@@ -1,0 +1,257 @@
+'use client';
+
+import Sidebar from '../components/Sidebar';
+import GlassmorphicLayout from '../components/GlassmorphicLayout';
+import { motion } from 'framer-motion';
+import { FileCheck, TrendingUp, Target, BookOpen, Brain, Code, Lightbulb, Award, Sparkles, ChevronRight, Calendar, Clock } from 'lucide-react';
+
+export default function Dashboard() {
+  return (
+    <GlassmorphicLayout>
+      <div className="flex min-h-screen">
+        <Sidebar />
+        
+        <main className="flex-1 lg:ml-0">
+          {/* Header */}
+          <header className="bg-white/5 backdrop-blur-2xl border-b border-white/10 px-4 sm:px-6 lg:px-8 py-4 lg:py-6 sticky top-0 z-20">
+            <div className="flex justify-between items-center">
+              <div className="ml-12 lg:ml-0">
+                <h1 className="text-xl sm:text-2xl font-semibold text-white mb-1">
+                  Good morning, <span className="text-lime-400">Juan</span> 👋
+                </h1>
+                <p className="text-gray-400 text-xs sm:text-sm hidden sm:block">Here's your learning progress today</p>
+              </div>
+              <div className="flex items-center gap-2 sm:gap-4">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="p-2 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10 hover:bg-white/10 transition hidden sm:block"
+                >
+                  <Calendar className="w-5 h-5 text-gray-300" />
+                </motion.button>
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-lime-400 to-emerald-500 rounded-lg flex items-center justify-center text-gray-900 font-semibold text-xs sm:text-sm shadow-lg shadow-lime-500/30">
+                  JD
+                </div>
+              </div>
+            </div>
+          </header>
+
+          <div className="p-4 sm:p-6 lg:p-8">
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+              {[
+                { icon: FileCheck, label: 'Assessments', value: '3/5', subtext: 'Completed', gradient: 'from-blue-500/20 to-cyan-500/20', iconBg: 'from-blue-400 to-cyan-500' },
+                { icon: TrendingUp, label: 'Average Score', value: '85%', subtext: 'Great progress', gradient: 'from-lime-500/20 to-emerald-500/20', iconBg: 'from-lime-400 to-emerald-500' },
+                { icon: Target, label: 'Program Matches', value: '12', subtext: 'Available', gradient: 'from-purple-500/20 to-pink-500/20', iconBg: 'from-purple-400 to-pink-500' },
+                { icon: BookOpen, label: 'Learning Modules', value: '8/15', subtext: 'In progress', gradient: 'from-orange-500/20 to-red-500/20', iconBg: 'from-orange-400 to-red-500' },
+              ].map((stat, index) => {
+                const Icon = stat.icon;
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                    whileHover={{ y: -5, scale: 1.02 }}
+                    className="group relative"
+                  >
+                    <div className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} rounded-xl sm:rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
+                    
+                    <div className="relative bg-white/5 backdrop-blur-2xl rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 hover:border-white/20 transition-all">
+                      <div className="flex items-start justify-between mb-3 sm:mb-4">
+                        <div className={`w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br ${stat.iconBg} rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg`}>
+                          <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                        </div>
+                      </div>
+                      <div className="text-2xl sm:text-3xl font-bold text-white mb-1">{stat.value}</div>
+                      <div className="text-xs sm:text-sm text-gray-400">{stat.label}</div>
+                      <div className="text-xs text-gray-500 mt-1">{stat.subtext}</div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+              {/* Strengths */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: 0.4 }}
+                className="lg:col-span-2 relative group"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-lime-500/20 to-emerald-500/20 rounded-xl sm:rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                
+                <div className="relative bg-white/5 backdrop-blur-2xl rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 hover:border-white/20 transition-all h-full">
+                  <div className="flex items-center gap-3 mb-4 sm:mb-6">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-lime-400 to-emerald-500 rounded-lg sm:rounded-xl flex items-center justify-center">
+                      <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg sm:text-xl font-semibold text-white">Your Strengths</h2>
+                      <p className="text-xs text-gray-400 hidden sm:block">Top performing areas</p>
+                    </div>
+                  </div>
+                  <div className="space-y-4 sm:space-y-5">
+                    {[
+                      { name: 'Logical Reasoning', score: 92, icon: Brain, color: 'from-blue-400 to-cyan-500' },
+                      { name: 'Mathematics', score: 88, icon: Target, color: 'from-purple-400 to-pink-500' },
+                      { name: 'Problem Solving', score: 85, icon: Lightbulb, color: 'from-orange-400 to-red-500' },
+                    ].map((strength) => {
+                      const Icon = strength.icon;
+                      return (
+                        <div key={strength.name}>
+                          <div className="flex items-center justify-between mb-2 sm:mb-3">
+                            <div className="flex items-center gap-2 sm:gap-3">
+                              <div className={`w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br ${strength.color} rounded-lg flex items-center justify-center shadow-lg`}>
+                                <Icon className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                              </div>
+                              <span className="font-medium text-white text-sm sm:text-base">{strength.name}</span>
+                            </div>
+                            <span className="text-base sm:text-lg font-bold text-lime-400">{strength.score}%</span>
+                          </div>
+                          <div className="relative w-full bg-white/5 rounded-full h-2 overflow-hidden backdrop-blur-xl">
+                            <motion.div
+                              initial={{ width: 0 }}
+                              animate={{ width: `${strength.score}%` }}
+                              transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
+                              className={`absolute inset-y-0 left-0 bg-gradient-to-r ${strength.color} rounded-full shadow-lg`}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Quick Actions */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: 0.4 }}
+                className="relative group"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-xl sm:rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                
+                <div className="relative bg-white/5 backdrop-blur-2xl rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 hover:border-white/20 transition-all h-full">
+                  <div className="flex items-center gap-3 mb-4 sm:mb-6">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg sm:rounded-xl flex items-center justify-center">
+                      <Award className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg sm:text-xl font-semibold text-white">Quick Actions</h2>
+                      <p className="text-xs text-gray-400 hidden sm:block">Continue learning</p>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    {[
+                      { label: 'Continue Assessment', icon: FileCheck },
+                      { label: 'View Recommendations', icon: Target },
+                      { label: 'Start Learning', icon: BookOpen },
+                    ].map((action, idx) => {
+                      const Icon = action.icon;
+                      return (
+                        <motion.button
+                          key={idx}
+                          whileHover={{ x: 5 }}
+                          className="w-full flex items-center justify-between p-3 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all group/btn"
+                        >
+                          <div className="flex items-center gap-3">
+                            <Icon className="w-4 h-4 text-gray-400 group-hover/btn:text-lime-400 transition-colors" />
+                            <span className="text-xs sm:text-sm text-gray-300">{action.label}</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-gray-500 group-hover/btn:text-lime-400 transition-colors" />
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+
+                  <div className="mt-6 pt-6 border-t border-white/10">
+                    <h3 className="text-sm font-semibold text-gray-400 mb-3">Recent Activity</h3>
+                    <div className="space-y-3">
+                      {[
+                        { text: 'Completed Math Assessment', time: '2h ago' },
+                        { text: 'Started Problem Solving', time: '5h ago' },
+                      ].map((activity, idx) => (
+                        <div key={idx} className="flex items-start gap-2">
+                          <div className="w-1.5 h-1.5 bg-lime-400 rounded-full mt-2 flex-shrink-0"></div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs text-gray-300 truncate">{activity.text}</p>
+                            <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
+                              <Clock className="w-3 h-3 flex-shrink-0" />
+                              {activity.time}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Recommended Programs */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.6 }}
+              className="relative group"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl sm:rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              
+              <div className="relative bg-white/5 backdrop-blur-2xl rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 hover:border-white/20 transition-all">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-400 to-pink-500 rounded-lg sm:rounded-xl flex items-center justify-center">
+                      <Target className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg sm:text-xl font-semibold text-white">Recommended Programs</h2>
+                      <p className="text-xs text-gray-400 hidden sm:block">Based on your strengths and interests</p>
+                    </div>
+                  </div>
+                  <button className="text-xs sm:text-sm font-medium text-lime-400 hover:text-lime-300 transition-colors self-start sm:self-auto">View All</button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  {[
+                    { name: 'Computer Science', match: 95, university: 'University of the Philippines', icon: Code, color: 'from-blue-400 to-cyan-500' },
+                    { name: 'Software Engineering', match: 92, university: 'Ateneo de Manila University', icon: Code, color: 'from-purple-400 to-pink-500' },
+                    { name: 'Data Science', match: 88, university: 'De La Salle University', icon: TrendingUp, color: 'from-lime-400 to-emerald-500' },
+                  ].map((program) => {
+                    const Icon = program.icon;
+                    return (
+                      <motion.div
+                        key={program.name}
+                        whileHover={{ y: -5, scale: 1.02 }}
+                        className="relative group/card"
+                      >
+                        <div className={`absolute inset-0 bg-gradient-to-br ${program.color} opacity-0 group-hover/card:opacity-20 rounded-xl blur-xl transition-opacity`}></div>
+                        
+                        <div className="relative bg-white/5 backdrop-blur-xl rounded-xl p-4 sm:p-5 border border-white/10 hover:border-white/20 transition-all">
+                          <div className="flex items-start justify-between mb-3 sm:mb-4">
+                            <div className={`w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br ${program.color} rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg`}>
+                              <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                            </div>
+                            <div className="bg-lime-400 text-gray-900 text-xs font-bold px-2 sm:px-2.5 py-1 rounded-lg shadow-lg">
+                              {program.match}%
+                            </div>
+                          </div>
+                          <h3 className="text-base sm:text-lg font-semibold text-white mb-1">{program.name}</h3>
+                          <p className="text-xs text-gray-400 mb-3 sm:mb-4 line-clamp-1">{program.university}</p>
+                          <button className="w-full px-4 py-2 sm:py-2.5 bg-lime-400 hover:bg-lime-500 text-gray-900 font-semibold rounded-lg sm:rounded-xl transition-all shadow-lg shadow-lime-500/30 text-sm">
+                            View Details
+                          </button>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </main>
+      </div>
+    </GlassmorphicLayout>
+  );
+}
