@@ -1,0 +1,53 @@
+# Dependencies
+**/node_modules/
+**/.pnp
+**.pnp.*
+**/venv/
+**/.venv/
+**/env/
+
+# Next.js
+**/.next/
+**/out/
+
+# Production
+**/build/
+**/dist/
+
+# Misc
+.DS_Store
+*.pem
+*.swp
+*.swo
+Thumbs.db
+db.lock
+ehthumbs.db
+desktop.ini
+
+# Debug
+**/*.log*
+
+# Local env files
+.env
+*.env
+.env*.local
+
+# Typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# IDEs
+.vscode/
+.idea/
+
+# Testing
+**/coverage/
+**/htmlcov/
+**/.pytest_cache/
+**/.coverage
+
+# Alembic
+alembic/versions/*.pyc
+
+# Turbopack
+next-panic-*.log

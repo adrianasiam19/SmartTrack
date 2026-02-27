@@ -1,0 +1,2 @@
+# This folder holds generated Alembic migration versions.
+# Run: alembic revision --autogenerate -m "initial"
