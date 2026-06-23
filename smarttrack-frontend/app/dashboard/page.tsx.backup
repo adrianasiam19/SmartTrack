@@ -40,7 +40,7 @@ export default function Dashboard() {
           {/* Stats Grid with enhanced glassmorphism */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {[
-              { icon: FileCheck, label: 'Assessments', value: '3/5', subtext: 'Completed', gradient: 'from-blue-500/20 to-cyan-500/20', iconBg: 'from-blue-400 to-cyan-500' },
+              { icon: FileCheck, label: 'Challenges', value: '3/5', subtext: 'Completed', gradient: 'from-blue-500/20 to-cyan-500/20', iconBg: 'from-blue-400 to-cyan-500' },
               { icon: TrendingUp, label: 'Average Score', value: '85%', subtext: 'Great progress', gradient: 'from-lime-500/20 to-emerald-500/20', iconBg: 'from-lime-400 to-emerald-500' },
               { icon: Target, label: 'Program Matches', value: '12', subtext: 'Available', gradient: 'from-purple-500/20 to-pink-500/20', iconBg: 'from-purple-400 to-pink-500' },
               { icon: BookOpen, label: 'Learning Modules', value: '8/15', subtext: 'In progress', gradient: 'from-orange-500/20 to-red-500/20', iconBg: 'from-orange-400 to-red-500' },
@@ -152,7 +152,7 @@ export default function Dashboard() {
                 </div>
                 <div className="space-y-3">
                   {[
-                    { label: 'Continue Assessment', icon: FileCheck, color: 'lime' },
+                    { label: 'Continue Challenge', icon: FileCheck, color: 'lime' },
                     { label: 'View Recommendations', icon: Target, color: 'purple' },
                     { label: 'Start Learning', icon: BookOpen, color: 'blue' },
                   ].map((action, idx) => {
@@ -178,7 +178,7 @@ export default function Dashboard() {
                   <h3 className="text-sm font-semibold text-gray-400 mb-3">Recent Activity</h3>
                   <div className="space-y-3">
                     {[
-                      { text: 'Completed Math Assessment', time: '2h ago' },
+                      { text: 'Completed Math Challenge', time: '2h ago' },
                       { text: 'Started Problem Solving', time: '5h ago' },
                     ].map((activity, idx) => (
                       <div key={idx} className="flex items-start gap-2">
