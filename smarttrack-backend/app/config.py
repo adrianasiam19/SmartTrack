@@ -22,6 +22,13 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_ID: str
     GOOGLE_CLIENT_SECRET: str
 
+    # ── Gemini AI ────────────────────────────────────────────────────────────
+    GEMINI_API_KEY: str = ""
+
+    # ── NVIDIA AI ────────────────────────────────────────────────────────────
+    NVIDIA_API_KEY: str = ""
+    NVIDIA_MODEL: str = "meta/llama-3.1-8b-instruct"
+
     # ── App ──────────────────────────────────────────────────────────────────
     CORS_ORIGINS: str = "http://localhost:3000"
     FRONTEND_URL: str = "http://localhost:3000"

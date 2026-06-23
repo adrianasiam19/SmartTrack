@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -21,6 +21,26 @@ class User(Base):
     password_hash: Mapped[str | None] = mapped_column(
         Text, nullable=True  # NULL for Google OAuth users (no password)
     )
+
+    # Legacy category (kept for backward compatibility; new code uses `programme`)
+    category: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    school: Mapped[str | None] = mapped_column(String(255), nullable=True)
+
+    # ── SHS onboarding ────────────────────────────────────────────────────────
+    # SHS programme: "General Science" | "General Arts"
+    programme: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    # SHS level: "SHS 1" | "SHS 2" | "SHS 3" | "Completed SHS"
+    shs_level: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    onboarding_completed: Mapped[bool] = mapped_column(
+        Boolean, default=False, nullable=False
+    )
+
+    # ── Gamification ──────────────────────────────────────────────────────────
+    xp: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    rank: Mapped[str] = mapped_column(
+        String(50), default="Beginner", nullable=False
+    )
+    streak: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
 
     # Google OAuth
     google_id: Mapped[str | None] = mapped_column(
@@ -56,6 +76,9 @@ class User(Base):
     # Relationships
     refresh_tokens: Mapped[list["RefreshToken"]] = relationship(
         "RefreshToken", back_populates="user", cascade="all, delete-orphan"
+    )
+    academic_records: Mapped[list["AcademicRecord"]] = relationship(
+        "AcademicRecord", back_populates="user", cascade="all, delete-orphan"
     )
 
     def __repr__(self) -> str:
@@ -101,3 +124,24 @@ class RefreshToken(Base):
 
     def __repr__(self) -> str:
         return f"<RefreshToken user_id={self.user_id} revoked={self.revoked}>"
+
+
+class AcademicRecord(Base):
+    __tablename__ = "academic_records"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    subject: Mapped[str] = mapped_column(String(100), nullable=False)
+    grade: Mapped[str] = mapped_column(String(10), nullable=False)
+    exam_type: Mapped[str] = mapped_column(String(50), default="WASSCE")
+
+    user: Mapped["User"] = relationship("User", back_populates="academic_records")
+
+    def __repr__(self) -> str:
+        return f"<AcademicRecord user_id={self.user_id} subject={self.subject} grade={self.grade}>"
+

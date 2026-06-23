@@ -1,0 +1,26 @@
+[
+  {
+    "domain": "Math",
+    "title": "Introduction to Linear Equations",
+    "content": "# Linear Equations 101\n\nA linear equation is an equation of a straight line, which means that the degree of a linear equation must be $0$ or $1$ for each of its variables. \n\n## Solving for $x$\nTo find the value of $x$, you want to isolate it on one side of the equation.\n\n**Example:**\n`3x + 5 = 20`\n\n1. Subtract $5$ from both sides: `3x = 15`\n2. Divide both sides by $3$: `x = 5`\n\nTake your time with these steps. Careful evaluation prevents simple arithmetic mistakes!",
+    "difficulty_level": -1.0
+  },
+  {
+    "domain": "Logic",
+    "title": "Syllogisms and Deductive Reasoning",
+    "content": "# Deductive Reasoning\n\nDeductive reasoning is a logical process in which a conclusion is based on the concordance of multiple premises that are generally assumed to be true.\n\n## Syllogisms\nA common form is the syllogism.\n\n**Structure:**\n1. Major premise: All A are B.\n2. Minor premise: All B are C.\n3. Conclusion: Therefore, all A are C.\n\n**Example:**\n- All dogs are animals.\n- All animals have DNA.\n- Therefore, all dogs have DNA.\n\nWhen evaluating logical statements, try drawing a Venn Diagram to visualize the sets!",
+    "difficulty_level": -0.5
+  },
+  {
+    "domain": "Verbal",
+    "title": "Mastering Synonyms in Context",
+    "content": "# Contextual Vocabulary\n\nOften, you can figure out a word's meaning by looking at the words surrounding it.\n\n## The Art of Substitution\nWhen asked for a synonym, try substituting the options back into the original sentence to see which one preserves the exact meaning.\n\n**Example Word: Eloquent**\n- Definition: Fluent or persuasive in speaking or writing.\n- Synonym: Articulate.\n\n*Tip: Read widely to naturally build your intuition for word placement.*",
+    "difficulty_level": -0.2
+  },
+  {
+    "domain": "Science",
+    "title": "Cellular Biology Fundamentals",
+    "content": "# The Cell: Basic Unit of Life\n\nCells are the structural, functional, and biological units of all living beings.\n\n## Key Organelles\n- **Nucleus**: The control center containing DNA.\n- **Mitochondria**: The powerhouse of the cell, where cellular respiration occurs to generate ATP.\n- **Ribosomes**: The site of protein synthesis.\n\nRemember: Structure determines function in biology. The folded inner membrane of the mitochondria increases surface area for maximum energy production!",
+    "difficulty_level": -2.0
+  }
+]
