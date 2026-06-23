@@ -1,6 +1,6 @@
-# SmartTrack Backend 🐍
+# Atlas Backend 🐍
 
-Python FastAPI backend for the SmartTrack AI-powered career guidance platform.
+Python FastAPI backend for the Atlas AI-powered career guidance platform.
 
 ## Stack
 - **Framework**: FastAPI + Uvicorn  
@@ -12,7 +12,7 @@ Python FastAPI backend for the SmartTrack AI-powered career guidance platform.
 ## Project Structure
 
 ```
-smarttrack-backend/
+atlas-backend/
 ├── app/
 │   ├── main.py              # FastAPI entry, CORS, router registration
 │   ├── config.py            # Settings from .env
@@ -54,7 +54,7 @@ Interactive docs: `http://localhost:8000/docs` (dev mode only)
 
 ### 1. Create & activate virtual environment
 ```bash
-cd smarttrack-backend
+cd atlas-backend
 python -m venv .venv
 
 # Windows
@@ -99,7 +99,7 @@ Swagger docs at `http://localhost:8000/docs`
 
 ## Deployment (Render)
 
-1. Push `smarttrack-backend/` to GitHub as its own repo (or a subfolder)
+1. Push `atlas-backend/` to GitHub as its own repo (or a subfolder)
 2. Create new **Web Service** on Render → connect repo
 3. Set **Start command**: `uvicorn app.main:app --host 0.0.0.0 --port 8000`
 4. Add all `.env` values as **Environment Variables** in Render dashboard

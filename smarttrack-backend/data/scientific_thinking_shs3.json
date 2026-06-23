@@ -1,0 +1,4789 @@
+[
+  {
+    "id": 1,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Chemical Bonding & Reactions",
+    "mission_title": "The Bond Builders",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What type of bond is formed when electrons are transferred from a metal to a non-metal?",
+    "options": {
+      "A": "Covalent bond",
+      "B": "Ionic bond",
+      "C": "Metallic bond",
+      "D": "Hydrogen bond"
+    },
+    "correct_answer": "B",
+    "explanation": "Ionic bonds form when a metal atom loses electrons to a non-metal atom. The metal becomes a positive ion and the non-metal becomes a negative ion; electrostatic attraction holds them together.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-001",
+    "xp": 20
+  },
+  {
+    "id": 2,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Chemical Bonding & Reactions",
+    "mission_title": "The Shared Electrons",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "In a covalent bond, what do the two atoms share?",
+    "options": {
+      "A": "Protons",
+      "B": "Neutrons",
+      "C": "Electrons",
+      "D": "Ions"
+    },
+    "correct_answer": "C",
+    "explanation": "Covalent bonds form when two atoms (usually non-metals) share one or more pairs of electrons. This sharing gives each atom a full outer shell, increasing stability.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-002",
+    "xp": 20
+  },
+  {
+    "id": 3,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Chemical Bonding & Reactions",
+    "mission_title": "The Alloy Architect",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is an alloy?",
+    "options": {
+      "A": "A pure metal element",
+      "B": "A mixture of a metal with one or more other elements to improve its properties",
+      "C": "A type of ionic compound",
+      "D": "A non-metal compound"
+    },
+    "correct_answer": "B",
+    "explanation": "An alloy is a mixture where a metal is combined with other elements (metals or non-metals) to enhance properties like strength, hardness, or corrosion resistance.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-003",
+    "xp": 20
+  },
+  {
+    "id": 4,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Chemical Bonding & Reactions",
+    "mission_title": "The Conservation Law",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "In a chemical reaction, what is CONSERVED according to the Law of Conservation of Mass?",
+    "options": {
+      "A": "The colour of the reactants",
+      "B": "The total mass - mass of reactants equals mass of products",
+      "C": "The temperature of the substances",
+      "D": "The volume of the substances"
+    },
+    "correct_answer": "B",
+    "explanation": "Lavoisier's Law of Conservation of Mass states that matter is neither created nor destroyed in a chemical reaction.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-004",
+    "xp": 20
+  },
+  {
+    "id": 5,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Chemical Bonding & Reactions",
+    "mission_title": "The Organic Carbon",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What makes a compound 'organic' in chemistry?",
+    "options": {
+      "A": "It comes from a living organism only",
+      "B": "It contains carbon atoms (with some exceptions like CO2 and carbonates)",
+      "C": "It contains only hydrogen and oxygen",
+      "D": "It is always a gas at room temperature"
+    },
+    "correct_answer": "B",
+    "explanation": "Organic chemistry is the study of carbon-containing compounds. Carbon's ability to form four bonds and chain with other carbons makes it uniquely versatile.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-005",
+    "xp": 20
+  },
+  {
+    "id": 6,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Chemical Bonding & Reactions",
+    "mission_title": "The Hydrocarbons",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What are hydrocarbons?",
+    "options": {
+      "A": "Compounds containing only hydrogen and nitrogen",
+      "B": "Compounds containing only carbon and hydrogen",
+      "C": "Compounds containing carbon, hydrogen, and oxygen",
+      "D": "Compounds containing hydrogen and oxygen only"
+    },
+    "correct_answer": "B",
+    "explanation": "Hydrocarbons are the simplest organic compounds, made up of only carbon and hydrogen. They include alkanes (e.g., methane CH4), alkenes (e.g., ethene C2H4), and alkynes.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-006",
+    "xp": 20
+  },
+  {
+    "id": 7,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Chemical Bonding & Reactions",
+    "mission_title": "The Radioactivity Facts",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is radioactivity?",
+    "options": {
+      "A": "The ability of a material to reflect light",
+      "B": "The spontaneous emission of radiation from the unstable nucleus of an atom",
+      "C": "The absorption of heat by dense materials",
+      "D": "The process of forming ionic bonds"
+    },
+    "correct_answer": "B",
+    "explanation": "Radioactivity is the spontaneous decay of unstable atomic nuclei, releasing energy as radiation (alpha, beta, or gamma).",
+    "template_id": null,
+    "source_id": "ST3-SHS3-007",
+    "xp": 20
+  },
+  {
+    "id": 8,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Chemical Bonding & Reactions",
+    "mission_title": "The Alpha Particle",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "An alpha (a) particle is identical to the nucleus of which element?",
+    "options": {
+      "A": "Hydrogen",
+      "B": "Helium",
+      "C": "Lithium",
+      "D": "Carbon"
+    },
+    "correct_answer": "B",
+    "explanation": "An alpha particle consists of 2 protons and 2 neutrons - identical to a helium-4 nucleus.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-008",
+    "xp": 20
+  },
+  {
+    "id": 9,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Chemical Bonding & Reactions",
+    "mission_title": "The Beta Particle",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "A beta (b) particle is a high-energy electron emitted from the nucleus. What nuclear change produces it?",
+    "options": {
+      "A": "A proton splits in two",
+      "B": "A neutron converts to a proton, emitting an electron",
+      "C": "A proton converts to a neutron",
+      "D": "Two electrons combine"
+    },
+    "correct_answer": "B",
+    "explanation": "In beta decay, a neutron in the nucleus converts to a proton, releasing a high-energy electron (beta particle) and an antineutrino.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-009",
+    "xp": 20
+  },
+  {
+    "id": 10,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Chemical Bonding & Reactions",
+    "mission_title": "The Gamma Ray",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Gamma (g) radiation is different from alpha and beta radiation because it is:",
+    "options": {
+      "A": "A stream of particles with positive charge",
+      "B": "A stream of electrons",
+      "C": "Electromagnetic radiation (high-energy photons) with no charge or mass",
+      "D": "A stream of neutrons"
+    },
+    "correct_answer": "C",
+    "explanation": "Gamma rays are high-energy electromagnetic waves (photons). Unlike alpha and beta, they have no mass or charge.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-010",
+    "xp": 20
+  },
+  {
+    "id": 11,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Chemical Bonding & Reactions",
+    "mission_title": "The Half-Life",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is the HALF-LIFE of a radioactive isotope?",
+    "options": {
+      "A": "The time for all radioactive atoms to decay",
+      "B": "The time taken for half of the radioactive nuclei in a sample to decay",
+      "C": "The age of the radioactive material",
+      "D": "The time for the material to become completely safe"
+    },
+    "correct_answer": "B",
+    "explanation": "Half-life is the time for exactly half of the radioactive atoms in a sample to decay.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-011",
+    "xp": 20
+  },
+  {
+    "id": 12,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Chemical Bonding & Reactions",
+    "mission_title": "The Nuclear Fission",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is nuclear fission?",
+    "options": {
+      "A": "The joining of two light nuclei to form a heavier nucleus",
+      "B": "The splitting of a heavy atomic nucleus into two smaller nuclei, releasing enormous energy",
+      "C": "The emission of an alpha particle from an unstable nucleus",
+      "D": "The decay of a nucleus by emitting a beta particle"
+    },
+    "correct_answer": "B",
+    "explanation": "Nuclear fission splits a heavy nucleus (like uranium-235) into smaller fragments when struck by a neutron.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-012",
+    "xp": 20
+  },
+  {
+    "id": 13,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Chemical Bonding & Reactions",
+    "mission_title": "The Nuclear Fusion",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is nuclear fusion?",
+    "options": {
+      "A": "The splitting of a heavy nucleus into two smaller ones",
+      "B": "The joining of two light nuclei to form a heavier nucleus, releasing even more energy than fission",
+      "C": "The emission of gamma radiation from a nucleus",
+      "D": "The process of removing electrons from an atom"
+    },
+    "correct_answer": "B",
+    "explanation": "Nuclear fusion joins two light nuclei (e.g., hydrogen isotopes) to form a heavier nucleus. This is the process that powers the Sun.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-013",
+    "xp": 20
+  },
+  {
+    "id": 14,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Chemical Bonding & Reactions",
+    "mission_title": "The Metallic Bond",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What holds atoms together in a metallic bond?",
+    "options": {
+      "A": "Shared electron pairs between specific atoms",
+      "B": "Transfer of electrons from one atom to another",
+      "C": "A sea of delocalised (free-moving) electrons shared by all the positive metal ions",
+      "D": "Electrostatic attraction between opposite ions"
+    },
+    "correct_answer": "C",
+    "explanation": "In metallic bonding, metal atoms release their outer electrons into a shared 'sea' of delocalised electrons.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-014",
+    "xp": 20
+  },
+  {
+    "id": 15,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Chemical Bonding & Reactions",
+    "mission_title": "The Steel Alloy",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Steel is an alloy of iron and carbon. Why is steel STRONGER than pure iron?",
+    "options": {
+      "A": "Carbon ions replace iron ions, making a lighter structure",
+      "B": "Carbon atoms disrupt the regular layers of iron atoms, making it harder for layers to slide over each other",
+      "C": "Carbon increases the size of iron atoms",
+      "D": "Adding carbon removes impurities from iron"
+    },
+    "correct_answer": "B",
+    "explanation": "In pure iron, layers of atoms can slide over each other easily (soft and ductile). Carbon atoms in steel are a different size, disrupting the regular pattern.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-015",
+    "xp": 20
+  },
+  {
+    "id": 16,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Chemical Bonding & Reactions",
+    "mission_title": "The Radiation Shield",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Which material is MOST effective at shielding gamma radiation?",
+    "options": {
+      "A": "Paper",
+      "B": "Aluminium foil",
+      "C": "A few centimetres of water",
+      "D": "Thick lead or several metres of concrete"
+    },
+    "correct_answer": "D",
+    "explanation": "Alpha radiation is stopped by paper; beta by aluminium; gamma requires thick lead because it is highly penetrating electromagnetic radiation.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-016",
+    "xp": 20
+  },
+  {
+    "id": 17,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Chemical Bonding & Reactions",
+    "mission_title": "The Chain Reaction",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "In a nuclear power station, what is the purpose of the MODERATOR?",
+    "options": {
+      "A": "To speed up the neutrons from fission",
+      "B": "To absorb excess neutrons to control the reaction",
+      "C": "To slow down fast neutrons so they can trigger further fission in uranium-235",
+      "D": "To generate steam from the heat"
+    },
+    "correct_answer": "C",
+    "explanation": "Fast neutrons from fission are too fast to cause further fission efficiently. The moderator slows them to thermal speeds.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-017",
+    "xp": 20
+  },
+  {
+    "id": 18,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Chemical Bonding & Reactions",
+    "mission_title": "The Applications of Radioactivity",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Radioactive isotopes are used in medicine for treating cancer. Why is gamma radiation used in radiotherapy?",
+    "options": {
+      "A": "Gamma is stopped by skin so it cannot damage internal tissue",
+      "B": "Gamma radiation can penetrate the body and kill cancer cells",
+      "C": "Gamma radiation is harmless to all cells",
+      "D": "Gamma radiation only affects cancer cells, not healthy ones"
+    },
+    "correct_answer": "B",
+    "explanation": "Gamma radiation penetrates deep into tissue, delivering energy to kill rapidly dividing cancer cells.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-018",
+    "xp": 20
+  },
+  {
+    "id": 19,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Chemical Bonding & Reactions",
+    "mission_title": "The Alkanes Family",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Methane (CH4), ethane (C2H6), and propane (C3H8) belong to which organic compound family?",
+    "options": {
+      "A": "Alkenes",
+      "B": "Alkynes",
+      "C": "Alkanes",
+      "D": "Alcohols"
+    },
+    "correct_answer": "C",
+    "explanation": "Alkanes are saturated hydrocarbons with only single C-C bonds. The general formula is CnH2n+2.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-019",
+    "xp": 20
+  },
+  {
+    "id": 20,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Chemical Bonding & Reactions",
+    "mission_title": "The Double Bond",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Alkenes differ from alkanes because alkenes contain:",
+    "options": {
+      "A": "Only single bonds between carbon atoms",
+      "B": "A carbon-carbon double bond (C=C)",
+      "C": "Triple bonds only",
+      "D": "No hydrogen atoms"
+    },
+    "correct_answer": "B",
+    "explanation": "Alkenes are unsaturated hydrocarbons containing at least one C=C double bond.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-020",
+    "xp": 20
+  },
+  {
+    "id": 21,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Chemical Bonding & Reactions",
+    "mission_title": "The Combustion Reaction",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Complete combustion of a hydrocarbon (e.g., methane) in excess oxygen produces:",
+    "options": {
+      "A": "Carbon monoxide and water only",
+      "B": "Carbon dioxide and water",
+      "C": "Carbon only",
+      "D": "Oxygen and nitrogen"
+    },
+    "correct_answer": "B",
+    "explanation": "Complete combustion: hydrocarbon + excess oxygen -> carbon dioxide + water.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-021",
+    "xp": 20
+  },
+  {
+    "id": 22,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Chemical Bonding & Reactions",
+    "mission_title": "The Uses of Organic Chemistry",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Plastics, medicines, fertilisers, and fuels are all products of organic chemistry. What key property of carbon makes this variety possible?",
+    "options": {
+      "A": "Carbon is the heaviest element",
+      "B": "Carbon can form four bonds and chain with other carbons to create millions of different molecular structures",
+      "C": "Carbon only bonds with hydrogen",
+      "D": "Carbon is the most abundant element on Earth"
+    },
+    "correct_answer": "B",
+    "explanation": "Carbon's tetravalency (ability to form 4 bonds) and its ability to form stable chains creates an almost unlimited number of organic molecules.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-022",
+    "xp": 20
+  },
+  {
+    "id": 23,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Genetics & Heredity",
+    "mission_title": "The DNA Discovery",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is DNA?",
+    "options": {
+      "A": "A type of protein that builds muscle",
+      "B": "Deoxyribonucleic Acid - the molecule that carries the genetic instructions for development, functioning, and reproduction of all living organisms",
+      "C": "A hormone that controls growth",
+      "D": "A type of fat found in cell membranes"
+    },
+    "correct_answer": "B",
+    "explanation": "DNA is the hereditary material in all living organisms. It contains the genetic code that determines traits.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-023",
+    "xp": 20
+  },
+  {
+    "id": 24,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Genetics & Heredity",
+    "mission_title": "The Double Helix",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is the shape of the DNA molecule?",
+    "options": {
+      "A": "A single straight strand",
+      "B": "A double helix (two strands twisted around each other)",
+      "C": "A circular ring",
+      "D": "A triple helix"
+    },
+    "correct_answer": "B",
+    "explanation": "DNA has a double helix structure - two complementary strands wound around each other, like a twisted ladder.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-024",
+    "xp": 20
+  },
+  {
+    "id": 25,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Genetics & Heredity",
+    "mission_title": "The Gene Definition",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is a GENE?",
+    "options": {
+      "A": "A complete chromosome",
+      "B": "A segment of DNA that codes for a specific protein or trait",
+      "C": "The entire DNA of an organism",
+      "D": "A type of mutation"
+    },
+    "correct_answer": "B",
+    "explanation": "A gene is a specific sequence of DNA bases that codes for a particular protein. Genes are the basic units of heredity.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-025",
+    "xp": 20
+  },
+  {
+    "id": 26,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Genetics & Heredity",
+    "mission_title": "The Chromosome Count",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "How many chromosomes does a normal human body cell (somatic cell) contain?",
+    "options": {
+      "A": "23",
+      "B": "46",
+      "C": "48",
+      "D": "2"
+    },
+    "correct_answer": "B",
+    "explanation": "Human body cells contain 46 chromosomes arranged in 23 pairs.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-026",
+    "xp": 20
+  },
+  {
+    "id": 27,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Genetics & Heredity",
+    "mission_title": "The Gregor Mendel",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Who is known as the 'Father of Genetics'?",
+    "options": {
+      "A": "Charles Darwin",
+      "B": "Louis Pasteur",
+      "C": "Gregor Mendel",
+      "D": "James Watson"
+    },
+    "correct_answer": "C",
+    "explanation": "Gregor Mendel, an Austrian monk, conducted pioneering pea plant breeding experiments and discovered the fundamental laws of heredity.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-027",
+    "xp": 20
+  },
+  {
+    "id": 28,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Genetics & Heredity",
+    "mission_title": "The Dominant Trait",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What does it mean for an allele to be DOMINANT?",
+    "options": {
+      "A": "It is always passed on to offspring",
+      "B": "It is expressed in the phenotype even when only one copy is present (in a heterozygous individual)",
+      "C": "It causes disease",
+      "D": "It only appears in females"
+    },
+    "correct_answer": "B",
+    "explanation": "A dominant allele masks the effect of a recessive allele. A heterozygous individual (Aa) shows the dominant phenotype.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-028",
+    "xp": 20
+  },
+  {
+    "id": 29,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Genetics & Heredity",
+    "mission_title": "The Recessive Trait",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "A recessive allele is only expressed in the phenotype when:",
+    "options": {
+      "A": "Only one copy is present",
+      "B": "Two copies are present (the individual is homozygous recessive)",
+      "C": "Combined with a dominant allele",
+      "D": "Found on the Y chromosome only"
+    },
+    "correct_answer": "B",
+    "explanation": "Recessive alleles only show in the phenotype when an individual has two copies of the recessive allele (aa).",
+    "template_id": null,
+    "source_id": "ST3-SHS3-029",
+    "xp": 20
+  },
+  {
+    "id": 30,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Genetics & Heredity",
+    "mission_title": "The Punnett Square",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Two heterozygous parents (Aa x Aa) cross. What is the probability of an offspring being homozygous recessive (aa)?",
+    "options": {
+      "A": "0%",
+      "B": "25%",
+      "C": "50%",
+      "D": "75%"
+    },
+    "correct_answer": "B",
+    "explanation": "Punnett square for Aa x Aa gives: AA (25%), Aa (50%), aa (25%). Each offspring has a 25% chance of being homozygous recessive.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-030",
+    "xp": 20
+  },
+  {
+    "id": 31,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Genetics & Heredity",
+    "mission_title": "The Genotype vs Phenotype",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is the difference between genotype and phenotype?",
+    "options": {
+      "A": "They are the same thing",
+      "B": "Genotype is the genetic makeup (alleles); phenotype is the observable physical characteristics expressed",
+      "C": "Phenotype is the genetic makeup; genotype is the observable trait",
+      "D": "Genotype only refers to sex chromosomes"
+    },
+    "correct_answer": "B",
+    "explanation": "Genotype = the genetic constitution (e.g., Aa). Phenotype = what you can observe (e.g., tall).",
+    "template_id": null,
+    "source_id": "ST3-SHS3-031",
+    "xp": 20
+  },
+  {
+    "id": 32,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Genetics & Heredity",
+    "mission_title": "The Sex Determination",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "How is sex determined in humans?",
+    "options": {
+      "A": "By the temperature during development",
+      "B": "By the mother's genes only",
+      "C": "By the sex chromosomes: females have XX; males have XY",
+      "D": "By the father's blood type"
+    },
+    "correct_answer": "C",
+    "explanation": "Humans have 23 pairs of chromosomes. The 23rd pair are sex chromosomes - females have XX, males have XY.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-032",
+    "xp": 20
+  },
+  {
+    "id": 33,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Genetics & Heredity",
+    "mission_title": "The Mutation",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is a genetic MUTATION?",
+    "options": {
+      "A": "The normal process of DNA copying",
+      "B": "A change in the DNA sequence",
+      "C": "The transfer of genes from parent to offspring",
+      "D": "The expression of a recessive gene"
+    },
+    "correct_answer": "B",
+    "explanation": "A mutation is a permanent change in the nucleotide sequence of DNA.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-033",
+    "xp": 20
+  },
+  {
+    "id": 34,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Genetics & Heredity",
+    "mission_title": "The Sickle Cell Disease",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Sickle cell disease is caused by a mutation in which gene?",
+    "options": {
+      "A": "The insulin gene",
+      "B": "The haemoglobin gene",
+      "C": "The keratin gene",
+      "D": "The amylase gene"
+    },
+    "correct_answer": "B",
+    "explanation": "Sickle cell disease is caused by a point mutation in the haemoglobin gene (HbS).",
+    "template_id": null,
+    "source_id": "ST3-SHS3-034",
+    "xp": 20
+  },
+  {
+    "id": 35,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Genetics & Heredity",
+    "mission_title": "The Sickle Cell Inheritance",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "In Ghana, sickle cell disease is common. A child with genotype HbSHbS has sickle cell disease. What are the genotypes of both parents?",
+    "options": {
+      "A": "Both parents must be HbSHbS",
+      "B": "Both parents must be HbAHbS (carriers)",
+      "C": "One parent is HbAHbA and one is HbSHbS",
+      "D": "Both parents must be HbAHbA"
+    },
+    "correct_answer": "B",
+    "explanation": "Sickle cell disease (HbSHbS) is autosomal recessive. Both parents must be carriers (HbAHbS).",
+    "template_id": null,
+    "source_id": "ST3-SHS3-035",
+    "xp": 20
+  },
+  {
+    "id": 36,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Genetics & Heredity",
+    "mission_title": "The Meiosis Significance",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Why is meiosis (the cell division that produces sex cells) important for genetic variation?",
+    "options": {
+      "A": "It produces identical daughter cells",
+      "B": "It doubles the chromosome number",
+      "C": "It creates genetic variation through crossing over and random assortment of chromosomes",
+      "D": "It repairs damaged DNA"
+    },
+    "correct_answer": "C",
+    "explanation": "During meiosis, homologous chromosomes exchange segments (crossing over) and independently assort into daughter cells.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-036",
+    "xp": 20
+  },
+  {
+    "id": 37,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Genetics & Heredity",
+    "mission_title": "The Cloning",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "A clone has the same genetic material as its parent. How is this different from natural sexual reproduction?",
+    "options": {
+      "A": "Clones always look different from their parents",
+      "B": "Clones are produced sexually with two parents",
+      "C": "A clone is produced from a single parent without fertilisation - it is genetically identical to the parent",
+      "D": "Clones cannot reproduce"
+    },
+    "correct_answer": "C",
+    "explanation": "Cloning produces genetically identical copies. In sexual reproduction, offspring have a unique combination of genes from two parents.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-037",
+    "xp": 20
+  },
+  {
+    "id": 38,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Genetics & Heredity",
+    "mission_title": "The Protein Synthesis",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "DNA carries the code for proteins. What is the correct sequence of events in protein synthesis?",
+    "options": {
+      "A": "Ribosomes -> DNA -> mRNA -> protein",
+      "B": "DNA -> mRNA (transcription in nucleus) -> ribosome -> protein (translation)",
+      "C": "mRNA -> DNA -> protein",
+      "D": "Protein -> DNA -> mRNA"
+    },
+    "correct_answer": "B",
+    "explanation": "DNA is transcribed into mRNA in the nucleus. The mRNA exits to a ribosome where it is translated into a sequence of amino acids.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-038",
+    "xp": 20
+  },
+  {
+    "id": 39,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Genetics & Heredity",
+    "mission_title": "The Blood Groups",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Blood type is controlled by multiple alleles. A person with blood group O has genotype:",
+    "options": {
+      "A": "I^A I^B",
+      "B": "I^A I^A or I^A i",
+      "C": "I^B I^B or I^B i",
+      "D": "ii (two recessive alleles)"
+    },
+    "correct_answer": "D",
+    "explanation": "The ABO blood group system has three alleles: I^A, I^B (codominant), and i (recessive). Blood group O requires genotype ii.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-039",
+    "xp": 20
+  },
+  {
+    "id": 40,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Genetics & Heredity",
+    "mission_title": "The Genetic Counselling",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Why is genetic counselling important in Ghana, particularly regarding sickle cell disease?",
+    "options": {
+      "A": "It tells parents the sex of their child",
+      "B": "It helps couples understand their genetic risk of passing inherited conditions to offspring and make informed reproductive decisions",
+      "C": "It is required by law before marriage",
+      "D": "It can cure genetic diseases"
+    },
+    "correct_answer": "B",
+    "explanation": "Genetic counselling helps people understand their genetic makeup and risk of passing conditions like sickle cell disease to children.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-040",
+    "xp": 20
+  },
+  {
+    "id": 41,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Genetics & Heredity",
+    "mission_title": "The Evolution Connection",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "How do mutations contribute to evolution?",
+    "options": {
+      "A": "Mutations always decrease an organism's fitness",
+      "B": "Mutations can introduce new alleles into a population; if beneficial, they may be selected for over generations - driving evolution",
+      "C": "Mutations only cause disease",
+      "D": "Mutations are immediately eliminated"
+    },
+    "correct_answer": "B",
+    "explanation": "Mutations are the ultimate source of new genetic variation. Natural selection acts on this variation to drive evolution.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-041",
+    "xp": 20
+  },
+  {
+    "id": 42,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Genetics & Heredity",
+    "mission_title": "The Biotechnology Application",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Genetic engineering in agriculture has been used in Ghana to develop improved crop varieties. What does this involve?",
+    "options": {
+      "A": "Traditional cross-breeding over many generations",
+      "B": "Directly altering an organism's DNA to introduce specific traits",
+      "C": "Exposing crops to radiation to cause random mutations",
+      "D": "Selective harvesting of the best plants"
+    },
+    "correct_answer": "B",
+    "explanation": "Genetic engineering directly inserts, deletes, or modifies specific genes in an organism's DNA.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-042",
+    "xp": 20
+  },
+  {
+    "id": 43,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "mission_title": "The Wave Fundamentals",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is a WAVE?",
+    "options": {
+      "A": "The movement of water in the ocean only",
+      "B": "A disturbance that transfers energy from one place to another without transferring matter",
+      "C": "The movement of electrons in a wire",
+      "D": "A type of chemical bond"
+    },
+    "correct_answer": "B",
+    "explanation": "A wave is a propagating disturbance that transfers energy without permanently displacing the medium.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-045",
+    "xp": 20
+  },
+  {
+    "id": 44,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "mission_title": "The Transverse Wave",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "In a transverse wave, the oscillation (vibration) is:",
+    "options": {
+      "A": "In the same direction as the wave travels",
+      "B": "At right angles (perpendicular) to the direction the wave travels",
+      "C": "At 45 degrees to the wave direction",
+      "D": "In a circular motion"
+    },
+    "correct_answer": "B",
+    "explanation": "In transverse waves, particles vibrate perpendicular to the direction of wave travel. Light and electromagnetic waves are transverse.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-046",
+    "xp": 20
+  },
+  {
+    "id": 45,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "mission_title": "The Longitudinal Wave",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Sound is a longitudinal wave. What does this mean about how its particles vibrate?",
+    "options": {
+      "A": "Particles vibrate at right angles to the wave direction",
+      "B": "Particles vibrate parallel to the wave travels, creating compressions and rarefactions",
+      "C": "Particles move in circles",
+      "D": "Particles do not vibrate at all"
+    },
+    "correct_answer": "B",
+    "explanation": "In longitudinal waves, particles vibrate back and forth along the same axis as wave travel, creating compressions and rarefactions.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-047",
+    "xp": 20
+  },
+  {
+    "id": 46,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "mission_title": "The Wave Properties",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is the FREQUENCY of a wave?",
+    "options": {
+      "A": "The maximum displacement of particles from their rest position",
+      "B": "The distance between two successive crests",
+      "C": "The number of complete wave cycles passing a point per second, measured in Hertz (Hz)",
+      "D": "The speed at which the wave travels"
+    },
+    "correct_answer": "C",
+    "explanation": "Frequency (f) is the number of complete oscillations per second. 1 Hz = 1 cycle per second.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-048",
+    "xp": 20
+  },
+  {
+    "id": 47,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "mission_title": "The Wave Equation",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "The wave equation is v = fL. If a wave has frequency 500 Hz and wavelength 0.4 m, what is its speed?",
+    "options": {
+      "A": "125 m/s",
+      "B": "200 m/s",
+      "C": "500 m/s",
+      "D": "1250 m/s"
+    },
+    "correct_answer": "B",
+    "explanation": "v = f x wavelength = 500 Hz x 0.4 m = 200 m/s.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-049",
+    "xp": 20
+  },
+  {
+    "id": 48,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "mission_title": "The Amplitude",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is the AMPLITUDE of a wave?",
+    "options": {
+      "A": "The distance between two crests",
+      "B": "The number of waves per second",
+      "C": "The maximum displacement of a particle from its undisturbed (rest) position",
+      "D": "The speed of the wave"
+    },
+    "correct_answer": "C",
+    "explanation": "Amplitude is the maximum displacement from the equilibrium position to the peak or trough of a wave.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-050",
+    "xp": 20
+  },
+  {
+    "id": 49,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "mission_title": "The Electromagnetic Spectrum",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Which of the following correctly orders electromagnetic waves from LONGEST to SHORTEST wavelength?",
+    "options": {
+      "A": "Gamma -> X-ray -> UV -> visible -> infrared -> microwave -> radio",
+      "B": "Radio -> microwave -> infrared -> visible light -> UV -> X-ray -> gamma",
+      "C": "Visible -> UV -> infrared -> radio -> gamma",
+      "D": "X-ray -> UV -> visible -> gamma -> microwave -> radio"
+    },
+    "correct_answer": "B",
+    "explanation": "The EM spectrum from longest to shortest wavelength: Radio, Microwave, Infrared, Visible, Ultraviolet, X-ray, Gamma ray.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-051",
+    "xp": 20
+  },
+  {
+    "id": 50,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "mission_title": "The Speed of Light",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is the speed of electromagnetic waves (including light) in a vacuum?",
+    "options": {
+      "A": "340 m/s",
+      "B": "3 x 10^6 m/s",
+      "C": "3 x 10^8 m/s",
+      "D": "3 x 10^10 m/s"
+    },
+    "correct_answer": "C",
+    "explanation": "The speed of light in a vacuum is approximately 3 x 10^8 m/s (300,000 km/s).",
+    "template_id": null,
+    "source_id": "ST3-SHS3-052",
+    "xp": 20
+  },
+  {
+    "id": 51,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "mission_title": "The Reflection Law",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "The law of reflection states that:",
+    "options": {
+      "A": "The angle of incidence equals the angle of refraction",
+      "B": "The angle of incidence equals the angle of reflection (both measured from the normal)",
+      "C": "Light always reflects at 90 degrees",
+      "D": "The angle of reflection is always greater than the angle of incidence"
+    },
+    "correct_answer": "B",
+    "explanation": "Law of reflection: angle of incidence = angle of reflection. Both measured from the normal.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-053",
+    "xp": 20
+  },
+  {
+    "id": 52,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "mission_title": "The Refraction",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "When light passes from air into glass, it slows down and bends toward the normal. This is called:",
+    "options": {
+      "A": "Reflection",
+      "B": "Diffraction",
+      "C": "Refraction",
+      "D": "Interference"
+    },
+    "correct_answer": "C",
+    "explanation": "Refraction is the bending of a wave when it changes speed by passing into a different medium.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-054",
+    "xp": 20
+  },
+  {
+    "id": 53,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "mission_title": "The Sound Speed",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Sound travels at approximately 340 m/s in air. In which medium does sound travel FASTEST?",
+    "options": {
+      "A": "Air",
+      "B": "Water",
+      "C": "Steel/solids",
+      "D": "A vacuum"
+    },
+    "correct_answer": "C",
+    "explanation": "Sound travels faster in denser, more elastic media: solid > liquid > gas. In steel, sound travels at ~5,100 m/s.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-055",
+    "xp": 20
+  },
+  {
+    "id": 54,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "mission_title": "The Hearing Range",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "The human ear can detect sound in the frequency range approximately:",
+    "options": {
+      "A": "2 Hz to 200 Hz",
+      "B": "20 Hz to 20,000 Hz (20 kHz)",
+      "C": "200 Hz to 2,000,000 Hz",
+      "D": "1 Hz to 1,000 Hz"
+    },
+    "correct_answer": "B",
+    "explanation": "Humans can hear sounds from about 20 Hz to 20,000 Hz.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-056",
+    "xp": 20
+  },
+  {
+    "id": 55,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "mission_title": "The Ultrasound",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Ultrasound is used in medical scanning. Why is it safe for scanning unborn babies?",
+    "options": {
+      "A": "Ultrasound uses X-rays which are safe in small doses",
+      "B": "Ultrasound uses high-frequency sound waves which reflect off tissues - no ionising radiation is involved",
+      "C": "Ultrasound uses visible light to see inside the body",
+      "D": "Ultrasound uses gamma rays at very low doses"
+    },
+    "correct_answer": "B",
+    "explanation": "Ultrasound scanning uses high-frequency sound waves that bounce off internal structures - no ionising radiation.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-057",
+    "xp": 20
+  },
+  {
+    "id": 56,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "mission_title": "The Total Internal Reflection",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Optical fibres transmit light signals using total internal reflection. What condition must be met for this to occur?",
+    "options": {
+      "A": "Light must travel from a less dense to a more dense medium",
+      "B": "Light must hit the boundary at an angle less than the critical angle",
+      "C": "Light must travel from a denser medium and hit the boundary at an angle greater than the critical angle",
+      "D": "Light must travel in a vacuum"
+    },
+    "correct_answer": "C",
+    "explanation": "Total internal reflection is used in fibre optic cables for high-speed internet and medical endoscopes.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-058",
+    "xp": 20
+  },
+  {
+    "id": 57,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "mission_title": "The Diffraction",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Diffraction is the spreading of waves around obstacles or through gaps. When is diffraction most noticeable?",
+    "options": {
+      "A": "When the gap is much larger than the wavelength",
+      "B": "When the gap size is similar to or smaller than the wavelength",
+      "C": "When the wave travels in a vacuum",
+      "D": "When the wave frequency is very high"
+    },
+    "correct_answer": "B",
+    "explanation": "Diffraction is most pronounced when the gap or obstacle is similar in size to the wavelength.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-059",
+    "xp": 20
+  },
+  {
+    "id": 58,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "mission_title": "The Seismic Waves",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Earthquakes produce seismic waves. P-waves (primary waves) are:",
+    "options": {
+      "A": "Transverse waves that travel through solids only",
+      "B": "Longitudinal waves that travel through solids, liquids, and gases",
+      "C": "Surface waves only",
+      "D": "Electromagnetic waves produced by earthquakes"
+    },
+    "correct_answer": "B",
+    "explanation": "P-waves are longitudinal seismic waves that travel through solids, liquids, and gases.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-060",
+    "xp": 20
+  },
+  {
+    "id": 59,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "mission_title": "The Doppler Effect",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "A police car races toward you with its siren on. You hear the siren at a higher pitch than when it passes. This is:",
+    "options": {
+      "A": "The refraction effect",
+      "B": "The Doppler effect - the perceived frequency changes due to relative motion",
+      "C": "The amplitude effect",
+      "D": "The diffraction effect"
+    },
+    "correct_answer": "B",
+    "explanation": "When a wave source moves toward you, waves are compressed (higher pitch). When it moves away, they stretch.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-061",
+    "xp": 20
+  },
+  {
+    "id": 60,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "mission_title": "The Colour Spectrum",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "When white light passes through a prism, it splits into colours. This occurs because:",
+    "options": {
+      "A": "Different colours have different amplitudes",
+      "B": "Different colours (frequencies) travel at slightly different speeds in glass, causing different amounts of refraction",
+      "C": "The prism absorbs some colours",
+      "D": "All colours have the same wavelength"
+    },
+    "correct_answer": "B",
+    "explanation": "Dispersion occurs because different frequencies of light are refracted by different amounts in glass.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-062",
+    "xp": 20
+  },
+  {
+    "id": 61,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "mission_title": "The Wavelength and Colour",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Which colour of visible light has the LONGEST wavelength?",
+    "options": {
+      "A": "Violet",
+      "B": "Blue",
+      "C": "Green",
+      "D": "Red"
+    },
+    "correct_answer": "D",
+    "explanation": "Red has the longest wavelength (~700 nm). Violet has the shortest (~400 nm).",
+    "template_id": null,
+    "source_id": "ST3-SHS3-063",
+    "xp": 20
+  },
+  {
+    "id": 62,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "mission_title": "The Noise Pollution",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Noise pollution is a growing concern in Ghanaian cities. Which unit measures the loudness of sound?",
+    "options": {
+      "A": "Hertz (Hz)",
+      "B": "Metres per second (m/s)",
+      "C": "Decibels (dB)",
+      "D": "Newtons (N)"
+    },
+    "correct_answer": "C",
+    "explanation": "Sound intensity is measured in decibels (dB). Prolonged exposure above 85 dB can cause hearing damage.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-064",
+    "xp": 20
+  },
+  {
+    "id": 63,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "mission_title": "The Infrared Applications",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Which of the following is a practical application of INFRARED radiation?",
+    "options": {
+      "A": "Sterilising medical equipment",
+      "B": "Treating cancer cells",
+      "C": "Thermal imaging cameras and remote controls",
+      "D": "GPS navigation"
+    },
+    "correct_answer": "C",
+    "explanation": "Infrared radiation is used in thermal/night-vision cameras and TV/device remote controls.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-065",
+    "xp": 20
+  },
+  {
+    "id": 64,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "mission_title": "The X-Ray Uses",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "X-rays are used in hospitals to image bones. Why are X-rays useful for this?",
+    "options": {
+      "A": "X-rays reflect off soft tissue only",
+      "B": "X-rays penetrate soft tissue but are absorbed by denser material like bone, creating an image",
+      "C": "X-rays only travel in a vacuum",
+      "D": "X-rays are the same as gamma rays"
+    },
+    "correct_answer": "B",
+    "explanation": "X-rays pass through soft tissue but are absorbed by bones, creating shadow images.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-066",
+    "xp": 20
+  },
+  {
+    "id": 65,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "mission_title": "The Period of a Wave",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is the PERIOD of a wave?",
+    "options": {
+      "A": "The distance between two crests",
+      "B": "The time taken for one complete wave cycle to pass a point (T = 1/f)",
+      "C": "The number of waves per second",
+      "D": "The speed of the wave"
+    },
+    "correct_answer": "B",
+    "explanation": "Period (T) is the time for one complete oscillation. T = 1/f.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-193",
+    "xp": 20
+  },
+  {
+    "id": 66,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Forces, Pressure & Machines",
+    "mission_title": "The Pressure Principle",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is the formula for PRESSURE?",
+    "options": {
+      "A": "Pressure = Force x Area",
+      "B": "Pressure = Mass x Velocity",
+      "C": "Pressure = Force / Area",
+      "D": "Pressure = Weight / Volume"
+    },
+    "correct_answer": "C",
+    "explanation": "Pressure = Force / Area (P = F/A). Unit: Pascal (Pa) = N/m2.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-067",
+    "xp": 20
+  },
+  {
+    "id": 67,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Forces, Pressure & Machines",
+    "mission_title": "The Pressure Calculation",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "A force of 100 N acts on an area of 0.5 m2. What is the pressure?",
+    "options": {
+      "A": "50 Pa",
+      "B": "100 Pa",
+      "C": "200 Pa",
+      "D": "500 Pa"
+    },
+    "correct_answer": "C",
+    "explanation": "P = F/A = 100 N / 0.5 m2 = 200 Pa.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-068",
+    "xp": 20
+  },
+  {
+    "id": 68,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Forces, Pressure & Machines",
+    "mission_title": "The Atmospheric Pressure",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Standard atmospheric pressure at sea level is approximately:",
+    "options": {
+      "A": "100 Pa",
+      "B": "1,000 Pa",
+      "C": "101,325 Pa (approx 100,000 Pa or 1 atm)",
+      "D": "1,000,000 Pa"
+    },
+    "correct_answer": "C",
+    "explanation": "Standard atmospheric pressure is ~101,325 Pa.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-069",
+    "xp": 20
+  },
+  {
+    "id": 69,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Forces, Pressure & Machines",
+    "mission_title": "The Hydraulic System",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Hydraulic machines use Pascal's Principle. What does this state?",
+    "options": {
+      "A": "Pressure applied to a confined fluid is transmitted equally in all directions throughout the fluid",
+      "B": "Fluids always flow from high to low pressure",
+      "C": "Pressure in a fluid increases with depth",
+      "D": "Liquids cannot be compressed"
+    },
+    "correct_answer": "A",
+    "explanation": "Pascal's Principle: pressure applied to an enclosed fluid is transmitted undiminished in all directions.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-070",
+    "xp": 20
+  },
+  {
+    "id": 70,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Forces, Pressure & Machines",
+    "mission_title": "The Moment of a Force",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is the MOMENT of a force?",
+    "options": {
+      "A": "The mass of the object",
+      "B": "The turning effect of a force about a pivot = Force x perpendicular distance",
+      "C": "The speed at which a force is applied",
+      "D": "The direction of a force"
+    },
+    "correct_answer": "B",
+    "explanation": "Moment = Force x perpendicular distance from pivot. Unit: Newton-metres (N-m).",
+    "template_id": null,
+    "source_id": "ST3-SHS3-071",
+    "xp": 20
+  },
+  {
+    "id": 71,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Forces, Pressure & Machines",
+    "mission_title": "The Principle of Moments",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "For a body in rotational equilibrium, the Principle of Moments states:",
+    "options": {
+      "A": "All forces must be equal",
+      "B": "Total clockwise moment about any pivot = total anticlockwise moment",
+      "C": "There must be no forces acting",
+      "D": "The net force must be upward"
+    },
+    "correct_answer": "B",
+    "explanation": "The Principle of Moments: sum of clockwise moments = sum of anticlockwise moments about any pivot.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-072",
+    "xp": 20
+  },
+  {
+    "id": 72,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Forces, Pressure & Machines",
+    "mission_title": "The Lever Classes",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "A wheelbarrow is a Class 2 lever (load between effort and pivot). What mechanical advantage does this give?",
+    "options": {
+      "A": "Less than 1",
+      "B": "Greater than 1 - a smaller effort can move a larger load",
+      "C": "Exactly 1",
+      "D": "The lever cannot move any load"
+    },
+    "correct_answer": "B",
+    "explanation": "A Class 2 lever always has MA > 1, so output force exceeds input force.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-073",
+    "xp": 20
+  },
+  {
+    "id": 73,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Forces, Pressure & Machines",
+    "mission_title": "The Mechanical Advantage",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is MECHANICAL ADVANTAGE?",
+    "options": {
+      "A": "The speed gained by using a machine",
+      "B": "The ratio of load to effort: MA = Load / Effort",
+      "C": "The energy wasted in a machine",
+      "D": "The distance the effort moves"
+    },
+    "correct_answer": "B",
+    "explanation": "MA > 1 means a small effort moves a large load.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-074",
+    "xp": 20
+  },
+  {
+    "id": 74,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Forces, Pressure & Machines",
+    "mission_title": "The Inclined Plane",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "A ramp (inclined plane) is a simple machine. How does it make it easier to move a heavy load?",
+    "options": {
+      "A": "It increases the force required",
+      "B": "It decreases the distance",
+      "C": "It spreads the work over a longer distance, requiring less force",
+      "D": "It uses compressed air"
+    },
+    "correct_answer": "C",
+    "explanation": "A ramp allows the same work to be done with less force over a greater distance.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-075",
+    "xp": 20
+  },
+  {
+    "id": 75,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Forces, Pressure & Machines",
+    "mission_title": "The Efficiency",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "A machine does 500 J of useful work but uses 800 J of energy input. What is its efficiency?",
+    "options": {
+      "A": "37.5%",
+      "B": "50%",
+      "C": "62.5%",
+      "D": "160%"
+    },
+    "correct_answer": "C",
+    "explanation": "Efficiency = (useful output / total input) x 100% = (500/800) x 100% = 62.5%.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-076",
+    "xp": 20
+  },
+  {
+    "id": 76,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Forces, Pressure & Machines",
+    "mission_title": "The Circular Motion",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "An object moving in a circle at constant speed is ACCELERATING. Why?",
+    "options": {
+      "A": "Its speed is increasing",
+      "B": "Its direction is constantly changing - a change in direction means acceleration",
+      "C": "It is slowing down due to gravity",
+      "D": "It is not accelerating if speed is constant"
+    },
+    "correct_answer": "B",
+    "explanation": "Acceleration is any change in velocity. Velocity is a vector with both magnitude AND direction.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-077",
+    "xp": 20
+  },
+  {
+    "id": 77,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Forces, Pressure & Machines",
+    "mission_title": "The Centripetal Force",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What provides the centripetal force for a satellite orbiting Earth?",
+    "options": {
+      "A": "The rocket engines",
+      "B": "Gravity - Earth's gravitational attraction",
+      "C": "Air resistance",
+      "D": "The momentum of the satellite"
+    },
+    "correct_answer": "B",
+    "explanation": "For a satellite, gravity provides the centripetal force toward the centre of the orbit.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-078",
+    "xp": 20
+  },
+  {
+    "id": 78,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Forces, Pressure & Machines",
+    "mission_title": "The Pressure in Fluids",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Pressure in a fluid increases with depth. Which equation correctly shows this?",
+    "options": {
+      "A": "P = rho / gh",
+      "B": "P = rho x g x h (density x g x height of fluid above)",
+      "C": "P = g / rho x h",
+      "D": "P = rho x g / h"
+    },
+    "correct_answer": "B",
+    "explanation": "P = rho x g x h where rho = density, g = gravitational field strength, h = depth.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-079",
+    "xp": 20
+  },
+  {
+    "id": 79,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Forces, Pressure & Machines",
+    "mission_title": "The Simple Pulley",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "A single fixed pulley (like a flagpole pulley) has MA = 1. What advantage does it offer?",
+    "options": {
+      "A": "It multiplies force",
+      "B": "It changes the direction of the effort force - pull down to lift up",
+      "C": "It reduces distance",
+      "D": "It reduces friction"
+    },
+    "correct_answer": "B",
+    "explanation": "A single fixed pulley does not multiply force but changes the direction of effort.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-080",
+    "xp": 20
+  },
+  {
+    "id": 80,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Forces, Pressure & Machines",
+    "mission_title": "The Blood Pressure",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Blood pressure is HIGHER in the lower limbs than at the head. Why?",
+    "options": {
+      "A": "The heart pumps faster to the legs",
+      "B": "Blood in the lower limbs has more pressure due to the greater depth/height of fluid (blood) above them",
+      "C": "Blood in legs is denser",
+      "D": "Arteries in the legs are narrower"
+    },
+    "correct_answer": "B",
+    "explanation": "Using P = rho x g x h, pressure in a fluid column increases with depth.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-082",
+    "xp": 20
+  },
+  {
+    "id": 81,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Forces, Pressure & Machines",
+    "mission_title": "The Three Classes of Levers",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Which class of lever has the EFFORT between the pivot and the load?",
+    "options": {
+      "A": "Class 1 lever",
+      "B": "Class 2 lever",
+      "C": "Class 3 lever",
+      "D": "Class 4 lever"
+    },
+    "correct_answer": "C",
+    "explanation": "Class 3 levers have effort between pivot and load. The human forearm is a Class 3 lever.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-084",
+    "xp": 20
+  },
+  {
+    "id": 82,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Forces, Pressure & Machines",
+    "mission_title": "The Atmospheric Applications",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "A syringe draws liquid by pulling back the plunger. What force causes the liquid to enter?",
+    "options": {
+      "A": "Suction from the plunger",
+      "B": "Atmospheric pressure outside pushes the liquid in when the pressure inside is reduced",
+      "C": "Gravity pulling the liquid upward",
+      "D": "Osmosis driving water in"
+    },
+    "correct_answer": "B",
+    "explanation": "Pulling the plunger back reduces pressure inside the syringe below atmospheric pressure.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-085",
+    "xp": 20
+  },
+  {
+    "id": 83,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Forces, Pressure & Machines",
+    "mission_title": "The Torque Challenge",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "A spanner of length 0.3 m is used with a force of 40 N applied perpendicular. What is the moment?",
+    "options": {
+      "A": "0.0075 N-m",
+      "B": "7.5 N-m",
+      "C": "12 N-m",
+      "D": "133 N-m"
+    },
+    "correct_answer": "C",
+    "explanation": "Moment = Force x perpendicular distance = 40 N x 0.3 m = 12 N-m.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-087",
+    "xp": 20
+  },
+  {
+    "id": 84,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Forces, Pressure & Machines",
+    "mission_title": "The Floating and Sinking",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Archimedes' Principle states that an object immersed in a fluid experiences an upthrust equal to:",
+    "options": {
+      "A": "Its weight in air",
+      "B": "The weight of fluid displaced by the object",
+      "C": "The density of the fluid only",
+      "D": "The volume of the object only"
+    },
+    "correct_answer": "B",
+    "explanation": "Upthrust = weight of fluid displaced. Ships float by displacing a large volume of water.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-088",
+    "xp": 20
+  },
+  {
+    "id": 85,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Consumer Electronics & Digital Systems",
+    "mission_title": "The Digital World",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is the difference between ANALOGUE and DIGITAL signals?",
+    "options": {
+      "A": "Analogue signals are digital",
+      "B": "Analogue signals vary continuously; digital signals use discrete values (0s and 1s)",
+      "C": "Digital signals are louder",
+      "D": "There is no practical difference"
+    },
+    "correct_answer": "B",
+    "explanation": "Analogue signals can take any value within a range. Digital signals use only 0 and 1.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-089",
+    "xp": 20
+  },
+  {
+    "id": 86,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Consumer Electronics & Digital Systems",
+    "mission_title": "The Binary System",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What does the binary number '1010' represent in decimal?",
+    "options": {
+      "A": "2",
+      "B": "5",
+      "C": "10",
+      "D": "12"
+    },
+    "correct_answer": "C",
+    "explanation": "Binary 1010 = (1x8) + (0x4) + (1x2) + (0x1) = 10 in decimal.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-090",
+    "xp": 20
+  },
+  {
+    "id": 87,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Consumer Electronics & Digital Systems",
+    "mission_title": "The Logic Gates",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is the output of an AND gate when both inputs are 1?",
+    "options": {
+      "A": "0 (LOW)",
+      "B": "1 (HIGH)",
+      "C": "Depends on the voltage",
+      "D": "It produces a pulse"
+    },
+    "correct_answer": "B",
+    "explanation": "AND gate outputs 1 only when ALL inputs are 1.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-091",
+    "xp": 20
+  },
+  {
+    "id": 88,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Consumer Electronics & Digital Systems",
+    "mission_title": "The OR Gate",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is the output of an OR gate when one input is 1 and the other is 0?",
+    "options": {
+      "A": "0 (LOW)",
+      "B": "1 (HIGH)",
+      "C": "Cannot be determined",
+      "D": "Depends on which input is 1"
+    },
+    "correct_answer": "B",
+    "explanation": "OR gate outputs 1 when ANY input is 1.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-092",
+    "xp": 20
+  },
+  {
+    "id": 89,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Consumer Electronics & Digital Systems",
+    "mission_title": "The NOT Gate",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "A NOT gate (inverter) has an input of 0. What is the output?",
+    "options": {
+      "A": "0",
+      "B": "1 (inverts/flips the input)",
+      "C": "Depends on voltage",
+      "D": "No output"
+    },
+    "correct_answer": "B",
+    "explanation": "A NOT gate inverts its input: if input = 0, output = 1.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-093",
+    "xp": 20
+  },
+  {
+    "id": 90,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Consumer Electronics & Digital Systems",
+    "mission_title": "The NAND Gate",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "A NAND gate is AND followed by NOT. Output when BOTH inputs are 1?",
+    "options": {
+      "A": "1 (HIGH)",
+      "B": "0 (LOW)",
+      "C": "Depends on power supply",
+      "D": "NAND only works with one input"
+    },
+    "correct_answer": "B",
+    "explanation": "NAND = NOT AND. When both inputs are 1, AND gives 1, NOT(1) = 0.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-094",
+    "xp": 20
+  },
+  {
+    "id": 91,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Consumer Electronics & Digital Systems",
+    "mission_title": "The Microcontroller",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is a MICROCONTROLLER?",
+    "options": {
+      "A": "A large computer in a factory",
+      "B": "A small integrated circuit containing a processor, memory, and programmable I/O",
+      "C": "A type of capacitor",
+      "D": "A temperature sensor"
+    },
+    "correct_answer": "B",
+    "explanation": "A microcontroller contains CPU, memory and I/O peripherals on one chip.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-095",
+    "xp": 20
+  },
+  {
+    "id": 92,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Consumer Electronics & Digital Systems",
+    "mission_title": "The Communication Technology",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Which technology uses electromagnetic waves to transmit data wirelessly?",
+    "options": {
+      "A": "Copper wire cables",
+      "B": "Optical fibre",
+      "C": "Radio frequency (RF) waves - including WiFi, Bluetooth, and mobile networks",
+      "D": "Hydraulic pressure waves"
+    },
+    "correct_answer": "C",
+    "explanation": "Wireless technologies use radio frequency electromagnetic waves to transmit digital data.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-096",
+    "xp": 20
+  },
+  {
+    "id": 93,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Consumer Electronics & Digital Systems",
+    "mission_title": "The GPS Technology",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "GPS uses signals from satellites to determine location. What type of waves carry these signals?",
+    "options": {
+      "A": "Sound waves",
+      "B": "Radio waves (microwave frequency range)",
+      "C": "Light waves",
+      "D": "Infrared waves"
+    },
+    "correct_answer": "B",
+    "explanation": "GPS satellites transmit microwave radio signals. Receivers calculate position by measuring time delays.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-097",
+    "xp": 20
+  },
+  {
+    "id": 94,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Consumer Electronics & Digital Systems",
+    "mission_title": "The Sensor Systems",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "A temperature sensor converts temperature into an electrical signal. What type of device is this?",
+    "options": {
+      "A": "An actuator",
+      "B": "A transistor switch",
+      "C": "A transducer (sensor)",
+      "D": "A logic gate"
+    },
+    "correct_answer": "C",
+    "explanation": "A transducer converts one form of energy to another. Sensors are input transducers.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-098",
+    "xp": 20
+  },
+  {
+    "id": 95,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Consumer Electronics & Digital Systems",
+    "mission_title": "The Feedback System",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "A thermostat uses a FEEDBACK system. What does feedback do in a control system?",
+    "options": {
+      "A": "It adds more energy",
+      "B": "It compares output to desired value and adjusts input to correct differences",
+      "C": "It removes all input",
+      "D": "It increases power consumption"
+    },
+    "correct_answer": "B",
+    "explanation": "Negative feedback compares actual output to the desired setpoint and reduces any difference.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-099",
+    "xp": 20
+  },
+  {
+    "id": 96,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Consumer Electronics & Digital Systems",
+    "mission_title": "The Internet of Things",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "The Internet of Things (IoT) refers to:",
+    "options": {
+      "A": "The physical infrastructure of cables and servers",
+      "B": "A network of everyday physical devices with sensors that connect and exchange data over the internet",
+      "C": "The World Wide Web",
+      "D": "Social media platforms"
+    },
+    "correct_answer": "B",
+    "explanation": "IoT describes smart devices connected to the internet that collect and share data.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-100",
+    "xp": 20
+  },
+  {
+    "id": 97,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Consumer Electronics & Digital Systems",
+    "mission_title": "The XOR Gate",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "An XOR gate outputs 1 only when inputs DIFFER. For A=1 and B=1, output?",
+    "options": {
+      "A": "0",
+      "B": "1",
+      "C": "Depends",
+      "D": "2"
+    },
+    "correct_answer": "A",
+    "explanation": "XOR outputs 1 only when inputs differ. Same inputs give 0.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-CE01",
+    "xp": 20
+  },
+  {
+    "id": 98,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Consumer Electronics & Digital Systems",
+    "mission_title": "The Binary Addition",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is the binary sum of 0101 + 0011?",
+    "options": {
+      "A": "0110",
+      "B": "1000",
+      "C": "1001",
+      "D": "0111"
+    },
+    "correct_answer": "B",
+    "explanation": "0101 (5) + 0011 (3) = 8 = 1000 in binary.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-CE02",
+    "xp": 20
+  },
+  {
+    "id": 99,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Consumer Electronics & Digital Systems",
+    "mission_title": "The Memory Types",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is the difference between RAM and ROM?",
+    "options": {
+      "A": "RAM stores data permanently; ROM loses data when powered off",
+      "B": "RAM is read-write and loses data when powered off; ROM is read-only and retains data without power",
+      "C": "RAM is slower than ROM",
+      "D": "ROM stores video files"
+    },
+    "correct_answer": "B",
+    "explanation": "RAM is volatile (temporary); ROM is non-volatile (permanent).",
+    "template_id": null,
+    "source_id": "ST3-SHS3-CE03",
+    "xp": 20
+  },
+  {
+    "id": 100,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Consumer Electronics & Digital Systems",
+    "mission_title": "The 5G Network",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "5G is the fifth generation of mobile network. What key advantage does 5G offer over 4G?",
+    "options": {
+      "A": "Lower cost per call",
+      "B": "Slower but more reliable",
+      "C": "Significantly faster speeds, lower latency, and ability to connect more devices",
+      "D": "Better voice call quality only"
+    },
+    "correct_answer": "C",
+    "explanation": "5G offers speeds up to 20 Gbps, ultra-low latency, and supports millions of devices per km2.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-CE05",
+    "xp": 20
+  },
+  {
+    "id": 101,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Consumer Electronics & Digital Systems",
+    "mission_title": "The Renewable Energy Electronics",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "A solar charge controller in a solar panel system performs which function?",
+    "options": {
+      "A": "Converts sunlight to electricity",
+      "B": "Stores electrical energy",
+      "C": "Regulates voltage and current from the solar panel to prevent battery overcharging",
+      "D": "Converts AC to DC"
+    },
+    "correct_answer": "C",
+    "explanation": "A solar charge controller prevents battery overcharging and maximises power output.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-CE08",
+    "xp": 20
+  },
+  {
+    "id": 102,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Consumer Electronics & Digital Systems",
+    "mission_title": "The Oscilloscope",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "An oscilloscope is used to:",
+    "options": {
+      "A": "Measure mass of components",
+      "B": "Measure temperature",
+      "C": "Display and measure electrical waveforms - voltage against time",
+      "D": "Amplify audio signals"
+    },
+    "correct_answer": "C",
+    "explanation": "An oscilloscope displays a graph of voltage versus time for electrical signals.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-CE09",
+    "xp": 20
+  },
+  {
+    "id": 103,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Human Body & Health",
+    "mission_title": "The Immune System",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is the role of the IMMUNE SYSTEM?",
+    "options": {
+      "A": "Digest food and absorb nutrients",
+      "B": "Protect the body from disease-causing organisms (pathogens) and foreign substances",
+      "C": "Transport oxygen in the blood",
+      "D": "Regulate body temperature only"
+    },
+    "correct_answer": "B",
+    "explanation": "The immune system defends the body against pathogens including bacteria, viruses, fungi, and parasites.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-101",
+    "xp": 20
+  },
+  {
+    "id": 104,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Human Body & Health",
+    "mission_title": "The Antibodies",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What are ANTIBODIES?",
+    "options": {
+      "A": "White blood cells that engulf pathogens",
+      "B": "Proteins produced by B-lymphocytes that bind specifically to a pathogen's antigens and neutralise it",
+      "C": "Hormones from the endocrine system",
+      "D": "Chemical messengers from the nervous system"
+    },
+    "correct_answer": "B",
+    "explanation": "Antibodies are Y-shaped proteins that bind specifically to unique antigens on pathogens.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-102",
+    "xp": 20
+  },
+  {
+    "id": 105,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Human Body & Health",
+    "mission_title": "The Vaccination",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "How does vaccination protect against infectious disease?",
+    "options": {
+      "A": "Vaccines contain antibiotics that kill pathogens",
+      "B": "Vaccines introduce a weakened form of the pathogen, stimulating the immune system without causing disease",
+      "C": "Vaccines directly kill viruses",
+      "D": "Vaccines strengthen muscles"
+    },
+    "correct_answer": "B",
+    "explanation": "Vaccination triggers immune response and production of memory cells without causing the full disease.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-103",
+    "xp": 20
+  },
+  {
+    "id": 106,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Human Body & Health",
+    "mission_title": "The Herd Immunity",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is HERD IMMUNITY?",
+    "options": {
+      "A": "Immunity only for farm animals",
+      "B": "When a high proportion of a population is immune, protecting unvaccinated individuals",
+      "C": "A type of vaccine for the whole community",
+      "D": "The natural immunity of all animals"
+    },
+    "correct_answer": "B",
+    "explanation": "Herd immunity breaks transmission chains, protecting even those who cannot be vaccinated.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-105",
+    "xp": 20
+  },
+  {
+    "id": 107,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Human Body & Health",
+    "mission_title": "The Nervous System",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "The CENTRAL NERVOUS SYSTEM (CNS) consists of:",
+    "options": {
+      "A": "The brain, spinal cord, and all peripheral nerves",
+      "B": "The brain and spinal cord only",
+      "C": "All nerves in the body",
+      "D": "The sympathetic and parasympathetic systems only"
+    },
+    "correct_answer": "B",
+    "explanation": "The CNS consists of the brain (control centre) and spinal cord (relay).",
+    "template_id": null,
+    "source_id": "ST3-SHS3-107",
+    "xp": 20
+  },
+  {
+    "id": 108,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Human Body & Health",
+    "mission_title": "The Reflex Arc",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "When you accidentally touch a hot surface, your hand pulls away BEFORE you feel pain. Where is the reflex arc processed?",
+    "options": {
+      "A": "The brain cortex",
+      "B": "The spinal cord - bypassing the brain for faster response",
+      "C": "The cerebellum",
+      "D": "The thalamus"
+    },
+    "correct_answer": "B",
+    "explanation": "Simple reflex arcs are processed in the spinal cord for a very fast response to protect from harm.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-108",
+    "xp": 20
+  },
+  {
+    "id": 109,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Human Body & Health",
+    "mission_title": "The Endocrine System",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is the ENDOCRINE SYSTEM?",
+    "options": {
+      "A": "The system of nerves carrying electrical signals",
+      "B": "The system of glands that produce and release hormones directly into the bloodstream",
+      "C": "The digestive system",
+      "D": "The immune system's signalling network"
+    },
+    "correct_answer": "B",
+    "explanation": "The endocrine system controls long-term processes through chemical messengers (hormones).",
+    "template_id": null,
+    "source_id": "ST3-SHS3-109",
+    "xp": 20
+  },
+  {
+    "id": 110,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Human Body & Health",
+    "mission_title": "The Insulin and Diabetes",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Insulin is produced by the pancreas. What is its function?",
+    "options": {
+      "A": "To break down fats",
+      "B": "To lower blood glucose levels by stimulating cells to absorb glucose and storing it as glycogen",
+      "C": "To increase heart rate",
+      "D": "To control growth"
+    },
+    "correct_answer": "B",
+    "explanation": "Insulin lowers blood glucose after eating by stimulating cellular uptake and glycogen storage.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-110",
+    "xp": 20
+  },
+  {
+    "id": 111,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Human Body & Health",
+    "mission_title": "The HIV/AIDS",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "HIV targets which specific cells of the immune system?",
+    "options": {
+      "A": "Red blood cells",
+      "B": "Phagocytes",
+      "C": "CD4+ T-helper lymphocytes",
+      "D": "Platelets"
+    },
+    "correct_answer": "C",
+    "explanation": "HIV specifically infects and destroys CD4+ T-helper cells, which coordinate the immune response.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-111",
+    "xp": 20
+  },
+  {
+    "id": 112,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Human Body & Health",
+    "mission_title": "The Non-Communicable Disease",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Cancer is a non-communicable disease. What is cancer?",
+    "options": {
+      "A": "A bacterial infection",
+      "B": "Uncontrolled division of abnormal cells that can invade surrounding tissues",
+      "C": "A nutritional deficiency",
+      "D": "An autoimmune condition"
+    },
+    "correct_answer": "B",
+    "explanation": "Cancer occurs when mutations cause cells to divide uncontrollably, forming tumours.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-112",
+    "xp": 20
+  },
+  {
+    "id": 113,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Human Body & Health",
+    "mission_title": "The Homeostasis",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "HOMEOSTASIS is the maintenance of a stable internal environment. Which is an example?",
+    "options": {
+      "A": "Growing taller during puberty",
+      "B": "Regulating blood glucose levels between 70-100 mg/dL despite varying food intake",
+      "C": "Learning new skills",
+      "D": "Adapting to a new climate"
+    },
+    "correct_answer": "B",
+    "explanation": "Homeostasis maintains conditions within narrow limits despite external changes.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-113",
+    "xp": 20
+  },
+  {
+    "id": 114,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Human Body & Health",
+    "mission_title": "The Kidney Function",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "The kidneys filter blood to produce urine. Which is REABSORBED back into the blood?",
+    "options": {
+      "A": "Urea",
+      "B": "Excess salts",
+      "C": "All glucose, most water, and useful minerals (selective reabsorption)",
+      "D": "Harmful drugs only"
+    },
+    "correct_answer": "C",
+    "explanation": "Kidneys selectively reabsorb useful substances back into the blood.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-117",
+    "xp": 20
+  },
+  {
+    "id": 115,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Human Body & Health",
+    "mission_title": "The Environmental Health",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Water pollution in Ghana's rivers due to illegal mining (galamsey) poses what health risk?",
+    "options": {
+      "A": "Only aesthetic problems",
+      "B": "Heavy metal contamination causing neurological damage, kidney failure, and cancer",
+      "C": "Water becomes too cold",
+      "D": "Dehydration from salt water"
+    },
+    "correct_answer": "B",
+    "explanation": "Galamsey releases toxic heavy metals (mercury, arsenic) into water bodies.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-119",
+    "xp": 20
+  },
+  {
+    "id": 116,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Human Body & Health",
+    "mission_title": "The Antibiotic Resistance",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Why is ANTIBIOTIC RESISTANCE a growing global health threat?",
+    "options": {
+      "A": "Antibiotics are too expensive",
+      "B": "Some bacteria have evolved resistance through natural selection - making common infections untreatable",
+      "C": "Antibiotics cause more side effects",
+      "D": "Bacteria are too small"
+    },
+    "correct_answer": "B",
+    "explanation": "Overuse of antibiotics selects for resistant bacteria through natural selection.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-120",
+    "xp": 20
+  },
+  {
+    "id": 117,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Human Body & Health",
+    "mission_title": "The Skin Barrier",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "The skin is the body's first line of defence. How does it provide protection?",
+    "options": {
+      "A": "Skin produces antibodies",
+      "B": "Skin is a physical and chemical barrier - unbroken skin prevents entry of pathogens, and sweat/sebum inhibit bacterial growth",
+      "C": "Skin produces white blood cells",
+      "D": "Skin attacks pathogens with enzymes"
+    },
+    "correct_answer": "A",
+    "explanation": "Skin provides innate immunity as the first line of defence: physical barrier plus antimicrobial secretions.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-196",
+    "xp": 20
+  },
+  {
+    "id": 118,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Energy & Environment",
+    "mission_title": "The Energy Transformation",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "In a coal-fired power station, what is the sequence of energy transformations?",
+    "options": {
+      "A": "Electrical -> kinetic -> heat -> chemical",
+      "B": "Chemical (coal) -> heat -> kinetic (steam/turbine) -> electrical (generator)",
+      "C": "Nuclear -> electrical -> heat",
+      "D": "Solar -> electrical -> heat"
+    },
+    "correct_answer": "B",
+    "explanation": "Coal combustion releases chemical energy as heat, converting water to steam to drive turbines.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-123",
+    "xp": 20
+  },
+  {
+    "id": 119,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Energy & Environment",
+    "mission_title": "The Renewable Energy Systems",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Which of the following is a RENEWABLE energy source?",
+    "options": {
+      "A": "Coal",
+      "B": "Natural gas",
+      "C": "Crude oil",
+      "D": "Wind energy"
+    },
+    "correct_answer": "D",
+    "explanation": "Renewable energy sources are naturally replenished: solar, wind, hydro, geothermal, biomass.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-124",
+    "xp": 20
+  },
+  {
+    "id": 120,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Energy & Environment",
+    "mission_title": "The Biogas",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Biogas can be produced in Ghana from which materials?",
+    "options": {
+      "A": "Crude oil",
+      "B": "Organic waste like animal dung, kitchen waste, and agricultural residues",
+      "C": "Nuclear materials",
+      "D": "Plastic waste"
+    },
+    "correct_answer": "B",
+    "explanation": "Biogas is produced by anaerobic breakdown of organic matter by bacteria, producing methane.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-125",
+    "xp": 20
+  },
+  {
+    "id": 121,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Energy & Environment",
+    "mission_title": "The Greenhouse Effect",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is the NATURAL greenhouse effect?",
+    "options": {
+      "A": "Growing crops in greenhouses",
+      "B": "Greenhouse gases trapping heat from the Sun, keeping Earth warm enough for life",
+      "C": "Melting polar ice caps",
+      "D": "Ozone depletion by CFCs"
+    },
+    "correct_answer": "B",
+    "explanation": "The natural greenhouse effect is essential - without it, Earth's average temperature would be -18oC.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-127",
+    "xp": 20
+  },
+  {
+    "id": 122,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Energy & Environment",
+    "mission_title": "The Ozone Layer",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is the importance of the OZONE LAYER?",
+    "options": {
+      "A": "Provides oxygen for breathing",
+      "B": "Blocks harmful UV radiation from the Sun",
+      "C": "Prevents meteorites",
+      "D": "Reflects radio waves"
+    },
+    "correct_answer": "B",
+    "explanation": "The ozone layer absorbs 97-99% of the Sun's harmful UV radiation.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-128",
+    "xp": 20
+  },
+  {
+    "id": 123,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Energy & Environment",
+    "mission_title": "The Deforestation Impact",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "How does large-scale deforestation in Ghana contribute to climate change?",
+    "options": {
+      "A": "It cools the climate",
+      "B": "It releases stored carbon as CO2 and removes trees that would absorb CO2",
+      "C": "No impact",
+      "D": "It increases rainfall"
+    },
+    "correct_answer": "B",
+    "explanation": "Forests are carbon sinks. Deforestation releases stored carbon and reduces CO2 absorption capacity.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-129",
+    "xp": 20
+  },
+  {
+    "id": 124,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Energy & Environment",
+    "mission_title": "The Solar Energy in Ghana",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Ghana lies within the tropics. What is the average daily solar radiation Ghana receives?",
+    "options": {
+      "A": "0.5 kWh/m2/day",
+      "B": "2-3 kWh/m2/day",
+      "C": "4-6 kWh/m2/day",
+      "D": "10 kWh/m2/day"
+    },
+    "correct_answer": "C",
+    "explanation": "Ghana receives 4-6 kWh/m2/day of solar radiation - one of the highest in the world.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-136",
+    "xp": 20
+  },
+  {
+    "id": 125,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Energy & Environment",
+    "mission_title": "The Hydroelectric Power",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Ghana's largest hydroelectric dam is Akosombo. How is hydroelectric power generated?",
+    "options": {
+      "A": "Burning coal to heat water",
+      "B": "Water falls through turbines, converting kinetic energy to electrical via generators",
+      "C": "Solar panels on dam surface",
+      "D": "Chemical reactions in water"
+    },
+    "correct_answer": "B",
+    "explanation": "Hydroelectric power converts the potential energy of stored water into electricity.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-137",
+    "xp": 20
+  },
+  {
+    "id": 126,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Energy & Environment",
+    "mission_title": "The Sustainable Development",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is SUSTAINABLE DEVELOPMENT?",
+    "options": {
+      "A": "Development maximising current economic growth",
+      "B": "Development meeting present needs without compromising future generations' ability to meet their own needs",
+      "C": "Development considering only economics",
+      "D": "Development stopping all industrial activity"
+    },
+    "correct_answer": "B",
+    "explanation": "Sustainable development balances economic development, social equity, and environmental protection.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-140",
+    "xp": 20
+  },
+  {
+    "id": 127,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Industrial Chemistry & Biotechnology",
+    "mission_title": "The Haber Process",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "The Haber Process manufactures which industrial chemical from N2 and H2?",
+    "options": {
+      "A": "Sulphuric acid",
+      "B": "Ammonia (NH3)",
+      "C": "Chlorine",
+      "D": "Sodium hydroxide"
+    },
+    "correct_answer": "B",
+    "explanation": "The Haber Process produces ammonia, the starting material for nitrogen fertilisers.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-145",
+    "xp": 20
+  },
+  {
+    "id": 128,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Industrial Chemistry & Biotechnology",
+    "mission_title": "The Fermentation in Industry",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Industrial fermentation is used to produce which of the following?",
+    "options": {
+      "A": "Petrol and diesel only",
+      "B": "Antibiotics, industrial alcohol, and citric acid using microorganisms",
+      "C": "Plastics and synthetic fibres only",
+      "D": "Nuclear fuel"
+    },
+    "correct_answer": "B",
+    "explanation": "Industrial fermentation uses microorganisms to produce antibiotics, bioethanol, citric acid, and more.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-150",
+    "xp": 20
+  },
+  {
+    "id": 129,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Industrial Chemistry & Biotechnology",
+    "mission_title": "The Biotechnology Definition",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "What is BIOTECHNOLOGY?",
+    "options": {
+      "A": "The study of robots",
+      "B": "The use of living organisms in technology to develop products and processes",
+      "C": "The study of chemical reactions only",
+      "D": "Electronic device manufacture"
+    },
+    "correct_answer": "B",
+    "explanation": "Biotechnology uses biological systems to develop useful products in medicine, agriculture, and industry.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-151",
+    "xp": 20
+  },
+  {
+    "id": 130,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Industrial Chemistry & Biotechnology",
+    "mission_title": "The PCR Technique",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "PCR is used in COVID-19 testing and forensics. What does PCR do?",
+    "options": {
+      "A": "Sequences the entire genome",
+      "B": "Amplifies (makes millions of copies of) a specific DNA sequence for analysis",
+      "C": "Destroys viral DNA",
+      "D": "Measures blood glucose"
+    },
+    "correct_answer": "B",
+    "explanation": "PCR rapidly amplifies tiny amounts of DNA into millions of copies for analysis.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-154",
+    "xp": 20
+  },
+  {
+    "id": 131,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Industrial Chemistry & Biotechnology",
+    "mission_title": "The Water Treatment",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "In water treatment plants in Ghana, which process uses chlorine?",
+    "options": {
+      "A": "Sedimentation",
+      "B": "Filtration",
+      "C": "Chlorination - killing bacteria and pathogens to make water safe",
+      "D": "Flocculation"
+    },
+    "correct_answer": "C",
+    "explanation": "Water treatment: screening, sedimentation, coagulation, filtration, then chlorination for disinfection.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-159",
+    "xp": 20
+  },
+  {
+    "id": 132,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Industrial Chemistry & Biotechnology",
+    "mission_title": "The Polymer Chemistry",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Plastics are polymers. What is a POLYMER?",
+    "options": {
+      "A": "A single large molecule",
+      "B": "A small molecule that bonds to others",
+      "C": "A long chain molecule made by joining many small repeating units (monomers)",
+      "D": "A type of metal alloy"
+    },
+    "correct_answer": "C",
+    "explanation": "Polymers are large molecules formed by polymerisation. Natural polymers include DNA and proteins.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-160",
+    "xp": 20
+  },
+  {
+    "id": 133,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Industrial Chemistry & Biotechnology",
+    "mission_title": "The Corrosion Prevention",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Galvanising protects steel by coating it with zinc. Why does this work even if the coating is scratched?",
+    "options": {
+      "A": "Zinc fills scratches automatically",
+      "B": "Zinc is more reactive than iron - it corrodes preferentially (sacrificial protection)",
+      "C": "Scratches make steel stronger",
+      "D": "Zinc reflects light"
+    },
+    "correct_answer": "B",
+    "explanation": "Zinc acts as a sacrificial anode because it is more reactive than iron.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-163",
+    "xp": 20
+  },
+  {
+    "id": 134,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Industrial Chemistry & Biotechnology",
+    "mission_title": "The Downstream Petroleum",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Crude oil is refined at the Tema Oil Refinery. What process separates crude oil into fractions?",
+    "options": {
+      "A": "Electrolysis",
+      "B": "Fractional distillation based on different boiling points",
+      "C": "Fermentation",
+      "D": "Combustion"
+    },
+    "correct_answer": "B",
+    "explanation": "Fractional distillation separates crude oil into fractions with different boiling point ranges.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-165",
+    "xp": 20
+  },
+  {
+    "id": 135,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Science, Technology & Society",
+    "mission_title": "The Science Applications",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "STEM education is prioritised in Ghana's curriculum. Why?",
+    "options": {
+      "A": "STEM is easier to teach",
+      "B": "STEM skills are essential for innovation, solving problems, and building Ghana's economy",
+      "C": "STEM is only for university",
+      "D": "Ghana has no arts teachers"
+    },
+    "correct_answer": "B",
+    "explanation": "STEM education builds critical thinking and problem-solving capacity for innovation-led growth.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-167",
+    "xp": 20
+  },
+  {
+    "id": 136,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Science, Technology & Society",
+    "mission_title": "The Technology Impact",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Mobile money (MTN MoMo, Vodafone Cash) has transformed financial access in Ghana. This is an example of:",
+    "options": {
+      "A": "Technology replacing jobs",
+      "B": "Technology solving social problems by increasing financial access for unbanked populations",
+      "C": "Technology benefiting only urban areas",
+      "D": "A negative consequence of digital technology"
+    },
+    "correct_answer": "B",
+    "explanation": "Mobile money has given millions of Ghanaians without bank accounts access to financial services.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-169",
+    "xp": 20
+  },
+  {
+    "id": 137,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Science, Technology & Society",
+    "mission_title": "The Space Technology",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Ghana launched GhanaSat-1 in 2017. What is a practical application of satellite technology for Ghana?",
+    "options": {
+      "A": "Sending astronauts to the Moon",
+      "B": "Earth observation for monitoring deforestation, agriculture, floods, and land use mapping",
+      "C": "Generating electricity for Accra",
+      "D": "Replacing mobile networks"
+    },
+    "correct_answer": "B",
+    "explanation": "Earth observation satellites provide data for agriculture, forest monitoring, and disaster management.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-172",
+    "xp": 20
+  },
+  {
+    "id": 138,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Science, Technology & Society",
+    "mission_title": "The Peer Review in Science",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Before a scientific paper is published, it undergoes peer review. What does this ensure?",
+    "options": {
+      "A": "Correct grammar",
+      "B": "Independent experts evaluate methodology, data, and conclusions for validity and accuracy",
+      "C": "Popularity on social media",
+      "D": "The scientist is famous"
+    },
+    "correct_answer": "B",
+    "explanation": "Peer review is science's quality control process, checking methodology and conclusions.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-174",
+    "xp": 20
+  },
+  {
+    "id": 139,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Science, Technology & Society",
+    "mission_title": "The SDGs and Science",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "How does science contribute to achieving SDG 3 (Good Health) and SDG 7 (Clean Energy) in Ghana?",
+    "options": {
+      "A": "Science is irrelevant",
+      "B": "Developing vaccines, medicines (SDG3) and solar/wind/biofuels (SDG7)",
+      "C": "Only economics can achieve them",
+      "D": "SDGs can be met without research"
+    },
+    "correct_answer": "B",
+    "explanation": "Science and technology are central to achieving SDGs through vaccines, solar panels, and biogas.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-176",
+    "xp": 20
+  },
+  {
+    "id": 140,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Science, Technology & Society",
+    "mission_title": "The Traditional Knowledge",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Traditional Ghanaian practices like using neem leaves for malaria have scientific basis. How should this be approached?",
+    "options": {
+      "A": "Ignored entirely",
+      "B": "Investigated scientifically - active compounds tested in clinical trials",
+      "C": "Completely incompatible with science",
+      "D": "Only shared with traditional healers"
+    },
+    "correct_answer": "B",
+    "explanation": "Traditional knowledge can be scientifically investigated to develop standardised medicines.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-180",
+    "xp": 20
+  },
+  {
+    "id": 141,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Science, Technology & Society",
+    "mission_title": "The SHS Science Review",
+    "difficulty_tier": "Bronze",
+    "shs_levels": [
+      "SHS 3"
+    ],
+    "difficulty_a": 1.5,
+    "difficulty_b": -1.5,
+    "difficulty_c": 0.25,
+    "question": "Which statement BEST describes the nature and purpose of science?",
+    "options": {
+      "A": "Science is a fixed set of facts",
+      "B": "Science is a systematic, evidence-based process of asking questions and testing ideas, always open to revision",
+      "C": "Science is only done in labs",
+      "D": "Science is only for doctors and engineers"
+    },
+    "correct_answer": "B",
+    "explanation": "Science is a dynamic, self-correcting process driven by evidence, not authority.",
+    "template_id": null,
+    "source_id": "ST3-SHS3-183",
+    "xp": 20
+  },
+  {
+    "id": 142,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Chemical Bonding & Reactions",
+    "source_id": "ST3-SHS3-142",
+    "mission_title": "The Periodic Trends",
+    "question": "As you move down Group 1 (alkali metals) in the Periodic Table, what happens to reactivity?",
+    "options": {
+      "A": "Reactivity decreases because atomic radius decreases",
+      "B": "Reactivity increases because outer electron is further from nucleus and more easily lost",
+      "C": "Reactivity stays the same throughout the group",
+      "D": "Reactivity fluctuates unpredictably"
+    },
+    "correct_answer": "B",
+    "explanation": "Going down Group 1, atomic radius increases, so the outer electron is further from the nucleus and experiences less electrostatic attraction, making it easier to lose — increasing reactivity.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 143,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Chemical Bonding & Reactions",
+    "source_id": "ST3-SHS3-143",
+    "mission_title": "The Catalysts",
+    "question": "A catalyst increases the rate of a chemical reaction. How does it do this?",
+    "options": {
+      "A": "By increasing the temperature of the reaction",
+      "B": "By providing an alternative reaction pathway with lower activation energy",
+      "C": "By increasing the pressure in the reaction vessel",
+      "D": "By adding more reactants"
+    },
+    "correct_answer": "B",
+    "explanation": "A catalyst provides an alternative pathway with a lower activation energy, meaning more colliding particles have enough energy to react. Catalysts are not consumed in the reaction.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 144,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Chemical Bonding & Reactions",
+    "source_id": "ST3-SHS3-144",
+    "mission_title": "The Electrolysis",
+    "question": "During electrolysis of water, which gases are produced at each electrode?",
+    "options": {
+      "A": "Hydrogen at anode, oxygen at cathode",
+      "B": "Oxygen at anode, hydrogen at cathode",
+      "C": "Both electrodes produce hydrogen",
+      "D": "Oxygen at both electrodes"
+    },
+    "correct_answer": "B",
+    "explanation": "In water electrolysis: at the anode (+), water is oxidised to O₂ gas; at the cathode (-), water is reduced to H₂ gas. The volume of H₂ produced is twice the volume of O₂ (2:1 ratio).",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 145,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Consumer Electronics & Digital Systems",
+    "source_id": "ST3-SHS3-CE10",
+    "mission_title": "The ADC",
+    "question": "An Analog-to-Digital Converter (ADC) in an electronic system converts:",
+    "options": {
+      "A": "Digital signals to analog signals for output devices",
+      "B": "Continuous analog signals (e.g., temperature, sound) into discrete digital values for processing",
+      "C": "AC current to DC current",
+      "D": "Digital data into human-readable text"
+    },
+    "correct_answer": "B",
+    "explanation": "ADCs convert real-world analog signals (continuous voltage) into binary digital values that microprocessors can process. The resolution (e.g., 8-bit, 10-bit) determines precision. Ghana's IoT and smart agriculture systems use ADCs for sensor data.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 146,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Consumer Electronics & Digital Systems",
+    "source_id": "ST3-SHS3-CE11",
+    "mission_title": "The Sensors",
+    "question": "A thermistor is a type of sensor. What property of a thermistor changes with temperature?",
+    "options": {
+      "A": "Its colour changes with temperature",
+      "B": "Its electrical resistance changes with temperature, allowing temperature measurement",
+      "C": "It produces a voltage proportional to temperature",
+      "D": "It expands and contracts with temperature"
+    },
+    "correct_answer": "B",
+    "explanation": "A thermistor is a temperature-sensitive resistor. NTC (Negative Temperature Coefficient) thermistors decrease resistance as temperature rises. They are used in thermostats, battery monitors, and weather stations.",
+    "xp": 20,
+    "difficulty_tier": "Bronze"
+  },
+  {
+    "id": 147,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Energy & Environment",
+    "source_id": "ST3-SHS3-EN01",
+    "mission_title": "The Renewable Revolution",
+    "question": "Ghana's Akosombo Dam generates hydroelectric power. What energy conversion takes place?",
+    "options": {
+      "A": "Chemical → Electrical",
+      "B": "Gravitational potential → Kinetic → Electrical",
+      "C": "Nuclear → Thermal → Electrical",
+      "D": "Solar → Chemical → Electrical"
+    },
+    "correct_answer": "B",
+    "explanation": "Water stored behind the dam has gravitational potential energy. When released, it flows down (kinetic energy) and spins turbines connected to generators, converting mechanical energy into electrical energy.",
+    "xp": 20,
+    "difficulty_tier": "Bronze"
+  },
+  {
+    "id": 148,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Energy & Environment",
+    "source_id": "ST3-SHS3-EN02",
+    "mission_title": "The Solar Potential",
+    "question": "Ghana receives abundant sunshine year-round. What is the primary challenge for widespread solar adoption in rural areas?",
+    "options": {
+      "A": "Sunlight is not strong enough in Ghana",
+      "B": "High upfront cost of solar panels and battery storage despite long-term savings",
+      "C": "Solar panels require constant direct sunlight to function",
+      "D": "Solar energy cannot power household appliances"
+    },
+    "correct_answer": "B",
+    "explanation": "While the solar resource is excellent (Ghana receives ~4.5-5.5 kWh/m²/day), the initial investment for panels, inverters, and batteries is high. Battery storage is essential for nighttime use, adding significant cost. Government solar subsidies aim to reduce this barrier.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 149,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Energy & Environment",
+    "source_id": "ST3-SHS3-EN03",
+    "mission_title": "The Wind Energy",
+    "question": "Wind turbines convert the kinetic energy of wind into electricity. What determines the maximum theoretical power a wind turbine can generate?",
+    "options": {
+      "A": "The colour of the turbine blades",
+      "B": "The cube of the wind speed (power ∝ wind speed³)",
+      "C": "The height of the turbine tower only",
+      "D": "The number of blades on the turbine"
+    },
+    "correct_answer": "B",
+    "explanation": "Wind power is proportional to the cube of wind speed (P ∝ v³×A×ρ). Doubling wind speed gives 8× the power. This is why wind farms are sited in consistently windy locations.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 150,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Energy & Environment",
+    "source_id": "ST3-SHS3-EN04",
+    "mission_title": "The Greenhouse Effect",
+    "question": "The greenhouse effect is necessary for life on Earth. Which gas is the MOST significant contributor to the enhanced greenhouse effect from human activities?",
+    "options": {
+      "A": "Oxygen (O₂)",
+      "B": "Carbon dioxide (CO₂) from burning fossil fuels and deforestation",
+      "C": "Nitrogen (N₂)",
+      "D": "Hydrogen (H₂)"
+    },
+    "correct_answer": "B",
+    "explanation": "CO₂ is the most abundant long-lived greenhouse gas from human activities. While water vapour is the most abundant GHG naturally, the enhanced greenhouse effect is primarily driven by CO₂ from burning fossil fuels and deforestation.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 151,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Energy & Environment",
+    "source_id": "ST3-SHS3-EN05",
+    "mission_title": "The Carbon Cycle",
+    "question": "Deforestation in Ghana contributes to climate change. What is the primary mechanism?",
+    "options": {
+      "A": "Trees release carbon dioxide when cut down",
+      "B": "Forests are carbon sinks that absorb CO₂; removing them releases stored carbon and reduces future CO₂ absorption",
+      "C": "Deforestation increases rainfall",
+      "D": "Trees produce methane when cut"
+    },
+    "correct_answer": "B",
+    "explanation": "Forests absorb CO₂ through photosynthesis. When trees are cut and burned or decompose, stored carbon is released. With fewer trees, less CO₂ is removed from the atmosphere — a double impact on atmospheric CO₂ levels.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 152,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Energy & Environment",
+    "source_id": "ST3-SHS3-EN06",
+    "mission_title": "The Energy Efficiency",
+    "question": "LED bulbs use ~80% less energy than incandescent bulbs for the same light output. This is an example of:",
+    "options": {
+      "A": "Energy generation",
+      "B": "Energy efficiency — using less energy to perform the same function",
+      "C": "Energy storage",
+      "D": "Energy distribution"
+    },
+    "correct_answer": "B",
+    "explanation": "Energy efficiency means getting the same output (light) with less energy input. LEDs convert ~80-90% of electricity to light, while incandescents convert only ~10% (the rest is wasted as heat).",
+    "xp": 20,
+    "difficulty_tier": "Bronze"
+  },
+  {
+    "id": 153,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Energy & Environment",
+    "source_id": "ST3-SHS3-EN07",
+    "mission_title": "The Waste Management",
+    "question": "What is the environmental benefit of composting organic waste instead of sending it to a landfill?",
+    "options": {
+      "A": "Composting is faster than landfill disposal",
+      "B": "Composting aerobically produces nutrient-rich fertiliser and avoids methane (a potent GHG) produced in landfills",
+      "C": "Composting requires less space than landfills",
+      "D": "Composting eliminates all waste"
+    },
+    "correct_answer": "B",
+    "explanation": "In landfills, organic waste decomposes anaerobically, producing methane (CH₄) — a greenhouse gas ~25× more potent than CO₂. Aerobic composting produces CO₂ and nutrient-rich compost that improves soil health.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 154,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Energy & Environment",
+    "source_id": "ST3-SHS3-EN08",
+    "mission_title": "The Climate Adaptation",
+    "question": "Rising sea levels threaten Ghana's coastal communities. Which is an example of climate adaptation?",
+    "options": {
+      "A": "Burning less fossil fuels to slow climate change",
+      "B": "Building sea defence walls and developing salt-tolerant crops",
+      "C": "Planting more trees in the northern regions",
+      "D": "Reducing industrial emissions"
+    },
+    "correct_answer": "B",
+    "explanation": "Mitigation = reducing causes (e.g., emissions reduction). Adaptation = adjusting to effects (e.g., sea walls, salt-tolerant crops). Coastal communities need both strategies. Ghana's coastal zone is home to ~7 million people.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 155,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Energy & Environment",
+    "source_id": "ST3-SHS3-EN09",
+    "mission_title": "The Biomass Energy",
+    "question": "In many Ghanaian communities, biomass (wood, charcoal) is the primary cooking fuel. What is the main environmental concern?",
+    "options": {
+      "A": "Biomass is non-renewable and will run out",
+      "B": "Indoor air pollution from biomass smoke causes respiratory diseases and deforestation occurs when wood is harvested unsustainably",
+      "C": "Biomass releases no smoke when burned",
+      "D": "Biomass cooking is more expensive than LPG"
+    },
+    "correct_answer": "B",
+    "explanation": "Traditional biomass cooking produces harmful indoor air pollutants (PM2.5, CO) causing respiratory illnesses. Unsustainable wood harvesting contributes to deforestation. Clean cookstoves and LPG are alternatives promoted in Ghana.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 156,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Energy & Environment",
+    "source_id": "ST3-SHS3-EN10",
+    "mission_title": "The Nigeria-Ghana Gas",
+    "question": "The West African Gas Pipeline brings natural gas to Ghana for power generation. What is the main environmental advantage of using natural gas instead of coal for electricity?",
+    "options": {
+      "A": "Natural gas produces no greenhouse gases",
+      "B": "Natural gas produces about half the CO₂ of coal and fewer air pollutants like sulphur dioxide",
+      "C": "Natural gas is a renewable energy source",
+      "D": "Natural gas requires no infrastructure"
+    },
+    "correct_answer": "B",
+    "explanation": "Natural gas (mainly methane) produces ~50% less CO₂ per unit of electricity than coal. It also produces negligible sulphur dioxide and less particulate matter. It is a 'bridge fuel' in the transition to renewables.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 157,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Forces, Pressure & Machines",
+    "source_id": "ST3-SHS3-FP11",
+    "mission_title": "The Hydraulic Press",
+    "question": "A hydraulic car lift uses a small force on a small piston to lift a heavy car on a large piston. This works because:",
+    "options": {
+      "A": "Air pressure pushes the car up",
+      "B": "The small piston creates high pressure which is transmitted equally throughout the fluid, producing a large force on the large piston",
+      "C": "The large piston is made of lighter material",
+      "D": "Gravity is reduced in hydraulic systems"
+    },
+    "correct_answer": "B",
+    "explanation": "Pascal's Principle: pressure applied to an enclosed fluid is transmitted undiminished throughout the fluid. Force = Pressure × Area. Small area × small force = same pressure = large area × large force.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 162,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Genetics & Heredity",
+    "source_id": "ST3-SHS3-043",
+    "mission_title": "The Natural Selection",
+    "question": "In Ghana, the sickle cell trait (HbAS) is common in regions where malaria is endemic. This is because:",
+    "options": {
+      "A": "The HbS allele provides no benefit",
+      "B": "HbAS individuals have some protection against severe malaria, so the allele persists in the population despite causing disease in HbSS individuals",
+      "C": "Malaria cures sickle cell disease",
+      "D": "HbAS individuals are immune to all diseases"
+    },
+    "correct_answer": "B",
+    "explanation": "This is a classic example of heterozygote advantage. HbAS (sickle cell trait) individuals are less susceptible to severe malaria. The HbS allele persists at high frequency in malaria-endemic regions because the benefits in heterozygotes outweigh the costs in homozygotes.",
+    "xp": 30,
+    "difficulty_tier": "Gold"
+  },
+  {
+    "id": 163,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Human Body & Health",
+    "source_id": "ST3-SHS3-HB16",
+    "mission_title": "The Vaccination",
+    "question": "How do vaccines protect against infectious diseases?",
+    "options": {
+      "A": "Vaccines kill all bacteria in the body",
+      "B": "Vaccines expose the immune system to harmless antigens, triggering production of memory cells for rapid future response",
+      "C": "Vaccines provide immediate full immunity to all diseases",
+      "D": "Vaccines replace damaged immune cells"
+    },
+    "correct_answer": "B",
+    "explanation": "Vaccines contain weakened or inactive parts of pathogens. The immune system produces antibodies and memory cells. On later exposure, memory cells trigger rapid antibody production before infection can take hold. This is 'active immunity'.",
+    "xp": 20,
+    "difficulty_tier": "Bronze"
+  },
+  {
+    "id": 164,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Human Body & Health",
+    "source_id": "ST3-SHS3-HB17",
+    "mission_title": "The Antibiotic Resistance",
+    "question": "Antibiotic resistance is a growing global health crisis. What is the main cause of antibiotic resistance in bacteria?",
+    "options": {
+      "A": "Patients become resistant to antibiotics over time",
+      "B": "Overuse and misuse of antibiotics creates selective pressure, allowing resistant bacteria to survive and multiply",
+      "C": "Antibiotics cause mutations that make humans resistant",
+      "D": "Bacteria naturally become resistant without any outside influence"
+    },
+    "correct_answer": "B",
+    "explanation": "When antibiotics are overused or not taken as prescribed (e.g., stopping early), susceptible bacteria die but resistant ones survive and reproduce. This is natural selection in action. Ghana has antimicrobial resistance surveillance programs to address this.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 165,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Human Body & Health",
+    "source_id": "ST3-SHS3-HB18",
+    "mission_title": "The Nutrition Science",
+    "question": "Why is vitamin A deficiency a significant public health concern in parts of Africa, and what is a scientific approach to addressing it?",
+    "options": {
+      "A": "Vitamin A is not essential for health",
+      "B": "Vitamin A deficiency causes blindness and weakens immunity; biofortified crops like orange-fleshed sweet potatoes provide dietary vitamin A",
+      "C": "Vitamin A can only be obtained from supplements",
+      "D": "Vitamin A deficiency only affects adults"
+    },
+    "correct_answer": "B",
+    "explanation": "Vitamin A is essential for vision and immune function. Deficiency is a leading cause of preventable blindness in children. Biofortification (breeding crops with higher vitamin content) is a sustainable, food-based solution.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 166,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Human Body & Health",
+    "source_id": "ST3-SHS3-HB19",
+    "mission_title": "The Nervous System",
+    "question": "A reflex action (e.g., pulling hand from a hot object) is faster than a conscious reaction because:",
+    "options": {
+      "A": "Reflexes use faster nerve fibres",
+      "B": "The reflex arc bypasses the brain — the spinal cord processes the signal directly for rapid response",
+      "C": "Reflexes are not real nerve signals",
+      "D": "Hot objects trigger a special type of nerve"
+    },
+    "correct_answer": "B",
+    "explanation": "A reflex arc: sensory neuron → spinal cord (interneuron) → motor neuron. The brain is informed after the response begins. This short pathway eliminates the time needed for conscious processing, enabling rapid protective action.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 167,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Human Body & Health",
+    "source_id": "ST3-SHS3-HB20",
+    "mission_title": "The Endocrine System",
+    "question": "Which gland in the human body is often called the 'master gland' because it controls other endocrine glands?",
+    "options": {
+      "A": "Thyroid gland",
+      "B": "Adrenal gland",
+      "C": "Pituitary gland",
+      "D": "Pancreas"
+    },
+    "correct_answer": "B",
+    "explanation": "The pituitary gland at the base of the brain secretes hormones that regulate growth, reproduction, and metabolism. It controls the thyroid, adrenal glands, and gonads by releasing stimulating hormones.",
+    "xp": 20,
+    "difficulty_tier": "Bronze"
+  },
+  {
+    "id": 168,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Industrial Chemistry & Biotechnology",
+    "source_id": "ST3-SHS3-IB01",
+    "mission_title": "The Fermentation",
+    "question": "In Ghana, palm wine is produced through fermentation. What is the key biochemical process?",
+    "options": {
+      "A": "Bacteria convert proteins into ammonia",
+      "B": "Yeast converts sugars (glucose) into ethanol and carbon dioxide under anaerobic conditions",
+      "C": "Mould breaks down cellulose into glucose",
+      "D": "Enzymes convert starch directly into ethanol"
+    },
+    "correct_answer": "B",
+    "explanation": "Fermentation: yeast cells (Saccharomyces) convert glucose into ethanol (alcohol) and CO₂ gas. C₆H₁₂O₆ → 2C₂H₅OH + 2CO₂. This is anaerobic respiration (no oxygen required). The CO₂ produces bubbling.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 169,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Industrial Chemistry & Biotechnology",
+    "source_id": "ST3-SHS3-IB02",
+    "mission_title": "The Bioplastics",
+    "question": "Bioplastics are being developed as alternatives to petroleum-based plastics. What is a key advantage and challenge?",
+    "options": {
+      "A": "Bioplastics are stronger than all conventional plastics",
+      "B": "Bioplastics can be made from renewable resources (e.g., corn starch) but some require specific industrial composting conditions to degrade",
+      "C": "Bioplastics cost nothing to produce",
+      "D": "Bioplastics do not need any energy to manufacture"
+    },
+    "correct_answer": "B",
+    "explanation": "PLA (polylactic acid) bioplastic is made from renewable corn starch. It's compostable but requires high-temperature industrial composting facilities that are not widely available in Ghana, limiting the environmental benefit.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 170,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Industrial Chemistry & Biotechnology",
+    "source_id": "ST3-SHS3-IB03",
+    "mission_title": "The Soap Making",
+    "question": "Traditional Ghanaian soap (alata samina) is made by reacting oils with a strong alkali. What is this chemical reaction called?",
+    "options": {
+      "A": "Hydrolysis",
+      "B": "Saponification — the reaction of fats/oils with an alkali (NaOH/KOH) to produce soap and glycerol",
+      "C": "Esterification",
+      "D": "Polymerisation"
+    },
+    "correct_answer": "B",
+    "explanation": "Saponification: triglycerides (fats/oils) + sodium hydroxide → soap (sodium salts of fatty acids) + glycerol. This is how traditional alata samina and modern soaps are made. Different oils produce different soap properties.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 171,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Industrial Chemistry & Biotechnology",
+    "source_id": "ST3-SHS3-IB04",
+    "mission_title": "The Water Treatment",
+    "question": "In municipal water treatment, aluminium sulphate (alum) is added. What is its purpose?",
+    "options": {
+      "A": "To kill bacteria in the water",
+      "B": "To cause suspended particles to clump together (flocculation) so they settle or can be filtered",
+      "C": "To add minerals to the water",
+      "D": "To neutralise acidic water"
+    },
+    "correct_answer": "B",
+    "explanation": "Alum (aluminium sulphate) is a coagulant. It neutralises the charge on suspended particles, causing them to clump into larger 'flocs' that settle or are removed by filtration. This removes turbidity, colour, and many microorganisms.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 172,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Industrial Chemistry & Biotechnology",
+    "source_id": "ST3-SHS3-IB05",
+    "mission_title": "The Food Preservation",
+    "question": "Salting fish (a traditional preservation method in Ghana) prevents spoilage because:",
+    "options": {
+      "A": "Salt adds flavour that masks spoilage",
+      "B": "Salt creates a hypertonic environment, drawing water out of bacterial cells through osmosis, killing or inhibiting them",
+      "C": "Salt chemically destroys all bacteria instantly",
+      "D": "Salt reacts with fish to form preservatives"
+    },
+    "correct_answer": "B",
+    "explanation": "High salt concentration creates osmotic pressure. Water leaves bacterial cells by osmosis, causing plasmolysis (cell shrinkage). The bacteria cannot survive or reproduce. This is why salted fish can be stored for months without refrigeration.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 173,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Industrial Chemistry & Biotechnology",
+    "source_id": "ST3-SHS3-IB06",
+    "mission_title": "The pH Scale",
+    "question": "Lemon juice has pH ~2.5 and soap has pH ~9. Which statement is correct?",
+    "options": {
+      "A": "Lemon juice is a base and soap is an acid",
+      "B": "Lemon juice is an acid (pH < 7) and soap is an alkali (pH > 7); lemon juice has ~6 million times more H⁺ ions than soap",
+      "C": "Both are neutral",
+      "D": "pH cannot be measured for liquids"
+    },
+    "correct_answer": "B",
+    "explanation": "The pH scale is logarithmic. Each unit = 10× difference in H⁺ concentration. pH 2.5 → pH 9 is a 6.5 unit difference = 10^6.5 ≈ 3.2 million times more H⁺ ions. pH < 7 = acid; pH > 7 = alkali/base.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 174,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Industrial Chemistry & Biotechnology",
+    "source_id": "ST3-SHS3-IB07",
+    "mission_title": "The Cement Production",
+    "question": "Ghana produces cement locally. The key chemical reaction in cement production involves heating limestone (calcium carbonate). What is produced?",
+    "options": {
+      "A": "Calcium oxide (quicklime) and carbon dioxide — CaCO₃ → CaO + CO₂ (thermal decomposition)",
+      "B": "Calcium metal and oxygen",
+      "C": "Calcium hydroxide and carbon",
+      "D": "Pure lime and water"
+    },
+    "correct_answer": "B",
+    "explanation": "Heating limestone (calcium carbonate) causes thermal decomposition: CaCO₃(s) → CaO(s) + CO₂(g). The calcium oxide (quicklime) is then mixed with clay and other materials to form cement clinker. This process is energy-intensive and produces significant CO₂.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 175,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Science, Technology & Society",
+    "source_id": "ST3-SHS3-STS08",
+    "mission_title": "The Digital Divide",
+    "question": "In Ghana, the 'digital divide' refers to the gap between those who have access to technology and those who don't. Why does this matter for education?",
+    "options": {
+      "A": "Technology has no impact on education",
+      "B": "Students without internet access miss online learning resources, digital skills development, and cannot fully participate in the modern knowledge economy",
+      "C": "Only wealthy countries need technology",
+      "D": "Digital divide only affects entertainment"
+    },
+    "correct_answer": "B",
+    "explanation": "The digital divide affects educational equity. Students without reliable internet or devices cannot access online courses, educational videos, digital textbooks, or develop ICT skills essential for modern careers. Ghana's free SHS policy includes ICT infrastructure development.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 176,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Science, Technology & Society",
+    "source_id": "ST3-SHS3-STS09",
+    "mission_title": "The AI Ethics",
+    "question": "Artificial Intelligence systems increasingly make decisions that affect people's lives. What is a key ethical concern?",
+    "options": {
+      "A": "AI systems are always perfectly fair",
+      "B": "AI systems can inherit and amplify human biases present in their training data, leading to unfair or discriminatory outcomes",
+      "C": "AI has no impact on human decision-making",
+      "D": "AI eliminates the need for human judgment entirely"
+    },
+    "correct_answer": "B",
+    "explanation": "AI learns from historical data, which may contain human biases (race, gender, socioeconomic). If training data reflects past discrimination, the AI may perpetuate or amplify it. Ethical AI requires diverse teams, careful data curation, and ongoing monitoring.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 177,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Science, Technology & Society",
+    "source_id": "ST3-SHS3-STS10",
+    "mission_title": "The Telemedicine",
+    "question": "Telemedicine allows doctors to consult with patients remotely using technology. How is this particularly valuable in Ghana?",
+    "options": {
+      "A": "Telemedicine replaces all in-person doctor visits",
+      "B": "Telemedicine can extend healthcare access to rural areas where doctors are scarce, reducing travel costs and wait times",
+      "C": "Telemedicine only works for emergency cases",
+      "D": "Telemedicine is illegal in Ghana"
+    },
+    "correct_answer": "B",
+    "explanation": "Ghana has a doctor-to-patient ratio of ~1:10,000, with most doctors concentrated in urban areas. Telemedicine bridges this gap by enabling remote consultations, prescription renewals, and follow-up care for rural patients.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 178,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Science, Technology & Society",
+    "source_id": "ST3-SHS3-STS11",
+    "mission_title": "The Space Technology",
+    "question": "Ghana launched its first satellite, GhanaSat-1, in 2017. What practical benefits do satellites provide for Ghana?",
+    "options": {
+      "A": "Satellites have no practical use for developing countries",
+      "B": "Satellites enable weather monitoring, agricultural planning (crop health via NDVI), coastal erosion monitoring, and communication services",
+      "C": "GhanaSat-1 was only for scientific prestige",
+      "D": "Satellites only provide television signals"
+    },
+    "correct_answer": "B",
+    "explanation": "Small CubeSats like GhanaSat-1 carry cameras and sensors for earth observation. Applications include: monitoring crop health (NDVI), tracking deforestation, coastal erosion mapping, weather forecasting, and improving telecommunications.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 179,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Science, Technology & Society",
+    "source_id": "ST3-SHS3-STS12",
+    "mission_title": "The Nanotechnology",
+    "question": "Nanotechnology involves manipulating matter at the atomic scale (1-100 nanometres). What is a current medical application of nanotechnology?",
+    "options": {
+      "A": "Nanotechnology only exists in science fiction",
+      "B": "Nanoparticles can deliver drugs directly to cancer cells, reducing side effects compared to traditional chemotherapy",
+      "C": "Nanotechnology is too expensive for medical use",
+      "D": "Nanoparticles are only used in electronics"
+    },
+    "correct_answer": "B",
+    "explanation": "Nanoparticles can be engineered to carry chemotherapy drugs and release them specifically at tumour sites (targeted drug delivery). This reduces damage to healthy tissue and side effects. Other applications include nanosensors for disease detection.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 180,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Science, Technology & Society",
+    "source_id": "ST3-SHS3-STS13",
+    "mission_title": "The Fintech Impact",
+    "question": "Mobile money services like MTN MoMo have transformed financial inclusion in Ghana. What technological infrastructure makes this possible?",
+    "options": {
+      "A": "Mobile money uses satellite technology exclusively",
+      "B": "Mobile money uses USSD codes and mobile networks to process financial transactions on basic phones without requiring bank accounts or internet",
+      "C": "Mobile money requires smartphones and bank accounts",
+      "D": "Mobile money is a traditional banking system"
+    },
+    "correct_answer": "B",
+    "explanation": "USSD (Unstructured Supplementary Service Data) works on any mobile phone. Users dial short codes to send money, pay bills, or save. This has brought financial services to millions of Ghanaians without bank accounts. Ghana is a global leader in mobile money adoption.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 181,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Science, Technology & Society",
+    "source_id": "ST3-SHS3-STS14",
+    "mission_title": "The Renewable Energy Policy",
+    "question": "Ghana has a target to increase the share of renewable energy in its electricity mix. What is a scientific/technological challenge in integrating large-scale renewables into the national grid?",
+    "options": {
+      "A": "Renewable energy is always cheaper than fossil fuels",
+      "B": "Solar and wind are intermittent (generate only when sun shines/wind blows), requiring energy storage and grid management to ensure stable power supply",
+      "C": "Renewable energy cannot be connected to a national grid",
+      "D": "Solar panels require rare earth metals not available in Ghana"
+    },
+    "correct_answer": "B",
+    "explanation": "Unlike hydro (which can be stored in dams), solar and wind are variable. Adding large amounts to the grid requires battery storage, pumped hydro, or other balancing mechanisms. Ghana's Renewable Energy Master Plan addresses these challenges.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 182,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Science, Technology & Society",
+    "source_id": "ST3-SHS3-STS15",
+    "mission_title": "The Precision Agriculture",
+    "question": "Precision agriculture uses technology to optimise farming. How does GPS-guided tractor technology improve farming efficiency?",
+    "options": {
+      "A": "GPS tractors drive themselves without fuel",
+      "B": "GPS guidance prevents overlap in spraying/seeding, reducing input waste by 10-20% and improving yield",
+      "C": "GPS tractors never break down",
+      "D": "GPS is only useful for navigation in cities"
+    },
+    "correct_answer": "B",
+    "explanation": "GPS-guided tractors with auto-steer can apply fertiliser, pesticides, and seeds with sub-metre accuracy. This eliminates gaps and overlaps, reducing input costs by 10-20% and environmental impact. Ghana's agricultural sector is beginning to adopt these technologies.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 183,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "source_id": "ST3-SHS3-WS10",
+    "mission_title": "The Doppler Effect",
+    "question": "An ambulance siren sounds higher-pitched as it approaches you and lower-pitched as it moves away. What is this phenomenon called?",
+    "options": {
+      "A": "Refraction",
+      "B": "The Doppler Effect — the observed frequency of a wave changes due to relative motion between source and observer",
+      "C": "Diffraction",
+      "D": "Resonance"
+    },
+    "correct_answer": "B",
+    "explanation": "As the ambulance approaches, sound waves are compressed (shorter wavelength = higher frequency = higher pitch). As it moves away, waves are stretched (longer wavelength = lower frequency = lower pitch). Police use this effect in radar speed guns.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 184,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "source_id": "ST3-SHS3-WS11",
+    "mission_title": "The Dispersion",
+    "question": "A rainbow forms when sunlight passes through raindrops. What optical process creates the colours?",
+    "options": {
+      "A": "Reflection — light bounces off the raindrop surface",
+      "B": "Dispersion — white light is refracted and separated into component colours because different wavelengths bend by different amounts",
+      "C": "Diffraction — light bends around the edge of raindrops",
+      "D": "Absorption — raindrops absorb all colours except one"
+    },
+    "correct_answer": "B",
+    "explanation": "White light is composed of all visible colours. When entering a raindrop, different wavelengths (colours) refract by different amounts — violet bends most, red least. Internal reflection and further refraction produce the circular rainbow spectrum (ROYGBIV).",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 185,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Energy & Environment",
+    "source_id": "ST3-SHS3-EN11",
+    "mission_title": "The Ocean Acidification",
+    "question": "Increased atmospheric CO₂ dissolves in oceans, forming carbonic acid. What is a consequence of ocean acidification?",
+    "options": {
+      "A": "Oceans become more alkaline, harming fish",
+      "B": "Ocean acidification reduces carbonate ions needed by coral and shellfish to build their calcium carbonate shells/skeletons",
+      "C": "Ocean acidification has no effect on marine life",
+      "D": "Ocean acidification increases oxygen in water"
+    },
+    "correct_answer": "B",
+    "explanation": "CO₂ + H₂O → H₂CO₃ (carbonic acid) → H⁺ + HCO₃⁻. More H⁺ ions bind with carbonate (CO₃²⁻), making it unavailable for calcifying organisms like corals, oysters, and plankton — threatening the marine food web.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 186,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Energy & Environment",
+    "source_id": "ST3-SHS3-EN12",
+    "mission_title": "The E-Waste Challenge",
+    "question": "Ghana's Agbogbloshie e-waste site in Accra has gained international attention. What is the main environmental health concern from informal e-waste recycling?",
+    "options": {
+      "A": "E-waste contains valuable metals that should be discarded",
+      "B": "Burning e-waste to recover metals releases toxic fumes including lead, mercury, and brominated flame retardants into air and soil",
+      "C": "E-waste is completely safe to handle without protection",
+      "D": "E-waste only affects plants, not humans"
+    },
+    "correct_answer": "B",
+    "explanation": "Informal recycling involves open burning of cables and components to extract copper and aluminium. This releases dioxins, furans, lead, mercury, and other toxics. Workers and nearby communities face elevated cancer, respiratory, and neurological risks.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 187,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "source_id": "ST3-SHS3-WS12",
+    "mission_title": "The Polarisation",
+    "question": "Polarised sunglasses reduce glare from horizontal surfaces like water or roads. How do they work?",
+    "options": {
+      "A": "They block all light from entering the eyes",
+      "B": "They have a polarising filter that blocks horizontally polarised reflected light while allowing vertically polarised light through",
+      "C": "They absorb all ultraviolet light only",
+      "D": "They reflect light away from the eyes"
+    },
+    "correct_answer": "B",
+    "explanation": "Sunlight reflected from flat horizontal surfaces becomes horizontally polarised. Polarised lenses have a vertical transmission axis that blocks this horizontal component, reducing glare and improving visual clarity, especially for driving and water activities.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 188,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "source_id": "ST3-SHS3-WS13",
+    "mission_title": "The Seismic Waves",
+    "question": "During an earthquake, P-waves (primary) arrive before S-waves (secondary). Why?",
+    "options": {
+      "A": "P-waves are faster because they travel as longitudinal waves (compression) and can pass through solids, liquids, and gases",
+      "B": "S-waves are faster but arrive later",
+      "C": "P-waves only travel through air",
+      "D": "S-waves travel faster through solids than P-waves"
+    },
+    "correct_answer": "B",
+    "explanation": "P-waves (primary) are longitudinal compression waves that travel faster (~6 km/s in crust). S-waves (secondary) are transverse shear waves that are slower (~3.5 km/s) and only travel through solids. The time difference helps locate earthquake epicentres.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 189,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Waves, Light & Sound",
+    "source_id": "ST3-SHS3-WS14",
+    "mission_title": "The Standing Waves",
+    "question": "When a guitar string is plucked, it vibrates to produce a fundamental frequency and overtones. The point of zero vibration on a standing wave is called:",
+    "options": {
+      "A": "Antinode",
+      "B": "Node — the point on a standing wave where amplitude is always zero",
+      "C": "Crest",
+      "D": "Amplitude"
+    },
+    "correct_answer": "B",
+    "explanation": "In a standing wave, nodes are points of zero displacement (destructive interference). Antinodes are points of maximum displacement (constructive interference). The fundamental frequency produces nodes at the ends of the string and an antinode in the middle.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 190,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Forces, Pressure & Machines",
+    "source_id": "ST3-SHS3-FP12",
+    "mission_title": "The Atmospheric Pressure",
+    "question": "Why does a drinking straw work when you suck on it?",
+    "options": {
+      "A": "Sucking creates a vacuum that pulls liquid up",
+      "B": "Sucking reduces pressure inside the straw, and the higher atmospheric pressure on the liquid surface pushes the liquid up the straw",
+      "C": "The liquid is attracted to the mouth by surface tension",
+      "D": "Capillary action pulls the liquid upward"
+    },
+    "correct_answer": "B",
+    "explanation": "Atmospheric pressure (~101,325 Pa) acts on the liquid surface. When you reduce pressure inside the straw (by sucking), the greater external atmospheric pressure forces liquid up into the lower-pressure region. At high altitudes, straws work less efficiently.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 191,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Forces, Pressure & Machines",
+    "source_id": "ST3-SHS3-FP13",
+    "mission_title": "The Lever Classes",
+    "question": "A crowbar used to pry open a crate has the fulcrum at one end and the load at the other. The effort is applied between them. What class of lever is this?",
+    "options": {
+      "A": "First-class lever",
+      "B": "Second-class lever (load between fulcrum and effort)",
+      "C": "Third-class lever (effort between fulcrum and load)",
+      "D": "This is not a lever system"
+    },
+    "correct_answer": "B",
+    "explanation": "In a third-class lever: effort is between the fulcrum and load. This gives a mechanical advantage less than 1 but increases speed and range of motion. Examples: tweezers, fishing rod, and a crowbar used this way.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 192,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Consumer Electronics & Digital Systems",
+    "source_id": "ST3-SHS3-CE12",
+    "mission_title": "The Microcontroller",
+    "question": "Arduino and Raspberry Pi are popular platforms for learning electronics and programming. What distinguishes a microcontroller (like Arduino) from a single-board computer (like Raspberry Pi)?",
+    "options": {
+      "A": "Microcontrollers run full operating systems like Windows",
+      "B": "Microcontrollers are designed for real-time control of devices with limited resources, while single-board computers run full OS for more complex tasks",
+      "C": "Raspberry Pi cannot control any physical devices",
+      "D": "Arduino can connect to the internet without any additional hardware"
+    },
+    "correct_answer": "B",
+    "explanation": "Microcontrollers (Arduino, ESP32) are simple, low-power chips that run one program repeatedly — ideal for sensors, motors, and IoT devices. Single-board computers (Raspberry Pi) run Linux, handle complex tasks, and have more memory but consume more power.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 193,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Consumer Electronics & Digital Systems",
+    "source_id": "ST3-SHS3-CE13",
+    "mission_title": "The IoT in Agriculture",
+    "question": "Internet of Things (IoT) sensors in agriculture can monitor soil moisture, temperature, and humidity. What data transmission technology is commonly used for IoT in rural Ghana where internet coverage may be limited?",
+    "options": {
+      "A": "Bluetooth can cover entire farms",
+      "B": "GSM/4G networks and LoRaWAN (Long Range Wide Area Network) can transmit sensor data over kilometres with very low power",
+      "C": "WiFi covers all rural areas",
+      "D": "Satellite internet is freely available"
+    },
+    "correct_answer": "B",
+    "explanation": "LoRaWAN is ideal for IoT agriculture: it can transmit small data packets over 2-15 km with minimal power (batteries last years). GSM/4G provides wider coverage where mobile networks exist. Smart agriculture pilots in Ghana use these technologies.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 194,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Genetics & Heredity",
+    "source_id": "ST3-SHS3-GEN01",
+    "mission_title": "The Pedigree Analysis",
+    "question": "A genetic pedigree shows that a trait appears in every generation and affects males and females equally. What inheritance pattern does this suggest?",
+    "options": {
+      "A": "Autosomal recessive",
+      "B": "Autosomal dominant — the trait appears in every generation and affects both sexes equally",
+      "C": "X-linked recessive",
+      "D": "Mitochondrial inheritance"
+    },
+    "correct_answer": "B",
+    "explanation": "Autosomal dominant traits appear in every generation (no skipping) because only one copy of the dominant allele is needed. Affected individuals have an affected parent. Males and females are equally affected because the gene is on a non-sex chromosome.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 195,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Genetics & Heredity",
+    "source_id": "ST3-SHS3-GEN02",
+    "mission_title": "The Epigenetics",
+    "question": "Epigenetics studies changes in gene expression that do not involve changes to the DNA sequence. Which of the following is an epigenetic mechanism?",
+    "options": {
+      "A": "A change in the DNA base sequence",
+      "B": "DNA methylation — addition of methyl groups to DNA that can silence gene expression without changing the sequence",
+      "C": "A mutation in a single gene",
+      "D": "A change in chromosome number"
+    },
+    "correct_answer": "B",
+    "explanation": "Epigenetic changes alter gene activity without changing the DNA sequence. DNA methylation (adding CH₃ groups) typically silences genes. Histone modification and non-coding RNAs are other mechanisms. Environmental factors like diet can cause epigenetic changes.",
+    "xp": 30,
+    "difficulty_tier": "Gold"
+  },
+  {
+    "id": 196,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Human Body & Health",
+    "source_id": "ST3-SHS3-HB21",
+    "mission_title": "The Homeostasis",
+    "question": "When you exercise vigorously, your body temperature rises. Your body responds by sweating and increasing blood flow to the skin. This regulatory process is called:",
+    "options": {
+      "A": "Positive feedback",
+      "B": "Homeostasis — the maintenance of a stable internal environment through negative feedback mechanisms",
+      "C": "Enzyme denaturation",
+      "D": "Thermal runaway"
+    },
+    "correct_answer": "B",
+    "explanation": "Homeostasis keeps internal conditions within optimal ranges. Rising temperature triggers responses (sweating cools, vasodilation increases heat loss) that counteract the change. This is negative feedback: the response opposes the stimulus.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 197,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Industrial Chemistry & Biotechnology",
+    "source_id": "ST3-SHS3-IB08",
+    "mission_title": "The Polymerisation",
+    "question": "Plastics are polymers — long-chain molecules made of repeating subunits. What type of polymerisation reaction links monomers together by releasing a small molecule like water?",
+    "options": {
+      "A": "Addition polymerisation",
+      "B": "Condensation polymerisation — monomers join by eliminating a small molecule (e.g., water or HCl)",
+      "C": "Cracking",
+      "D": "Electrolysis"
+    },
+    "correct_answer": "B",
+    "explanation": "In condensation polymerisation, two different monomers react, each contributing part of the new bond and releasing a small molecule (e.g., H₂O). Nylon (diamine + dicarboxylic acid) and polyester are examples of condensation polymers.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 198,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Industrial Chemistry & Biotechnology",
+    "source_id": "ST3-SHS3-IB09",
+    "mission_title": "The Cracking Process",
+    "question": "In the petroleum industry, long-chain hydrocarbons are broken down into shorter, more useful molecules. What is this process called?",
+    "options": {
+      "A": "Fractional distillation",
+      "B": "Cracking — thermal or catalytic breaking of long-chain hydrocarbons into shorter alkanes and alkenes",
+      "C": "Polymerisation",
+      "D": "Combustion"
+    },
+    "correct_answer": "B",
+    "explanation": "Cracking breaks large hydrocarbon molecules into smaller, more valuable ones: e.g., C₁₆H₃₄ → C₈H₁₈ + C₈H₁₆. Thermal cracking uses high temperature; catalytic cracking uses a catalyst (zeolite) at lower temperature, producing high-octane petrol and alkenes for plastics.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 199,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Science, Technology & Society",
+    "source_id": "ST3-SHS3-STS16",
+    "mission_title": "The Green Chemistry",
+    "question": "Green chemistry aims to design chemical processes that reduce or eliminate hazardous substances. Which of the following is a green chemistry principle?",
+    "options": {
+      "A": "Use more solvents to improve reactions",
+      "B": "Design chemical products that break down into harmless substances after use (biodegradability)",
+      "C": "Increase energy consumption to speed up reactions",
+      "D": "Use more toxic reagents for faster reactions"
+    },
+    "correct_answer": "B",
+    "explanation": "Green chemistry's 12 principles include: waste prevention, atom economy, less hazardous synthesis, biodegradable products, safer solvents, energy efficiency, renewable feedstocks, and real-time monitoring. Ghana's chemical industry is adopting these principles.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "id": 200,
+    "arena": "scientific",
+    "domain": "Science",
+    "category": "Science, Technology & Society",
+    "source_id": "ST3-SHS3-STS17",
+    "mission_title": "The Science Communication",
+    "question": "During a disease outbreak in Ghana, health authorities communicate scientific information. What is the MOST important factor in effective science communication to the public?",
+    "options": {
+      "A": "Use highly technical medical language to show authority",
+      "B": "Communicate clear, accurate, actionable information in local languages through trusted community channels",
+      "C": "Only communicate through social media",
+      "D": "Avoid sharing information until the outbreak is over"
+    },
+    "correct_answer": "B",
+    "explanation": "Effective science communication uses plain language, respects cultural contexts, works through trusted messengers (community leaders, local health workers), and addresses misinformation promptly. Ghana's National Health Promotion Strategy emphasises these approaches.",
+    "xp": 25,
+    "difficulty_tier": "Silver"
+  },
+  {
+    "source_id": "ST3-SHS3-BONUS1",
+    "category": "Chemical Bonding & Reactions",
+    "mission_title": "The Redox Reactions",
+    "question": "In a redox (reduction-oxidation) reaction, what happens to the substance that is OXIDISED?",
+    "options": {
+      "A": "It gains electrons",
+      "B": "It loses electrons",
+      "C": "It gains protons",
+      "D": "It forms a precipitate"
+    },
+    "correct_answer": "B",
+    "explanation": "Oxidation is the loss of electrons. Reduction is the gain of electrons (OIL RIG: Oxidation Is Loss, Reduction Is Gain). In the reaction Zn + CuSO4 -> ZnSO4 + Cu, Zn is oxidised (loses electrons).",
+    "xp": 25,
+    "difficulty_tier": "Silver",
+    "arena": "scientific",
+    "domain": "Science",
+    "id": 201
+  },
+  {
+    "source_id": "ST3-SHS3-BONUS2",
+    "category": "Energy & Environment",
+    "mission_title": "The Carbon Footprint",
+    "question": "What is a \"carbon footprint\"?",
+    "options": {
+      "A": "The physical size of carbon emissions",
+      "B": "The total amount of greenhouse gases (especially CO2) emitted directly or indirectly by an individual, organisation, or product",
+      "C": "The distance carbon travels in the atmosphere",
+      "D": "The amount of carbon in fossil fuels"
+    },
+    "correct_answer": "B",
+    "explanation": "A carbon footprint measures total greenhouse gas emissions. For example, a person's carbon footprint includes transport, food, electricity, and goods consumption. Ghana's per capita carbon footprint is low (~0.6 tons CO2 vs global average ~4.8 tons).",
+    "xp": 20,
+    "difficulty_tier": "Bronze",
+    "arena": "scientific",
+    "domain": "Science",
+    "id": 202
+  },
+  {
+    "source_id": "ST3-SHS3-BONUS3",
+    "category": "Human Body & Health",
+    "mission_title": "The Digestive System",
+    "question": "Where does MOST digestion and absorption of nutrients occur in the human digestive system?",
+    "options": {
+      "A": "The stomach",
+      "B": "The small intestine",
+      "C": "The large intestine",
+      "D": "The mouth"
+    },
+    "correct_answer": "B",
+    "explanation": "The small intestine is the primary site for digestion and absorption. Its inner surface has millions of villi and microvilli that greatly increase surface area for efficient nutrient absorption into the bloodstream. The stomach mainly digests proteins.",
+    "xp": 20,
+    "difficulty_tier": "Bronze",
+    "arena": "scientific",
+    "domain": "Science",
+    "id": 203
+  },
+  {
+    "source_id": "ST3-SHS3-BONUS4",
+    "category": "Waves, Light & Sound",
+    "mission_title": "The Interference",
+    "question": "When two waves meet and combine, their amplitudes add together. This is called:",
+    "options": {
+      "A": "Diffraction",
+      "B": "Interference - the superposition of waves resulting in constructive (larger) or destructive (smaller/cancelled) waves",
+      "C": "Refraction",
+      "D": "Polarisation"
+    },
+    "correct_answer": "B",
+    "explanation": "Interference is the superposition of two or more waves. Constructive interference occurs when crests align (amplitude increases). Destructive interference occurs when a crest meets a trough (amplitude decreases/cancels). This creates the colourful patterns in soap bubbles.",
+    "xp": 25,
+    "difficulty_tier": "Silver",
+    "arena": "scientific",
+    "domain": "Science",
+    "id": 204
+  }
+]

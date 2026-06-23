@@ -37,6 +37,18 @@ async def update_profile(
     if body.avatar_url is not None:
         current_user.avatar_url = body.avatar_url
         updated = True
+    if body.programme is not None:
+        current_user.programme = body.programme
+        updated = True
+    if body.shs_level is not None:
+        current_user.shs_level = body.shs_level
+        updated = True
+    if body.school is not None:
+        current_user.school = body.school
+        updated = True
+    if body.onboarding_completed is not None:
+        current_user.onboarding_completed = body.onboarding_completed
+        updated = True
 
     if updated:
         db.add(current_user)

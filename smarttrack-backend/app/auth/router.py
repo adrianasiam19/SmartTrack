@@ -27,6 +27,7 @@ from app.auth.service import (
     validate_refresh_token,
     verify_password,
 )
+from app.auth.validators import validate_password_strength, PasswordValidationError
 from app.config import settings
 from app.database import get_db
 from app.users.models import User
@@ -46,6 +47,15 @@ GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 )
 async def register(body: schemas.RegisterRequest, db: AsyncSession = Depends(get_db)):
     """Register a new account with email and password."""
+    # Validate password strength
+    try:
+        validate_password_strength(body.password)
+    except PasswordValidationError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+    
     existing = await get_user_by_email(body.email, db)
     if existing:
         raise HTTPException(
@@ -57,6 +67,14 @@ async def register(body: schemas.RegisterRequest, db: AsyncSession = Depends(get
         email=body.email,
         full_name=body.full_name,
         password_hash=hash_password(body.password),
+        programme=body.programme,
+        shs_level=body.shs_level,
+        school=body.school,
+        onboarding_completed=False,
+        # Initialize gamification stats
+        xp=0,
+        rank="Beginner",
+        streak=0,
     )
     db.add(user)
     await db.flush()   # Get auto-generated user.id before creating tokens
@@ -125,6 +143,7 @@ async def refresh(body: schemas.RefreshRequest, db: AsyncSession = Depends(get_d
 async def logout(body: schemas.RefreshRequest, db: AsyncSession = Depends(get_db)):
     """Revoke the provided refresh token (invalidates this device's session)."""
     await revoke_refresh_token(body.refresh_token, db)
+    await db.commit()  # Commit the revocation to database
 
 
 # ── Google OAuth ──────────────────────────────────────────────────────────────

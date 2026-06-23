@@ -1,0 +1,730 @@
+[
+    {
+        "domain": "Logic",
+        "question": "If all Blips are Blops, and some Blops are Blaps, which of the following statements is definitively TRUE?",
+        "options": {
+            "A": "All Blips are Blaps",
+            "B": "Some Blaps are Blips",
+            "C": "No Blips are Blaps",
+            "D": "It cannot be determined if any Blips are Blaps"
+        },
+        "correct_answer": "D",
+        "difficulty_a": 1.2,
+        "difficulty_b": 0.8,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Verbal",
+        "question": "COTTON : SOFT :: SANDPAPER : ?",
+        "options": {
+            "A": "Wood",
+            "B": "Smooth",
+            "C": "Rough",
+            "D": "Carpet"
+        },
+        "correct_answer": "C",
+        "difficulty_a": 1.5,
+        "difficulty_b": -0.5,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Math",
+        "question": "A clock shows the time as 3:15. What is the approximate angle between the hour and the minute hands?",
+        "options": {
+            "A": "0 degrees",
+            "B": "7.5 degrees",
+            "C": "15 degrees",
+            "D": "22.5 degrees"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.8,
+        "difficulty_b": 1.2,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Science",
+        "question": "A researcher wants to test if a new fertilizer makes tomato plants grow taller. They plant 10 tomatoes with the fertilizer and 10 without. What is the most critical variable to keep constant?",
+        "options": {
+            "A": "The height of the plants",
+            "B": "The amount of water and sunlight received",
+            "C": "The type of fertilizer used",
+            "D": "The weight of the tomatoes produced"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.1,
+        "difficulty_b": -0.2,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "General",
+        "question": "A town is facing an immediate water shortage due to a burst pipe. Building a new reservoir will take 5 years. Rationing will cause immediate public dissatisfaction. Importing water is expensive but fast. As a policy maker, what is the most rational short-term decision?",
+        "options": {
+            "A": "Start building the reservoir immediately and do nothing else",
+            "B": "Import water temporarily while fixing the pipe and planning long-term infrastructure",
+            "C": "Implement strict rationing to avoid any financial costs",
+            "D": "Wait for the rainy season to naturally resolve the shortage"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.4,
+        "difficulty_b": 0.3,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Logic",
+        "question": "If it rains, the street is wet. The street is wet. Therefore, it rained. This logic is flawed because:",
+        "options": {
+            "A": "The street could be wet for another reason",
+            "B": "Rain does not always make the street wet",
+            "C": "The statement is actually logically sound",
+            "D": "The premise contradicts the conclusion"
+        },
+        "correct_answer": "A",
+        "difficulty_a": 1.3,
+        "difficulty_b": 0.1,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Verbal",
+        "question": "Despite the manager's _________ demeanor, the team realized she was highly anxious about the upcoming product launch.",
+        "options": {
+            "A": "Nervous",
+            "B": "Panicked",
+            "C": "Placid",
+            "D": "Emotional"
+        },
+        "correct_answer": "C",
+        "difficulty_a": 1.6,
+        "difficulty_b": 0.9,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Math",
+        "question": "If a store offers a 50% discount, followed by a 50% discount on the already discounted price, the total discount is:",
+        "options": {
+            "A": "100%",
+            "B": "75%",
+            "C": "50%",
+            "D": "25%"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.7,
+        "difficulty_b": 0.5,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Science",
+        "question": "If a new chemical element is discovered that perfectly fits into Group 1 of the periodic table, which property would it MOST likely exhibit?",
+        "options": {
+            "A": "High resistance to electricity",
+            "B": "Highly reactive with water",
+            "C": "Gaseous state at room temperature",
+            "D": "Tendency to gain electrons"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.5,
+        "difficulty_b": 0.6,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Logic",
+        "question": "Rearrange the letters 'CIFAIPC' to make a meaningful word. What category does it belong to?",
+        "options": {
+            "A": "Animal",
+            "B": "Ocean",
+            "C": "Country",
+            "D": "Profession"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.9,
+        "difficulty_b": 1.4,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Verbal",
+        "question": "Statement: \"The introduction of automated checkout machines reduced the need for human cashiers.\" Assumption: ",
+        "options": {
+            "A": "Automated machines are more efficient than humans.",
+            "B": "Customers prefer human cashiers over machines.",
+            "C": "The store's overall revenue will decrease.",
+            "D": "Customers are willing to use machines instead of humans."
+        },
+        "correct_answer": "D",
+        "difficulty_a": 1.4,
+        "difficulty_b": 0.7,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Math",
+        "question": "A train travels 120 km in the first 2 hours, stops for 1 hour, and then travels 90 km in the next 1.5 hours. What is its average speed for the whole journey?",
+        "options": {
+            "A": "60 km/h",
+            "B": "52.5 km/h",
+            "C": "42 km/h",
+            "D": "70 km/h"
+        },
+        "correct_answer": "C",
+        "difficulty_a": 1.3,
+        "difficulty_b": 0.4,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Science",
+        "question": "A patient is given a placebo (a sugar pill) but told it is a powerful painkiller, and their pain subsides. This phenomenon best demonstrates the:",
+        "options": {
+            "A": "Hawthorne effect",
+            "B": "Placebo effect",
+            "C": "Confirmation bias",
+            "D": "Observer effect"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.0,
+        "difficulty_b": -0.4,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "General",
+        "question": "In a group project, one member consistently fails to meet deadlines, affecting the whole team's grade. The most professionally effective initial step is to:",
+        "options": {
+            "A": "Complain to the teacher immediately to have them removed",
+            "B": "Do their work for them to ensure a good grade",
+            "C": "Confront them aggressively in front of the group",
+            "D": "Have a private, constructive discussion to understand their challenges and set clear expectations"
+        },
+        "correct_answer": "D",
+        "difficulty_a": 1.2,
+        "difficulty_b": -0.1,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Logic",
+        "question": "Which number replaces the question mark? 3, 6, 11, 18, 27, ?",
+        "options": {
+            "A": "36",
+            "B": "38",
+            "C": "40",
+            "D": "42"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.6,
+        "difficulty_b": 0.8,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Verbal",
+        "question": "Choose the word which is the ODD ONE OUT:",
+        "options": {
+            "A": "Apple",
+            "B": "Mango",
+            "C": "Potato",
+            "D": "Banana"
+        },
+        "correct_answer": "C",
+        "difficulty_a": 0.8,
+        "difficulty_b": -1.5,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Math",
+        "question": "If x + y = 10, and xy = 20, what is x² + y²?",
+        "options": {
+            "A": "40",
+            "B": "60",
+            "C": "80",
+            "D": "100"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.8,
+        "difficulty_b": 1.5,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Science",
+        "question": "An object is submerged in water. It displaces 500ml of water and floats. What is the weight of the object relative to the displaced water?",
+        "options": {
+            "A": "It weighs exactly the same as the displaced water",
+            "B": "It weighs more than the displaced water",
+            "C": "It weighs less than the displaced water",
+            "D": "Weight cannot be determined from displacement"
+        },
+        "correct_answer": "A",
+        "difficulty_a": 1.5,
+        "difficulty_b": 0.9,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Logic",
+        "question": "If no dogs are cats, and all cats are mammals, which conclusion is logically valid?",
+        "options": {
+            "A": "No dogs are mammals",
+            "B": "Some mammals are not dogs",
+            "C": "All mammals are cats",
+            "D": "Some dogs are mammals"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.7,
+        "difficulty_b": 1.1,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Verbal",
+        "question": "To 'obfuscate' means to:",
+        "options": {
+            "A": "Clarify",
+            "B": "Make unclear or confusing",
+            "C": "Argue loudly",
+            "D": "Agree silently"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.4,
+        "difficulty_b": 0.5,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Math",
+        "question": "A rectangle's length is increased by 20% and its width is decreased by 20%. What is the percentage change in its area?",
+        "options": {
+            "A": "No change",
+            "B": "4% increase",
+            "C": "4% decrease",
+            "D": "2% decrease"
+        },
+        "correct_answer": "C",
+        "difficulty_a": 1.9,
+        "difficulty_b": 1.3,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Science",
+        "question": "Why do astronauts float inside the International Space Station?",
+        "options": {
+            "A": "There is no gravity in space",
+            "B": "They are constantly in a state of free-fall around the Earth",
+            "C": "The space station has anti-gravity technology",
+            "D": "Space suits are designed to be buoyant"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.3,
+        "difficulty_b": 0.2,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "General",
+        "question": "A new policy proposes taxing the rich heavily to fund public services. Critics argue this will reduce investment and harm the economy. This critique is rooted in which economic concept?",
+        "options": {
+            "A": "Supply-side economics / Trickle-down theory",
+            "B": "Keynesian economics",
+            "C": "Communism",
+            "D": "Mercantilism"
+        },
+        "correct_answer": "A",
+        "difficulty_a": 1.6,
+        "difficulty_b": 0.9,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Logic",
+        "question": "If you are reading this, you are breathing. You are not breathing. Therefore:",
+        "options": {
+            "A": "You are reading this",
+            "B": "You are not reading this",
+            "C": "You might be reading this",
+            "D": "None of the above"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.5,
+        "difficulty_b": 0.6,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Verbal",
+        "question": "READING : KNOWLEDGE :: EATING : ?",
+        "options": {
+            "A": "Hunger",
+            "B": "Food",
+            "C": "Energy/Nourishment",
+            "D": "Cooking"
+        },
+        "correct_answer": "C",
+        "difficulty_a": 1.3,
+        "difficulty_b": 0.0,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Math",
+        "question": "You have a 3-liter jug and a 5-liter jug. How can you measure exactly 4 liters of water?",
+        "options": {
+            "A": "Fill the 3L twice and pour into 5L",
+            "B": "Fill the 5L, pour into 3L, leaving 2L; empty 3L, transfer the 2L, fill 5L again, pour 1L into 3L to fill it, leaving 4L in the 5L",
+            "C": "Fill the 5L halfway",
+            "D": "It is mathematically impossible"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.7,
+        "difficulty_b": 0.8,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Science",
+        "question": "If a chemical reaction absorbs heat from its surroundings, it is called:",
+        "options": {
+            "A": "Exothermic",
+            "B": "Endothermic",
+            "C": "Isothermic",
+            "D": "Adiabatic"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.2,
+        "difficulty_b": -0.3,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "General",
+        "question": "Two countries are in a dispute over a border region. Both claim historical rights. The most peaceful and globally accepted method to resolve this without war is:",
+        "options": {
+            "A": "A population vote in both countries",
+            "B": "International arbitration or adjudication at the ICJ",
+            "C": "Economic sanctions by a third party",
+            "D": "Splitting the region exactly in half geographically"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.4,
+        "difficulty_b": 0.4,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Logic",
+        "question": "Look at this series: 2, 1, (1/2), (1/4), ... What number should come next?",
+        "options": {
+            "A": "(1/3)",
+            "B": "(1/8)",
+            "C": "(1/16)",
+            "D": "(1/6)"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.1,
+        "difficulty_b": -0.2,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Verbal",
+        "question": "Identify the underlying assumption: 'We should not hire John for the marketing role because he has an accounting degree.'",
+        "options": {
+            "A": "John is bad at math",
+            "B": "People with accounting degrees cannot do marketing well",
+            "C": "Marketing roles do not require any math",
+            "D": "John does not want to do marketing"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.5,
+        "difficulty_b": 0.7,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Math",
+        "question": "A polygon has 6 sides. How many diagonals can be drawn from one single vertex?",
+        "options": {
+            "A": "3",
+            "B": "4",
+            "C": "5",
+            "D": "6"
+        },
+        "correct_answer": "A",
+        "difficulty_a": 1.6,
+        "difficulty_b": 0.9,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Science",
+        "question": "In a food chain, grass -> grasshopper -> frog -> snake -> eagle, what happens if the frogs are completely removed?",
+        "options": {
+            "A": "Grasshoppers will decrease",
+            "B": "Eagles will eat more grass",
+            "C": "Grasshoppers will likely increase drastically",
+            "D": "Snakes will eat eagles"
+        },
+        "correct_answer": "C",
+        "difficulty_a": 1.2,
+        "difficulty_b": -0.1,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Logic",
+        "question": "Statement: The cost of living in City X has risen by 15% in one year, but average salaries have only risen by 5%. Conclusion: People in City X are generally worse off financially than a year ago. This conclusion is:",
+        "options": {
+            "A": "Definitely true",
+            "B": "Definitely false",
+            "C": "Probably true, but assumes spending habits haven't changed to offset the gap",
+            "D": "Probably true, but assumes no one received a promotion"
+        },
+        "correct_answer": "C",
+        "difficulty_a": 1.8,
+        "difficulty_b": 1.4,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Verbal",
+        "question": "What is the meaning of the idiom: 'To let the cat out of the bag'?",
+        "options": {
+            "A": "To release a pet",
+            "B": "To make a mess",
+            "C": "To accidentally reveal a secret",
+            "D": "To act recklessly"
+        },
+        "correct_answer": "C",
+        "difficulty_a": 0.9,
+        "difficulty_b": -1.0,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Math",
+        "question": "If it takes 5 machines 5 minutes to make 5 widgets, how long would it take 100 machines to make 100 widgets?",
+        "options": {
+            "A": "100 minutes",
+            "B": "5 minutes",
+            "C": "20 minutes",
+            "D": "1 minute"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 2.0,
+        "difficulty_b": 1.6,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Science",
+        "question": "If you rub a balloon on your hair, it sticks to the wall. This is due to:",
+        "options": {
+            "A": "Magnetism",
+            "B": "Static electricity / Induced charge",
+            "C": "Gravitational pull",
+            "D": "Adhesive glue on the balloon"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.0,
+        "difficulty_b": -0.6,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "General",
+        "question": "A local business owner decides to pay their employees a living wage significantly above the minimum. What is the most likely short-term economic trade-off?",
+        "options": {
+            "A": "The business will immediately go bankrupt",
+            "B": "Profit margins will decrease, but employee retention may increase",
+            "C": "The government will lower their taxes",
+            "D": "Customers will immediately stop buying their products"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.5,
+        "difficulty_b": 0.5,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Logic",
+        "question": "If all Zorps are Zips, and some Zips are Zaps, which of the following MUST be false?",
+        "options": {
+            "A": "Some Zorps are Zaps",
+            "B": "No Zorps are Zaps",
+            "C": "All Zaps are Zips",
+            "D": "Some Zips are not Zorps"
+        },
+        "correct_answer": "D",
+        "difficulty_a": 2.1,
+        "difficulty_b": 1.8,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Verbal",
+        "question": "Select the most logical order of sentences to form a paragraph: 1. Finally, the water boils. 2. First, fill a pot with water. 3. Then, place it on the stove. 4. Next, turn on the heat.",
+        "options": {
+            "A": "2, 3, 4, 1",
+            "B": "2, 4, 3, 1",
+            "C": "1, 2, 3, 4",
+            "D": "3, 2, 4, 1"
+        },
+        "correct_answer": "A",
+        "difficulty_a": 0.7,
+        "difficulty_b": -1.8,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Math",
+        "question": "A father is 4 times as old as his son. In 10 years, he will be 3 times as old as his son. How old is the son currently?",
+        "options": {
+            "A": "10 years",
+            "B": "20 years",
+            "C": "30 years",
+            "D": "15 years"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.6,
+        "difficulty_b": 1.0,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Science",
+        "question": "Why does a raw egg spin differently than a hard-boiled egg?",
+        "options": {
+            "A": "The raw egg is heavier",
+            "B": "The liquid inside the raw egg continues to move due to inertia, resisting the spin",
+            "C": "The shell of a hard-boiled egg is smoother",
+            "D": "Heat changes the gravitational pull on the egg"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.7,
+        "difficulty_b": 1.1,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "General",
+        "question": "Freedom of speech is a fundamental right, but it is not absolute. Which of the following is a universally accepted limitation on free speech?",
+        "options": {
+            "A": "Criticizing the government",
+            "B": "Expressing unpopular religious views",
+            "C": "Inciting immediate violence against a specific group",
+            "D": "Burning a national flag in protest"
+        },
+        "correct_answer": "C",
+        "difficulty_a": 1.3,
+        "difficulty_b": 0.3,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Logic",
+        "question": "Mary is taller than Jane. Jane is taller than Sarah. Sarah is taller than Emma. Who is the shortest?",
+        "options": {
+            "A": "Mary",
+            "B": "Jane",
+            "C": "Sarah",
+            "D": "Emma"
+        },
+        "correct_answer": "D",
+        "difficulty_a": 0.8,
+        "difficulty_b": -1.2,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Verbal",
+        "question": "ALUMNI : SCHOOL :: SOLDIERS : ?",
+        "options": {
+            "A": "War",
+            "B": "Army",
+            "C": "Country",
+            "D": "Battle"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.4,
+        "difficulty_b": 0.6,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Math",
+        "question": "If you flip a fair coin three times, what is the probability of getting exactly two heads?",
+        "options": {
+            "A": "1/8",
+            "B": "1/4",
+            "C": "3/8",
+            "D": "1/2"
+        },
+        "correct_answer": "C",
+        "difficulty_a": 1.5,
+        "difficulty_b": 0.7,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Science",
+        "question": "When a car abruptly stops, passengers lunge forward. This is best explained by:",
+        "options": {
+            "A": "Gravity",
+            "B": "Centripetal force",
+            "C": "Inertia (Newton's First Law)",
+            "D": "Friction"
+        },
+        "correct_answer": "C",
+        "difficulty_a": 1.1,
+        "difficulty_b": -0.4,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "General",
+        "question": "A charity organization wants to maximize donations for a cause. Psychological research suggests the most effective strategy is to:",
+        "options": {
+            "A": "Show massive, overwhelming statistics about the problem",
+            "B": "Tell a compelling, emotional story about a single specific individual affected",
+            "C": "Use aggressive guilt-tripping tactics",
+            "D": "Offer a financial reward to donors"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.6,
+        "difficulty_b": 0.8,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Logic",
+        "question": "Which figure does not belong in the following group? (Conceptual) Square, Circle, Triangle, Cylinder",
+        "options": {
+            "A": "Square",
+            "B": "Circle",
+            "C": "Triangle",
+            "D": "Cylinder"
+        },
+        "correct_answer": "D",
+        "difficulty_a": 1.2,
+        "difficulty_b": 0.0,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Verbal",
+        "question": "'The mayor's promise to fix the potholes was just lip service.' This means the mayor:",
+        "options": {
+            "A": "Spoke about it sincerely but failed",
+            "B": "Made a verbal promise without real intention to act",
+            "C": "Kissed someone to get votes",
+            "D": "Held a press conference"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.3,
+        "difficulty_b": 0.2,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Math",
+        "question": "What is the next number in the series? 1, 4, 9, 16, 25, ?",
+        "options": {
+            "A": "30",
+            "B": "36",
+            "C": "49",
+            "D": "34"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 0.9,
+        "difficulty_b": -1.0,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "Science",
+        "question": "If a disease is highly contagious but has a very low mortality rate, and another disease is not contagious but has a high mortality rate, which poses a greater immediate threat to a dense population?",
+        "options": {
+            "A": "The non-contagious disease, because death is certain",
+            "B": "The contagious disease, because it can overwhelm healthcare systems through rapid spread",
+            "C": "Neither, they are equal threats",
+            "D": "It depends entirely on the weather"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.5,
+        "difficulty_b": 0.6,
+        "difficulty_c": 0.25
+    },
+    {
+        "domain": "General",
+        "question": "In a democracy, why is the 'Rule of Law' important?",
+        "options": {
+            "A": "It ensures the military has the most power",
+            "B": "It ensures that everyone, including leaders, is accountable to the same laws",
+            "C": "It allows the police to enforce laws selectively",
+            "D": "It prevents citizens from protesting"
+        },
+        "correct_answer": "B",
+        "difficulty_a": 1.1,
+        "difficulty_b": -0.2,
+        "difficulty_c": 0.25
+    }
+]

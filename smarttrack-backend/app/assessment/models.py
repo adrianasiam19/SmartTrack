@@ -1,0 +1,273 @@
+import uuid
+from datetime import datetime, timezone
+
+from sqlalchemy import JSON, DateTime, Integer, String, ForeignKey, Boolean, Text, func
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app.database import Base
+
+
+class Question(Base):
+    __tablename__ = "questions"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    domain: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
+
+    # ── Arena structure (Phase 2) ──────────────────────────────────────────
+    arena: Mapped[str | None] = mapped_column(String(50), nullable=True, index=True)
+    """
+    Which arena the question belongs to:
+      "logic" | "quantitative" | "scientific" | "communication"
+    """
+    difficulty_tier: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    """
+    "Bronze" | "Silver" | "Gold" — roughly maps to SHS 1 / SHS 2 / SHS 3.
+    """
+    shs_levels: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    """
+    JSON list of SHS levels this question is appropriate for, e.g. ["SHS 1", "SHS 2"].
+    """
+    template_id: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    """
+    The template family this question was generated from (e.g. "logic-seq-add-001").
+    Used for anti-cheating — ensures students don't get the same template repeatedly.
+    """
+
+    question: Mapped[str] = mapped_column(String(1000), nullable=False)
+    options: Mapped[dict] = mapped_column(JSON, nullable=False)  # {"A": "...", "B": "...", etc}
+    correct_answer: Mapped[str] = mapped_column(String(1), nullable=False)  # A, B, C, or D
+    explanation: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    # IRT Parameters
+    difficulty_a: Mapped[float] = mapped_column(nullable=False, default=1.0) # discrimination
+    difficulty_b: Mapped[float] = mapped_column(nullable=False, default=0.0) # difficulty
+    difficulty_c: Mapped[float] = mapped_column(nullable=False, default=0.25) # guessing (e.g. 25% for 4 options)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    def __repr__(self) -> str:
+        return f"<Question id={self.id} arena={self.arena} tier={self.difficulty_tier}>"
+
+
+class UserSkillEstimate(Base):
+    """Tracks a user's skill estimate (theta) per domain using IRT."""
+    __tablename__ = "user_skill_estimates"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    domain: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
+    
+    # Skill parameters
+    theta: Mapped[float] = mapped_column(nullable=False, default=0.0)
+    standard_error: Mapped[float] = mapped_column(nullable=False, default=1.0)
+
+    last_updated: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    def __repr__(self) -> str:
+        return f"<UserSkillEstimate user_id={self.user_id} domain={self.domain} theta={self.theta}>"
+
+
+class Response(Base):
+    """Tracks individual answers for Behavioral Intelligence."""
+    __tablename__ = "responses"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    question_id: Mapped[int] = mapped_column(
+        ForeignKey("questions.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    
+    # Telemetry
+    correct: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    time_taken_seconds: Mapped[float] = mapped_column(nullable=False)
+    hints_used: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    
+    timestamp: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    def __repr__(self) -> str:
+        return f"<Response user_id={self.user_id} question_id={self.question_id} correct={self.correct}>"
+
+
+class BehavioralProfile(Base):
+    """Tracks derived behavioral traits for a user."""
+    __tablename__ = "behavioral_profiles"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    trait: Mapped[str] = mapped_column(String(50), nullable=False)
+    value: Mapped[float] = mapped_column(nullable=False, default=0.0)
+    confidence: Mapped[float] = mapped_column(nullable=False, default=0.0)
+
+    last_updated: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    def __repr__(self) -> str:
+        return f"<BehavioralProfile user_id={self.user_id} trait={self.trait} value={self.value}>"
+
+
+class Leaderboard(Base):
+    """Precomputed leaderboard scores for fast retrieval."""
+    __tablename__ = "leaderboards"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    domain: Mapped[str] = mapped_column(String(50), nullable=False, index=True)  # "Overall", "Math", "Logic", etc.
+    category: Mapped[str] = mapped_column(String(50), nullable=False, index=True) # "Science", "Arts", etc., or "Global"
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    score: Mapped[float] = mapped_column(nullable=False, default=0.0)
+    rank: Mapped[int] = mapped_column(Integer, nullable=True)
+
+    last_updated: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    def __repr__(self) -> str:
+        return f"<Leaderboard user_id={self.user_id} domain={self.domain} score={self.score}>"
+
+
+class LearningModule(Base):
+    """Micro-content (2-3 min) to teach a concept before testing."""
+    __tablename__ = "learning_modules"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    domain: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
+    title: Mapped[str] = mapped_column(String(200), nullable=False)
+    content: Mapped[str] = mapped_column(Text, nullable=False)  # Markdown
+    difficulty_level: Mapped[float] = mapped_column(nullable=False, default=0.0) # Matches IRT theta
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    def __repr__(self) -> str:
+        return f"<LearningModule id={self.id} domain={self.domain} title='{self.title}'>"
+
+
+class PsychometricCard(Base):
+    """
+    Psychometric Insight Cards injected every 3-5 challenge questions.
+    These feel natural and engaging — students shouldn't feel they are
+    taking a psychological assessment. Responses feed into the
+    behavioural trait analysis and programme recommendations.
+    """
+    __tablename__ = "psychometric_cards"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    card_id: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
+    question: Mapped[str] = mapped_column(String(500), nullable=False)
+    options: Mapped[dict] = mapped_column(JSON, nullable=False)
+    # Optional trait mapping: e.g. {"A": "analytical", "B": "creative", ...}
+    trait_mapping: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    def __repr__(self) -> str:
+        return f"<PsychometricCard id={self.id} card_id={self.card_id}>"
+
+
+class PsychometricResponse(Base):
+    """Stores a user's answer to a psychometric insight card."""
+    __tablename__ = "psychometric_responses"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    card_id: Mapped[str] = mapped_column(String(50), nullable=False)
+    answer: Mapped[str] = mapped_column(String(10), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
+    )
+
+    def __repr__(self) -> str:
+        return f"<PsychometricResponse user_id={self.user_id} card_id={self.card_id}>"
+
+
+class DailyStreakProgress(Base):
+    """
+    Tracks each user's progress per daily streak subject and level.
+    """
+    __tablename__ = "daily_streak_progress"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    subject_id: Mapped[str] = mapped_column(
+        String(50), nullable=False, index=True
+    )
+    """
+    One of: "core-mathematics", "integrated-science", "english-language", "social-studies"
+    """
+    level_id: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    progress: Mapped[int] = mapped_column(Integer, nullable=False, default=0)  # 0–100
+    completed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    started_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    completed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+    user: Mapped["User"] = relationship("User", backref="daily_streak_progress")
+
+    def __repr__(self) -> str:
+        return f"<DailyStreakProgress user_id={self.user_id} subject={self.subject_id} level={self.level_id}>"
+
+
