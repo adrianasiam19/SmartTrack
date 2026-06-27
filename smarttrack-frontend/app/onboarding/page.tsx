@@ -5,54 +5,48 @@ import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { getAccessToken } from '../lib/authApi';
 
-import ScreenWelcome from './components/ScreenWelcome';
-import ScreenCreateProfile from './components/ScreenCreateProfile';
-import ScreenQuickInsights from './components/ScreenQuickInsights';
-import ScreenProfileReady from './components/ScreenProfileReady';
+import ScreenOnboarding1 from './components/ScreenOnboarding1';
+import ScreenOnboarding2 from './components/ScreenOnboarding2';
+import ScreenOnboarding3 from './components/ScreenOnboarding3';
+import ScreenOnboarding4 from './components/ScreenOnboarding4';
+import ScreenOnboarding5 from './components/ScreenOnboarding5';
 
 type OnboardingStep =
   | 'welcome'
-  | 'create-profile'
-  | 'quick-insights'
-  | 'profile-ready';
+  | 'starter-arena'
+  | 'earn-your-way'
+  | 'learn-and-grow'
+  | 'journey-starts';
 
 const STEP_LABELS: Record<OnboardingStep, string> = {
   welcome: 'Welcome',
-  'create-profile': 'Your Profile',
-  'quick-insights': 'Quick Insights',
-  'profile-ready': 'Ready',
+  'starter-arena': 'Starter Arena',
+  'earn-your-way': 'Earn XP',
+  'learn-and-grow': 'Learn & Grow',
+  'journey-starts': 'Begin',
 };
 
 const STEP_ORDER: OnboardingStep[] = [
   'welcome',
-  'create-profile',
-  'quick-insights',
-  'profile-ready',
+  'starter-arena',
+  'earn-your-way',
+  'learn-and-grow',
+  'journey-starts',
 ];
 
 const pageVariants = {
   enter: (direction: number) => ({
     x: direction > 0 ? '30%' : '-30%',
     opacity: 0,
-    scale: 0.98,
   }),
   center: {
     x: 0,
     opacity: 1,
-    scale: 1,
   },
   exit: (direction: number) => ({
     x: direction > 0 ? '-20%' : '20%',
     opacity: 0,
-    scale: 0.98,
   }),
-};
-
-const pageTransition = {
-  type: 'spring' as const,
-  stiffness: 300,
-  damping: 30,
-  mass: 0.8,
 };
 
 export default function OnboardingPage() {
@@ -87,11 +81,12 @@ export default function OnboardingPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [step]);
 
-  const handleWelcomeDone = useCallback(() => goToStep('create-profile'), [goToStep]);
-  const handleProfileDone = useCallback(() => goToStep('quick-insights'), [goToStep]);
-  const handleInsightsDone = useCallback(() => goToStep('profile-ready'), [goToStep]);
-  const handleReadyDone = useCallback(() => {
-    // ScreenProfileReady handles the redirect itself
+  const handleWelcomeDone = useCallback(() => goToStep('starter-arena'), [goToStep]);
+  const handleStarterArenaDone = useCallback(() => goToStep('earn-your-way'), [goToStep]);
+  const handleEarnWayDone = useCallback(() => goToStep('learn-and-grow'), [goToStep]);
+  const handleLearnGrowDone = useCallback(() => goToStep('journey-starts'), [goToStep]);
+  const handleJourneyDone = useCallback(() => {
+    // ScreenOnboarding5 handles the redirect itself
   }, []);
 
   if (loading) {
@@ -116,9 +111,7 @@ export default function OnboardingPage() {
             const label = STEP_LABELS[stepKey] || '';
             return (
               <div key={idx} className="flex items-center gap-2">
-                <motion.div
-                  animate={isActive ? { scale: [1, 1.3, 1] } : {}}
-                  transition={isActive ? { duration: 1.5, repeat: Infinity } : {}}
+                <div
                   className={`w-2.5 h-2.5 rounded-full transition-all ${
                     isActive
                       ? 'bg-[#2563EB] shadow-[0_0_8px_rgba(37,99,235,0.6)]'
@@ -163,50 +156,65 @@ export default function OnboardingPage() {
             initial="enter"
             animate="center"
             exit="exit"
-            transition={pageTransition}
-          >
-            <ScreenWelcome onNext={handleWelcomeDone} />
-          </motion.div>
-        )}
-        {step === 'create-profile' && (
-          <motion.div
-            key="create-profile"
-            custom={direction}
-            variants={pageVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={pageTransition}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
           >
             {renderStepIndicator()}
-            <ScreenCreateProfile onNext={handleProfileDone} />
+            <ScreenOnboarding1 onNext={handleWelcomeDone} />
           </motion.div>
         )}
-        {step === 'quick-insights' && (
+        {step === 'starter-arena' && (
           <motion.div
-            key="quick-insights"
+            key="starter-arena"
             custom={direction}
             variants={pageVariants}
             initial="enter"
             animate="center"
             exit="exit"
-            transition={pageTransition}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
           >
             {renderStepIndicator()}
-            <ScreenQuickInsights onNext={handleInsightsDone} />
+            <ScreenOnboarding2 onNext={handleStarterArenaDone} />
           </motion.div>
         )}
-        {step === 'profile-ready' && (
+        {step === 'earn-your-way' && (
           <motion.div
-            key="profile-ready"
+            key="earn-your-way"
             custom={direction}
             variants={pageVariants}
             initial="enter"
             animate="center"
             exit="exit"
-            transition={pageTransition}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
           >
-            <ScreenProfileReady onComplete={handleReadyDone} />
+            {renderStepIndicator()}
+            <ScreenOnboarding3 onNext={handleEarnWayDone} />
+          </motion.div>
+        )}
+        {step === 'learn-and-grow' && (
+          <motion.div
+            key="learn-and-grow"
+            custom={direction}
+            variants={pageVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          >
+            {renderStepIndicator()}
+            <ScreenOnboarding4 onNext={handleLearnGrowDone} />
+          </motion.div>
+        )}
+        {step === 'journey-starts' && (
+          <motion.div
+            key="journey-starts"
+            custom={direction}
+            variants={pageVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          >
+            <ScreenOnboarding5 onComplete={handleJourneyDone} />
           </motion.div>
         )}
       </AnimatePresence>

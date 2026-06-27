@@ -82,7 +82,7 @@ function shuffledOptionKeys(options: Record<string, string>): string[] {
   return shuffleArray([...keys]);
 }
 
-export function ChallengeArena() {
+function ChallengeArena() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const domain = searchParams.get('domain');
