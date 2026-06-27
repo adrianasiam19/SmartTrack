@@ -1,13 +1,16 @@
 """
 daily_streak.py
 ────────────────
-Router for Daily Streak Challenge progress tracking.
+Router for Daily Streak / Today's Challenge system.
 
 Endpoints:
-  GET    /daily-streak/progress      → Get progress for all 4 subjects
-  POST   /daily-streak/progress      → Update progress for a specific subject/level
+  GET    /daily-streak/progress          → Get progress for all 4 subjects (legacy)
+  POST   /daily-streak/progress          → Update progress for a specific subject/level (legacy)
+  GET    /daily-streak/todays-challenge  → Get today's mixed challenge composition
 """
-from datetime import datetime, timezone
+import hashlib
+import random
+from datetime import date, datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
@@ -29,6 +32,20 @@ SUBJECT_IDS = [
     "english-language",
     "social-studies",
 ]
+
+SUBJECT_LABELS: dict[str, str] = {
+    "core-mathematics": "Mathematics",
+    "integrated-science": "Science",
+    "english-language": "English",
+    "social-studies": "Social Studies",
+}
+
+SUBJECT_COLORS: dict[str, str] = {
+    "core-mathematics": "#2563EB",
+    "integrated-science": "#059669",
+    "english-language": "#7C3AED",
+    "social-studies": "#D97706",
+}
 
 
 class LevelProgressOut(BaseModel):
@@ -61,6 +78,26 @@ class UpdateProgressResponse(BaseModel):
     subject: SubjectProgressOut
     xp_earned: int = 0
     streak_updated: bool = False
+
+
+class ChallengeSection(BaseModel):
+    """One subject section within today's mixed challenge."""
+    subject_id: str
+    label: str
+    color: str
+    question_count: int
+    level_id: int  # 1, 2, or 3 — hidden from student
+
+
+class TodaysChallengeResponse(BaseModel):
+    """The mixed challenge configuration for today."""
+    challenge_id: str
+    date: str
+    sections: list[ChallengeSection]
+    total_questions: int
+    xp_reward: int
+    current_streak: int
+    current_xp: int
 
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
@@ -121,6 +158,39 @@ async def _get_or_create_progress(
     return {"subject_id": subject_id, "levels": result_levels}
 
 
+def _todays_seed() -> str:
+    """Generate a daily seed string based on the date."""
+    today = date.today()
+    return f"atlas-challenge-{today.isoformat()}"
+
+
+def _determine_challenge_composition() -> list[dict]:
+    """
+    Determine today's challenge composition deterministically from the date.
+    Each day has a different mix of subjects and question counts.
+    """
+    seed_str = _todays_seed()
+    seed_int = int(hashlib.sha256(seed_str.encode()).hexdigest(), 16)
+    rng = random.Random(seed_int)
+
+    # Base configuration: 4 subjects, each with 3-5 questions
+    subjects = list(SUBJECT_IDS)
+    rng.shuffle(subjects)
+
+    # Vary question counts per subject (3-6 questions each)
+    sections = []
+    for subject_id in subjects:
+        count = rng.randint(3, 6)
+        level_id = 1  # Start at level 1, progress behind the scenes
+        sections.append({
+            "subject_id": subject_id,
+            "question_count": count,
+            "level_id": level_id,
+        })
+
+    return sections
+
+
 # ── Endpoints ────────────────────────────────────────────────────────────────
 
 
@@ -129,7 +199,7 @@ async def get_daily_streak_progress(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Get the user's progress across all 4 daily streak subjects."""
+    """Get the user's progress across all 4 daily streak subjects (legacy)."""
     subjects = []
     total_xp = current_user.xp or 0
 
@@ -171,7 +241,6 @@ async def update_daily_streak_progress(
     streak_updated = False
 
     if row is None:
-        # Create new progress row
         row = DailyStreakProgress(
             user_id=current_user.id,
             subject_id=body.subject_id,
@@ -182,7 +251,6 @@ async def update_daily_streak_progress(
         )
         db.add(row)
     else:
-        old_progress = row.progress
         old_completed = row.completed
         row.progress = body.progress
         row.completed = body.completed
@@ -191,9 +259,7 @@ async def update_daily_streak_progress(
 
     await db.flush()
 
-    # Award XP when level is completed for the first time
     if body.completed:
-        # XP reward based on level
         level_xp_map = {1: 100, 2: 150, 3: 200}
         xp_reward = level_xp_map.get(body.level_id, 100)
         current_user.xp = (current_user.xp or 0) + xp_reward
@@ -204,7 +270,6 @@ async def update_daily_streak_progress(
 
     await db.commit()
 
-    # Return updated subject progress
     subj = await _get_or_create_progress(db, current_user.id, body.subject_id)
 
     return UpdateProgressResponse(
@@ -213,4 +278,48 @@ async def update_daily_streak_progress(
         subject=SubjectProgressOut(**subj),
         xp_earned=xp_earned,
         streak_updated=streak_updated,
+    )
+
+
+@router.get("/todays-challenge", response_model=TodaysChallengeResponse)
+async def get_todays_challenge(
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Get today's mixed challenge composition.
+
+    Returns a daily-varying mix of subjects with question counts.
+    The challenge composition changes each day automatically.
+    Students see a unified challenge instead of choosing subjects.
+    Level progression (1→2→3) happens behind the scenes.
+    """
+    sections_data = _determine_challenge_composition()
+
+    # Calculate total questions and XP reward
+    total_questions = sum(s["question_count"] for s in sections_data)
+    base_xp_per_question = 10
+    xp_reward = total_questions * base_xp_per_question
+
+    # Build challenge ID from date
+    challenge_id = f"challenge-{date.today().isoformat()}"
+
+    challenge_sections = [
+        ChallengeSection(
+            subject_id=s["subject_id"],
+            label=SUBJECT_LABELS.get(s["subject_id"], s["subject_id"]),
+            color=SUBJECT_COLORS.get(s["subject_id"], "#64748B"),
+            question_count=s["question_count"],
+            level_id=s["level_id"],
+        )
+        for s in sections_data
+    ]
+
+    return TodaysChallengeResponse(
+        challenge_id=challenge_id,
+        date=date.today().isoformat(),
+        sections=challenge_sections,
+        total_questions=total_questions,
+        xp_reward=xp_reward,
+        current_streak=current_user.streak or 0,
+        current_xp=current_user.xp or 0,
     )

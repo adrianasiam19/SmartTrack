@@ -15,6 +15,7 @@ import {
 const navItems = [
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/learning', label: 'Learning Center' },
+  { href: '/challenges', label: 'Challenges' },
   { href: '/challenges/daily-streak', label: 'Daily Streak' },
   { href: '/recommendations', label: 'Recommendations' },
   { href: '/profile', label: 'Profile' },
@@ -71,7 +72,7 @@ export default function Sidebar() {
 
       <button
         onClick={() => setMobileOpen(true)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-3 bg-white border border-[#C7D2FE] rounded-xl shadow-md text-[#4F46E5] hover:bg-[#EEF2FF] transition-all"
+        className="lg:hidden fixed top-4 left-4 z-50 p-3 bg-white border border-[#BFDBFE] rounded-xl shadow-md text-[#2563EB] hover:bg-[#EFF6FF] transition-all"
         aria-label="Open navigation"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -91,12 +92,12 @@ export default function Sidebar() {
       >
         <div className={`flex items-center border-b border-[#C7D2FE] ${collapsed ? 'justify-center' : 'px-5'} py-5 h-16`}>
           {collapsed ? (
-            <div className="w-9 h-9 bg-gradient-to-br from-[#4F46E5] to-[#D97706] rounded-xl flex items-center justify-center shadow-md">
+            <div className="w-9 h-9 bg-gradient-to-br from-[#2563EB] to-[#7C3AED] rounded-xl flex items-center justify-center shadow-md">
               <span className="text-white font-bold text-base">A</span>
             </div>
           ) : (
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-[#4F46E5] to-[#D97706] rounded-xl flex items-center justify-center shadow-md shadow-[#4F46E5]/20">
+              <div className="w-10 h-10 bg-gradient-to-br from-[#2563EB] to-[#7C3AED] rounded-xl flex items-center justify-center shadow-md shadow-[#2563EB]/20">
                 <span className="text-white font-bold text-lg">A</span>
               </div>
               <span className="text-xl font-bold text-[#1E293B]">Atlas</span>
@@ -115,8 +116,8 @@ export default function Sidebar() {
                   flex items-center rounded-xl transition-all
                   ${collapsed ? 'justify-center px-2 py-3.5' : 'px-4 py-3'}
                   ${active
-                    ? 'bg-[#4F46E5] text-white font-bold shadow-md shadow-[#4F46E5]/30'
-                    : 'text-[#475569] hover:bg-[#E0E7FF] hover:text-[#4F46E5]'
+                    ? 'bg-[#2563EB] text-white font-bold shadow-md shadow-[#2563EB]/30'
+                    : 'text-[#475569] hover:bg-[#EFF6FF] hover:text-[#2563EB]'
                   }
                 `}
                 title={collapsed ? item.label : undefined}
@@ -136,7 +137,7 @@ export default function Sidebar() {
           {!loading && user ? (
             <div className="space-y-2">
               <div className={`flex items-center gap-3 ${collapsed ? 'justify-center' : ''}`}>
-                <div className="w-9 h-9 bg-gradient-to-br from-[#4F46E5] to-[#D97706] rounded-xl flex items-center justify-center text-white text-sm font-bold flex-shrink-0 shadow-sm">
+                <div className="w-9 h-9 bg-gradient-to-br from-[#2563EB] to-[#7C3AED] rounded-xl flex items-center justify-center text-white text-sm font-bold flex-shrink-0 shadow-sm">
                   {getInitials(user.full_name)}
                 </div>
                 {!collapsed && (
@@ -158,7 +159,7 @@ export default function Sidebar() {
             </div>
           ) : (
             !loading && !collapsed && (
-              <Link href="/login" className="block text-center text-base text-[#4F46E5] hover:text-[#4338CA] font-bold py-2">
+              <Link href="/login" className="block text-center text-base text-[#2563EB] hover:text-[#1D4ED8] font-bold py-2">
                 Sign In
               </Link>
             )
@@ -202,10 +203,9 @@ export default function Sidebar() {
                   key={item.href}
                   href={item.href}
                   onClick={() => setMobileOpen(false)}
-                  className={`flex items-center px-4 py-3 rounded-xl transition-all text-base ${
-                    active
-                      ? 'bg-[#4F46E5] text-white font-bold shadow-md'
-                      : 'text-[#475569] hover:bg-[#EEF2FF] hover:text-[#4F46E5]'
+                  className={`flex items-center px-4 py-3 rounded-xl transition-all text-base${active
+                      ? 'bg-[#2563EB] text-white font-bold shadow-md'
+                      : 'text-[#475569] hover:bg-[#EFF6FF] hover:text-[#2563EB]'
                   }`}
                 >
                   <span>{item.label}</span>
@@ -228,7 +228,7 @@ export default function Sidebar() {
                 </div>
               </div>
             ) : (
-              <Link href="/login" className="text-base text-[#4F46E5] hover:text-[#4338CA] font-bold">
+              <Link href="/login" className="text-base text-[#2563EB] hover:text-[#1D4ED8] font-bold">
                 Sign In
               </Link>
             )}

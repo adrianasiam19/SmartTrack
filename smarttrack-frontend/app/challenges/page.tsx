@@ -55,7 +55,7 @@ export default function ChallengesHub() {
               </div>
               {user && (
                 <div className="flex items-center gap-3">
-                  <div className="text-sm font-semibold text-[#4F46E5]">{user.xp.toLocaleString()} XP</div>
+                  <div className="text-sm font-semibold text-[#2563EB]">{user.xp.toLocaleString()} XP</div>
                   <div className="text-sm font-semibold text-[#D97706]">{user.rank}</div>
                 </div>
               )}
