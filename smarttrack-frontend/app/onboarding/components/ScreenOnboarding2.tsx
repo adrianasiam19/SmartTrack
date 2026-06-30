@@ -20,18 +20,30 @@ export default function ScreenOnboarding2({ onNext }: Props) {
             <span className="text-2xl">🌟</span>
           </div>
 
+          <p className="text-xs font-semibold text-[#2563EB] uppercase tracking-wider mb-2">
+            Step 2 of 5
+          </p>
+
           <h1 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-4">
             Starter Arena
           </h1>
+          <p className="text-base text-[#475569] mb-2 leading-relaxed">
+            Before Atlas can guide you, it first needs to understand you.
+          </p>
           <p className="text-base text-[#475569] mb-6 leading-relaxed">
-            Begin with a fun discovery challenge! Atlas will learn about your strengths, interests, and thinking style through:
+            The Starter Arena is a short discovery experience designed to learn how you think, what interests you, and where your natural strengths may lie.
+          </p>
+
+          <p className="text-sm font-semibold text-[#1E293B] mb-3">
+            You will encounter:
           </p>
 
           <div className="space-y-3 mb-8">
             {[
-              { icon: '🧠', label: 'Reasoning questions that test your logic' },
-              { icon: '🔍', label: 'Pattern recognition challenges' },
-              { icon: '💡', label: 'Quick insight prompts about your preferences' },
+              { icon: '🧠', label: 'Reasoning activities' },
+              { icon: '🔍', label: 'Logic-based questions' },
+              { icon: '🔮', label: 'Pattern recognition exercises' },
+              { icon: '💡', label: 'Quick Insight questions' },
             ].map((item, i) => (
               <motion.div
                 key={i}
@@ -44,6 +56,18 @@ export default function ScreenOnboarding2({ onNext }: Props) {
                 <span className="text-sm text-[#475569]">{item.label}</span>
               </motion.div>
             ))}
+          </div>
+
+          <div className="bg-[#EFF6FF] border border-[#BFDBFE] rounded-xl p-4 mb-6">
+            <p className="text-sm text-[#475569] leading-relaxed">
+              Throughout the experience, Atlas will occasionally ask psychometric questions that help build a deeper understanding of your interests, preferences, and thinking style.
+            </p>
+          </div>
+
+          <div className="bg-[#F0FDF4] border border-[#BBF7D0] rounded-xl p-4 mb-8">
+            <p className="text-sm text-[#475569] leading-relaxed">
+              There are no timers and no pressure. The goal is not to test what you know. The goal is to understand who you are. Atlas uses these insights to personalise your journey from the very beginning.
+            </p>
           </div>
 
           <motion.button
