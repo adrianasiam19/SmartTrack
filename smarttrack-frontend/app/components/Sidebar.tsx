@@ -15,8 +15,6 @@ import {
 const navItems = [
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/learning', label: 'Learning Center' },
-  { href: '/challenges', label: 'Challenges' },
-  { href: '/challenges/daily-streak', label: 'Daily Streak' },
   { href: '/recommendations', label: 'Recommendations' },
   { href: '/profile', label: 'Profile' },
 ];
