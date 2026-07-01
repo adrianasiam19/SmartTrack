@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import { getAccessToken } from '../../lib/authApi';
 
 interface DashboardData {
   radar_chart: Record<string, number>;
@@ -15,29 +16,62 @@ export default function ChallengeDashboard() {
   const router = useRouter();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const mockData: DashboardData = {
-      radar_chart: { "MATH": 0.8, "SCIENCE": 0.7, "VERBAL": 0.9, "GENERAL": 0.6, "LOGIC": 0.85 },
-      behavioral_traits: { "Persistence": 0.85, "Processing Speed": 0.92, "Consistency": 0.78, "Risk Appetite": 0.45 },
-      overall_score: 94.2,
-      career_matches: [
-        { path: "Software Engineering", match: 0.95 },
-        { path: "Data Science", match: 0.88 },
-        { path: "Business Analytics", match: 0.82 }
-      ]
+    const fetchData = async () => {
+      try {
+        const token = getAccessToken();
+        if (!token) { router.push('/login'); return; }
+
+        const res = await fetch('http://localhost:8000/api/v1/challenges/dashboard', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (res.ok) {
+          const json = await res.json();
+          setData(json);
+        } else {
+          setError('No challenge data available yet. Complete a challenge to see your results.');
+        }
+      } catch {
+        setError('No challenge data available yet. Complete a challenge to see your results.');
+      } finally {
+        setLoading(false);
+      }
     };
-    setTimeout(() => { setData(mockData); setLoading(false); }, 1500);
-  }, []);
+    fetchData();
+  }, [router]);
 
   if (loading) return (
     <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
       <div className="flex flex-col items-center gap-4">
         <div className="w-10 h-10 border-3 border-[#4F46E5] border-t-transparent rounded-full animate-spin" />
-        <p className="text-gray-500 text-sm font-medium">Analyzing your profile...</p>
+        <p className="text-gray-500 text-sm font-medium">Loading your profile...</p>
       </div>
     </div>
   );
+
+  if (error || !data) {
+    return (
+      <div className="min-h-screen bg-[#F8FAFC] p-6 md:p-12 flex items-center justify-center">
+        <div className="max-w-md text-center">
+          <h1 className="text-2xl font-bold text-[#1E293B] mb-4">Challenge Dashboard</h1>
+          <p className="text-gray-500 mb-8">{error || 'No data available yet.'}</p>
+          <div className="flex gap-3 justify-center">
+            <button onClick={() => router.push('/challenges')}
+              className="px-6 py-3 bg-[#4F46E5] text-white font-medium rounded-xl hover:bg-[#4338CA] transition-all">
+              Start a Challenge
+            </button>
+            <button onClick={() => router.push('/dashboard')}
+              className="px-6 py-3 bg-white border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-all">
+              Go to Dashboard
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] p-6 md:p-12">
@@ -72,11 +106,11 @@ export default function ChallengeDashboard() {
             <div className="bg-[#4F46E5] rounded-2xl p-8 text-white">
               <p className="text-xs font-bold tracking-widest uppercase mb-1 opacity-70">Composite Percentile</p>
               <div className="flex items-baseline gap-2">
-                <h2 className="text-5xl font-black">{data?.overall_score}</h2>
+                <h2 className="text-5xl font-black">{data.overall_score}</h2>
                 <span className="text-xl font-bold">th</span>
               </div>
               <p className="mt-4 text-sm font-medium leading-relaxed text-indigo-200">
-                You are performing in the top 6% of students in your category nationwide.
+                You are performing in the top {Math.round(100 - data.overall_score)}% of students in your category.
               </p>
             </div>
 

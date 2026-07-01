@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Trophy, Target, BookOpen, Zap, ArrowRight } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import BottomNav from '../components/BottomNav';
 import AppLayout from '../components/AppLayout';
@@ -46,23 +45,12 @@ export default function ChallengesHub() {
               animate={{ opacity: 1, y: 0 }}
               className="mb-8"
             >
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 bg-gradient-to-br from-[#2563EB] to-[#1D4ED8] rounded-xl flex items-center justify-center shadow-md">
-                  <Zap className="w-5 h-5 text-white" />
-                </div>
-                <h1 className="text-2xl font-bold text-[#1E293B]">Challenges</h1>
-              </div>
+              <h1 className="text-2xl font-bold text-[#1E293B]">Challenges</h1>
 
               {user && (
                 <div className="flex items-center gap-4 mt-2">
-                  <div className="flex items-center gap-1.5">
-                    <Zap className="w-4 h-4 text-[#F59E0B]" />
-                    <span className="text-sm font-semibold text-[#1E293B]">{userXp.toLocaleString()} XP</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Trophy className="w-4 h-4 text-[#7C3AED]" />
-                    <span className="text-sm font-semibold text-[#475569]">{userRank}</span>
-                  </div>
+                  <span className="text-sm font-semibold text-[#1E293B]">{userXp.toLocaleString()} XP</span>
+                  <span className="text-sm text-[#475569]">{userRank}</span>
                 </div>
               )}
             </motion.div>
@@ -105,14 +93,13 @@ export default function ChallengesHub() {
               <h2 className="text-base font-bold text-[#1E293B] mb-3">How Challenges Work</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
-                  { icon: <BookOpen className="w-4 h-4 text-[#2563EB]" />, text: 'Complete daily challenge sets across core subjects' },
-                  { icon: <Target className="w-4 h-4 text-[#7C3AED]" />, text: 'Challenges help strengthen your core academic skills' },
-                  { icon: <Zap className="w-4 h-4 text-[#F59E0B]" />, text: 'Challenge performance earns you valuable XP' },
-                  { icon: <Trophy className="w-4 h-4 text-[#D97706]" />, text: 'Earned XP contributes to your leaderboard ranking' },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-2.5 bg-white/70 backdrop-blur-sm rounded-lg px-3.5 py-2.5 border border-[#E2E8F0]">
-                    <div className="flex-shrink-0">{item.icon}</div>
-                    <span className="text-sm text-[#475569]">{item.text}</span>
+                  'Complete daily challenge sets across core subjects',
+                  'Challenges help strengthen your core academic skills',
+                  'Challenge performance earns you valuable XP',
+                  'Earned XP contributes to your leaderboard ranking',
+                ].map((text, i) => (
+                  <div key={i} className="bg-white/70 backdrop-blur-sm rounded-lg px-3.5 py-2.5 border border-[#E2E8F0]">
+                    <span className="text-sm text-[#475569]">{text}</span>
                   </div>
                 ))}
               </div>

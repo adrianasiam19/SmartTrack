@@ -4,7 +4,6 @@ import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft,
-  Zap,
   MessageSquare,
 } from 'lucide-react';
 import type { Lesson, LessonStep } from '../lib/learningContent';

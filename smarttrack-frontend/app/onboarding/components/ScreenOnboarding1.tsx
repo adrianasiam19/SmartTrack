@@ -30,21 +30,15 @@ export default function ScreenOnboarding1({ onNext }: Props) {
 
           <div className="flex items-center justify-center gap-6 mb-8">
             <div className="text-center">
-              <div className="w-10 h-10 bg-[#EFF6FF] rounded-xl flex items-center justify-center mx-auto mb-2">
-                <span className="text-lg">🎯</span>
-              </div>
+              <div className="text-2xl font-bold text-[#2563EB] mb-1">D</div>
               <p className="text-xs text-[#64748B]">Discover</p>
             </div>
             <div className="text-center">
-              <div className="w-10 h-10 bg-[#F5F3FF] rounded-xl flex items-center justify-center mx-auto mb-2">
-                <span className="text-lg">📚</span>
-              </div>
+              <div className="text-2xl font-bold text-[#7C3AED] mb-1">L</div>
               <p className="text-xs text-[#64748B]">Learn</p>
             </div>
             <div className="text-center">
-              <div className="w-10 h-10 bg-[#FFFBEB] rounded-xl flex items-center justify-center mx-auto mb-2">
-                <span className="text-lg">🚀</span>
-              </div>
+              <div className="text-2xl font-bold text-[#D97706] mb-1">G</div>
               <p className="text-xs text-[#64748B]">Grow</p>
             </div>
           </div>

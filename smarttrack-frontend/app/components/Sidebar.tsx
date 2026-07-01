@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { LogOut } from 'lucide-react';
+// Icons removed for clean typography-based design
 import { useState, useEffect } from 'react';
 import {
   logout,
@@ -150,7 +150,6 @@ export default function Sidebar() {
                   onClick={handleLogout}
                   className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-[#475569] hover:text-[#F43F5E] hover:bg-[#FFF1F2] rounded-xl transition-all"
                 >
-                  <LogOut className="w-4 h-4" />
                   Sign Out
                 </button>
               )}
@@ -164,7 +163,7 @@ export default function Sidebar() {
           )}
           {collapsed && user && (
             <button onClick={handleLogout} className="mt-2 text-[#475569] hover:text-[#F43F5E]" title="Sign Out">
-              <LogOut className="w-4 h-4 mx-auto" />
+              <span className="text-xs font-medium">Sign Out</span>
             </button>
           )}
         </div>

@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Sparkles, ArrowRight, Zap } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import BottomNav from '../components/BottomNav';
 import AppLayout from '../components/AppLayout';
@@ -117,14 +116,9 @@ export default function Dashboard() {
                 onClick={() => router.push('/challenges/intro')}
                 className="w-full bg-white border-2 border-[#BFDBFE] rounded-2xl p-6 sm:p-8 text-left hover:shadow-lg hover:border-[#2563EB] transition-all duration-200 group"
               >
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 bg-gradient-to-br from-[#2563EB] to-[#1D4ED8] rounded-2xl flex items-center justify-center shadow-md group-hover:shadow-lg group-hover:shadow-[#2563EB]/25 transition-all">
-                    <Zap className="w-7 h-7 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <h2 className="text-xl font-bold text-[#1E293B]">Daily Streak</h2>
-                    <p className="text-sm text-[#64748B]">Complete today&apos;s challenge and keep your streak alive</p>
-                  </div>
+                <div className="mb-5">
+                  <h2 className="text-xl font-bold text-[#1E293B]">Daily Streak</h2>
+                  <p className="text-sm text-[#64748B] mt-1">Complete today&apos;s challenge and keep your streak alive</p>
                 </div>
 
                 <div className="grid grid-cols-3 gap-4">
@@ -145,9 +139,8 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <div className="mt-5 flex items-center justify-center gap-2 bg-[#2563EB] text-white font-bold py-3.5 rounded-xl hover:bg-[#1D4ED8] transition-colors group-hover:shadow-md group-hover:shadow-[#2563EB]/25">
-                  <span>Start Today&apos;s Challenge</span>
-                  <ArrowRight className="w-4 h-4" />
+                <div className="mt-5 bg-[#2563EB] text-white font-bold py-3.5 rounded-xl text-center">
+                  Start Today&apos;s Challenge
                 </div>
               </motion.button>
             </motion.div>
@@ -159,12 +152,9 @@ export default function Dashboard() {
               transition={{ delay: 0.15 }}
               className="bg-gradient-to-r from-[#EFF6FF] to-[#F5F3FF] border border-[#BFDBFE] rounded-xl p-5"
             >
-              <div className="flex items-start gap-3">
-                <Sparkles className="w-5 h-5 text-[#F59E0B] flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-xs font-semibold text-[#2563EB] uppercase tracking-wider mb-1">Did you know?</p>
-                  <p className="text-sm text-[#475569] leading-relaxed">{funFact}</p>
-                </div>
+              <div>
+                <p className="text-xs font-semibold text-[#2563EB] uppercase tracking-wider mb-1">Did you know?</p>
+                <p className="text-sm text-[#475569] leading-relaxed">{funFact}</p>
               </div>
             </motion.div>
           </main>

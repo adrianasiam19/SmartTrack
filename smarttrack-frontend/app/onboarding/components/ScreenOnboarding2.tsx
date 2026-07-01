@@ -17,7 +17,7 @@ export default function ScreenOnboarding2({ onNext }: Props) {
       >
         <div className="bg-white rounded-2xl border border-[#E2E8F0] p-8 sm:p-10 shadow-sm">
           <div className="w-16 h-16 bg-gradient-to-br from-[#2563EB] to-[#3B82F6] rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-            <span className="text-2xl">🌟</span>
+            <span className="text-2xl font-bold text-white">SA</span>
           </div>
 
           <p className="text-xs font-semibold text-[#2563EB] uppercase tracking-wider mb-2">
@@ -40,20 +40,19 @@ export default function ScreenOnboarding2({ onNext }: Props) {
 
           <div className="space-y-3 mb-8">
             {[
-              { icon: '🧠', label: 'Reasoning activities' },
-              { icon: '🔍', label: 'Logic-based questions' },
-              { icon: '🔮', label: 'Pattern recognition exercises' },
-              { icon: '💡', label: 'Quick Insight questions' },
-            ].map((item, i) => (
+              'Reasoning activities',
+              'Logic-based questions',
+              'Pattern recognition exercises',
+              'Quick Insight questions',
+            ].map((label, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 + i * 0.1 }}
-                className="flex items-center gap-3 p-3 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]"
+                className="p-3 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]"
               >
-                <span className="text-lg">{item.icon}</span>
-                <span className="text-sm text-[#475569]">{item.label}</span>
+                <span className="text-sm text-[#475569]">{label}</span>
               </motion.div>
             ))}
           </div>

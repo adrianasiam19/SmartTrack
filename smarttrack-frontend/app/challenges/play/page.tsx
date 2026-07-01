@@ -3,7 +3,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Zap, Check, Trophy } from 'lucide-react';
 import Sidebar from '../../components/Sidebar';
 import BottomNav from '../../components/BottomNav';
 import AppLayout from '../../components/AppLayout';
@@ -178,7 +177,7 @@ function LevelCompleteScreen({
       className="flex flex-col items-center justify-center py-16 px-6"
     >
       <div className="w-20 h-20 bg-gradient-to-br from-[#059669] to-[#34D399] rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-        <Check className="w-10 h-10 text-white" />
+        <span className="text-4xl font-bold text-white">✓</span>
       </div>
 
       <h2 className="text-2xl font-bold text-[#1E293B] mb-2">{level.name} Complete!</h2>
@@ -200,7 +199,6 @@ function LevelCompleteScreen({
             style={{ backgroundColor: level.color }}
           >
             Continue to Next Level
-            <ChevronRight className="w-4 h-4" />
           </motion.button>
         )}
         {isLast && onSeeResults && (
@@ -212,7 +210,6 @@ function LevelCompleteScreen({
             style={{ backgroundColor: '#059669' }}
           >
             See Results
-            <ChevronRight className="w-4 h-4" />
           </motion.button>
         )}
       </div>
@@ -232,7 +229,7 @@ function AllCompleteScreen({ totalXp }: { totalXp: number }) {
       className="flex flex-col items-center justify-center py-16 px-6"
     >
       <div className="w-24 h-24 bg-gradient-to-br from-[#F59E0B] to-[#D97706] rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-        <Trophy className="w-12 h-12 text-white" />
+        <span className="text-4xl font-bold text-white">🏆</span>
       </div>
 
       <h2 className="text-3xl font-bold text-[#1E293B] mb-2">Today&apos;s Challenge Complete!</h2>
@@ -443,8 +440,7 @@ function ChallengePlayContent() {
                       <h2 className="text-lg font-bold text-[#1E293B]">
                         {currentQuestion.subject}
                       </h2>
-                      <div className="flex items-center gap-1.5">
-                        <Zap className="w-4 h-4 text-[#F59E0B]" />
+                      <div>
                         <span className="text-sm font-semibold text-[#1E293B]">
                           +{currentLevel.xpReward} XP
                         </span>
@@ -518,7 +514,6 @@ function ChallengePlayContent() {
                       disabled={currentQuestionIndex === 0}
                       className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium text-[#64748B] hover:text-[#1E293B] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     >
-                      <ChevronLeft className="w-4 h-4" />
                       Previous
                     </button>
 
@@ -559,7 +554,6 @@ function ChallengePlayContent() {
                         style={{ backgroundColor: currentLevel.color }}
                       >
                         Next
-                        <ChevronRight className="w-4 h-4" />
                       </button>
                     ) : (
                       <button
@@ -569,7 +563,6 @@ function ChallengePlayContent() {
                         style={{ backgroundColor: currentLevel.color }}
                       >
                         Submit Level
-                        <Check className="w-4 h-4" />
                       </button>
                     )}
                   </div>

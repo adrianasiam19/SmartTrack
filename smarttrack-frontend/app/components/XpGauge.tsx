@@ -207,11 +207,8 @@ export default function XpGauge({
             )}
           </div>
 
-          {/* Streak - only icon allowed */}
+          {/* Streak */}
           <div className="flex items-center gap-2 pt-1">
-            <svg className="w-4 h-4 text-[#F59E0B]" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 23c-3.866 0-7-3.134-7-7 0-3.866 3-8 7-13 4 5 7 9.134 7 13 0 3.866-3.134 7-7 7z" />
-            </svg>
             <span className="text-sm font-bold text-[#1E293B]">{streak}</span>
             <span className="text-xs text-[#64748B]">{streak === 1 ? 'day' : 'days'} streak</span>
           </div>
