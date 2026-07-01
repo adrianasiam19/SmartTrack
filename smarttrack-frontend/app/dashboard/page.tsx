@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Flame, Target, BookOpen, Sparkles, Trophy, Zap, ArrowRight } from 'lucide-react';
+import { Flame, Target, Sparkles, Zap, ArrowRight } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import BottomNav from '../components/BottomNav';
 import AppLayout from '../components/AppLayout';
@@ -73,7 +73,7 @@ export default function Dashboard() {
       <div className="flex min-h-screen">
         <Sidebar />
         <div className="flex-1 lg:pb-0 pb-24">
-          <main className="flex-1 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-10 pb-10">
+          <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-10 pb-10">
             {/* Welcome */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -90,7 +90,7 @@ export default function Dashboard() {
               </p>
             </motion.div>
 
-            {/* XP & Level */}
+            {/* XP Overview & Level */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -104,88 +104,75 @@ export default function Dashboard() {
               />
             </motion.div>
 
-            {/* Quick Actions */}
-            <motion.button
+            {/* Daily Streak — Main Action Card */}
+            <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              whileHover={{ y: -2 }}
-              whileTap={{ scale: 0.99 }}
-              onClick={() => router.push('/learning')}
-              className="w-full bg-white border border-[#E2E8F0] border-l-4 border-l-[#2563EB] rounded-xl p-5 text-left hover:shadow-md hover:border-[#BFDBFE] transition-all duration-200 mb-8"
+              className="mb-8"
             >
-              <div className="flex items-start justify-between">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <BookOpen className="w-5 h-5 text-[#2563EB]" />
-                    <h3 className="text-base font-semibold text-[#1E293B]">Continue Learning</h3>
+              <motion.button
+                whileHover={{ y: -3, scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => router.push('/challenges')}
+                className="w-full bg-gradient-to-br from-[#FFFBEB] to-[#FEF3C7] border-2 border-[#FDE68A] rounded-2xl p-6 sm:p-8 text-left hover:shadow-lg hover:border-[#F59E0B] transition-all duration-200"
+              >
+                <div className="flex items-center gap-4 mb-5">
+                  <div className="w-14 h-14 bg-gradient-to-br from-[#F59E0B] to-[#D97706] rounded-2xl flex items-center justify-center shadow-md">
+                    <Flame className="w-7 h-7 text-white" />
                   </div>
-                  <p className="text-sm text-[#475569]">Pick up where you left off with your lessons.</p>
+                  <div className="flex-1">
+                    <h2 className="text-xl font-bold text-[#1E293B]">Daily Streak</h2>
+                    <p className="text-sm text-[#92400E]">Complete today&apos;s challenge and keep your streak alive</p>
+                  </div>
                 </div>
-                <span className="flex-shrink-0 ml-4 px-4 py-2 text-xs font-semibold text-[#2563EB] bg-[#EFF6FF] rounded-lg">
-                  Go
-                </span>
-              </div>
-            </motion.button>
 
-            {/* Challenges Section */}
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 text-center border border-[#FDE68A]">
+                    <div className="text-2xl font-black text-[#D97706]">{userStreak}</div>
+                    <div className="text-xs text-[#92400E] font-medium mt-1">Day Streak</div>
+                  </div>
+                  <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 text-center border border-[#FDE68A]">
+                    <div className="flex items-center justify-center gap-1 text-2xl font-black text-[#059669]">
+                      <Zap className="w-5 h-5" />
+                      <span>+50</span>
+                    </div>
+                    <div className="text-xs text-[#92400E] font-medium mt-1">XP Available</div>
+                  </div>
+                  <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 text-center border border-[#FDE68A]">
+                    <div className="text-xl font-black text-[#2563EB]">Today</div>
+                    <div className="text-xs text-[#92400E] font-medium mt-1">Challenge</div>
+                  </div>
+                </div>
+
+                <div className="mt-5 flex items-center justify-center gap-2 bg-[#F59E0B] text-white font-bold py-3 rounded-xl hover:bg-[#D97706] transition-colors">
+                  <span>Start Today&apos;s Challenge</span>
+                  <ArrowRight className="w-4 h-4" />
+                </div>
+              </motion.button>
+            </motion.div>
+
+            {/* Recommendation Readiness */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
-              className="mb-8"
+              className="bg-white border border-[#E2E8F0] rounded-xl p-6 mb-8"
             >
-              <div className="flex items-center gap-2 mb-4">
-                <Trophy className="w-5 h-5 text-[#F59E0B]" />
-                <h2 className="text-lg font-semibold text-[#1E293B]">Challenges</h2>
+              <div className="flex items-center gap-3 mb-4">
+                <Target className="w-5 h-5 text-[#7C3AED]" />
+                <h2 className="text-lg font-semibold text-[#1E293B]">Recommendation Readiness</h2>
               </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Daily Challenge */}
-                <motion.button
-                  whileHover={{ y: -2 }}
-                  whileTap={{ scale: 0.99 }}
-                  onClick={() => router.push('/challenges/daily-streak')}
-                  className="bg-gradient-to-br from-[#FFFBEB] to-[#FEF3C7] border border-[#FDE68A] rounded-xl p-5 text-left hover:shadow-md transition-all duration-200"
-                >
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 bg-[#F59E0B] rounded-xl flex items-center justify-center">
-                      <Flame className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="text-base font-bold text-[#1E293B]">Daily Challenge</h3>
-                      <p className="text-xs text-[#92400E]">Complete today&apos;s challenge</p>
-                    </div>
+              <p className="text-sm text-[#475569] mb-4">
+                Complete challenges to help Atlas recommend the best university programmes for you. The more challenges you complete, the more accurate your recommendations become.
+              </p>
+              <div className="flex items-center gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs text-[#64748B]">Progress</span>
+                    <span className="text-xs font-semibold text-[#2563EB]">{Math.min(Math.round((userXp / 500) * 100), 100)}%</span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5">
-                      <Zap className="w-4 h-4 text-[#D97706]" />
-                      <span className="text-sm font-semibold text-[#92400E]">
-                        {userStreak} day streak
-                      </span>
-                    </div>
-                    <ArrowRight className="w-4 h-4 text-[#D97706]" />
-                  </div>
-                </motion.button>
-
-                {/* XP Progress */}
-                <motion.div
-                  className="bg-white border border-[#E2E8F0] rounded-xl p-5"
-                >
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-[#2563EB] to-[#7C3AED] rounded-xl flex items-center justify-center">
-                      <Trophy className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="text-base font-bold text-[#1E293B]">XP Earned</h3>
-                      <p className="text-xs text-[#475569]">Keep building your progress</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-2xl font-bold text-[#2563EB]">{userXp.toLocaleString()}</span>
-                    <span className="text-xs font-medium text-[#475569]">Rank: {userRank}</span>
-                  </div>
-                  <div className="w-full bg-[#E2E8F0] rounded-full h-2 overflow-hidden">
+                  <div className="w-full bg-[#E2E8F0] rounded-full h-2.5 overflow-hidden">
                     <motion.div
                       initial={{ width: '0%' }}
                       animate={{ width: `${Math.min((userXp / 500) * 100, 100)}%` }}
@@ -193,30 +180,13 @@ export default function Dashboard() {
                       className="h-full bg-gradient-to-r from-[#2563EB] to-[#7C3AED] rounded-full"
                     />
                   </div>
-                </motion.div>
-
-                {/* Continue Challenge - full width */}
-                <motion.button
-                  whileHover={{ y: -2 }}
-                  whileTap={{ scale: 0.99 }}
+                </div>
+                <button
                   onClick={() => router.push('/challenges')}
-                  className="sm:col-span-2 bg-gradient-to-r from-[#EFF6FF] to-[#F5F3FF] border border-[#BFDBFE] rounded-xl p-5 text-left hover:shadow-md transition-all duration-200"
+                  className="flex-shrink-0 px-5 py-2.5 bg-[#2563EB] text-white text-xs font-semibold rounded-lg hover:bg-[#1D4ED8] transition-colors"
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-[#2563EB] rounded-xl flex items-center justify-center">
-                        <Target className="w-5 h-5 text-white" />
-                      </div>
-                      <div>
-                        <h3 className="text-base font-bold text-[#1E293B]">Continue Challenge</h3>
-                        <p className="text-xs text-[#475569]">Explore all challenge arenas and activities</p>
-                      </div>
-                    </div>
-                    <span className="flex-shrink-0 px-5 py-2.5 bg-[#2563EB] text-white text-xs font-semibold rounded-lg hover:bg-[#1D4ED8] transition-colors">
-                      Explore
-                    </span>
-                  </div>
-                </motion.button>
+                  View Challenges
+                </button>
               </div>
             </motion.div>
 
@@ -224,7 +194,7 @@ export default function Dashboard() {
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25 }}
+              transition={{ delay: 0.2 }}
               className="bg-gradient-to-r from-[#EFF6FF] to-[#F5F3FF] border border-[#BFDBFE] rounded-xl p-5"
             >
               <div className="flex items-start gap-3">
