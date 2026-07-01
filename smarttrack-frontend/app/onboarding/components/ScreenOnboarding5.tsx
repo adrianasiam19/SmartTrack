@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { updateUserProfile } from '../../lib/authApi';
 
 interface Props {
   onComplete: () => void;
@@ -10,14 +11,31 @@ interface Props {
 
 export default function ScreenOnboarding5({ onComplete }: Props) {
   const router = useRouter();
+  const [saving, setSaving] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      onComplete();
-      router.push('/dashboard');
-    }, 3000);
-    return () => clearTimeout(timer);
-  }, [router, onComplete]);
+    const completeOnboarding = async () => {
+      try {
+        await updateUserProfile({ onboarding_completed: true });
+        setSaving(false);
+      } catch {
+        setError('Could not save your progress. You can continue anyway.');
+        setSaving(false);
+      }
+    };
+    completeOnboarding();
+  }, []);
+
+  useEffect(() => {
+    if (!saving) {
+      const timer = setTimeout(() => {
+        onComplete();
+        router.push('/dashboard');
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [saving, router, onComplete]);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6">
@@ -38,16 +56,28 @@ export default function ScreenOnboarding5({ onComplete }: Props) {
           <p className="text-base text-[#475569] mb-4 leading-relaxed">
             Atlas is ready. Your challenges, lessons, and personalised recommendations are waiting.
           </p>
-          <p className="text-sm text-[#94A3B8]">
-            Taking you to your dashboard...
-          </p>
+
+          {error && (
+            <p className="text-sm text-[#DC2626] mb-2">{error}</p>
+          )}
+
+          {saving ? (
+            <div className="flex items-center justify-center gap-2 text-sm text-[#94A3B8]">
+              <div className="w-4 h-4 border-2 border-[#2563EB] border-t-transparent rounded-full animate-spin" />
+              <span>Setting up your profile...</span>
+            </div>
+          ) : (
+            <p className="text-sm text-[#94A3B8]">
+              Taking you to your dashboard...
+            </p>
+          )}
 
           <div className="mt-6 max-w-xs mx-auto">
             <div className="h-1.5 bg-[#E2E8F0] rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: '0%' }}
-                animate={{ width: '100%' }}
-                transition={{ duration: 2.5, ease: 'easeInOut' }}
+                animate={{ width: saving ? '40%' : '100%' }}
+                transition={{ duration: saving ? 1.5 : 1.5, ease: 'easeInOut' }}
                 className="h-full bg-gradient-to-r from-[#2563EB] to-[#7C3AED] rounded-full"
               />
             </div>
