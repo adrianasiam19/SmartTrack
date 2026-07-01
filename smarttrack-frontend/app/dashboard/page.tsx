@@ -63,6 +63,10 @@ export default function Dashboard() {
   if (!user) return null;
 
   const firstName = user.full_name?.split(' ')[0] || 'there';
+  const userXp = typeof user.xp === 'number' ? user.xp : 0;
+  const userRank = user.rank || 'Beginner';
+  const userStreak = typeof user.streak === 'number' ? user.streak : 0;
+  const userProgramme = user.programme || 'SHS Student';
 
   return (
     <AppLayout>
@@ -81,7 +85,7 @@ export default function Dashboard() {
                 <span className="text-[#2563EB]">{firstName}</span>
               </h1>
               <p className="text-base text-[#475569] mt-2">
-                {user.programme || 'SHS Student'}
+                {userProgramme}
                 {user.shs_level ? ` · ${user.shs_level}` : ''}
               </p>
             </motion.div>
@@ -94,9 +98,9 @@ export default function Dashboard() {
               className="mb-8"
             >
               <XpGauge
-                xp={user.xp}
-                rank={user.rank}
-                streak={user.streak}
+                xp={userXp}
+                rank={userRank}
+                streak={userStreak}
               />
             </motion.div>
 
@@ -157,7 +161,7 @@ export default function Dashboard() {
                     <div className="flex items-center gap-1.5">
                       <Zap className="w-4 h-4 text-[#D97706]" />
                       <span className="text-sm font-semibold text-[#92400E]">
-                        {user.streak || 0} day streak
+                        {userStreak} day streak
                       </span>
                     </div>
                     <ArrowRight className="w-4 h-4 text-[#D97706]" />
@@ -178,13 +182,13 @@ export default function Dashboard() {
                     </div>
                   </div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-2xl font-bold text-[#2563EB]">{user.xp.toLocaleString()}</span>
-                    <span className="text-xs font-medium text-[#475569]">Rank: {user.rank}</span>
+                    <span className="text-2xl font-bold text-[#2563EB]">{userXp.toLocaleString()}</span>
+                    <span className="text-xs font-medium text-[#475569]">Rank: {userRank}</span>
                   </div>
                   <div className="w-full bg-[#E2E8F0] rounded-full h-2 overflow-hidden">
                     <motion.div
                       initial={{ width: '0%' }}
-                      animate={{ width: `${Math.min((user.xp / 500) * 100, 100)}%` }}
+                      animate={{ width: `${Math.min((userXp / 500) * 100, 100)}%` }}
                       transition={{ duration: 0.8, ease: 'easeOut' }}
                       className="h-full bg-gradient-to-r from-[#2563EB] to-[#7C3AED] rounded-full"
                     />
