@@ -6,49 +6,45 @@ import { useRouter } from 'next/navigation';
 import Sidebar from '../../components/Sidebar';
 import BottomNav from '../../components/BottomNav';
 import AppLayout from '../../components/AppLayout';
-
-interface LeaderboardEntry {
-  rank: number;
-  user_name: string;
-  xp: number;
-  streak: number;
-  school: string;
-  programme: string;
-  is_me?: boolean;
-}
-
-const LEAGUES = [
-  { id: 'Overall', label: 'Overall' },
-  { id: 'Science', label: 'Science' },
-  { id: 'Arts', label: 'Arts' },
-  { id: 'Logic', label: 'Logic' },
-  { id: 'School', label: 'School' },
-];
-
-const MOCK_ENTRIES: LeaderboardEntry[] = [
-  { rank: 1, user_name: 'Olawale J.', xp: 4985, streak: 45, school: 'Kings College', programme: 'General Science' },
-  { rank: 2, user_name: 'Chidi E.', xp: 4962, streak: 38, school: 'Vivian Fowler', programme: 'General Arts' },
-  { rank: 3, user_name: 'Amina B.', xp: 4945, streak: 32, school: 'Lekki British School', programme: 'General Science' },
-  { rank: 4, user_name: 'You (Adrian)', xp: 4920, streak: 28, school: 'Accra Academy', programme: 'General Science', is_me: true },
-  { rank: 5, user_name: 'Tobi A.', xp: 4890, streak: 21, school: 'Corona Sec', programme: 'General Arts' },
-  { rank: 6, user_name: 'Zainab M.', xp: 4875, streak: 19, school: 'Grange School', programme: 'General Science' },
-  { rank: 7, user_name: 'Emeka O.', xp: 4850, streak: 15, school: 'Igbobi College', programme: 'General Arts' },
-  { rank: 8, user_name: 'Nkechi F.', xp: 4820, streak: 14, school: 'Queens College', programme: 'General Science' },
-  { rank: 9, user_name: 'Kofi A.', xp: 4790, streak: 12, school: 'Presbyterian Boys', programme: 'General Arts' },
-  { rank: 10, user_name: 'Adwoa S.', xp: 4750, streak: 10, school: 'Wesley Girls', programme: 'General Science' },
-];
+import { getAccessToken, getCurrentUser, getStoredUser, type UserProfile } from '../../lib/authApi';
 
 export default function LeaderboardPage() {
   const router = useRouter();
-  const [selectedLeague, setSelectedLeague] = useState('Overall');
-  const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
+  const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [entries, setEntries] = useState<any[]>([]);
+  const [fetchError, setFetchError] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => { setEntries(MOCK_ENTRIES); setLoading(false); }, 800);
-    return () => clearTimeout(timer);
-  }, [selectedLeague]);
+    const load = async () => {
+      try {
+        if (!getAccessToken()) { router.push('/login'); return; }
+        const cached = getStoredUser(); if (cached) setUser(cached);
+        const fresh = await getCurrentUser(); setUser(fresh);
+
+        // Try to fetch real leaderboard data from the API
+        const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+        const res = await fetch(`${API_BASE}/challenges/leaderboard`, {
+          headers: {
+            Authorization: `Bearer ${getAccessToken()}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setEntries(Array.isArray(data) ? data : data.entries || []);
+        } else {
+          setFetchError(true);
+        }
+      } catch {
+        setFetchError(true);
+      }
+      finally { setLoading(false); }
+    };
+    load();
+  }, [router]);
+
+  const isEmpty = entries.length === 0;
 
   return (
     <AppLayout>
@@ -56,77 +52,30 @@ export default function LeaderboardPage() {
         <Sidebar />
         <div className="flex-1 lg:pb-0 pb-20">
           <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-8 pb-8">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-4">
-                <button onClick={() => router.push('/challenges')}
-                  className="flex items-center gap-2 text-gray-400 hover:text-gray-600 transition-colors">
-                  <span className="text-sm font-medium hidden sm:inline">Back</span>
-                </button>
-                <div>
-                  <h1 className="text-xl font-bold text-[#1E293B]">Leaderboard</h1>
-                  <p className="text-xs text-gray-500">Compete and climb the ranks</p>
-                </div>
-              </div>
-              <div className="text-xs text-gray-500">
-                Season 1
-              </div>
+            <div className="mb-6">
+              <h1 className="text-xl font-bold text-[#1E293B]">Leaderboard</h1>
+              <p className="text-xs text-gray-500">Real rankings from actual student activity</p>
             </div>
 
-            <div className="flex gap-2 overflow-x-auto pb-4 mb-6 scrollbar-hide">
-              {LEAGUES.map((league) => (
+            {loading ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="w-8 h-8 border-2 border-[#2563EB] border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : isEmpty ? (
+              <div className="bg-white border border-[#E2E8F0] rounded-xl p-12 text-center">
+                <h2 className="text-lg font-bold text-[#1E293B] mb-2">No Rankings Yet</h2>
+                <p className="text-sm text-[#64748B] max-w-md mx-auto">
+                  No rankings available yet. Complete challenges to become one of the first students on the leaderboard.
+                </p>
                 <button
-                  key={league.id}
-                  onClick={() => setSelectedLeague(league.id)}
-                  className={`px-4 py-2 rounded-lg border transition-all whitespace-nowrap text-sm ${
-                    selectedLeague === league.id
-                      ? 'bg-[#4F46E5] border-[#4F46E5] text-white font-medium'
-                      : 'border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700 bg-white'
-                  }`}
+                  onClick={() => router.push('/challenges/intro')}
+                  className="mt-6 px-6 py-3 bg-[#2563EB] text-white font-semibold rounded-xl hover:bg-[#1D4ED8] transition-all"
                 >
-                  {league.label}
+                  Start a Challenge
                 </button>
-              ))}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-              {entries.slice(0, 3).map((entry, idx) => {
-                const isFirst = idx === 0;
-                return (
-                  <motion.div
-                    key={entry.user_name}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.1 }}
-                    className={`relative p-5 rounded-xl border text-center ${
-                      isFirst
-                        ? 'bg-[#4F46E5] border-[#4F46E5] text-white'
-                        : 'bg-white border-gray-200'
-                    }`}
-                  >
-                    <div className="text-sm font-bold text-gray-400 mb-2">#{['1st', '2nd', '3rd'][idx]}</div>
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg mx-auto mb-2 ${
-                      isFirst ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'
-                    }`}>
-                      {entry.user_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                    </div>
-                    <h3 className={`font-semibold ${isFirst ? 'text-white' : 'text-[#1E293B]'}`}>{entry.user_name}</h3>
-                    <p className={`text-xs ${isFirst ? 'text-indigo-200' : 'text-gray-500'}`}>{entry.school}</p>
-                    <div className="mt-2">
-                      <p className={`text-xl font-bold ${isFirst ? 'text-white' : 'text-[#4F46E5]'}`}>{entry.xp.toLocaleString()}</p>
-                      <p className={`text-[10px] uppercase tracking-widest ${isFirst ? 'text-indigo-200' : 'text-gray-400'}`}>XP</p>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
-
-            <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-              {loading ? (
-                <div className="p-12 text-center">
-                  <div className="w-8 h-8 border-2 border-[#4F46E5] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-                  <p className="text-gray-500 text-sm">Loading rankings...</p>
-                </div>
-              ) : (
+              </div>
+            ) : (
+              <div className="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden">
                 <div className="divide-y divide-gray-100">
                   <div className="flex items-center gap-4 px-5 py-3 text-xs text-gray-400 font-medium uppercase tracking-wider">
                     <span className="w-8 text-center">Rank</span>
@@ -134,38 +83,39 @@ export default function LeaderboardPage() {
                     <span className="w-20 text-right">XP</span>
                   </div>
 
-                  {entries.map((entry) => (
-                    <div key={entry.rank}
-                      className={`flex items-center gap-4 px-5 py-3.5 transition-colors ${
-                        entry.is_me ? 'bg-[#EEF2FF]' : 'hover:bg-gray-50'
-                      }`}
-                    >
-                      <div className="w-8 text-center">
-                        <span className={`text-sm font-bold ${entry.rank <= 3 ? 'text-[#4F46E5]' : 'text-gray-400'}`}>
-                          #{entry.rank}
-                        </span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <h4 className="text-sm font-medium text-[#1E293B] truncate">{entry.user_name}</h4>
-                          {entry.is_me && (
-                            <span className="px-1.5 py-0.5 text-[9px] font-bold bg-[#4F46E5] text-white rounded uppercase">You</span>
-                          )}
+                  {entries.map((entry: any, idx: number) => {
+                    const name = entry.user_name || entry.full_name || `Student ${idx + 1}`;
+                    const xp = entry.xp || 0;
+                    const rank = entry.rank || idx + 1;
+                    const isMe = user && (entry.user_id === user.id || entry.is_me);
+                    return (
+                      <div key={rank}
+                        className={`flex items-center gap-4 px-5 py-3.5 transition-colors ${
+                          isMe ? 'bg-[#EEF2FF]' : 'hover:bg-gray-50'
+                        }`}
+                      >
+                        <div className="w-8 text-center">
+                          <span className={`text-sm font-bold ${rank <= 3 ? 'text-[#2563EB]' : 'text-gray-400'}`}>
+                            #{rank}
+                          </span>
                         </div>
-                        <p className="text-xs text-gray-400 truncate">{entry.school}</p>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <h4 className="text-sm font-medium text-[#1E293B] truncate">{name}</h4>
+                            {isMe && (
+                              <span className="px-1.5 py-0.5 text-[9px] font-bold bg-[#2563EB] text-white rounded uppercase">You</span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="w-20 text-right">
+                          <span className="text-sm font-semibold text-[#1E293B]">{xp.toLocaleString()}</span>
+                        </div>
                       </div>
-                      <div className="w-20 text-right">
-                        <span className="text-sm font-semibold text-[#1E293B]">{entry.xp.toLocaleString()}</span>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
-              )}
-            </div>
-
-            <p className="text-center text-xs text-gray-400 mt-4">
-              Rankings update in real-time. Complete challenges to earn XP and climb the leaderboard!
-            </p>
+              </div>
+            )}
           </main>
         </div>
         <BottomNav />

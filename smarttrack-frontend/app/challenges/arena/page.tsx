@@ -16,6 +16,7 @@ import {
   getStoredUser,
   getCurrentUser,
   storeUser,
+  updateUserProfile,
   type UserProfile,
 } from '../../lib/authApi';
 import {
@@ -137,9 +138,20 @@ function ChallengeArena() {
 
   useEffect(() => {
     if (isPlacement && phase === 'complete') {
+      // Optimistically update local state first
+      const cached = getStoredUser();
+      if (cached) {
+        const updated = { ...cached, onboarding_completed: true };
+        storeUser(updated);
+        setUser(updated);
+      }
+      // Attempt to persist to backend
+      updateUserProfile({ onboarding_completed: true }).catch(() => {
+        // Non-critical — local state is already updated
+      });
       const timer = setTimeout(() => {
-        router.push('/onboarding?phase=analysis');
-      }, 800);
+        router.push('/dashboard');
+      }, 1200);
       return () => clearTimeout(timer);
     }
   }, [isPlacement, phase, router]);

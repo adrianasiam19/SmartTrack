@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Zap, Trophy, Target, TrendingUp, ArrowRight } from 'lucide-react';
 import Sidebar from '../../components/Sidebar';
 import BottomNav from '../../components/BottomNav';
 import AppLayout from '../../components/AppLayout';
@@ -40,22 +39,18 @@ export default function ChallengeIntro() {
 
   const benefits = [
     {
-      icon: <Target className="w-5 h-5 text-[#2563EB]" />,
       title: 'Strengthen Core Skills',
       description: 'Challenges reinforce your understanding of key academic subjects and help you retain what you learn.',
     },
     {
-      icon: <TrendingUp className="w-5 h-5 text-[#059669]" />,
       title: 'Build Consistency',
       description: 'Daily practice builds strong learning habits. The longer your streak, the sharper your skills become.',
     },
     {
-      icon: <Zap className="w-5 h-5 text-[#7C3AED]" />,
       title: 'Earn Challenge XP',
       description: 'Each completed challenge level rewards you with XP. The harder the level, the more XP you earn.',
     },
     {
-      icon: <Trophy className="w-5 h-5 text-[#D97706]" />,
       title: 'Climb the Leaderboard',
       description: 'Challenge XP contributes to your leaderboard ranking. Compete with fellow students across Ghana.',
     },
@@ -73,9 +68,6 @@ export default function ChallengeIntro() {
               animate={{ opacity: 1, y: 0 }}
               className="mb-8 text-center"
             >
-              <div className="w-16 h-16 bg-gradient-to-br from-[#2563EB] to-[#1D4ED8] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-[#2563EB]/20">
-                <Zap className="w-8 h-8 text-white" />
-              </div>
               <h1 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">
                 Today&apos;s Challenge
               </h1>
@@ -92,8 +84,7 @@ export default function ChallengeIntro() {
                 transition={{ delay: 0.05 }}
                 className="text-center mb-8"
               >
-                <div className="inline-flex items-center gap-2 bg-[#EFF6FF] border border-[#BFDBFE] rounded-full px-5 py-2">
-                  <Zap className="w-4 h-4 text-[#2563EB]" />
+                <div className="inline-flex bg-[#EFF6FF] border border-[#BFDBFE] rounded-full px-5 py-2">
                   <span className="text-sm font-semibold text-[#2563EB]">
                     {userStreak} day streak! Keep it going!
                   </span>
@@ -117,15 +108,8 @@ export default function ChallengeIntro() {
                     transition={{ delay: 0.1 + i * 0.05 }}
                     className="bg-white border border-[#E2E8F0] rounded-xl p-5"
                   >
-                    <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 bg-[#EFF6FF] rounded-xl flex items-center justify-center flex-shrink-0">
-                        {benefit.icon}
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-bold text-[#1E293B] mb-1">{benefit.title}</h3>
-                        <p className="text-sm text-[#64748B] leading-relaxed">{benefit.description}</p>
-                      </div>
-                    </div>
+                    <h3 className="text-sm font-bold text-[#1E293B] mb-1">{benefit.title}</h3>
+                    <p className="text-sm text-[#64748B] leading-relaxed">{benefit.description}</p>
                   </motion.div>
                 ))}
               </div>
@@ -187,10 +171,9 @@ export default function ChallengeIntro() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => router.push('/challenges/play')}
-                className="inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] text-white font-bold text-lg rounded-xl hover:from-[#3B82F6] hover:to-[#2563EB] shadow-lg shadow-[#2563EB]/25 hover:shadow-xl hover:shadow-[#2563EB]/30 transition-all duration-200"
+                className="inline-flex px-10 py-4 bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] text-white font-bold text-lg rounded-xl hover:from-[#3B82F6] hover:to-[#2563EB] shadow-lg shadow-[#2563EB]/25 hover:shadow-xl hover:shadow-[#2563EB]/30 transition-all duration-200"
               >
-                <span>START TODAY&apos;S CHALLENGE</span>
-                <ArrowRight className="w-5 h-5" />
+                START TODAY&apos;S CHALLENGE
               </motion.button>
             </motion.div>
           </main>

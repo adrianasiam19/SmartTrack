@@ -17,7 +17,7 @@ export default function ScreenOnboarding4({ onNext }: Props) {
       >
         <div className="bg-white rounded-2xl border border-[#E2E8F0] p-8 sm:p-10 shadow-sm">
           <div className="w-16 h-16 bg-gradient-to-br from-[#7C3AED] to-[#6D28D9] rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-            <span className="text-2xl">📖</span>
+            <span className="text-2xl font-bold text-white">LG</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-4">

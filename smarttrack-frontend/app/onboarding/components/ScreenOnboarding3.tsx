@@ -17,7 +17,7 @@ export default function ScreenOnboarding3({ onNext }: Props) {
       >
         <div className="bg-white rounded-2xl border border-[#E2E8F0] p-8 sm:p-10 shadow-sm">
           <div className="w-16 h-16 bg-gradient-to-br from-[#F59E0B] to-[#D97706] rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-            <span className="text-2xl">⚡</span>
+            <span className="text-2xl font-bold text-white">XP</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-4">
@@ -30,8 +30,8 @@ export default function ScreenOnboarding3({ onNext }: Props) {
           <div className="grid grid-cols-3 gap-4 mb-8">
             {[
               { value: 'XP', label: 'Experience Points', color: 'text-[#2563EB]', bg: 'bg-[#EFF6FF]' },
-              { value: '🔥', label: 'Daily Streak', color: 'text-[#D97706]', bg: 'bg-[#FFFBEB]' },
-              { value: '🏆', label: 'Leaderboard', color: 'text-[#7C3AED]', bg: 'bg-[#F5F3FF]' },
+              { value: 'Days', label: 'Daily Streak', color: 'text-[#D97706]', bg: 'bg-[#FFFBEB]' },
+              { value: 'Rank', label: 'Leaderboard', color: 'text-[#7C3AED]', bg: 'bg-[#F5F3FF]' },
             ].map((item, i) => (
               <motion.div
                 key={i}
