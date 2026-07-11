@@ -8,38 +8,12 @@ import BottomNav from '../components/BottomNav';
 import AppLayout from '../components/AppLayout';
 import { getAccessToken, getStoredUser, getCurrentUser, type UserProfile } from '../lib/authApi';
 
-interface ReadinessItem { id: string; label: string; completed: boolean; }
-interface ArenaStrength { name: string; level: 'Strong' | 'Moderate' | 'Developing' | 'Not Started'; description: string; }
-
-function deriveArenaStrengths(user: UserProfile | null): ArenaStrength[] {
-  if (!user) return [];
-  const xp = user.xp || 0;
-  const isScience = user.programme === 'General Science';
-  const lvl = (s: number, m: number, d: number): ArenaStrength['level'] =>
-    xp >= s ? 'Strong' : xp >= m ? 'Moderate' : xp >= d ? 'Developing' : 'Not Started';
-  return [
-    { name: 'Logic & Reasoning', level: lvl(200, 100, 30), description: 'Pattern recognition, deductive reasoning, and analytical problem-solving.' },
-    { name: 'Scientific Thinking', level: isScience && xp >= 100 ? 'Moderate' : xp >= 200 ? 'Moderate' : 'Developing', description: 'Hypothesis formation, experimental design, and evidence-based analysis.' },
-    { name: 'Quantitative Reasoning', level: lvl(200, 100, 30), description: 'Numerical problem-solving, percentages, ratios, and data analysis.' },
-    { name: 'Communication', level: !isScience && xp >= 100 ? 'Moderate' : 'Developing', description: 'Reading comprehension, argument analysis, and clear expression of ideas.' },
-  ];
-}
-
-function strengthColor(level: ArenaStrength['level']): string {
-  const colors: Record<string, string> = {
-    Strong: 'text-[#4F46E5] border-[#C7D2FE] bg-[#EEF2FF]',
-    Moderate: 'text-[#D97706] border-[#FDE68A] bg-[#FFFBEB]',
-    Developing: 'text-[#F43F5E] border-[#FFE4E6] bg-[#FFF1F2]',
-    'Not Started': 'text-gray-400 border-gray-200 bg-gray-50',
-  };
-  return colors[level] || colors['Not Started'];
-}
-
 export default function RecommendationsPage() {
   const router = useRouter();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [academicCompleted, setAcademicCompleted] = useState(false);
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -54,22 +28,29 @@ export default function RecommendationsPage() {
     load();
   }, [router]);
 
+  // Readiness milestones derived from user data
   const hasXP = (user?.xp || 0) > 0;
-  const readinessItems: ReadinessItem[] = [
+  const readinessItems = [
     { id: 'starter-arena', label: 'Starter Arena', completed: hasXP },
     { id: 'logic-arena', label: 'Logic Arena', completed: hasXP },
-    { id: 'scientific-thinking', label: 'Scientific Thinking', completed: hasXP },
     { id: 'quantitative-sprint', label: 'Quantitative Sprint', completed: hasXP },
-    { id: 'psychometric', label: 'Psychometric Profile', completed: false },
     { id: 'academic', label: 'Academic Results', completed: academicCompleted },
   ];
-  const arenaStrengths = deriveArenaStrengths(user);
   const completedCount = readinessItems.filter((i) => i.completed).length;
   const confidence = Math.min(100, hasXP ? 40 : 10 + (academicCompleted ? 25 : 0));
 
+  const handleUploadComplete = () => {
+    localStorage.setItem('atlas_academic_data', 'true');
+    setAcademicCompleted(true);
+    setUploadModalOpen(false);
+  };
+
   if (loading) return (
-    <AppLayout><div className="flex items-center justify-center min-h-screen">
-      <div className="w-8 h-8 border-2 border-[#4F46E5] border-t-transparent rounded-full animate-spin" /></div></AppLayout>
+    <AppLayout>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-10 h-10 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin" />
+      </div>
+    </AppLayout>
   );
 
   return (
@@ -77,90 +58,289 @@ export default function RecommendationsPage() {
       <div className="flex min-h-screen">
         <Sidebar />
         <div className="flex-1 lg:pb-0 pb-20">
-          <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-8 pb-8">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h1 className="text-xl font-bold text-[#1E293B]">Programme Recommendations</h1>
-                <p className="text-sm text-gray-500">{user?.programme || 'SHS Student'} · {user?.shs_level || 'Discover your path'}</p>
+          <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-8 pb-8">
+            {/* ── Header ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-8"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-2xl font-bold text-[#1E293B]">Programme Recommendations</h1>
+                  <p className="text-sm text-[#64748B] mt-1">
+                    {user?.programme || 'SHS Student'}
+                    {user?.shs_level ? ` · ${user.shs_level}` : ''}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 bg-[#EEF2FF] border border-[#C7D2FE] rounded-xl px-4 py-2">
+                  <span className="text-sm font-semibold text-[#2563EB]">{user?.xp?.toLocaleString() || 0} XP</span>
+                </div>
               </div>
-              <div className="text-sm font-semibold text-[#4F46E5]">{user?.xp?.toLocaleString() || 0} XP</div>
-            </div>
+            </motion.div>
 
             <div className="space-y-6">
-              <div className="bg-white border border-gray-200 rounded-xl p-6">
-                <h2 className="text-lg font-semibold text-[#1E293B] mb-1">Recommendation Readiness</h2>
-                <p className="text-sm text-gray-500 mb-6">Complete challenges and upload academic results to unlock accurate recommendations.</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
+              {/* ── A. Recommendation Readiness ── */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.05 }}
+                className="bg-white border border-[#BFDBFE] rounded-2xl p-6 lg:p-8 shadow-sm"
+              >
+                <h2 className="text-lg font-bold text-[#1E293B] mb-1">Recommendation Readiness</h2>
+                <p className="text-sm text-[#64748B] mb-6">
+                  Complete the required learning activities, challenge levels, and upload your academic results to unlock
+                  your personalised programme recommendations.
+                </p>
+
+                {/* Milestone checklist */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
                   {readinessItems.map((item) => (
-                    <div key={item.id} className={`flex items-center justify-between px-4 py-3 rounded-lg border transition-all ${item.completed ? 'bg-[#EEF2FF] border-[#C7D2FE]' : 'bg-white border-gray-200'}`}>
-                      <span className={`text-sm font-medium ${item.completed ? 'text-[#4F46E5]' : 'text-gray-500'}`}>{item.label}</span>
-                      <span className={`text-xs font-bold ${item.completed ? 'text-[#4F46E5]' : 'text-gray-300'}`}>{item.completed ? 'Done' : 'Pending'}</span>
-                    </div>
-                  ))}
-                </div>
-                <div className="bg-gray-50 rounded-xl p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-[#1E293B]">Recommendation Confidence</span>
-                    <span className="text-lg font-bold text-[#4F46E5]">{confidence}%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
-                    <div className="h-2 rounded-full bg-[#4F46E5] transition-all duration-1000" style={{ width: `${confidence}%` }} />
-                  </div>
-                  <span className="text-xs text-gray-500">{completedCount} of {readinessItems.length} milestones complete</span>
-                </div>
-              </div>
-
-              <div>
-                <h2 className="text-lg font-semibold text-[#1E293B] mb-4">Cognitive Profile</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {arenaStrengths.map((strength) => (
-                    <div key={strength.name} className="bg-white border border-gray-200 rounded-xl p-5">
-                      <div className="flex items-start gap-3">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between mb-1">
-                            <h3 className="font-semibold text-[#1E293B] text-sm">{strength.name}</h3>
-                            <span className={`inline-flex px-2 py-0.5 text-[10px] font-bold rounded-full border ${strengthColor(strength.level)}`}>{strength.level}</span>
-                          </div>
-                          <p className="text-xs text-gray-500">{strength.description}</p>
+                    <div
+                      key={item.id}
+                      className={`flex items-center justify-between px-4 py-3 rounded-xl border transition-all ${
+                        item.completed
+                          ? 'bg-[#EEF2FF] border-[#C7D2FE]'
+                          : 'bg-white border-[#E2E8F0]'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        {/* Checkbox circle */}
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
+                          item.completed
+                            ? 'bg-[#2563EB]'
+                            : 'bg-white border-2 border-[#CBD5E1]'
+                        }`}>
+                          {item.completed && (
+                            <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
                         </div>
+                        <span className={`text-sm font-medium ${
+                          item.completed ? 'text-[#2563EB]' : 'text-[#475569]'
+                        }`}>
+                          {item.label}
+                        </span>
                       </div>
+                      <span className={`text-xs font-semibold ${
+                        item.completed ? 'text-[#2563EB]' : 'text-[#94A3B8]'
+                      }`}>
+                        {item.completed ? 'Completed' : 'Pending'}
+                      </span>
                     </div>
                   ))}
                 </div>
-              </div>
 
-              {!academicCompleted && (
-                <div className="bg-amber-50 border border-amber-200 rounded-xl p-8 text-center">
-                  <h2 className="text-xl font-bold text-[#1E293B] mb-2">Your profile is still being built.</h2>
-                  <p className="text-gray-500 max-w-lg mx-auto mb-6 text-sm">Complete more challenges and upload your academic results to unlock accurate programme recommendations.</p>
-                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                    <button onClick={() => router.push('/challenges')}
-                      className="px-5 py-2.5 bg-[#4F46E5] text-white font-medium rounded-lg hover:bg-[#4338CA] transition-colors text-sm">
-                      Complete Challenges
-                    </button>
-                    <button onClick={() => { localStorage.setItem('atlas_academic_data', 'true'); setAcademicCompleted(true); }}
-                      className="px-5 py-2.5 border border-gray-200 text-gray-600 font-medium rounded-lg hover:bg-gray-50 transition-colors text-sm">
-                      Upload WASSCE Results
-                    </button>
+                {/* Confidence bar */}
+                <div className="bg-gradient-to-r from-[#EEF2FF] to-[#F5F3FF] rounded-xl p-5 border border-[#C7D2FE]/50">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-semibold text-[#1E293B]">Recommendation Confidence</span>
+                    <span className="text-xl font-bold text-[#2563EB]">{confidence}%</span>
                   </div>
+                  <div className="w-full bg-white/50 rounded-full h-2.5 mb-2 border border-[#C7D2FE]/30">
+                    <div
+                      className="h-2.5 rounded-full bg-gradient-to-r from-[#2563EB] to-[#7C3AED] transition-all duration-1000"
+                      style={{ width: `${confidence}%` }}
+                    />
+                  </div>
+                  <span className="text-xs text-[#64748B]">
+                    {completedCount} of {readinessItems.length} milestones complete
+                  </span>
                 </div>
-              )}
+              </motion.div>
 
-              {academicCompleted && (
-                <div className="bg-white border border-gray-200 rounded-xl p-8 text-center">
-                  <h3 className="text-lg font-semibold text-[#1E293B] mb-2">Recommendations are being generated...</h3>
-                  <p className="text-gray-500 text-sm mb-6">Your cognitive profile and academic data are being processed.</p>
-                  <button onClick={() => router.push('/challenges')}
-                    className="px-5 py-2.5 bg-[#4F46E5] text-white font-medium rounded-lg hover:bg-[#4338CA] transition-colors text-sm">
-                    Continue Building Your Profile
+              {/* ── B. Profile Being Built ── */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="bg-gradient-to-br from-white to-[#EEF2FF] border border-[#BFDBFE] rounded-2xl p-8 lg:p-10 text-center shadow-sm"
+              >
+                {/* Icon */}
+                <div className="w-16 h-16 bg-gradient-to-br from-[#2563EB] to-[#7C3AED] rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-[#2563EB]/20">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+
+                <h2 className="text-xl font-bold text-[#1E293B] mb-3">
+                  Your Recommendation Profile is Still Being Built
+                </h2>
+                <p className="text-sm text-[#64748B] max-w-lg mx-auto mb-7 leading-relaxed">
+                  Complete the required learning activities, challenge levels, and upload your academic results to
+                  unlock your personalised programme recommendations.
+                </p>
+
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <button
+                    onClick={() => router.push('/challenges/intro')}
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] text-white font-semibold rounded-xl shadow-lg shadow-[#2563EB]/20 hover:shadow-xl hover:from-[#3B82F6] hover:to-[#2563EB] transition-all duration-200 active:scale-[0.98]"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                    </svg>
+                    Complete Daily Challenge
+                  </button>
+                  <button
+                    onClick={() => setUploadModalOpen(true)}
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white border-2 border-[#BFDBFE] text-[#2563EB] font-semibold rounded-xl hover:bg-[#EFF6FF] hover:border-[#2563EB] transition-all duration-200 active:scale-[0.98]"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                    </svg>
+                    Upload Academic Results
                   </button>
                 </div>
-              )}
+              </motion.div>
+
+              {/* ── C. Upload Academic Results ── */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+                className="bg-white border border-[#BFDBFE] rounded-2xl p-6 lg:p-8 shadow-sm"
+              >
+                <div className="flex items-start gap-4">
+                  {/* Icon */}
+                  <div className="w-12 h-12 bg-gradient-to-br from-[#2563EB] to-[#7C3AED] rounded-xl flex items-center justify-center flex-shrink-0 shadow-md shadow-[#2563EB]/15">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                    </svg>
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-lg font-bold text-[#1E293B] mb-1">Upload Academic Results</h2>
+                    <p className="text-sm text-[#64748B] mb-5 leading-relaxed">
+                      Atlas uses your academic results together with your learning progress and challenge performance
+                      to improve recommendation accuracy. Upload any of the following documents:
+                    </p>
+
+                    {/* Document types */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+                      {[
+                        { label: 'WASSCE Results', desc: 'Final exam results', icon: 'W' },
+                        { label: 'Academic Report', desc: 'School term reports', icon: 'R' },
+                        { label: 'School Transcript', desc: 'If applicable', icon: 'T' },
+                      ].map((doc) => (
+                        <div
+                          key={doc.label}
+                          className="flex items-center gap-3 px-4 py-3.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl hover:bg-[#EEF2FF] hover:border-[#C7D2FE] transition-all cursor-pointer group"
+                          onClick={() => setUploadModalOpen(true)}
+                        >
+                          <div className="w-10 h-10 bg-white border border-[#E2E8F0] rounded-lg flex items-center justify-center text-sm font-bold text-[#2563EB] group-hover:border-[#C7D2FE] transition-all">
+                            {doc.icon}
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-[#1E293B]">{doc.label}</p>
+                            <p className="text-xs text-[#64748B]">{doc.desc}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Upload button */}
+                    <button
+                      onClick={() => setUploadModalOpen(true)}
+                      className={`w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-base transition-all duration-200 active:scale-[0.98] ${
+                        academicCompleted
+                          ? 'bg-[#EEF2FF] border border-[#C7D2FE] text-[#2563EB]'
+                          : 'bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] text-white shadow-lg shadow-[#2563EB]/20 hover:shadow-xl hover:from-[#3B82F6] hover:to-[#2563EB]'
+                      }`}
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                        {academicCompleted ? (
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        ) : (
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                        )}
+                      </svg>
+                      {academicCompleted ? 'Results Uploaded ✓' : 'Upload Academic Results'}
+                    </button>
+                    {academicCompleted && (
+                      <p className="text-xs text-[#64748B] text-center mt-2">
+                        Your academic results have been uploaded. They are being processed alongside your learning profile.
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
             </div>
           </main>
         </div>
         <BottomNav />
       </div>
+
+      {/* ── Upload Modal ── */}
+      {uploadModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          onClick={() => setUploadModalOpen(false)}
+        >
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-[#1E293B]/60 backdrop-blur-sm" />
+
+          {/* Modal */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            className="relative bg-white rounded-2xl border border-[#BFDBFE] shadow-2xl p-8 w-full max-w-md"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setUploadModalOpen(false)}
+              className="absolute top-4 right-4 p-2 rounded-xl hover:bg-[#EEF2FF] text-[#475569] hover:text-[#2563EB] transition-all"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Modal icon */}
+            <div className="w-14 h-14 bg-gradient-to-br from-[#2563EB] to-[#7C3AED] rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-[#2563EB]/20">
+              <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+              </svg>
+            </div>
+
+            <h3 className="text-lg font-bold text-[#1E293B] text-center mb-2">Upload Academic Results</h3>
+            <p className="text-sm text-[#64748B] text-center mb-6">
+              Upload your WASSCE results, school report, or transcript as a PDF or image file.
+            </p>
+
+            {/* Drop zone */}
+            <div
+              className="border-2 border-dashed border-[#C7D2FE] rounded-xl p-8 text-center hover:border-[#2563EB] hover:bg-[#EEF2FF] transition-all cursor-pointer group mb-6"
+              onClick={handleUploadComplete}
+            >
+              <div className="w-12 h-12 bg-[#EEF2FF] rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:bg-[#DBEAFE] transition-all">
+                <svg className="w-6 h-6 text-[#2563EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
+                </svg>
+              </div>
+              <p className="text-sm font-semibold text-[#1E293B] mb-1">
+                Click to upload or drag and drop
+              </p>
+              <p className="text-xs text-[#64748B]">
+                PDF, PNG, or JPG (max 10MB)
+              </p>
+            </div>
+
+            {/* Or use placeholder */}
+            <button
+              onClick={handleUploadComplete}
+              className="w-full px-5 py-3 bg-[#EEF2FF] border border-[#C7D2FE] text-[#475569] rounded-xl hover:bg-[#DBEAFE] hover:text-[#2563EB] transition-all text-sm font-medium"
+            >
+              Use Sample Academic Record Instead
+            </button>
+
+            <p className="text-xs text-[#64748B] text-center mt-4">
+              Your data is encrypted and used only for generating personalised recommendations.
+            </p>
+          </motion.div>
+        </div>
+      )}
     </AppLayout>
   );
 }

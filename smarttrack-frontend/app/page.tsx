@@ -26,7 +26,7 @@ export default function Home() {
           <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style={{
-              backgroundImage: 'url("https://images.pexels.com/photos/11025022/pexels-photo-11025022.jpeg?auto=compress&cs=tinysrgb&w=1200&h=900&dpr=1")',
+              backgroundImage: 'url("https://images.pexels.com/photos/8926544/pexels-photo-8926544.jpeg?auto=compress&cs=tinysrgb&w=1200&h=900&dpr=1")',
             }}
           />
           {/* Sophisticated gradient overlay */}
