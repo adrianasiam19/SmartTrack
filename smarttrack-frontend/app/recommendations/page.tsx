@@ -28,17 +28,6 @@ export default function RecommendationsPage() {
     load();
   }, [router]);
 
-  // Readiness milestones derived from user data
-  const hasXP = (user?.xp || 0) > 0;
-  const readinessItems = [
-    { id: 'starter-arena', label: 'Starter Arena', completed: hasXP },
-    { id: 'logic-arena', label: 'Logic Arena', completed: hasXP },
-    { id: 'quantitative-sprint', label: 'Quantitative Sprint', completed: hasXP },
-    { id: 'academic', label: 'Academic Results', completed: academicCompleted },
-  ];
-  const completedCount = readinessItems.filter((i) => i.completed).length;
-  const confidence = Math.min(100, hasXP ? 40 : 10 + (academicCompleted ? 25 : 0));
-
   const handleUploadComplete = () => {
     localStorage.setItem('atlas_academic_data', 'true');
     setAcademicCompleted(true);
@@ -80,81 +69,11 @@ export default function RecommendationsPage() {
             </motion.div>
 
             <div className="space-y-6">
-              {/* ── A. Recommendation Readiness ── */}
+              {/* ── 1. Your Recommendation Profile is Still Being Built ── */}
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.05 }}
-                className="bg-white border border-[#BFDBFE] rounded-2xl p-6 lg:p-8 shadow-sm"
-              >
-                <h2 className="text-lg font-bold text-[#1E293B] mb-1">Recommendation Readiness</h2>
-                <p className="text-sm text-[#64748B] mb-6">
-                  Complete the required learning activities, challenge levels, and upload your academic results to unlock
-                  your personalised programme recommendations.
-                </p>
-
-                {/* Milestone checklist */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
-                  {readinessItems.map((item) => (
-                    <div
-                      key={item.id}
-                      className={`flex items-center justify-between px-4 py-3 rounded-xl border transition-all ${
-                        item.completed
-                          ? 'bg-[#EEF2FF] border-[#C7D2FE]'
-                          : 'bg-white border-[#E2E8F0]'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        {/* Checkbox circle */}
-                        <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
-                          item.completed
-                            ? 'bg-[#2563EB]'
-                            : 'bg-white border-2 border-[#CBD5E1]'
-                        }`}>
-                          {item.completed && (
-                            <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                            </svg>
-                          )}
-                        </div>
-                        <span className={`text-sm font-medium ${
-                          item.completed ? 'text-[#2563EB]' : 'text-[#475569]'
-                        }`}>
-                          {item.label}
-                        </span>
-                      </div>
-                      <span className={`text-xs font-semibold ${
-                        item.completed ? 'text-[#2563EB]' : 'text-[#94A3B8]'
-                      }`}>
-                        {item.completed ? 'Completed' : 'Pending'}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Confidence bar */}
-                <div className="bg-gradient-to-r from-[#EEF2FF] to-[#F5F3FF] rounded-xl p-5 border border-[#C7D2FE]/50">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-semibold text-[#1E293B]">Recommendation Confidence</span>
-                    <span className="text-xl font-bold text-[#2563EB]">{confidence}%</span>
-                  </div>
-                  <div className="w-full bg-white/50 rounded-full h-2.5 mb-2 border border-[#C7D2FE]/30">
-                    <div
-                      className="h-2.5 rounded-full bg-gradient-to-r from-[#2563EB] to-[#7C3AED] transition-all duration-1000"
-                      style={{ width: `${confidence}%` }}
-                    />
-                  </div>
-                  <span className="text-xs text-[#64748B]">
-                    {completedCount} of {readinessItems.length} milestones complete
-                  </span>
-                </div>
-              </motion.div>
-
-              {/* ── B. Profile Being Built ── */}
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
                 className="bg-gradient-to-br from-white to-[#EEF2FF] border border-[#BFDBFE] rounded-2xl p-8 lg:p-10 text-center shadow-sm"
               >
                 {/* Icon */}
@@ -172,33 +91,22 @@ export default function RecommendationsPage() {
                   unlock your personalised programme recommendations.
                 </p>
 
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <button
-                    onClick={() => router.push('/challenges/intro')}
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] text-white font-semibold rounded-xl shadow-lg shadow-[#2563EB]/20 hover:shadow-xl hover:from-[#3B82F6] hover:to-[#2563EB] transition-all duration-200 active:scale-[0.98]"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
-                    </svg>
-                    Complete Daily Challenge
-                  </button>
-                  <button
-                    onClick={() => setUploadModalOpen(true)}
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white border-2 border-[#BFDBFE] text-[#2563EB] font-semibold rounded-xl hover:bg-[#EFF6FF] hover:border-[#2563EB] transition-all duration-200 active:scale-[0.98]"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-                    </svg>
-                    Upload Academic Results
-                  </button>
-                </div>
+                <button
+                  onClick={() => setUploadModalOpen(true)}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] text-white font-semibold rounded-xl shadow-lg shadow-[#2563EB]/20 hover:shadow-xl hover:from-[#3B82F6] hover:to-[#2563EB] transition-all duration-200 active:scale-[0.98]"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                  </svg>
+                  Upload Academic Results
+                </button>
               </motion.div>
 
-              {/* ── C. Upload Academic Results ── */}
+              {/* ── 2. Upload Academic Results ── */}
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 }}
+                transition={{ delay: 0.1 }}
                 className="bg-white border border-[#BFDBFE] rounded-2xl p-6 lg:p-8 shadow-sm"
               >
                 <div className="flex items-start gap-4">
@@ -220,8 +128,8 @@ export default function RecommendationsPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
                       {[
                         { label: 'WASSCE Results', desc: 'Final exam results', icon: 'W' },
-                        { label: 'Academic Report', desc: 'School term reports', icon: 'R' },
-                        { label: 'School Transcript', desc: 'If applicable', icon: 'T' },
+                        { label: 'SHS Academic Reports', desc: 'School term reports', icon: 'R' },
+                        { label: 'School Transcript', desc: 'Optional', icon: 'T' },
                       ].map((doc) => (
                         <div
                           key={doc.label}
