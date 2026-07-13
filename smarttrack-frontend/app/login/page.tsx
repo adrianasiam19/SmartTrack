@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, WifiOff, RefreshCw } from 'lucide-react';
 import { login, getStoredUser } from '../lib/authApi';
 
 export default function Login() {
@@ -11,10 +11,12 @@ export default function Login() {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isNetworkError, setIsNetworkError] = useState(false);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
+    setIsNetworkError(false);
     setIsLoading(true);
     try {
       const formData = new FormData(e.currentTarget);
@@ -23,7 +25,9 @@ export default function Login() {
       if (storedUser && !storedUser.onboarding_completed) router.push('/onboarding');
       else router.push('/dashboard');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
+      const message = err instanceof Error ? err.message : 'Login failed';
+      setError(message);
+      setIsNetworkError(message.toLowerCase().includes('connect to the server'));
     } finally { setIsLoading(false); }
   };
 
@@ -66,8 +70,26 @@ export default function Login() {
               </div>
             </div>
             {error && (
-              <div className="p-3.5 bg-[#FEF2F2] border border-[#FECACA] rounded-xl">
-                <p className="text-sm text-[#DC2626]">{error}</p>
+              <div className={`p-3.5 rounded-xl ${isNetworkError ? 'bg-[#FFFBEB] border border-[#FDE68A]' : 'bg-[#FEF2F2] border border-[#FECACA]'}`}>
+                <div className="flex items-start gap-2.5">
+                  {isNetworkError && <WifiOff className="w-5 h-5 text-[#D97706] mt-0.5 shrink-0" />}
+                  <div className="flex-1">
+                    <p className={`text-sm ${isNetworkError ? 'text-[#92400E]' : 'text-[#DC2626]'}`}>{error}</p>
+                    {isNetworkError && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setError('');
+                          setIsNetworkError(false);
+                        }}
+                        className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-[#D97706] hover:text-[#92400E] transition-colors"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" />
+                        Dismiss & try again
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
             <button type="submit" disabled={isLoading}
