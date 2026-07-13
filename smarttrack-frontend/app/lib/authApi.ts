@@ -125,11 +125,19 @@ export const getAuthHeaders = (): HeadersInit => {
  * After success: stores tokens, fetches user profile, caches it.
  */
 export const register = async (data: RegisterRequest): Promise<AuthTokens> => {
-  const response = await fetch(`${API_BASE_URL}/auth/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
+  let response: Response;
+  try {
+    [response] = await fetchWithRetry(
+      `${API_BASE_URL}/auth/register`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      },
+    );
+  } catch (err) {
+    throw new Error(getFetchErrorMessage(err));
+  }
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
@@ -152,15 +160,63 @@ export const register = async (data: RegisterRequest): Promise<AuthTokens> => {
 };
 
 /**
+ * Attempt a fetch with automatic retry on network errors.
+ * Returns [response, wasRetried].
+ */
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit,
+  maxRetries = 2,
+  delayMs = 1000,
+): Promise<[Response, boolean]> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const res = await fetch(url, options);
+      return [res, attempt > 0];
+    } catch (err) {
+      lastError = err;
+      if (attempt < maxRetries) {
+        console.warn(`fetch attempt ${attempt + 1} failed, retrying...`, err);
+        await new Promise((r) => setTimeout(r, delayMs * (attempt + 1)));
+      }
+    }
+  }
+  throw lastError;
+}
+
+/**
+ * Extract a human-friendly message from a fetch error.
+ * The browser throws `TypeError: Failed to fetch` when the server is unreachable.
+ */
+export function getFetchErrorMessage(err: unknown): string {
+  if (err instanceof TypeError && err.message === 'Failed to fetch') {
+    return 'Unable to connect to the server. Please check that the backend is running (port 8000) and try again.';
+  }
+  if (err instanceof Error) return err.message;
+  return 'An unexpected error occurred. Please try again.';
+}
+
+/**
  * Log in with email + password.
+ * Retries automatically on transient network errors.
  * Same persistence guarantees as `register`.
  */
 export const login = async (data: LoginRequest): Promise<AuthTokens> => {
-  const response = await fetch(`${API_BASE_URL}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
+  let response: Response;
+  try {
+    [response] = await fetchWithRetry(
+      `${API_BASE_URL}/auth/login`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      },
+    );
+  } catch (err) {
+    // Network-level failure even after retries
+    throw new Error(getFetchErrorMessage(err));
+  }
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
@@ -187,10 +243,23 @@ export const login = async (data: LoginRequest): Promise<AuthTokens> => {
  * The backend is the source of truth — also keeps localStorage in sync.
  */
 export const getCurrentUser = async (): Promise<UserProfile> => {
-  const response = await fetch(`${API_BASE_URL}/users/me`, {
-    method: 'GET',
-    headers: getAuthHeaders(),
-  });
+  let response: Response;
+  try {
+    [response] = await fetchWithRetry(
+      `${API_BASE_URL}/users/me`,
+      {
+        method: 'GET',
+        headers: getAuthHeaders(),
+      },
+      1,  // fewer retries for profile fetch
+      500,
+    );
+  } catch (err) {
+    if (err instanceof TypeError) {
+      throw new Error('Unable to connect to the server to load your profile.');
+    }
+    throw new Error('Failed to fetch user profile');
+  }
 
   if (!response.ok) {
     if (response.status === 401) {
@@ -213,13 +282,18 @@ export const logout = async (): Promise<void> => {
   }
 
   try {
-    await fetch(`${API_BASE_URL}/auth/logout`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refresh_token: refreshToken }),
-    });
+    await fetchWithRetry(
+      `${API_BASE_URL}/auth/logout`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      },
+      1,
+      500,
+    );
   } catch (error) {
-    console.error('Logout error:', error);
+    console.error('Logout error (server unreachable):', error);
   } finally {
     clearTokens();
   }
@@ -231,15 +305,26 @@ export const refreshAccessToken = async (): Promise<string> => {
     throw new Error('No refresh token available');
   }
 
-  const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ refresh_token: refreshToken }),
-  });
+  let response: Response;
+  try {
+    [response] = await fetchWithRetry(
+      `${API_BASE_URL}/auth/refresh`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      },
+      1,
+      500,
+    );
+  } catch (err) {
+    clearTokens();
+    throw new Error('Unable to connect to the server. Please log in again.');
+  }
 
   if (!response.ok) {
     clearTokens();
-    throw new Error('Failed to refresh token');
+    throw new Error('Session expired. Please log in again.');
   }
 
   const data: { access_token: string } = await response.json();
@@ -248,11 +333,21 @@ export const refreshAccessToken = async (): Promise<string> => {
 };
 
 export const updateUserProfile = async (data: Partial<Pick<UserProfile, 'full_name' | 'avatar_url' | 'programme' | 'shs_level' | 'school' | 'onboarding_completed'>>): Promise<UserProfile> => {
-  const response = await fetch(`${API_BASE_URL}/users/me`, {
-    method: 'PATCH',
-    headers: getAuthHeaders(),
-    body: JSON.stringify(data),
-  });
+  let response: Response;
+  try {
+    [response] = await fetchWithRetry(
+      `${API_BASE_URL}/users/me`,
+      {
+        method: 'PATCH',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      },
+      1,
+      500,
+    );
+  } catch (err) {
+    throw new Error(getFetchErrorMessage(err));
+  }
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
