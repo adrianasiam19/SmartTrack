@@ -2,15 +2,16 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Lock, ChevronDown } from 'lucide-react';
 import { register, Programme, SHSLevel } from '../lib/authApi';
 
 interface PasswordRequirement { label: string; met: boolean; }
 
-// Temporarily scoped to General Science only
-const PROGRAMMES: Programme[] = ['General Science'];
+// All SHS programmes — only General Science is available for now
+const ALL_PROGRAMMES: Programme[] = ['General Science', 'General Arts', 'Business', 'Visual Arts', 'Home Economics', 'Technical'];
+const AVAILABLE_PROGRAMME: Programme = 'General Science';
 const SHS_LEVELS: SHSLevel[] = ['SHS 1', 'SHS 2', 'SHS 3', 'Completed SHS'];
 
 const getPasswordRequirements = (password: string): PasswordRequirement[] => [
@@ -36,6 +37,20 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [progDropdownOpen, setProgDropdownOpen] = useState(false);
+  const progDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close programme dropdown on outside click
+  useEffect(() => {
+    if (!progDropdownOpen) return;
+    const handleClick = (e: MouseEvent) => {
+      if (progDropdownRef.current && !progDropdownRef.current.contains(e.target as Node)) {
+        setProgDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [progDropdownOpen]);
 
   const passwordRequirements = useMemo(() => getPasswordRequirements(password), [password]);
   const passwordsMatch = !!password && password === confirmPassword;
@@ -91,12 +106,52 @@ export default function Register() {
               <label className="block text-sm font-medium text-[#1E293B] mb-1.5">Email</label>
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputBase} placeholder="your.email@example.com" required disabled={isLoading} />
             </div>
-            <div>
+            <div className="relative" ref={progDropdownRef}>
               <label className="block text-sm font-medium text-[#1E293B] mb-1.5">SHS Programme</label>
-              <select value={programme} onChange={(e) => setProgramme(e.target.value as Programme | '')} className={selectBase} required disabled={isLoading}>
-                <option value="" disabled>Choose your programme</option>
-                {PROGRAMMES.map((p) => <option key={p} value={p}>{p}</option>)}
-              </select>
+              <button
+                type="button"
+                onClick={() => !isLoading && setProgDropdownOpen(!progDropdownOpen)}
+                className={`w-full flex items-center justify-between px-4 py-3 bg-white border rounded-xl text-base transition ${programme ? 'text-[#1E293B]' : 'text-[#94A3B8]'} ${progDropdownOpen ? 'ring-2 ring-[#2563EB] border-transparent' : 'border-[#CBD5E1]'}`}
+              >
+                <span>{programme || 'Choose your programme'}</span>
+                <ChevronDown className={`w-4 h-4 text-[#94A3B8] transition-transform ${progDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {progDropdownOpen && (
+                <div className="absolute z-20 mt-1 w-full bg-white border border-[#E2E8F0] rounded-xl shadow-lg overflow-hidden">
+                  {ALL_PROGRAMMES.map((p) => {
+                    const isAvailable = p === AVAILABLE_PROGRAMME;
+                    const isSelected = programme === p;
+                    return (
+                      <button
+                        key={p}
+                        type="button"
+                        disabled={!isAvailable}
+                        onClick={() => {
+                          if (isAvailable) {
+                            setProgramme(p);
+                            setProgDropdownOpen(false);
+                          }
+                        }}
+                        className={`w-full flex items-center gap-3 px-4 py-3 text-left text-sm transition ${
+                          isSelected ? 'bg-[#EEF2FF] text-[#2563EB] font-medium' : ''
+                        } ${
+                          isAvailable
+                            ? 'hover:bg-[#F8FAFC] cursor-pointer text-[#1E293B]'
+                            : 'text-[#94A3B8] cursor-not-allowed'
+                        }`}
+                      >
+                        <span className="flex-1">{p}</span>
+                        {!isAvailable && <Lock className="w-3.5 h-3.5 text-[#CBD5E1]" />}
+                        {isSelected && isAvailable && (
+                          <svg className="w-4 h-4 text-[#2563EB]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-[#1E293B] mb-1.5">SHS Level</label>
