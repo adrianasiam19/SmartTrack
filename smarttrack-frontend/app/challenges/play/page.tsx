@@ -37,119 +37,10 @@ const LEVELS: LevelConfig[] = [
 
 // ── Question Banks ─────────────────────────────────────────────────────────
 
-const LEVEL_1_QUESTIONS: Question[] = [
-  {
-    id: 1, subject: 'Core Mathematics',
-    text: 'If 3x + 7 = 22, what is the value of x?',
-    options: ['3', '5', '7', '15'],
-    correctIndex: 1,
-  },
-  {
-    id: 2, subject: 'Integrated Science',
-    text: 'Which of the following is the chemical symbol for sodium chloride?',
-    options: ['NaCl', 'NaOH', 'H₂O', 'CO₂'],
-    correctIndex: 0,
-  },
-  {
-    id: 3, subject: 'Core Mathematics',
-    text: 'What is the area of a rectangle with length 8 cm and width 5 cm?',
-    options: ['13 cm²', '26 cm²', '40 cm²', '45 cm²'],
-    correctIndex: 2,
-  },
-  {
-    id: 4, subject: 'Integrated Science',
-    text: 'The process by which plants make their own food using sunlight is called:',
-    options: ['Respiration', 'Photosynthesis', 'Digestion', 'Fermentation'],
-    correctIndex: 1,
-  },
-  {
-    id: 5, subject: 'Core Mathematics',
-    text: 'Simplify: 2(x + 3) - 4 = 8. What is x?',
-    options: ['1', '2', '3', '4'],
-    correctIndex: 2,
-  },
-];
-
-const LEVEL_2_QUESTIONS: Question[] = [
-  {
-    id: 1, subject: 'English Language',
-    text: 'Choose the correct word: The team ___ playing well today.',
-    options: ['is', 'are', 'were', 'am'],
-    correctIndex: 0,
-  },
-  {
-    id: 2, subject: 'Social Studies',
-    text: 'Which of the following is the highest mountain in Africa?',
-    options: ['Mount Kenya', 'Mount Kilimanjaro', 'Mount Everest', 'Mount Atlas'],
-    correctIndex: 1,
-  },
-  {
-    id: 3, subject: 'English Language',
-    text: 'What is the opposite of "generous"?',
-    options: ['Kind', 'Stingy', 'Brave', 'Honest'],
-    correctIndex: 1,
-  },
-  {
-    id: 4, subject: 'Social Studies',
-    text: 'Ghana gained independence from British colonial rule in which year?',
-    options: ['1945', '1951', '1957', '1963'],
-    correctIndex: 2,
-  },
-  {
-    id: 5, subject: 'English Language',
-    text: 'Identify the figure of speech: "The wind whispered through the trees."',
-    options: ['Simile', 'Metaphor', 'Personification', 'Hyperbole'],
-    correctIndex: 2,
-  },
-];
-
-const LEVEL_3_QUESTIONS: Question[] = [
-  {
-    id: 1, subject: 'Core Mathematics',
-    text: 'A student scored 18 out of 25 in a test. What is the percentage score?',
-    options: ['62%', '68%', '72%', '80%'],
-    correctIndex: 2,
-  },
-  {
-    id: 2, subject: 'English Language',
-    text: 'Which sentence uses the correct punctuation?',
-    options: [
-      'Where are you going?',
-      'Where are you going.',
-      'where are you going?',
-      'Where are you Going?',
-    ],
-    correctIndex: 0,
-  },
-  {
-    id: 3, subject: 'Integrated Science',
-    text: 'What is the primary function of red blood cells?',
-    options: [
-      'Fight infection',
-      'Carry oxygen',
-      'Clot blood',
-      'Produce hormones',
-    ],
-    correctIndex: 1,
-  },
-  {
-    id: 4, subject: 'Social Studies',
-    text: 'Which principle of democracy ensures that citizens have a say in how they are governed?',
-    options: ['Rule of law', 'Separation of powers', 'Representation', 'Fundamental rights'],
-    correctIndex: 2,
-  },
-  {
-    id: 5, subject: 'Core Mathematics',
-    text: 'Calculate the mean of the following numbers: 4, 8, 12, 16, 20.',
-    options: ['10', '12', '14', '16'],
-    correctIndex: 1,
-  },
-];
-
 const LEVEL_QUESTIONS: Record<number, Question[]> = {
-  1: LEVEL_1_QUESTIONS,
-  2: LEVEL_2_QUESTIONS,
-  3: LEVEL_3_QUESTIONS,
+  1: [],
+  2: [],
+  3: [],
 };
 
 // ── Level Transition Screen ────────────────────────────────────────────────
@@ -332,6 +223,49 @@ function ChallengePlayContent() {
 
   const progressPercent = currentLevelIndex * (100 / LEVELS.length) +
     (currentQuestionIndex / questions.length) * (100 / LEVELS.length);
+
+  // Show empty state if no questions available
+  if (questions.length === 0) {
+    return (
+      <AppLayout>
+        <div className="flex min-h-screen">
+          <Sidebar />
+          <div className="flex-1 lg:pb-0 pb-24">
+            <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-10">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center py-20"
+              >
+                <div className="w-16 h-16 bg-[#EEF2FF] rounded-2xl flex items-center justify-center mx-auto mb-4 border border-[#C7D2FE]">
+                  <span className="text-2xl font-bold text-[#4F46E5]">!</span>
+                </div>
+                <h2 className="text-xl font-bold text-[#1E293B] mb-2">No Questions Available</h2>
+                <p className="text-sm text-[#64748B] mb-6 max-w-sm mx-auto">
+                  Challenge content is being prepared. Check back later or explore other areas of the app.
+                </p>
+                <div className="flex gap-3 justify-center">
+                  <button
+                    onClick={() => router.push('/dashboard')}
+                    className="px-6 py-3 bg-[#2563EB] text-white font-semibold rounded-xl hover:bg-[#1D4ED8] transition-all"
+                  >
+                    Go to Dashboard
+                  </button>
+                  <button
+                    onClick={() => router.push('/challenges/intro')}
+                    className="px-6 py-3 border-2 border-[#E2E8F0] text-[#475569] font-semibold rounded-xl hover:bg-[#F8FAFC] transition-all"
+                  >
+                    Back to Intro
+                  </button>
+                </div>
+              </motion.div>
+            </main>
+          </div>
+          <BottomNav />
+        </div>
+      </AppLayout>
+    );
+  }
 
   const answeredCount = questions.filter((_, idx) => {
     const key = `${currentLevel.id}-${idx}`;

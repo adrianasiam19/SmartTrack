@@ -18,17 +18,8 @@ interface PlaceholderQuestion {
   options: string[];
 }
 
-function generatePlaceholderQuestions(subjectName: string, levelLabel: string): PlaceholderQuestion[] {
-  return Array.from({ length: TOTAL_QUESTIONS }, (_, i) => ({
-    id: i + 1,
-    text: `Question ${i + 1}: This is a placeholder ${subjectName} question for the ${levelLabel} level. Live question content will appear here once the question bank is connected.`,
-    options: [
-      'Option A placeholder text',
-      'Option B placeholder text',
-      'Option C placeholder text',
-      'Option D placeholder text',
-    ],
-  }));
+function generatePlaceholderQuestions(_subjectName: string, _levelLabel: string): PlaceholderQuestion[] {
+  return [];
 }
 
 function ChallengeContent() {
@@ -47,6 +38,49 @@ function ChallengeContent() {
   const [submitted, setSubmitted] = useState(false);
 
   const questions = generatePlaceholderQuestions(subject?.shortName || 'Subject', levelLabel);
+
+  // Guard: if no questions, show empty state
+  if (questions.length === 0) {
+    return (
+      <AppLayout>
+        <div className="flex min-h-screen">
+          <Sidebar />
+          <div className="flex-1 lg:pb-0 pb-24">
+            <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-10">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center py-20"
+              >
+                <div className="w-16 h-16 bg-[#EEF2FF] rounded-2xl flex items-center justify-center mx-auto mb-4 border border-[#C7D2FE]">
+                  <span className="text-2xl font-bold text-[#4F46E5]">!</span>
+                </div>
+                <h2 className="text-xl font-bold text-[#1E293B] mb-2">No Questions Available</h2>
+                <p className="text-sm text-[#64748B] mb-6 max-w-sm mx-auto">
+                  Challenge content is being prepared. Check back later or explore other areas of the app.
+                </p>
+                <div className="flex gap-3 justify-center">
+                  <button
+                    onClick={() => router.push('/dashboard')}
+                    className="px-6 py-3 bg-[#2563EB] text-white font-semibold rounded-xl hover:bg-[#1D4ED8] transition-all"
+                  >
+                    Go to Dashboard
+                  </button>
+                  <button
+                    onClick={() => router.back()}
+                    className="px-6 py-3 border-2 border-[#E2E8F0] text-[#475569] font-semibold rounded-xl hover:bg-[#F8FAFC] transition-all"
+                  >
+                    Go Back
+                  </button>
+                </div>
+              </motion.div>
+            </main>
+          </div>
+          <BottomNav />
+        </div>
+      </AppLayout>
+    );
+  }
 
   const handleSelect = (questionIndex: number, optionIndex: number) => {
     if (submitted) return;
