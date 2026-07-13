@@ -3,15 +3,6 @@ from sqlalchemy.orm import DeclarativeBase
 
 from app.config import settings
 
-import asyncio
-import selectors
-import sys
-
-# On Windows, SQLAlchemy (and other async libs) can have issues with the default ProactorEventLoop policy
-# in certain environments. We force SelectorEventLoop if we're on Windows.
-if sys.platform == "win32":
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-
 # Async engine — connects to Neon PostgreSQL
 engine = create_async_engine(
     settings.DATABASE_URL,
