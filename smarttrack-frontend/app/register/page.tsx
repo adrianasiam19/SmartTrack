@@ -9,7 +9,8 @@ import { register, Programme, SHSLevel } from '../lib/authApi';
 
 interface PasswordRequirement { label: string; met: boolean; }
 
-const PROGRAMMES: Programme[] = ['General Science', 'General Arts'];
+// Temporarily scoped to General Science only
+const PROGRAMMES: Programme[] = ['General Science'];
 const SHS_LEVELS: SHSLevel[] = ['SHS 1', 'SHS 2', 'SHS 3', 'Completed SHS'];
 
 const getPasswordRequirements = (password: string): PasswordRequirement[] => [

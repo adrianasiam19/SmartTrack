@@ -317,11 +317,10 @@ export default function Learning() {
                   <div className="flex-1">
                     <h2 className="font-semibold text-[#1E293B] mb-1">Set Up Your Learning Path</h2>
                     <p className="text-sm text-gray-500 mb-4">Tell us your programme and SHS level for the right lessons.</p>
-                    <div className="grid sm:grid-cols-2 gap-3 mb-4">
-                      <select value={onboardingProg} onChange={(e) => setOnboardingProg(e.target.value as Programme)}
-                        className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-[#1E293B]">
-                        <option value="General Science">General Science</option><option value="General Arts">General Arts</option>
-                      </select>
+                    <div className="grid sm:grid-cols-2 gap-3 mb-4">                        <select value={onboardingProg} onChange={(e) => setOnboardingProg(e.target.value as Programme)}
+                          className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-[#1E293B]">
+                          <option value="General Science">General Science</option>
+                        </select>
                       <select value={onboardingLevel} onChange={(e) => setOnboardingLevel(e.target.value as SHSLevel)}
                         className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-[#1E293B]">
                         <option value="SHS 1">SHS 1</option><option value="SHS 2">SHS 2</option><option value="SHS 3">SHS 3</option><option value="Completed SHS">Completed SHS</option>
