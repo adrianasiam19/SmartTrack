@@ -64,17 +64,30 @@ const MODULE_NAMES: Record<string, Record<string, string>> = {
     s9: 'Production in Local Industry',
     gs: 'General Science Foundations',
   },
-  'Social Studies': {},
+  'Social Studies': {
+    s1: 'A Geographical and Historical Sketch of Africa',
+    s2: 'Civic Ideals and Practices',
+    s3: 'Indigenous Knowledge Systems',
+    s4: 'Ethics and Human Values',
+    s5: 'African Civilisations',
+    s6: 'Revolutions That Changed the World',
+    s7: 'Economic Activities in Africa',
+    s8: 'Entrepreneurship, Workplace Culture and Productivity',
+    s9: 'Consumer Rights, Protection and Responsibilities',
+    s10: 'Financial Literacy',
+  },
 };
 
 function extractModuleKey(lessonId: string): string | null {
-  // coremath-m1t1 → m1, int-sci-s1t1 → s1, eng-lang-s5t1 → s5, gen-sci-s1 → gs
+  // coremath-m1t1 → m1, int-sci-s1t1 → s1, eng-lang-s5t1 → s5, soc-st-s1t1 → s1, gen-sci-s1 → gs
   const mathMatch = lessonId.match(/^coremath-(m\d+)/);
   if (mathMatch) return mathMatch[1];
   const intSciMatch = lessonId.match(/^int-sci-(s\d+)/);
   if (intSciMatch) return intSciMatch[1];
   const engMatch = lessonId.match(/^eng-lang-(s\d+)/);
   if (engMatch) return engMatch[1];
+  const socStMatch = lessonId.match(/^soc-st-(s\d+)/);
+  if (socStMatch) return socStMatch[1];
   const sciMatch = lessonId.match(/^gen-sci-(s\d+)/);
   if (sciMatch) return 'gs'; // all general science → one module
   return null;
