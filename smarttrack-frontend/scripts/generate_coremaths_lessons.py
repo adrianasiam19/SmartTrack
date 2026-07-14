@@ -254,13 +254,23 @@ def build_lesson_content(paragraphs: list[str], section: dict, lesson_idx: int, 
 
 
 def build_prerequisites(section_idx: int, lesson_idx: int) -> list[str]:
+    """Build prerequisite chain.
+    - First lesson of section 1: no prerequisites (freely accessible)
+    - Subsequent lessons in same section: previous lesson in same section
+    - First lesson of sections 2+: last lesson of previous section
+    """
     prereqs = []
-    if section_idx > 0 or lesson_idx > 1:
-        if lesson_idx > 1:
-            prev_id = f"coremath-m{section_idx + 1}t{lesson_idx - 1}"
-            prereqs.append(prev_id)
-        elif section_idx > 0:
-            prereqs.append(f"coremath-m{section_idx}t1")
+    if section_idx == 1 and lesson_idx == 1:
+        # Very first lesson — no prerequisites
+        return prereqs
+    if lesson_idx > 1:
+        # Depends on previous lesson in the same module
+        prereqs.append(f"coremath-m{section_idx}t{lesson_idx - 1}")
+    else:
+        # First lesson of sections 2+ — depends on last lesson of previous section
+        prev_section = section_idx - 1
+        prev_count = len(SECTIONS[prev_section - 1]["subtopics"])
+        prereqs.append(f"coremath-m{prev_section}t{prev_count}")
     return prereqs
 
 

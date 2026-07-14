@@ -21,7 +21,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 1,
     estimatedMinutes: 12,
     xpReward: 30,
-    prerequisites: ["coremath-m1t1"],
+    prerequisites: [],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -112,7 +112,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 2,
     estimatedMinutes: 16,
     xpReward: 40,
-    prerequisites: ["coremath-m2t1"],
+    prerequisites: ["coremath-m1t1"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -203,7 +203,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 3,
     estimatedMinutes: 20,
     xpReward: 50,
-    prerequisites: ["coremath-m2t2"],
+    prerequisites: ["coremath-m1t2"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -294,7 +294,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 4,
     estimatedMinutes: 24,
     xpReward: 60,
-    prerequisites: ["coremath-m2t3"],
+    prerequisites: ["coremath-m1t3"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -385,7 +385,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 1,
     estimatedMinutes: 12,
     xpReward: 30,
-    prerequisites: ["coremath-m2t1"],
+    prerequisites: ["coremath-m1t4"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -476,7 +476,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 2,
     estimatedMinutes: 16,
     xpReward: 40,
-    prerequisites: ["coremath-m3t1"],
+    prerequisites: ["coremath-m2t1"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -567,7 +567,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 3,
     estimatedMinutes: 20,
     xpReward: 50,
-    prerequisites: ["coremath-m3t2"],
+    prerequisites: ["coremath-m2t2"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -658,7 +658,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 4,
     estimatedMinutes: 24,
     xpReward: 60,
-    prerequisites: ["coremath-m3t3"],
+    prerequisites: ["coremath-m2t3"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -749,7 +749,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 1,
     estimatedMinutes: 12,
     xpReward: 30,
-    prerequisites: ["coremath-m3t1"],
+    prerequisites: ["coremath-m2t4"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -840,7 +840,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 2,
     estimatedMinutes: 16,
     xpReward: 40,
-    prerequisites: ["coremath-m4t1"],
+    prerequisites: ["coremath-m3t1"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -931,7 +931,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 3,
     estimatedMinutes: 20,
     xpReward: 50,
-    prerequisites: ["coremath-m4t2"],
+    prerequisites: ["coremath-m3t2"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -1022,7 +1022,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 4,
     estimatedMinutes: 24,
     xpReward: 60,
-    prerequisites: ["coremath-m4t3"],
+    prerequisites: ["coremath-m3t3"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -1113,7 +1113,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 1,
     estimatedMinutes: 12,
     xpReward: 30,
-    prerequisites: ["coremath-m4t1"],
+    prerequisites: ["coremath-m3t4"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -1204,7 +1204,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 2,
     estimatedMinutes: 16,
     xpReward: 40,
-    prerequisites: ["coremath-m5t1"],
+    prerequisites: ["coremath-m4t1"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -1295,7 +1295,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 3,
     estimatedMinutes: 20,
     xpReward: 50,
-    prerequisites: ["coremath-m5t2"],
+    prerequisites: ["coremath-m4t2"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -1386,7 +1386,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 4,
     estimatedMinutes: 24,
     xpReward: 60,
-    prerequisites: ["coremath-m5t3"],
+    prerequisites: ["coremath-m4t3"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -1477,7 +1477,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 1,
     estimatedMinutes: 12,
     xpReward: 30,
-    prerequisites: ["coremath-m5t1"],
+    prerequisites: ["coremath-m4t4"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -1568,7 +1568,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 2,
     estimatedMinutes: 16,
     xpReward: 40,
-    prerequisites: ["coremath-m6t1"],
+    prerequisites: ["coremath-m5t1"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -1659,7 +1659,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 3,
     estimatedMinutes: 20,
     xpReward: 50,
-    prerequisites: ["coremath-m6t2"],
+    prerequisites: ["coremath-m5t2"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -1750,7 +1750,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 4,
     estimatedMinutes: 24,
     xpReward: 60,
-    prerequisites: ["coremath-m6t3"],
+    prerequisites: ["coremath-m5t3"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -1841,7 +1841,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 1,
     estimatedMinutes: 12,
     xpReward: 30,
-    prerequisites: ["coremath-m6t1"],
+    prerequisites: ["coremath-m5t4"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -1932,7 +1932,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 2,
     estimatedMinutes: 16,
     xpReward: 40,
-    prerequisites: ["coremath-m7t1"],
+    prerequisites: ["coremath-m6t1"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -2023,7 +2023,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 3,
     estimatedMinutes: 20,
     xpReward: 50,
-    prerequisites: ["coremath-m7t2"],
+    prerequisites: ["coremath-m6t2"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -2114,7 +2114,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 4,
     estimatedMinutes: 24,
     xpReward: 60,
-    prerequisites: ["coremath-m7t3"],
+    prerequisites: ["coremath-m6t3"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -2205,7 +2205,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 1,
     estimatedMinutes: 12,
     xpReward: 30,
-    prerequisites: ["coremath-m7t1"],
+    prerequisites: ["coremath-m6t4"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -2296,7 +2296,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 2,
     estimatedMinutes: 16,
     xpReward: 40,
-    prerequisites: ["coremath-m8t1"],
+    prerequisites: ["coremath-m7t1"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -2387,7 +2387,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 3,
     estimatedMinutes: 20,
     xpReward: 50,
-    prerequisites: ["coremath-m8t2"],
+    prerequisites: ["coremath-m7t2"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -2478,7 +2478,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 4,
     estimatedMinutes: 24,
     xpReward: 60,
-    prerequisites: ["coremath-m8t3"],
+    prerequisites: ["coremath-m7t3"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -2569,7 +2569,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 1,
     estimatedMinutes: 12,
     xpReward: 30,
-    prerequisites: ["coremath-m8t1"],
+    prerequisites: ["coremath-m7t4"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -2660,7 +2660,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 2,
     estimatedMinutes: 16,
     xpReward: 40,
-    prerequisites: ["coremath-m9t1"],
+    prerequisites: ["coremath-m8t1"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -2751,7 +2751,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 3,
     estimatedMinutes: 20,
     xpReward: 50,
-    prerequisites: ["coremath-m9t2"],
+    prerequisites: ["coremath-m8t2"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -2842,7 +2842,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 4,
     estimatedMinutes: 24,
     xpReward: 60,
-    prerequisites: ["coremath-m9t3"],
+    prerequisites: ["coremath-m8t3"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -2933,7 +2933,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 1,
     estimatedMinutes: 12,
     xpReward: 30,
-    prerequisites: ["coremath-m9t1"],
+    prerequisites: ["coremath-m8t4"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -3024,7 +3024,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 2,
     estimatedMinutes: 16,
     xpReward: 40,
-    prerequisites: ["coremath-m10t1"],
+    prerequisites: ["coremath-m9t1"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -3115,7 +3115,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 3,
     estimatedMinutes: 20,
     xpReward: 50,
-    prerequisites: ["coremath-m10t2"],
+    prerequisites: ["coremath-m9t2"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
@@ -3206,7 +3206,7 @@ export const CORE_MATHS_SHS1_LESSONS: Lesson[] = [
     difficulty: 4,
     estimatedMinutes: 24,
     xpReward: 60,
-    prerequisites: ["coremath-m10t3"],
+    prerequisites: ["coremath-m9t3"],
     shsLevels: ["SHS 1"],
     suggestedLevel: "SHS 1",
     steps: [
