@@ -15,6 +15,7 @@ import { SOCIAL_STUDIES_SHS1_LESSONS } from '.\/generatedSocialStudiesLessons';
 import { BIOLOGY_SHS1_LESSONS } from '.\/generatedBiologyLessons';
 import { CHEMISTRY_SHS1_LESSONS } from '.\/generatedChemistryLessons';
 import { ADD_MATHS_SHS1_LESSONS } from '.\/generatedAdditionalMathsLessons';
+import { PHYSICS_SHS1_LESSONS } from '.\/generatedPhysicsLessons';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -153,6 +154,9 @@ export const ALL_LESSONS: Lesson[] = [
 
   // Additional Mathematics SHS 1 — auto-generated from curriculum materials (Elective)
   ...ADD_MATHS_SHS1_LESSONS,
+
+  // Physics SHS 1 — auto-generated from curriculum materials (Elective)
+  ...PHYSICS_SHS1_LESSONS,
 
   // General Science Year 1 — auto-generated
   ...GENERAL_SCIENCE_LESSONS,
