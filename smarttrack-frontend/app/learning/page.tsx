@@ -46,6 +46,15 @@ const MODULE_NAMES: Record<string, Record<string, string>> = {
     m7: 'Perimeter, Area and Volume',
     m8: 'Data Organisation, Analysis and Presentation',
     m9: 'Probability of Independent Events',
+    s2m1: 'Number Sets',
+    s2m2: 'Equations and Inequalities',
+    s2m3: 'Rigid Motion',
+    s2m4: 'Data Collection, Organisation and Representation',
+    s2m5: 'Ratios, Rates and Proportions',
+    s2m6: 'Patterns and Relations Involving Sequences and Series',
+    s2m7: 'Surface Areas and Volumes',
+    s2m8: 'Working with Data and Probability Experiments',
+    s2m9: 'Vectors and Trigonometry',
   },
   'English Language': {
     s5: 'Discourse and Conversation',
@@ -128,7 +137,9 @@ const MODULE_NAMES: Record<string, Record<string, string>> = {
 };
 
 function extractModuleKey(lessonId: string): string | null {
-  // coremath-m1t1 → m1, int-sci-s1t1 → s1, eng-lang-s5t1 → s5, soc-st-s1t1 → s1, gen-sci-s1 → gs
+  // coremath-m1t1 → m1, coremath2-s2m1t1 → s2m1, int-sci-s1t1 → s1, etc.
+  const math2Match = lessonId.match(/^coremath2-(s2m\d+)/);
+  if (math2Match) return math2Match[1];
   const mathMatch = lessonId.match(/^coremath-(m\d+)/);
   if (mathMatch) return mathMatch[1];
   const intSciMatch = lessonId.match(/^int-sci-(s\d+)/);
