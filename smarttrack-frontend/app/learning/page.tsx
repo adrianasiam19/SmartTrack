@@ -27,6 +27,7 @@ const SUBJECTS = [
 const ELECTIVE_SUBJECTS = [
   { id: 'Biology', label: 'Biology', description: 'Living organisms, cells, genetics and ecology', color: '#16A34A', icon: '🧬' },
   { id: 'Chemistry', label: 'Chemistry', description: 'Atoms, molecules, reactions and the periodic table', color: '#0EA5E9', icon: '⚗️' },
+  { id: 'Additional Mathematics', label: 'Additional Mathematics', description: 'Algebra, calculus, matrices, vectors and probability', color: '#7C3AED', icon: '🔢' },
 ] as const;
 
 type SubjectId = (typeof SUBJECTS)[number]['id'] | (typeof ELECTIVE_SUBJECTS)[number]['id'];
@@ -101,6 +102,18 @@ const MODULE_NAMES: Record<string, Record<string, string>> = {
     s9: 'Qualitative and Quantitative Analysis of Organic Compounds',
     s10: 'Classifications of Organic Compounds',
   },
+  'Additional Mathematics': {
+    s1: 'Binary Operations, Sets and Binomial',
+    s2: 'Surds, Indices and Logarithms',
+    s3: 'Sequences and Functions',
+    s4: 'Matrices',
+    s5: 'Straight Lines',
+    s6: 'Vectors',
+    s7: 'Trigonometric Functions and Their Applications',
+    s8: 'Limits and Differentiation',
+    s9: 'Statistics',
+    s10: 'Combinations, Permutations and Probability',
+  },
 };
 
 function extractModuleKey(lessonId: string): string | null {
@@ -113,6 +126,8 @@ function extractModuleKey(lessonId: string): string | null {
   if (engMatch) return engMatch[1];
   const socStMatch = lessonId.match(/^soc-st-(s\d+)/);
   if (socStMatch) return socStMatch[1];
+  const addMathMatch = lessonId.match(/^add-math-(s\d+)/);
+  if (addMathMatch) return addMathMatch[1];
   const chemMatch = lessonId.match(/^chem-(s\d+)/);
   if (chemMatch) return chemMatch[1];
   const bioMatch = lessonId.match(/^bio-(s\d+)/);
