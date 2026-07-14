@@ -28,6 +28,7 @@ const ELECTIVE_SUBJECTS = [
   { id: 'Biology', label: 'Biology', description: 'Living organisms, cells, genetics and ecology', color: '#16A34A', icon: '🧬' },
   { id: 'Chemistry', label: 'Chemistry', description: 'Atoms, molecules, reactions and the periodic table', color: '#0EA5E9', icon: '⚗️' },
   { id: 'Additional Mathematics', label: 'Additional Mathematics', description: 'Algebra, calculus, matrices, vectors and probability', color: '#7C3AED', icon: '🔢' },
+  { id: 'Physics', label: 'Physics', description: 'Motion, energy, light, electricity and nuclear physics', color: '#6366F1', icon: '⚛️' },
 ] as const;
 
 type SubjectId = (typeof SUBJECTS)[number]['id'] | (typeof ELECTIVE_SUBJECTS)[number]['id'];
@@ -114,6 +115,16 @@ const MODULE_NAMES: Record<string, Record<string, string>> = {
     s9: 'Statistics',
     s10: 'Combinations, Permutations and Probability',
   },
+  'Physics': {
+    s1: 'Introduction to Physics and Matter',
+    s2: 'Motion and Pressure',
+    s3: 'Thermometers and Temperature',
+    s4: 'Mirrors, Reflection and Refraction',
+    s5: 'Behaviour of Light Through Different Media',
+    s6: 'Electrical Charge and Magnetism',
+    s7: 'Semi Conductors, Transducers and Their Applications',
+    s8: 'Fundamental Concepts in Atomic and Nuclear Physics',
+  },
 };
 
 function extractModuleKey(lessonId: string): string | null {
@@ -126,6 +137,8 @@ function extractModuleKey(lessonId: string): string | null {
   if (engMatch) return engMatch[1];
   const socStMatch = lessonId.match(/^soc-st-(s\d+)/);
   if (socStMatch) return socStMatch[1];
+  const physMatch = lessonId.match(/^phys-(s\d+)/);
+  if (physMatch) return physMatch[1];
   const addMathMatch = lessonId.match(/^add-math-(s\d+)/);
   if (addMathMatch) return addMathMatch[1];
   const chemMatch = lessonId.match(/^chem-(s\d+)/);
