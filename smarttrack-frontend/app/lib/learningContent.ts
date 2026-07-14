@@ -10,6 +10,7 @@
 import { GENERAL_SCIENCE_LESSONS, GENERAL_SCIENCE_UNIT } from '.\/generalScienceContent';
 import { CORE_MATHS_SHS1_LESSONS } from '.\/generatedCoreMathsLessons';
 import { INTER_SCIENCE_SHS1_LESSONS } from '.\/generatedInterScienceLessons';
+import { ENGLISH_SHS1_LESSONS } from '.\/generatedEnglishLessons';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -133,6 +134,9 @@ export const ALL_LESSONS: Lesson[] = [
 
   // Integrated Science SHS 1 — auto-generated from curriculum materials
   ...INTER_SCIENCE_SHS1_LESSONS,
+
+  // English Language SHS 1 — auto-generated from curriculum materials
+  ...ENGLISH_SHS1_LESSONS,
 
   // General Science Year 1 — auto-generated
   ...GENERAL_SCIENCE_LESSONS,
