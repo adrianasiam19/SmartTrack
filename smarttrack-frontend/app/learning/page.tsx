@@ -26,6 +26,7 @@ const SUBJECTS = [
 // ── Elective Subjects ─────────────────────────────────────────────────────
 const ELECTIVE_SUBJECTS = [
   { id: 'Biology', label: 'Biology', description: 'Living organisms, cells, genetics and ecology', color: '#16A34A', icon: '🧬' },
+  { id: 'Chemistry', label: 'Chemistry', description: 'Atoms, molecules, reactions and the periodic table', color: '#0EA5E9', icon: '⚗️' },
 ] as const;
 
 type SubjectId = (typeof SUBJECTS)[number]['id'] | (typeof ELECTIVE_SUBJECTS)[number]['id'];
@@ -88,6 +89,18 @@ const MODULE_NAMES: Record<string, Record<string, string>> = {
     s4: 'Organisms',
     s5: 'Ecology',
   },
+  'Chemistry': {
+    s1: 'Introduction to Chemistry, Scientific Method and Atoms',
+    s2: 'The Concept of the Moles',
+    s3: 'Mole Ratios, Chemical Formulae and Chemical Equations',
+    s4: 'Kinetic Theory and the States of Matter (Part 1)',
+    s5: 'Kinetic Theory and the States of Matter (Part 2)',
+    s6: 'Periodic Properties',
+    s7: 'Inter Atomic Bonding',
+    s8: 'Intermolecular Bonding',
+    s9: 'Qualitative and Quantitative Analysis of Organic Compounds',
+    s10: 'Classifications of Organic Compounds',
+  },
 };
 
 function extractModuleKey(lessonId: string): string | null {
@@ -100,6 +113,8 @@ function extractModuleKey(lessonId: string): string | null {
   if (engMatch) return engMatch[1];
   const socStMatch = lessonId.match(/^soc-st-(s\d+)/);
   if (socStMatch) return socStMatch[1];
+  const chemMatch = lessonId.match(/^chem-(s\d+)/);
+  if (chemMatch) return chemMatch[1];
   const bioMatch = lessonId.match(/^bio-(s\d+)/);
   if (bioMatch) return bioMatch[1];
   const sciMatch = lessonId.match(/^gen-sci-(s\d+)/);
