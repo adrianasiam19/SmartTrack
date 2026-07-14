@@ -13,6 +13,7 @@ import { INTER_SCIENCE_SHS1_LESSONS } from '.\/generatedInterScienceLessons';
 import { ENGLISH_SHS1_LESSONS } from '.\/generatedEnglishLessons';
 import { SOCIAL_STUDIES_SHS1_LESSONS } from '.\/generatedSocialStudiesLessons';
 import { BIOLOGY_SHS1_LESSONS } from '.\/generatedBiologyLessons';
+import { CHEMISTRY_SHS1_LESSONS } from '.\/generatedChemistryLessons';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -145,6 +146,9 @@ export const ALL_LESSONS: Lesson[] = [
 
   // Biology SHS 1 — auto-generated from curriculum materials (Elective)
   ...BIOLOGY_SHS1_LESSONS,
+
+  // Chemistry SHS 1 — auto-generated from curriculum materials (Elective)
+  ...CHEMISTRY_SHS1_LESSONS,
 
   // General Science Year 1 — auto-generated
   ...GENERAL_SCIENCE_LESSONS,
