@@ -17,8 +17,8 @@ import { getLearningStage, getCurrentZone, calculateZoneProgress } from '../lib/
 
 // ── Core Subjects ──────────────────────────────────────────────────────────
 const SUBJECTS = [
-  { id: 'Core Mathematics', label: 'Core Mathematics', description: 'Numbers, algebra, geometry, statistics and more', color: '#4F46E5' },
-  { id: 'English Language', label: 'English Language', description: 'Comprehension, grammar, literature and writing', color: '#D97706' },
+  { id: 'Core Mathematics', label: 'Core Mathematics', description: 'Number sense, algebra, geometry, statistics and problem solving', color: '#4F46E5' },
+  { id: 'English Language', label: 'English Language', description: 'Grammar, comprehension, composition, oral skills and literature', color: '#D97706' },
   { id: 'Integrated Science', label: 'Integrated Science', description: 'Scientific method, materials, force, energy and health', color: '#059669' },
   { id: 'Social Studies', label: 'Social Studies', description: 'Governance, history, economics and civic responsibility', color: '#7C3AED' },
 ] as const;
