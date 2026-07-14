@@ -29,14 +29,15 @@ type DrillView = 'subjects' | 'levels' | 'modules' | 'lessons';
 // ── Module definitions ────────────────────────────────────────────────────
 const MODULE_NAMES: Record<string, Record<string, string>> = {
   'Core Mathematics': {
-    m1: 'Number and Numeration',
-    m2: 'Fractions, Decimals and Percentages',
-    m3: 'Algebraic Processes',
-    m4: 'Equations and Inequalities',
-    m5: 'Geometry and Trigonometry',
-    m6: 'Vectors and Bearings',
-    m7: 'Mensuration',
-    m8: 'Statistics and Probability',
+    m1: 'Number Sets',
+    m2: 'Fractions and Percentages',
+    m3: 'Algebraic Expressions and Factorisation',
+    m4: 'Linear Equations, Relations and Functions',
+    m5: 'Angles and the Pythagorean Theorem',
+    m6: 'Vectors and Trigonometry',
+    m7: 'Perimeter, Area and Volume',
+    m8: 'Data Organisation, Analysis and Presentation',
+    m9: 'Probability of Independent Events',
   },
   'English Language': {},
   'Integrated Science': {

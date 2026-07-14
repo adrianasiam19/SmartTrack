@@ -8,6 +8,7 @@
  */
 
 import { GENERAL_SCIENCE_LESSONS, GENERAL_SCIENCE_UNIT } from '.\/generalScienceContent';
+import { CORE_MATHS_SHS1_LESSONS } from '.\/generatedCoreMathsLessons';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -126,8 +127,11 @@ export type MathVizConfig = {
 // ── Lesson data ────────────────────────────────────────────────────────────
 
 export const ALL_LESSONS: Lesson[] = [
-  // All lesson content has been cleared.
-  // Add new lessons here or import from content modules.
+  // Core Mathematics SHS 1 — auto-generated from curriculum materials
+  ...CORE_MATHS_SHS1_LESSONS,
+
+  // General Science Year 1 — auto-generated
+  ...GENERAL_SCIENCE_LESSONS,
 ];
 
 // ── Helper functions ──────────────────────────────────────────────────────
