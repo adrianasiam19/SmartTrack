@@ -68,6 +68,30 @@ const MODULE_NAMES: Record<string, Record<string, string>> = {
     s22: 'Ideas',
     s23: 'Analysing Non-Fiction Texts',
     s24: 'Article Writing',
+    s2e1: 'Diphthongs and Reading Comprehension',
+    s2e2: 'Subordinate Clause, Paragraph Coherence and Poetry',
+    s2e3: 'Triphthongs, Question Types and Clauses',
+    s2e4: 'Noun Clause, Cohesive Devices and Poetry Appreciation',
+    s2e5: 'Affricates and Approximants, Grammatical Structures and Clauses',
+    s2e6: 'Relative/Adjectival Clause, Essay and Poetry',
+    s2e7: 'Consonant Clusters, Reading and Adverbial Clause',
+    s2e8: 'Adverbial Clause, Narrative Writing and Poetry',
+    s2e9: 'Consonant Clusters, Reading Fluently and Subject-Verb Agreement',
+    s2e10: 'Subject-Verb Agreement, Speech Writing and Imagery',
+    s2e11: 'Oral Narrative, Summary Writing and Subject-Verb Agreement',
+    s2e12: 'Active and Passive Voice, Speech Writing and Imagery',
+    s2e13: 'Stress, Intonation and Meaning, Active Voice and Summary Writing',
+    s2e14: 'Cues in Communication, Registers and Speech Writing',
+    s2e15: 'Cultural Perspective in Communication and Vocabulary in Context',
+    s2e16: 'Minutes Writing',
+    s2e17: 'Report Writing',
+    s2e18: 'Synonyms',
+    s2e19: 'Antonyms',
+    s2e20: 'Article Writing',
+    s2e21: 'Research and Presentation',
+    s2e22: 'Word Collocations',
+    s2e23: 'Formal Letter Writing',
+    s2e24: 'Research and Presentation',
   },
   'Integrated Science': {
     s1: 'Exploring Materials — Characteristics of Science',
@@ -144,6 +168,8 @@ function extractModuleKey(lessonId: string): string | null {
   if (mathMatch) return mathMatch[1];
   const intSciMatch = lessonId.match(/^int-sci-(s\d+)/);
   if (intSciMatch) return intSciMatch[1];
+  const eng2Match = lessonId.match(/^eng-lang2-(s2e\d+)/);
+  if (eng2Match) return eng2Match[1];
   const engMatch = lessonId.match(/^eng-lang-(s\d+)/);
   if (engMatch) return engMatch[1];
   const socStMatch = lessonId.match(/^soc-st-(s\d+)/);

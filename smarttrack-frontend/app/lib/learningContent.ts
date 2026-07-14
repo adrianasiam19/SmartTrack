@@ -12,6 +12,7 @@ import { CORE_MATHS_SHS1_LESSONS } from '.\/generatedCoreMathsLessons';
 import { CORE_MATHS2_SHS2_LESSONS } from '.\/generatedCoreMaths2Lessons';
 import { INTER_SCIENCE_SHS1_LESSONS } from '.\/generatedInterScienceLessons';
 import { ENGLISH_SHS1_LESSONS } from '.\/generatedEnglishLessons';
+import { ENG_LANG2_SHS2_LESSONS } from '.\/generatedEngLang2Lessons';
 import { SOCIAL_STUDIES_SHS1_LESSONS } from '.\/generatedSocialStudiesLessons';
 import { BIOLOGY_SHS1_LESSONS } from '.\/generatedBiologyLessons';
 import { CHEMISTRY_SHS1_LESSONS } from '.\/generatedChemistryLessons';
@@ -146,6 +147,9 @@ export const ALL_LESSONS: Lesson[] = [
 
   // English Language SHS 1 — auto-generated from curriculum materials
   ...ENGLISH_SHS1_LESSONS,
+
+  // English Language SHS 2 — auto-generated from curriculum materials
+  ...ENG_LANG2_SHS2_LESSONS,
 
   // Social Studies SHS 1 — auto-generated from curriculum materials
   ...SOCIAL_STUDIES_SHS1_LESSONS,
