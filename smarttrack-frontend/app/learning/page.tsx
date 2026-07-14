@@ -15,7 +15,7 @@ import {
 import { ALL_LESSONS, getLessonById, type Lesson } from '../lib/learningContent';
 import { getLearningStage, getCurrentZone, calculateZoneProgress } from '../lib/adaptiveEngine';
 
-// ── Subjects ───────────────────────────────────────────────────────────────
+// ── Core Subjects ──────────────────────────────────────────────────────────
 const SUBJECTS = [
   { id: 'Core Mathematics', label: 'Core Mathematics', description: 'Numbers, algebra, geometry, statistics and more', color: '#4F46E5' },
   { id: 'English Language', label: 'English Language', description: 'Comprehension, grammar, literature and writing', color: '#D97706' },
@@ -23,8 +23,13 @@ const SUBJECTS = [
   { id: 'Social Studies', label: 'Social Studies', description: 'Governance, history, economics and civic responsibility', color: '#7C3AED' },
 ] as const;
 
-type SubjectId = (typeof SUBJECTS)[number]['id'];
-type DrillView = 'subjects' | 'modules' | 'lessons' | 'coming-soon';
+// ── Elective Subjects ─────────────────────────────────────────────────────
+const ELECTIVE_SUBJECTS = [
+  { id: 'Biology', label: 'Biology', description: 'Living organisms, cells, genetics and ecology', color: '#16A34A', icon: '🧬' },
+] as const;
+
+type SubjectId = (typeof SUBJECTS)[number]['id'] | (typeof ELECTIVE_SUBJECTS)[number]['id'];
+type DrillView = 'subjects' | 'elective-subjects' | 'modules' | 'lessons' | 'coming-soon';
 
 // ── Module definitions ────────────────────────────────────────────────────
 const MODULE_NAMES: Record<string, Record<string, string>> = {
@@ -76,6 +81,13 @@ const MODULE_NAMES: Record<string, Record<string, string>> = {
     s9: 'Consumer Rights, Protection and Responsibilities',
     s10: 'Financial Literacy',
   },
+  'Biology': {
+    s1: 'Introduction to Biology and the Scientific Method',
+    s2: 'Fish Farming, Processing and Conservation',
+    s3: 'Cell Biology',
+    s4: 'Organisms',
+    s5: 'Ecology',
+  },
 };
 
 function extractModuleKey(lessonId: string): string | null {
@@ -88,6 +100,8 @@ function extractModuleKey(lessonId: string): string | null {
   if (engMatch) return engMatch[1];
   const socStMatch = lessonId.match(/^soc-st-(s\d+)/);
   if (socStMatch) return socStMatch[1];
+  const bioMatch = lessonId.match(/^bio-(s\d+)/);
+  if (bioMatch) return bioMatch[1];
   const sciMatch = lessonId.match(/^gen-sci-(s\d+)/);
   if (sciMatch) return 'gs'; // all general science → one module
   return null;
@@ -211,6 +225,7 @@ export default function Learning() {
   const handleBack = () => {
     if (view === 'lessons') { setView('modules'); setSelectedModule(null); }
     else if (view === 'modules') { setView('subjects'); setSelectedSubject(null); setSelectedLevel(null); }
+    else if (view === 'elective-subjects') { setView('subjects'); }
     else if (view === 'coming-soon') { setView('subjects'); setSelectedSubject(null); }
   };
 
@@ -234,7 +249,8 @@ export default function Learning() {
   // ── Breadcrumb ───────────────────────────────────────────────────────────
   const breadcrumb = useMemo(() => {
     const parts: { label: string; action: () => void }[] = [{ label: 'Learning Center', action: () => { setView('subjects'); setSelectedSubject(null); setSelectedLevel(null); setSelectedModule(null); } }];
-    if (selectedSubject) parts.push({ label: selectedSubject, action: () => { setView('subjects'); setSelectedSubject(null); setSelectedLevel(null); setSelectedModule(null); } });
+    if (view === 'elective-subjects') parts.push({ label: 'Elective Subjects', action: () => { setView('subjects'); } });
+    if (selectedSubject && view !== 'elective-subjects') parts.push({ label: selectedSubject, action: () => { setView('subjects'); setSelectedSubject(null); setSelectedLevel(null); setSelectedModule(null); } });
     if (selectedLevel && view !== 'coming-soon') parts.push({ label: selectedLevel, action: () => { setView('modules'); setSelectedModule(null); } });
     if (selectedModule) parts.push({ label: selectedModule.label, action: () => { setView('lessons'); } });
     return parts;
@@ -430,8 +446,96 @@ export default function Learning() {
               {/* ── Subjects View ── */}
               {view === 'subjects' && (
                 <motion.div key="subjects" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                  {/* Core Subjects section */}
+                  <div className="mb-2">
+                    <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Core Subjects</h2>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      {SUBJECTS.map((subject) => {
+                        const levelLessons = shsLevel
+                          ? getLessonsForSubject(subject.id, programme).filter(
+                              (l) => l.suggestedLevel === shsLevel || l.shsLevels?.includes(shsLevel)
+                            )
+                          : [];
+                        const lessons = shsLevel ? levelLessons : getLessonsForSubject(subject.id, programme);
+                        const completed = lessons.filter((l) => completedLessons.has(l.id)).length;
+                        const hasContent = lessons.length > 0;
+                        return (
+                          <button
+                            key={subject.id}
+                            onClick={() => hasContent && handleSelectSubject(subject.id)}
+                            disabled={!hasContent}
+                            className={`text-left bg-white border rounded-xl p-5 transition-all duration-200 ${
+                              hasContent
+                                ? 'border-gray-200 hover:border-gray-300 hover:shadow-sm cursor-pointer'
+                                : 'border-gray-100 opacity-50 cursor-default'
+                            }`}
+                          >
+                            <div className="flex items-start gap-4">
+                              <div
+                                className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-base flex-shrink-0"
+                                style={{ backgroundColor: subject.color }}
+                              >
+                                {subject.label.charAt(0)}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h3 className="font-semibold text-[#1E293B]">{subject.label}</h3>
+                                <p className="text-xs text-gray-500 mt-0.5">{subject.description}</p>
+                                {hasContent ? (
+                                  <div className="flex items-center gap-2 mt-2">
+                                    <div className="flex-1 bg-gray-100 rounded-full h-1 overflow-hidden">
+                                      <div className="h-full bg-[#4F46E5] rounded-full transition-all"
+                                        style={{ width: `${(completed / Math.max(1, lessons.length)) * 100}%` }} />
+                                    </div>
+                                    <span className="text-xs text-gray-400 flex-shrink-0">{completed}/{lessons.length}</span>
+                                  </div>
+                                ) : (
+                                  <p className="text-xs text-gray-400 mt-2 italic">Coming soon</p>
+                                )}
+                              </div>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Divider */}
+                  <div className="relative my-8">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-200" />
+                    </div>
+                    <div className="relative flex justify-center">
+                      <span className="bg-gray-50 px-3 text-xs text-gray-400 font-medium">Elective Subjects</span>
+                    </div>
+                  </div>
+
+                  {/* View Elective Subjects button */}
+                  <button
+                    onClick={() => setView('elective-subjects')}
+                    className="w-full text-left bg-white border-2 border-dashed border-gray-200 rounded-xl p-5 transition-all duration-200 hover:border-[#4F46E5]/40 hover:bg-[#EEF2FF]/30 cursor-pointer group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-xl bg-[#EEF2FF] flex items-center justify-center text-[#4F46E5] font-bold text-base flex-shrink-0 group-hover:bg-[#4F46E5] group-hover:text-white transition-colors">
+                        +
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-[#1E293B] group-hover:text-[#4F46E5] transition-colors">Explore Elective Subjects</h3>
+                        <p className="text-xs text-gray-500 mt-0.5">Biology, Chemistry, Physics, Elective Mathematics and more</p>
+                      </div>
+                      <svg className="w-5 h-5 text-gray-300 group-hover:text-[#4F46E5] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </button>
+                </motion.div>
+              )}
+
+              {/* ── Elective Subjects View ── */}
+              {view === 'elective-subjects' && (
+                <motion.div key="elective-subjects" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                  <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-3">Science Electives</h2>
                   <div className="grid sm:grid-cols-2 gap-4">
-                    {SUBJECTS.map((subject) => {
+                    {ELECTIVE_SUBJECTS.map((subject) => {
                       const levelLessons = shsLevel
                         ? getLessonsForSubject(subject.id, programme).filter(
                             (l) => l.suggestedLevel === shsLevel || l.shsLevels?.includes(shsLevel)
@@ -456,7 +560,7 @@ export default function Learning() {
                               className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-base flex-shrink-0"
                               style={{ backgroundColor: subject.color }}
                             >
-                              {subject.label.charAt(0)}
+                              {subject.icon}
                             </div>
                             <div className="flex-1 min-w-0">
                               <h3 className="font-semibold text-[#1E293B]">{subject.label}</h3>
