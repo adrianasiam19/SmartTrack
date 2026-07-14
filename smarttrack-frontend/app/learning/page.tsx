@@ -24,7 +24,7 @@ const SUBJECTS = [
 ] as const;
 
 type SubjectId = (typeof SUBJECTS)[number]['id'];
-type DrillView = 'subjects' | 'levels' | 'modules' | 'lessons';
+type DrillView = 'subjects' | 'modules' | 'lessons' | 'coming-soon';
 
 // ── Module definitions ────────────────────────────────────────────────────
 const MODULE_NAMES: Record<string, Record<string, string>> = {
@@ -97,14 +97,6 @@ function getModuleLabel(subject: string, moduleKey: string): string {
   return MODULE_NAMES[subject]?.[moduleKey] || `Module ${moduleKey.toUpperCase()}`;
 }
 
-// ── Level labels ──────────────────────────────────────────────────────────
-const LEVEL_LABELS = ['SHS 1', 'SHS 2', 'SHS 3'] as const;
-const LEVEL_DESCRIPTIONS: Record<string, string> = {
-  'SHS 1': 'Foundation · Core concepts and introductory topics',
-  'SHS 2': 'Intermediate · Deeper understanding and application',
-  'SHS 3': 'Advanced · Mastery and exam preparation',
-};
-
 // ── Helpers ───────────────────────────────────────────────────────────────
 function getLessonsForSubject(subject: string, programmeFilter?: string | null): Lesson[] {
   // Map 'Integrated Science' to include 'General Science' lessons
@@ -117,12 +109,6 @@ function getLessonsForSubject(subject: string, programmeFilter?: string | null):
     lessons = lessons.filter((l) => l.programme === 'Both' || l.programme === programmeFilter);
   }
   return lessons;
-}
-
-function getLevelsWithLessons(subject: string, programmeFilter?: string | null): string[] {
-  const lessons = getLessonsForSubject(subject, programmeFilter);
-  const levels = new Set(lessons.map((l) => l.suggestedLevel).filter(Boolean));
-  return LEVEL_LABELS.filter((l) => levels.has(l));
 }
 
 function getModulesForLevel(subject: string, shsLevel: string, programmeFilter?: string | null): { key: string; label: string; lessons: Lesson[] }[] {
@@ -199,15 +185,22 @@ export default function Learning() {
   // ── Drill-down navigation ────────────────────────────────────────────────
   const handleSelectSubject = (subject: SubjectId) => {
     setSelectedSubject(subject);
-    setSelectedLevel(null);
     setSelectedModule(null);
-    setView('levels');
-  };
-
-  const handleSelectLevel = (level: string) => {
-    setSelectedLevel(level);
-    setSelectedModule(null);
-    setView('modules');
+    // Auto-navigate based on student's registered SHS level
+    if (shsLevel) {
+      const levelLessons = getLessonsForSubject(subject, programme)
+        .filter(l => l.suggestedLevel === shsLevel || l.shsLevels?.includes(shsLevel));
+      if (levelLessons.length > 0) {
+        setSelectedLevel(shsLevel);
+        setView('modules');
+      } else {
+        setSelectedLevel(null);
+        setView('coming-soon');
+      }
+    } else {
+      setSelectedLevel(null);
+      setView('coming-soon');
+    }
   };
 
   const handleSelectModule = (key: string, label: string) => {
@@ -217,8 +210,8 @@ export default function Learning() {
 
   const handleBack = () => {
     if (view === 'lessons') { setView('modules'); setSelectedModule(null); }
-    else if (view === 'modules') { setView('levels'); setSelectedLevel(null); }
-    else if (view === 'levels') { setView('subjects'); setSelectedSubject(null); }
+    else if (view === 'modules') { setView('subjects'); setSelectedSubject(null); setSelectedLevel(null); }
+    else if (view === 'coming-soon') { setView('subjects'); setSelectedSubject(null); }
   };
 
   const handleSelectLesson = useCallback((lessonId: string) => {
@@ -241,11 +234,11 @@ export default function Learning() {
   // ── Breadcrumb ───────────────────────────────────────────────────────────
   const breadcrumb = useMemo(() => {
     const parts: { label: string; action: () => void }[] = [{ label: 'Learning Center', action: () => { setView('subjects'); setSelectedSubject(null); setSelectedLevel(null); setSelectedModule(null); } }];
-    if (selectedSubject) parts.push({ label: selectedSubject, action: () => { setView('levels'); setSelectedLevel(null); setSelectedModule(null); } });
-    if (selectedLevel) parts.push({ label: selectedLevel, action: () => { setView('modules'); setSelectedModule(null); } });
+    if (selectedSubject) parts.push({ label: selectedSubject, action: () => { setView('subjects'); setSelectedSubject(null); setSelectedLevel(null); setSelectedModule(null); } });
+    if (selectedLevel && view !== 'coming-soon') parts.push({ label: selectedLevel, action: () => { setView('modules'); setSelectedModule(null); } });
     if (selectedModule) parts.push({ label: selectedModule.label, action: () => { setView('lessons'); } });
     return parts;
-  }, [selectedSubject, selectedLevel, selectedModule]);
+  }, [selectedSubject, selectedLevel, selectedModule, view]);
 
   // ── Current level lessons for display ────────────────────────────────────
   const currentModuleLessons = useMemo(() => {
@@ -439,7 +432,12 @@ export default function Learning() {
                 <motion.div key="subjects" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                   <div className="grid sm:grid-cols-2 gap-4">
                     {SUBJECTS.map((subject) => {
-                      const lessons = getLessonsForSubject(subject.id, programme);
+                      const levelLessons = shsLevel
+                        ? getLessonsForSubject(subject.id, programme).filter(
+                            (l) => l.suggestedLevel === shsLevel || l.shsLevels?.includes(shsLevel)
+                          )
+                        : [];
+                      const lessons = shsLevel ? levelLessons : getLessonsForSubject(subject.id, programme);
                       const completed = lessons.filter((l) => completedLessons.has(l.id)).length;
                       const hasContent = lessons.length > 0;
                       return (
@@ -483,49 +481,27 @@ export default function Learning() {
                 </motion.div>
               )}
 
-              {/* ── Levels View ── */}
-              {view === 'levels' && selectedSubject && (
-                <motion.div key="levels" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                  <div className="grid sm:grid-cols-3 gap-4">
-                    {(() => {
-                      const availableLevels = getLevelsWithLessons(selectedSubject, programme);
-                      return LEVEL_LABELS.map((level) => {
-                        const hasLessons = availableLevels.includes(level);
-                        const lessons = hasLessons ? getLessonsForSubject(selectedSubject, programme).filter((l) =>
-                          l.suggestedLevel === level || l.shsLevels?.includes(level)
-                        ) : [];
-                        const completed = lessons.filter((l) => completedLessons.has(l.id)).length;
-                        return (
-                          <button
-                            key={level}
-                            onClick={() => hasLessons && handleSelectLevel(level)}
-                            disabled={!hasLessons}
-                            className={`text-left bg-white border rounded-xl p-5 transition-all duration-200 ${
-                              hasLessons
-                                ? 'border-gray-200 hover:border-gray-300 hover:shadow-sm cursor-pointer'
-                                : 'border-gray-100 opacity-40 cursor-default'
-                            }`}
-                          >
-                            <h3 className="text-lg font-bold text-[#1E293B]">{level}</h3>
-                            <p className="text-xs text-gray-500 mt-1">{LEVEL_DESCRIPTIONS[level]}</p>
-                            {hasLessons ? (
-                              <div className="mt-3">
-                                <div className="flex items-center gap-2">
-                                  <div className="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden">
-                                    <div className="h-full bg-[#4F46E5] rounded-full transition-all"
-                                      style={{ width: `${(completed / Math.max(1, lessons.length)) * 100}%` }} />
-                                  </div>
-                                  <span className="text-xs font-medium text-[#4F46E5]">{completed}/{lessons.length}</span>
-                                </div>
-                                <p className="text-xs text-gray-400 mt-2">{lessons.length} lessons</p>
-                              </div>
-                            ) : (
-                              <p className="text-xs text-gray-400 mt-3 italic">No content yet</p>
-                            )}
-                          </button>
-                        );
-                      });
-                    })()}
+              {/* ── Coming Soon View ── */}
+              {view === 'coming-soon' && selectedSubject && (
+                <motion.div key="coming-soon" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                  <div className="bg-white border border-gray-200 rounded-xl p-10 text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-100 flex items-center justify-center">
+                      <svg className="w-8 h-8 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      </svg>
+                    </div>
+                    <h2 className="text-xl font-bold text-[#1E293B] mb-2">
+                      {selectedSubject} — {shsLevel || 'Content'}
+                    </h2>
+                    <p className="text-gray-500 mb-4 max-w-md mx-auto">
+                      Learning content for <strong>{shsLevel || 'your level'}</strong> in <strong>{selectedSubject}</strong> is not yet available. We are working on adding it soon!
+                    </p>
+                    <button
+                      onClick={() => { setView('subjects'); setSelectedSubject(null); }}
+                      className="px-5 py-2 bg-[#4F46E5] text-white text-sm font-medium rounded-lg hover:bg-[#4338CA] transition-colors"
+                    >
+                      Back to Subjects
+                    </button>
                   </div>
                 </motion.div>
               )}
