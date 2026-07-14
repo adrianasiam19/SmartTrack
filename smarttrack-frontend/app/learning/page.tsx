@@ -522,7 +522,7 @@ export default function Learning() {
                               </div>
                               <div className="flex-1 min-w-0">
                                 <h3 className="font-semibold text-[#1E293B]">{subject.label}</h3>
-                                <p className="text-xs text-gray-500 mt-0.5">{subject.description}</p>
+                                {hasContent && <p className="text-xs text-gray-500 mt-0.5">{subject.description}</p>}
                                 {hasContent ? (
                                   <div className="flex items-center gap-2 mt-2">
                                     <div className="flex-1 bg-gray-100 rounded-full h-1 overflow-hidden">
@@ -607,7 +607,7 @@ export default function Learning() {
                             </div>
                             <div className="flex-1 min-w-0">
                               <h3 className="font-semibold text-[#1E293B]">{subject.label}</h3>
-                              <p className="text-xs text-gray-500 mt-0.5">{subject.description}</p>
+                                {hasContent && <p className="text-xs text-gray-500 mt-0.5">{subject.description}</p>}
                               {hasContent ? (
                                 <div className="flex items-center gap-2 mt-2">
                                   <div className="flex-1 bg-gray-100 rounded-full h-1 overflow-hidden">
