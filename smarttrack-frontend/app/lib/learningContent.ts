@@ -9,6 +9,7 @@
 
 import { GENERAL_SCIENCE_LESSONS, GENERAL_SCIENCE_UNIT } from '.\/generalScienceContent';
 import { CORE_MATHS_SHS1_LESSONS } from '.\/generatedCoreMathsLessons';
+import { INTER_SCIENCE_SHS1_LESSONS } from '.\/generatedInterScienceLessons';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -129,6 +130,9 @@ export type MathVizConfig = {
 export const ALL_LESSONS: Lesson[] = [
   // Core Mathematics SHS 1 — auto-generated from curriculum materials
   ...CORE_MATHS_SHS1_LESSONS,
+
+  // Integrated Science SHS 1 — auto-generated from curriculum materials
+  ...INTER_SCIENCE_SHS1_LESSONS,
 
   // General Science Year 1 — auto-generated
   ...GENERAL_SCIENCE_LESSONS,

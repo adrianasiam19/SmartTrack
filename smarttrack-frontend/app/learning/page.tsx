@@ -41,15 +41,26 @@ const MODULE_NAMES: Record<string, Record<string, string>> = {
   },
   'English Language': {},
   'Integrated Science': {
+    s1: 'Exploring Materials — Characteristics of Science',
+    s2: 'Science and Materials in Nature',
+    s3: 'Diffusion and Osmosis',
+    s4: 'Reproduction in Plants and Humans',
+    s5: 'Solar Panels',
+    s6: 'Force',
+    s7: 'Basic Electronics',
+    s8: 'Promoting Health and Safety',
+    s9: 'Production in Local Industry',
     gs: 'General Science Foundations',
   },
   'Social Studies': {},
 };
 
 function extractModuleKey(lessonId: string): string | null {
-  // coremath-m1t1 → m1, gen-sci-s1 → gs
+  // coremath-m1t1 → m1, int-sci-s1t1 → s1, gen-sci-s1 → gs
   const mathMatch = lessonId.match(/^coremath-(m\d+)/);
   if (mathMatch) return mathMatch[1];
+  const intSciMatch = lessonId.match(/^int-sci-(s\d+)/);
+  if (intSciMatch) return intSciMatch[1];
   const sciMatch = lessonId.match(/^gen-sci-(s\d+)/);
   if (sciMatch) return 'gs'; // all general science → one module
   return null;
