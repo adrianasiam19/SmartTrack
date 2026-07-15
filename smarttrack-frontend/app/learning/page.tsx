@@ -201,6 +201,14 @@ const MODULE_NAMES: Record<string, Record<string, string>> = {
     s6: 'Electrical Charge and Magnetism',
     s7: 'Semi Conductors, Transducers and Their Applications',
     s8: 'Fundamental Concepts in Atomic and Nuclear Physics',
+    's2-s1': 'Dimension, Vectors, Flotation and Deformation',
+    's2-s2': 'Measurement of Heat',
+    's2-s3': 'Electrostatics',
+    's2-s4': 'Photoelectric Effect and Radioactivity',
+    's2-s5': 'Projectiles, Friction, Circular Motion',
+    's2-s6': 'Electromagnetism',
+    's2-s7': 'Waves',
+    's2-s8': 'Electric Fields, Magnetic Fields and Electronics',
   },
 };
 
@@ -222,6 +230,8 @@ function extractModuleKey(lessonId: string): string | null {
   if (socStMatch) return socStMatch[1];
   const socSt2Match = lessonId.match(/^soc-st-2-(s\d+)/);
   if (socSt2Match) return `s2-${socSt2Match[1]}`;
+  const phys2Match = lessonId.match(/^phys-2-(s\d+)/);
+  if (phys2Match) return `s2-${phys2Match[1]}`;
   const physMatch = lessonId.match(/^phys-(s\d+)/);
   if (physMatch) return physMatch[1];
   const addMath2Match = lessonId.match(/^add-math-2-(s\d+)/);
