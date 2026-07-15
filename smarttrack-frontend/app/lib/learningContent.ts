@@ -17,6 +17,7 @@ import { ENG_LANG2_SHS2_LESSONS } from '.\/generatedEngLang2Lessons';
 import { SOCIAL_STUDIES_SHS1_LESSONS } from '.\/generatedSocialStudiesLessons';
 import { SOCIAL_STUDIES_SHS2_LESSONS } from '.\/generatedSocialStudiesSHS2Lessons';
 import { BIOLOGY_SHS1_LESSONS } from '.\/generatedBiologyLessons';
+import { BIOLOGY_SHS2_LESSONS } from '.\/generatedBiologySHS2Lessons';
 import { CHEMISTRY_SHS1_LESSONS } from '.\/generatedChemistryLessons';
 import { ADD_MATHS_SHS1_LESSONS } from '.\/generatedAdditionalMathsLessons';
 import { PHYSICS_SHS1_LESSONS } from '.\/generatedPhysicsLessons';
@@ -158,6 +159,9 @@ export const ALL_LESSONS: Lesson[] = [
 
   // Biology SHS 1 — auto-generated from curriculum materials (Elective)
   ...BIOLOGY_SHS1_LESSONS,
+
+  // Biology SHS 2 — auto-generated from curriculum materials (Elective)
+  ...BIOLOGY_SHS2_LESSONS,
 
   // Chemistry SHS 1 — auto-generated from curriculum materials (Elective)
   ...CHEMISTRY_SHS1_LESSONS,
