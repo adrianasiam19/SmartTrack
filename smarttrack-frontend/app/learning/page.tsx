@@ -104,6 +104,14 @@ const MODULE_NAMES: Record<string, Record<string, string>> = {
     s8: 'Promoting Health and Safety',
     s9: 'Production in Local Industry',
     gs: 'General Science Foundations',
+    's2-s1': 'Nature of Different Liquids in Life',
+    's2-s2': 'Human Excretory Organs',
+    's2-s3': 'Gaseous Exchange in Humans',
+    's2-s4': 'Concepts of Electricity',
+    's2-s5': 'Buoyancy Force',
+    's2-s6': 'Electronics',
+    's2-s7': 'Pathogenic Diseases',
+    's2-s8': 'Indigenous Beverages',
   },
   'Social Studies': {
     s1: 'A Geographical and Historical Sketch of Africa',
@@ -168,6 +176,8 @@ function extractModuleKey(lessonId: string): string | null {
   if (mathMatch) return mathMatch[1];
   const intSciMatch = lessonId.match(/^int-sci-(s\d+)/);
   if (intSciMatch) return intSciMatch[1];
+  const intSci2Match = lessonId.match(/^int-sci-2-(s\d+)/);
+  if (intSci2Match) return `s2-${intSci2Match[1]}`;
   const eng2Match = lessonId.match(/^eng-lang2-(s2e\d+)/);
   if (eng2Match) return eng2Match[1];
   const engMatch = lessonId.match(/^eng-lang-(s\d+)/);

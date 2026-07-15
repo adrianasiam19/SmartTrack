@@ -11,6 +11,7 @@ import { GENERAL_SCIENCE_LESSONS, GENERAL_SCIENCE_UNIT } from '.\/generalScience
 import { CORE_MATHS_SHS1_LESSONS } from '.\/generatedCoreMathsLessons';
 import { CORE_MATHS2_SHS2_LESSONS } from '.\/generatedCoreMaths2Lessons';
 import { INTER_SCIENCE_SHS1_LESSONS } from '.\/generatedInterScienceLessons';
+import { INTER_SCIENCE_SHS2_LESSONS } from '.\/generatedInterScienceSHS2Lessons';
 import { ENGLISH_SHS1_LESSONS } from '.\/generatedEnglishLessons';
 import { ENG_LANG2_SHS2_LESSONS } from '.\/generatedEngLang2Lessons';
 import { SOCIAL_STUDIES_SHS1_LESSONS } from '.\/generatedSocialStudiesLessons';
@@ -165,6 +166,9 @@ export const ALL_LESSONS: Lesson[] = [
 
   // Physics SHS 1 — auto-generated from curriculum materials (Elective)
   ...PHYSICS_SHS1_LESSONS,
+
+  // Integrated Science SHS 2 — auto-generated from curriculum materials
+  ...INTER_SCIENCE_SHS2_LESSONS,
 
   // General Science Year 1 — auto-generated
   ...GENERAL_SCIENCE_LESSONS,
