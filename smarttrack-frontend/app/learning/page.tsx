@@ -159,6 +159,14 @@ const MODULE_NAMES: Record<string, Record<string, string>> = {
     s8: 'Intermolecular Bonding',
     s9: 'Qualitative and Quantitative Analysis of Organic Compounds',
     s10: 'Classifications of Organic Compounds',
+    's2-s1': 'Energy Changes',
+    's2-s2': 'Chemical Kinetics',
+    's2-s3': 'Dynamic Equilibrium',
+    's2-s4': 'Acids, Bases and Salts',
+    's2-s5': 'Periodic Trends',
+    's2-s6': 'The Halogens',
+    's2-s7': 'Chemical Bonding and Structure',
+    's2-s8': 'Organic Compounds',
   },
   'Additional Mathematics': {
     s1: 'Binary Operations, Sets and Binomial',
@@ -220,6 +228,8 @@ function extractModuleKey(lessonId: string): string | null {
   if (addMath2Match) return `s2-${addMath2Match[1]}`;
   const addMathMatch = lessonId.match(/^add-math-(s\d+)/);
   if (addMathMatch) return addMathMatch[1];
+  const chem2Match = lessonId.match(/^chem-2-(s\d+)/);
+  if (chem2Match) return `s2-${chem2Match[1]}`;
   const chemMatch = lessonId.match(/^chem-(s\d+)/);
   if (chemMatch) return chemMatch[1];
   const bio2Match = lessonId.match(/^bio-2-(s\d+)/);
