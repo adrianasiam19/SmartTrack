@@ -143,6 +143,10 @@ const MODULE_NAMES: Record<string, Record<string, string>> = {
     s3: 'Cell Biology',
     s4: 'Organisms',
     s5: 'Ecology',
+    's2-s1': 'Biology as the Science of Life',
+    's2-s2': 'Cytology',
+    's2-s3': 'Diversity of Living Things',
+    's2-s4': 'Systems of Life',
   },
   'Chemistry': {
     s1: 'Introduction to Chemistry, Scientific Method and Atoms',
@@ -204,6 +208,8 @@ function extractModuleKey(lessonId: string): string | null {
   if (addMathMatch) return addMathMatch[1];
   const chemMatch = lessonId.match(/^chem-(s\d+)/);
   if (chemMatch) return chemMatch[1];
+  const bio2Match = lessonId.match(/^bio-2-(s\d+)/);
+  if (bio2Match) return `s2-${bio2Match[1]}`;
   const bioMatch = lessonId.match(/^bio-(s\d+)/);
   if (bioMatch) return bioMatch[1];
   const sciMatch = lessonId.match(/^gen-sci-(s\d+)/);
