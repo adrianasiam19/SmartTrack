@@ -124,6 +124,18 @@ const MODULE_NAMES: Record<string, Record<string, string>> = {
     s8: 'Entrepreneurship, Workplace Culture and Productivity',
     s9: 'Consumer Rights, Protection and Responsibilities',
     s10: 'Financial Literacy',
+    's2-s1': 'Identity and National Cohesion',
+    's2-s2': 'Environmental Literacy and Sustainability',
+    's2-s3': 'Law Enforcement Mechanisms in Ghana',
+    's2-s4': 'European Encounter, Colonialism and Neo-colonialism',
+    's2-s5': 'Nationalism, Citizenship and Nation Building',
+    's2-s6': 'Leisure and Tourism',
+    's2-s7': 'Revolutions that Changed the World',
+    's2-s8': 'The Youth and National Development',
+    's2-s9': 'Economic Activities in Ghana',
+    's2-s10': 'Entrepreneurship, Workplace Culture and Productivity',
+    's2-s11': 'Consumer Rights, Protection and Responsibilities',
+    's2-s12': 'Financial Literacy',
   },
   'Biology': {
     s1: 'Introduction to Biology and the Scientific Method',
@@ -184,6 +196,8 @@ function extractModuleKey(lessonId: string): string | null {
   if (engMatch) return engMatch[1];
   const socStMatch = lessonId.match(/^soc-st-(s\d+)/);
   if (socStMatch) return socStMatch[1];
+  const socSt2Match = lessonId.match(/^soc-st-2-(s\d+)/);
+  if (socSt2Match) return `s2-${socSt2Match[1]}`;
   const physMatch = lessonId.match(/^phys-(s\d+)/);
   if (physMatch) return physMatch[1];
   const addMathMatch = lessonId.match(/^add-math-(s\d+)/);
