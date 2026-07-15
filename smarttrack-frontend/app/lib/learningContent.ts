@@ -15,6 +15,7 @@ import { INTER_SCIENCE_SHS2_LESSONS } from '.\/generatedInterScienceSHS2Lessons'
 import { ENGLISH_SHS1_LESSONS } from '.\/generatedEnglishLessons';
 import { ENG_LANG2_SHS2_LESSONS } from '.\/generatedEngLang2Lessons';
 import { SOCIAL_STUDIES_SHS1_LESSONS } from '.\/generatedSocialStudiesLessons';
+import { SOCIAL_STUDIES_SHS2_LESSONS } from '.\/generatedSocialStudiesSHS2Lessons';
 import { BIOLOGY_SHS1_LESSONS } from '.\/generatedBiologyLessons';
 import { CHEMISTRY_SHS1_LESSONS } from '.\/generatedChemistryLessons';
 import { ADD_MATHS_SHS1_LESSONS } from '.\/generatedAdditionalMathsLessons';
@@ -169,6 +170,9 @@ export const ALL_LESSONS: Lesson[] = [
 
   // Integrated Science SHS 2 — auto-generated from curriculum materials
   ...INTER_SCIENCE_SHS2_LESSONS,
+
+  // Social Studies SHS 2 — auto-generated from curriculum materials
+  ...SOCIAL_STUDIES_SHS2_LESSONS,
 
   // General Science Year 1 — auto-generated
   ...GENERAL_SCIENCE_LESSONS,
