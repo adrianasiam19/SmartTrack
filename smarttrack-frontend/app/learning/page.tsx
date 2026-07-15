@@ -171,6 +171,18 @@ const MODULE_NAMES: Record<string, Record<string, string>> = {
     s8: 'Limits and Differentiation',
     s9: 'Statistics',
     s10: 'Combinations, Permutations and Probability',
+    's2-s1': 'Sets and Binomial Expansions',
+    's2-s2': 'Sequences and Inequalities',
+    's2-s3': 'Polynomial Functions',
+    's2-s4': 'Circles and Loci',
+    's2-s5': 'Vectors',
+    's2-s6': 'Matrices',
+    's2-s7': 'Correlation',
+    's2-s8': 'Indices and Logarithms',
+    's2-s9': 'Trigonometric Identities',
+    's2-s10': 'Differentiation',
+    's2-s11': 'Integration',
+    's2-s12': 'Applications of Differentiation',
   },
   'Physics': {
     s1: 'Introduction to Physics and Matter',
@@ -204,6 +216,8 @@ function extractModuleKey(lessonId: string): string | null {
   if (socSt2Match) return `s2-${socSt2Match[1]}`;
   const physMatch = lessonId.match(/^phys-(s\d+)/);
   if (physMatch) return physMatch[1];
+  const addMath2Match = lessonId.match(/^add-math-2-(s\d+)/);
+  if (addMath2Match) return `s2-${addMath2Match[1]}`;
   const addMathMatch = lessonId.match(/^add-math-(s\d+)/);
   if (addMathMatch) return addMathMatch[1];
   const chemMatch = lessonId.match(/^chem-(s\d+)/);

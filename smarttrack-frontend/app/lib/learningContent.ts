@@ -20,6 +20,7 @@ import { BIOLOGY_SHS1_LESSONS } from '.\/generatedBiologyLessons';
 import { BIOLOGY_SHS2_LESSONS } from '.\/generatedBiologySHS2Lessons';
 import { CHEMISTRY_SHS1_LESSONS } from '.\/generatedChemistryLessons';
 import { ADD_MATHS_SHS1_LESSONS } from '.\/generatedAdditionalMathsLessons';
+import { ADD_MATHS_SHS2_LESSONS } from '.\/generatedAdditionalMathsSHS2Lessons';
 import { PHYSICS_SHS1_LESSONS } from '.\/generatedPhysicsLessons';
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -168,6 +169,9 @@ export const ALL_LESSONS: Lesson[] = [
 
   // Additional Mathematics SHS 1 — auto-generated from curriculum materials (Elective)
   ...ADD_MATHS_SHS1_LESSONS,
+
+  // Additional Mathematics SHS 2 — auto-generated from curriculum materials (Elective)
+  ...ADD_MATHS_SHS2_LESSONS,
 
   // Physics SHS 1 — auto-generated from curriculum materials (Elective)
   ...PHYSICS_SHS1_LESSONS,
