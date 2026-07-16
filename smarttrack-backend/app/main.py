@@ -11,16 +11,24 @@ from app.assessment.daily_streak import router as daily_streak_router
 from app.assessment.router import router as assessment_router
 from app.auth.router import router as auth_router
 from app.config import settings
-from app.database import engine
+from app.database import engine, Base
 from app.revision.router import router as revision_router
 from app.assessment.starter_router import router as starter_router
+from app.assessment.challenge_hub_router import router as challenge_hub_router
 from app.users.router import router as users_router
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup / shutdown events."""
-    # Nothing to do on startup for now (Alembic handles migrations separately)
+    # Auto-create tables in development (Alembic handles production via migration scripts)
+    if settings.ENVIRONMENT == "development":
+        try:
+            async with engine.begin() as conn:
+                await conn.run_sync(Base.metadata.create_all)
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).warning(f"Table auto-creation skipped: {e}")
     yield
     # Cleanly close all DB connections on shutdown
     await engine.dispose()
@@ -73,6 +81,7 @@ app.include_router(ai_chat_router, prefix="/api/v1")
 app.include_router(daily_streak_router, prefix="/api/v1")
 app.include_router(revision_router, prefix="/api/v1")
 app.include_router(starter_router, prefix="/api/v1")
+app.include_router(challenge_hub_router, prefix="/api/v1")
 
 
 # ── Root route ────────────────────────────────────────────────────────────────
