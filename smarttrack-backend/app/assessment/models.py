@@ -271,3 +271,79 @@ class DailyStreakProgress(Base):
         return f"<DailyStreakProgress user_id={self.user_id} subject={self.subject_id} level={self.level_id}>"
 
 
+class ChallengeSession(Base):
+    """
+    Tracks a Challenge Hub session — 4 core subjects, 6 questions each.
+    """
+    __tablename__ = "challenge_sessions"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    challenge_level: Mapped[int] = mapped_column(Integer, nullable=False, default=1)  # 1, 2, or 3
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="in_progress")
+    total_xp: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    correct_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    wrong_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    current_subject_index: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    started_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+    completed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+    user: Mapped["User"] = relationship("User", backref="challenge_sessions")
+
+    def __repr__(self) -> str:
+        return f"<ChallengeSession id={self.id} user_id={self.user_id} level={self.challenge_level}>"
+
+
+class ChallengeResponse(Base):
+    """
+    Individual answer within a Challenge Hub session.
+    Stores the question data, user answer, and result for adaptive learning.
+    """
+    __tablename__ = "challenge_responses"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    session_id: Mapped[int] = mapped_column(
+        ForeignKey("challenge_sessions.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    subject: Mapped[str] = mapped_column(String(50), nullable=False)
+    question_index: Mapped[int] = mapped_column(Integer, nullable=False)
+    question_text: Mapped[str] = mapped_column(Text, nullable=False)
+    question_type: Mapped[str] = mapped_column(String(30), nullable=False, default="mcq")
+    options: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    correct_answer: Mapped[str] = mapped_column(String(500), nullable=False)
+    user_answer: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    is_correct: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    time_taken_seconds: Mapped[float | None] = mapped_column(nullable=True)
+    xp_earned: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    explanation: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    session: Mapped["ChallengeSession"] = relationship("ChallengeSession", backref="responses")
+
+    def __repr__(self) -> str:
+        return f"<ChallengeResponse id={self.id} session_id={self.session_id} subject={self.subject}>"
+
+
