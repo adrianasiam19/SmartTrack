@@ -237,21 +237,88 @@ export default function AtlasChallengePage() {
 
   // If final summary exists, show final screen
   if (finalSummary) {
+    const recLessons = (finalSummary.weak_topics || []).map((t: string) => ({
+      topic: t,
+      learningLink: `/learning?topic=${encodeURIComponent(t)}`,
+      revisionLink: `/revision?topic=${encodeURIComponent(t)}`,
+    }));
+
     return (
       <AppLayout>
         <div className="flex min-h-screen">
           <Sidebar />
           <div className="flex-1 lg:pb-0 pb-24">
             <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-10">
-              <div className="text-center py-12">
+              <div className="bg-white border rounded-2xl p-6">
                 <h1 className="text-2xl font-bold mb-2">Challenge Summary</h1>
-                <p className="text-gray-700 mb-4">Total XP: {finalSummary.total_xp}</p>
-                <p className="text-gray-700 mb-4">Accuracy: {finalSummary.accuracy}%</p>
-                <p className="text-gray-700 mb-4">Strongest: {finalSummary.strongest_subject}</p>
-                <p className="text-gray-700 mb-4">Weakest: {finalSummary.weakest_subject}</p>
-                <div className="mt-6">
-                  <button onClick={() => router.push('/dashboard')} className="px-6 py-3 bg-blue-600 text-white rounded-xl mr-3">Go to Dashboard</button>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                  <div className="p-4 bg-gray-50 rounded-lg text-center">
+                    <div className="text-sm text-gray-500">Total XP</div>
+                    <div className="text-xl font-bold">{finalSummary.total_xp}</div>
+                  </div>
+                  <div className="p-4 bg-gray-50 rounded-lg text-center">
+                    <div className="text-sm text-gray-500">Accuracy</div>
+                    <div className="text-xl font-bold">{finalSummary.accuracy}%</div>
+                  </div>
+                  <div className="p-4 bg-gray-50 rounded-lg text-center">
+                    <div className="text-sm text-gray-500">Daily Streak</div>
+                    <div className="text-xl font-bold">{user?.streak ?? 0} days</div>
+                  </div>
+                </div>
+
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold">Performance by Subject</h3>
+                  <div className="mt-2 space-y-2">
+                    {finalSummary.subject_performance?.map((s: any) => (
+                      <div key={s.subject} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                        <div>
+                          <div className="font-medium">{s.subject}</div>
+                          <div className="text-xs text-gray-500">{s.correct} correct / {s.total}</div>
+                        </div>
+                        <div className="text-sm font-semibold">{s.accuracy}%</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold">Strongest Subject</h3>
+                  <p className="text-sm text-gray-700">{finalSummary.strongest_subject || '—'}</p>
+                </div>
+
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold">Weakest Subject</h3>
+                  <p className="text-sm text-gray-700">{finalSummary.weakest_subject || '—'}</p>
+                </div>
+
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold">Topics Requiring Improvement</h3>
+                  <p className="text-sm text-gray-700">{(finalSummary.weak_topics && finalSummary.weak_topics.join(', ')) || 'None'}</p>
+                </div>
+
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold">Recommended Lessons (Learning Center)</h3>
+                  <div className="mt-2 space-y-2">
+                    {recLessons.length === 0 && <div className="text-sm text-gray-500">No recommendations — great job!</div>}
+                    {recLessons.map((r) => (
+                      <div key={r.topic} className="flex items-center justify-between bg-white p-3 rounded-lg border">
+                        <div className="text-sm">{r.topic}</div>
+                        <div className="flex gap-2">
+                          <a href={r.learningLink} className="text-sm text-blue-600 underline">Learning</a>
+                          {/* Show revision link only for SHS 3 students */}
+                          {user?.shs_level === 'SHS 3' && (
+                            <a href={r.revisionLink} className="text-sm text-purple-600 underline">SHS3 Revision</a>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-6 flex gap-3">
+                  <button onClick={() => router.push('/dashboard')} className="px-6 py-3 bg-blue-600 text-white rounded-xl">Go to Dashboard</button>
                   <button onClick={() => router.push('/challenges/leaderboard')} className="px-6 py-3 border border-gray-200 rounded-xl">Leaderboard</button>
+                  <button onClick={() => router.push('/learning')} className="px-6 py-3 border border-gray-200 rounded-xl">Explore Learning Center</button>
                 </div>
               </div>
             </main>
