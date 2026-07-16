@@ -8,6 +8,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { sendChatMessage, type ChatMessage } from '../lib/aiApi';
+import MarkdownRenderer from './MarkdownRenderer';
 
 interface LearningAssistantProps {
   lessonContext?: string;
@@ -154,7 +155,11 @@ export default function LearningAssistant({
                       : 'bg-[#EEF2FF] border border-[#C7D2FE] text-[#1E293B]'
                   }`}
                 >
-                  {msg.content}
+                  {msg.role === 'user' ? (
+                    msg.content
+                  ) : (
+                    <MarkdownRenderer content={msg.content} compact />
+                  )}
                 </div>
               </motion.div>
             ))}

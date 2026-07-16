@@ -7,6 +7,7 @@ import { Search, BookOpen, Clock, Star, ArrowLeft, MessageSquare, Sparkles, Chev
 import Sidebar from '../components/Sidebar';
 import BottomNav from '../components/BottomNav';
 import AppLayout from '../components/AppLayout';
+import MarkdownRenderer from '../components/MarkdownRenderer';
 import { getCurrentUser, getAccessToken, getStoredUser, type UserProfile } from '../lib/authApi';
 import { ALL_LESSONS, type Lesson } from '../lib/learningContent';
 import { generateTopicContent, askAIQuestion, type TopicContent } from '../lib/revisionApi';
@@ -521,8 +522,8 @@ export default function RevisionHub() {
                         </div>
                       )}
 
-                      {/* Sticky section tabs */}
-                      <div className="sticky top-16 z-20 -mx-4 px-4 bg-[#F8FAFC] border-b border-gray-200 mb-6 overflow-x-auto">
+                      {/* Section nav tabs */}
+                      <div className="-mx-4 px-4 bg-[#F8FAFC] border-b border-gray-200 rounded-t-xl overflow-x-auto">
                         <div className="flex gap-1 py-2 min-w-max">
                           {[
                             { id: 'explanation', label: 'Explanation' },
@@ -597,9 +598,7 @@ export default function RevisionHub() {
                             <BookOpen className="w-5 h-5 text-[#2563EB]" />
                             Explanation
                           </h2>
-                          <div className="prose prose-sm max-w-none text-[#475569] leading-relaxed whitespace-pre-line">
-                            {topicContent.explanation}
-                          </div>
+                          <MarkdownRenderer content={topicContent.explanation} />
                         </motion.div>
 
                         {/* ── Key Concepts Section ── */}
@@ -671,7 +670,7 @@ export default function RevisionHub() {
                                   </div>
                                   <div className="bg-[#FAFAFA] p-4">
                                     <p className="text-xs font-bold text-[#475569] mb-1">Solution</p>
-                                    <p className="text-sm text-[#1E293B] whitespace-pre-line">{ex.solution}</p>
+                                    <MarkdownRenderer content={ex.solution} compact />
                                   </div>
                                 </div>
                               ))}
@@ -757,9 +756,7 @@ export default function RevisionHub() {
                               <Sparkles className="w-5 h-5 text-[#2563EB]" />
                               Summary
                             </h2>
-                            <p className="text-sm text-[#1E293B] leading-relaxed whitespace-pre-line">
-                              {topicContent.summary}
-                            </p>
+                            <MarkdownRenderer content={topicContent.summary} compact />
                           </motion.div>
                         )}
 
@@ -798,7 +795,7 @@ export default function RevisionHub() {
                   <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="w-full lg:w-96 flex-shrink-0"
+                    className="w-full lg:w-[560px] flex-shrink-0"
                   >
                     <div className="sticky top-20 bg-white border border-gray-200 rounded-xl overflow-hidden flex flex-col"
                       style={{ maxHeight: 'calc(100vh - 8rem)' }}>
@@ -854,7 +851,11 @@ export default function RevisionHub() {
                                   ? 'bg-[#2563EB] text-white'
                                   : 'bg-[#F8FAFC] border border-gray-200 text-[#1E293B]'
                               }`}>
-                                <p className="whitespace-pre-line leading-relaxed">{msg.content}</p>
+                                {msg.role === 'user' ? (
+                                  <p className="whitespace-pre-line leading-relaxed">{msg.content}</p>
+                                ) : (
+                                  <MarkdownRenderer content={msg.content} compact />
+                                )}
                               </div>
                               {msg.role === 'user' && (
                                 <div className="w-7 h-7 rounded-full bg-[#2563EB] flex items-center justify-center flex-shrink-0 mt-0.5">
