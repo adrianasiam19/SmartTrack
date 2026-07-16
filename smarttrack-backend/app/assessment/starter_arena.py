@@ -5,6 +5,7 @@ Generates a mixed session of psychometric and academic diagnostic questions.
 Psychometric questions come from the database (with AI fallback).
 Academic questions are generated via AI, adapted to the student's SHS level.
 """
+import asyncio
 import json
 import logging
 import random
@@ -18,6 +19,14 @@ from app.config import settings
 from app.assessment.models import PsychometricCard, PsychometricResponse
 
 logger = logging.getLogger(__name__)
+
+# ── In-memory cache for AI-generated questions ────────────────────────────
+# Stores the latest AI-generated psychometric + academic questions so they
+# can be used in the NEXT Starter Arena session (avoids repeats).
+_ai_question_cache = {
+    "psychometric": [],  # list of question dicts
+    "academic": {},      # { "SHS 1": [...], "SHS 2": [...], "SHS 3": [...] }
+}
 
 DEEPSEEK_CHAT_URL = "https://api.deepseek.com/v1/chat/completions"
 NVIDIA_CHAT_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
@@ -421,6 +430,9 @@ async def generate_starter_session(
     """
     Generate a complete Starter Arena session with mixed questions.
 
+    Returns questions INSTANTLY using DB + fallback (no AI wait).
+    AI generation fires in the background to enrich future sessions.
+
     Returns:
         dict with:
           - session_id: str
@@ -430,7 +442,7 @@ async def generate_starter_session(
     session_id = f"sa_{user_id}_{random.randint(10000, 99999)}"
     questions = []
 
-    # ── 1. Fetch psychometric questions from database ─────────────────────
+    # ── 1. Psychometric questions: DB + cache + fallback (instant) ────────
     db_psych_cards = []
     try:
         result = await db.execute(
@@ -440,7 +452,6 @@ async def generate_starter_session(
     except Exception as e:
         logger.warning(f"Failed to fetch psychometric cards from DB: {e}")
 
-    # Get already-seen card IDs for this user
     seen_card_ids = set()
     try:
         seen_result = await db.execute(
@@ -452,13 +463,9 @@ async def generate_starter_session(
     except Exception:
         pass
 
-    # Filter out seen cards
     available_cards = [c for c in db_psych_cards if c.card_id not in seen_card_ids]
-
-    # Shuffle available cards
     random.shuffle(available_cards)
 
-    # Format as standard psychometric questions
     psych_questions = []
     for card in available_cards[:psychometric_count]:
         psych_questions.append({
@@ -470,60 +477,57 @@ async def generate_starter_session(
             "display": "choose",
         })
 
-    # If not enough from DB → try AI generation (avoids repeats from both DB + fallback)
+    # Fill remaining from AI cache (if available), then fallback
     if len(psych_questions) < psychometric_count:
         needed = psychometric_count - len(psych_questions)
-        logger.info(f"Not enough DB psychometric cards, generating {needed} via AI...")
+        seen = {q["question"] for q in psych_questions}
+        # Try cached AI-generated questions first
+        cached_psych = _ai_question_cache.get("psychometric", [])
+        for cached_q in cached_psych:
+            if len(psych_questions) >= psychometric_count:
+                break
+            if cached_q["question"] not in seen:
+                psych_questions.append(cached_q)
+                seen.add(cached_q["question"])
+        # Then fallback if still not enough
+        if len(psych_questions) < psychometric_count:
+            for fb_q in _get_fallback_psych_questions(8):
+                if len(psych_questions) >= psychometric_count:
+                    break
+                if fb_q["question"] not in seen:
+                    psych_questions.append(fb_q)
+                    seen.add(fb_q["question"])
 
-        # Build list of existing questions so AI knows what to avoid
-        all_existing_texts = set()
-        for c in db_psych_cards:
-            all_existing_texts.add(c.question)
-        for q in psych_questions:
-            all_existing_texts.add(q["question"])
-        # Add hardcoded fallback questions to avoid AI generating duplicates of those
-        for fb in _get_fallback_psych_questions(100):  # Get all (capped at 8)
-            all_existing_texts.add(fb["question"])
-        existing_text = "\n".join(f"- {q}" for q in sorted(all_existing_texts))
+    # ── 2. Academic questions: cache + fallback (instant) ──────────────────
+    academic_questions = []
+    # Try cached AI-generated academic questions first
+    cached_academic = _ai_question_cache.get("academic", {}).get(shs_level, [])
+    for cached_q in cached_academic:
+        if len(academic_questions) >= academic_count:
+            break
+        academic_questions.append(cached_q)
+    # Then fallback
+    if len(academic_questions) < academic_count:
+        needed = academic_count - len(academic_questions)
+        seen = {q["question"] for q in academic_questions}
+        for fb_q in _get_fallback_academic_questions(10, shs_level):
+            if len(academic_questions) >= academic_count:
+                break
+            if fb_q["question"] not in seen:
+                academic_questions.append(fb_q)
+                seen.add(fb_q["question"])
 
-        ai_psych = await _generate_psychometric_questions(
-            count=needed,
-            existing_questions=existing_text,
-        )
-        # Filter out any AI-generated questions that still match DB ones
-        if ai_psych:
-            seen_questions = {q["question"] for q in psych_questions}
-            seen_questions.update(c.question for c in db_psych_cards)
-            for gen_q in ai_psych:
-                if gen_q["question"] not in seen_questions:
-                    psych_questions.append(gen_q)
-                    seen_questions.add(gen_q["question"])
-
-    # If STILL not enough → use hardcoded fallback as last resort
-    if len(psych_questions) < psychometric_count:
-        needed = psychometric_count - len(psych_questions)
-        logger.info(f"AI generation also failed, using hardcoded fallback for {needed} questions")
-        seen_questions = {q["question"] for q in psych_questions}
-        for fb_q in _get_fallback_psych_questions(needed):
-            if fb_q["question"] not in seen_questions:
-                psych_questions.append(fb_q)
-                seen_questions.add(fb_q["question"])
-
-    # ── 2. Generate academic diagnostic questions via AI ───────────────────
-    # Try AI first (level-adapted), fall back to hardcoded if AI fails
-    academic_questions = await _generate_academic_questions(
-        count=academic_count,
+    # ── 3. Fire AI generation in the background for future richness ────────
+    asyncio.create_task(_background_ai_generation(
+        user_id=user_id,
         shs_level=shs_level,
-    )
-    if not academic_questions:
-        logger.info("AI academic generation failed, using hardcoded fallback")
-        academic_questions = _get_fallback_academic_questions(
-            count=academic_count,
-            shs_level=shs_level,
-        )
+        psychometric_count=psychometric_count,
+        academic_count=academic_count,
+        db_psych_cards=db_psych_cards,
+        psych_questions=psych_questions,
+    ))
 
-    # ── 3. Alternate questions naturally ──────────────────────────────────
-    # Weave psychometric and academic questions alternately for a conversational flow
+    # ── 4. Alternate questions naturally ──────────────────────────────────
     total = max(len(psych_questions), len(academic_questions))
     for i in range(total):
         if i < len(psych_questions):
@@ -536,6 +540,58 @@ async def generate_starter_session(
         "questions": questions,
         "total_count": len(questions),
     }
+
+
+async def _background_ai_generation(
+    user_id: str,
+    shs_level: str,
+    psychometric_count: int,
+    academic_count: int,
+    db_psych_cards: list,
+    psych_questions: list,
+) -> None:
+    """
+    Background task: generate richer questions via AI and cache them for the NEXT session.
+    Runs after the Starter Arena has already started so the user isn't waiting.
+    """
+    try:
+        logger.info(f"Background AI: generating {psychometric_count} psychometric + {academic_count} academic questions for {shs_level}")
+        global _ai_question_cache
+
+        # ── Psychometric AI (if DB didn't have enough) ────────────────────
+        if len(db_psych_cards) < psychometric_count:
+            all_existing = set()
+            for c in db_psych_cards:
+                all_existing.add(c.question)
+            for q in psych_questions:
+                all_existing.add(q.get("question", ""))
+            for fb in _get_fallback_psych_questions(8):
+                all_existing.add(fb["question"])
+            existing_text = "\n".join(f"- {q}" for q in sorted(all_existing))
+
+            ai_psych = await _generate_psychometric_questions(
+                count=psychometric_count,
+                existing_questions=existing_text,
+            )
+            if ai_psych:
+                # Store in cache for NEXT session
+                _ai_question_cache["psychometric"] = ai_psych
+                logger.info(f"Background AI: cached {len(ai_psych)} psychometric questions")
+
+        # ── Academic AI ───────────────────────────────────────────────────
+        ai_academic = await _generate_academic_questions(
+            count=academic_count,
+            shs_level=shs_level,
+        )
+        if ai_academic:
+            # Store in cache for NEXT session (keyed by SHS level)
+            if shs_level not in _ai_question_cache["academic"]:
+                _ai_question_cache["academic"][shs_level] = []
+            _ai_question_cache["academic"][shs_level] = ai_academic
+            logger.info(f"Background AI: cached {len(ai_academic)} academic questions for {shs_level}")
+
+    except Exception as e:
+        logger.warning(f"Background AI generation failed: {e}")
 
 
 async def _generate_psychometric_questions(count: int, existing_questions: str = "") -> list:
