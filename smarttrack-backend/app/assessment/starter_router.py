@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.auth.dependencies import get_current_user
 from app.database import get_db
 from app.users.models import User
+from app.assessment.models import PsychometricResponse
 from app.assessment.starter_arena import (
     generate_starter_session,
     generate_learner_profile,
@@ -105,6 +106,7 @@ async def start_session(
 async def complete_session(
     body: CompleteSessionRequest,
     current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Complete the Starter Arena and generate a learner profile.
@@ -123,6 +125,29 @@ async def complete_session(
         )
 
     try:
+        # ── Save psychometric responses to prevent repeats next session ──
+        saved_count = 0
+        for resp in body.psychometric_responses:
+            qid = resp.get("question_id", "")
+            answer = resp.get("answer", "")
+            # Extract card_id from "psych_LP-001" format → "LP-001"
+            card_id = qid.replace("psych_", "") if qid.startswith("psych_") else qid
+            try:
+                db_resp = PsychometricResponse(
+                    user_id=current_user.id,
+                    card_id=card_id,
+                    answer=answer,
+                )
+                db.add(db_resp)
+                saved_count += 1
+            except Exception:
+                continue
+
+        if saved_count > 0:
+            await db.commit()
+            logger.info(f"Saved {saved_count} psychometric responses for user {current_user.id}")
+
+        # Generate the learner profile
         profile = await generate_learner_profile(
             shs_level=shs_level,
             programme=programme,
