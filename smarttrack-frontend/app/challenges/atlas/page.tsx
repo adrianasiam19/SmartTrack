@@ -28,6 +28,7 @@ export default function AtlasChallengePage() {
   const [feedback, setFeedback] = useState<any | null>(null);
   const [showSubjectSummary, setShowSubjectSummary] = useState(false);
   const [finalSummary, setFinalSummary] = useState<any | null>(null);
+  const [sessionSummary, setSessionSummary] = useState<any | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -124,6 +125,8 @@ export default function AtlasChallengePage() {
 
         if (r.subject_complete) {
           // Show subject summary then fetch next subject questions
+          // Fetch latest session summary (includes subject performance)
+          await fetchSessionSummary();
           setShowSubjectSummary(true);
           // Allow user to continue; server already advanced subject index
         } else {
@@ -160,6 +163,22 @@ export default function AtlasChallengePage() {
       startTimer(d.timer_seconds || 120);
     } catch (e) {
       console.error(e);
+    }
+  };
+
+  const fetchSessionSummary = async () => {
+    if (!session) return;
+    try {
+      const params = new URLSearchParams({ session_id: session.session_id });
+      const res = await fetch(`${API_BASE}/challenge-hub/summary?${params.toString()}`, {
+        method: 'GET',
+        headers: getAuthHeaders(),
+      });
+      if (!res.ok) throw new Error('Summary fetch failed');
+      const data = await res.json();
+      setSessionSummary(data.summary || null);
+    } catch (e) {
+      console.error('Failed to fetch session summary', e);
     }
   };
 
@@ -245,17 +264,42 @@ export default function AtlasChallengePage() {
 
   // If showing subject summary
   if (showSubjectSummary) {
+    const perf = sessionSummary?.subject_performance?.find((s: any) => s.subject === subject) || null;
     return (
       <AppLayout>
         <div className="flex min-h-screen">
           <Sidebar />
           <div className="flex-1 lg:pb-0 pb-24">
             <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-10">
-              <div className="bg-white border rounded-xl p-6 text-center">
-                <h2 className="text-xl font-bold mb-2">Congratulations!</h2>
-                <p className="text-gray-600 mb-4">You have completed {subject}.</p>
-                <p className="text-gray-800 font-semibold">Current Total XP: {totalXp}</p>
-                <div className="mt-6">
+              <div className="bg-white border rounded-xl p-6">
+                <h2 className="text-xl font-bold mb-2">Subject Completed — {subject}</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                  <div className="p-4 bg-gray-50 rounded-lg">
+                    <div className="text-sm text-gray-500">XP Earned</div>
+                    <div className="text-2xl font-bold">{perf ? perf.xp : 0}</div>
+                  </div>
+                  <div className="p-4 bg-gray-50 rounded-lg">
+                    <div className="text-sm text-gray-500">Accuracy</div>
+                    <div className="text-2xl font-bold">{perf ? `${perf.accuracy}%` : '0%'}</div>
+                  </div>
+                </div>
+
+                <div className="mb-4">
+                  <div className="text-sm text-gray-500">Correct Answers</div>
+                  <div className="text-lg font-semibold">{perf ? perf.correct : 0} / {perf ? perf.total : 6}</div>
+                </div>
+
+                <div className="mb-4">
+                  <div className="text-sm text-gray-500">Strong Topics</div>
+                  <div className="text-sm text-gray-700">{sessionSummary?.strongest_subject || '—'}</div>
+                </div>
+
+                <div className="mb-4">
+                  <div className="text-sm text-gray-500">Weak Topics</div>
+                  <div className="text-sm text-gray-700">{(sessionSummary?.weak_topics && sessionSummary.weak_topics.join(', ')) || '—'}</div>
+                </div>
+
+                <div className="mt-6 text-center">
                   <button onClick={() => fetchCurrentSubject()} className="px-6 py-3 bg-blue-600 text-white rounded-xl">Continue →</button>
                 </div>
               </div>
