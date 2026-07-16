@@ -52,6 +52,7 @@ interface GameSession {
   correctAnswers: number;
   totalTime: number;
   startTime: number;
+  totalQuestions?: number;
 }
 
 function starterToQuestion(sq: StarterQuestion): Question {
@@ -150,6 +151,8 @@ function ChallengeArena() {
   const retriesRef = useRef(0);
   const responseTimesRef = useRef<number[]>([]);
   const bgFetchRef = useRef(false);
+  const psychResponsesRef = useRef<StoredResponse[]>([]);
+  const academicResponsesRef = useRef<StoredResponse[]>([]);
 
   const ENCOURAGEMENTS = [
     'You\'re doing great! Keep going! 🎉',
@@ -189,7 +192,8 @@ function ChallengeArena() {
     }
   }, [isPlacement, phase, router, starterSessionId, psychResponses, academicResponses]);
 
-  const MAX_QUESTIONS = isPlacement ? 18 : 10; // Starter Arena uses actual count from API, this is max fallback
+  // For placement: use actual count from API (defaults to 12 if not available yet)
+  const MAX_QUESTIONS = isPlacement ? (session.totalQuestions || 12) : 10;
   const QUESTION_TIMEOUT = isPlacement ? 45 : 30;
 
   const decryptAnswer = (hash: string): string => {
@@ -260,8 +264,10 @@ function ChallengeArena() {
       if (isPlacement) {
         // Use the new adaptive Starter Arena API
         try {
-          const session = await startStarterArena(8, 10);
+          const session = await startStarterArena(6, 6);
           setStarterSessionId(session.session_id);
+          // Use the actual total_count from the API for progress tracking
+          setSession((prev) => ({ ...prev, totalQuestions: session.total_count }));
           initialQuestions = session.questions.map((sq: StarterArenaQuestion, idx: number) => ({
             id: -(idx + 1),
             domain: sq.domain || sq.category || 'Discovery',
@@ -349,8 +355,10 @@ function ChallengeArena() {
       };
       if (isPsychometric) {
         setPsychResponses(prev => [...prev, response]);
+        psychResponsesRef.current = [...psychResponsesRef.current, response];
       } else {
         setAcademicResponses(prev => [...prev, response]);
+        academicResponsesRef.current = [...academicResponsesRef.current, response];
       }
 
       // Show encouragement every 3 questions
@@ -471,20 +479,32 @@ function ChallengeArena() {
 
     const handleAdvance = () => {
       if (isLastQuestion) {
-        const avgTime = responseTimesRef.current.length > 0
-          ? responseTimesRef.current.reduce((a, b) => a + b, 0) / responseTimesRef.current.length
-          : 0;
-        const consistency = Math.round((session.correctAnswers / session.questionsAnswered) * 100);
-        submitBehaviourData({
-          retries: retriesRef.current,
-          response_time_avg: Math.round(avgTime * 10) / 10,
-          response_times: responseTimesRef.current,
-          questions_answered: newCount,
-          correct_answers: session.correctAnswers,
-          consistency,
-          domain: domain || undefined,
-        });
-        setPhase('complete');
+        if (isPlacement) {
+          // Auto-redirect to dashboard — save profile in background
+          const cached = getStoredUser();
+          if (cached) {
+            storeUser({ ...cached, onboarding_completed: true });
+          }
+          updateUserProfile({ onboarding_completed: true }).catch(() => {});
+          // Use refs for latest response data (state might be stale in closure)
+          completeStarterArena(starterSessionId, psychResponsesRef.current, academicResponsesRef.current).catch(() => {});
+          router.push('/dashboard');
+        } else {
+          const avgTime = responseTimesRef.current.length > 0
+            ? responseTimesRef.current.reduce((a, b) => a + b, 0) / responseTimesRef.current.length
+            : 0;
+          const consistency = Math.round((session.correctAnswers / session.questionsAnswered) * 100);
+          submitBehaviourData({
+            retries: retriesRef.current,
+            response_time_avg: Math.round(avgTime * 10) / 10,
+            response_times: responseTimesRef.current,
+            questions_answered: newCount,
+            correct_answers: session.correctAnswers,
+            consistency,
+            domain: domain || undefined,
+          });
+          setPhase('complete');
+        }
       } else if (isPlacement && newCount % PSYCHOMETRIC_EVERY_N === 0) {
         setPhase('psychometric');
       } else {
