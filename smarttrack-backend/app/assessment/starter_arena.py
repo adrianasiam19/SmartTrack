@@ -470,11 +470,44 @@ async def generate_starter_session(
             "display": "choose",
         })
 
-    # If we don't have enough from DB, use hardcoded fallback psychometric questions INSTANTLY
-    # (AI generation is skipped at startup for speed — LLM can be used later for refinement)
+    # If not enough from DB → try AI generation (avoids repeats from both DB + fallback)
     if len(psych_questions) < psychometric_count:
-        logger.info(f"Using fallback psychometric questions (needed {psychometric_count - len(psych_questions)})")
-        psych_questions.extend(_get_fallback_psych_questions(psychometric_count - len(psych_questions)))
+        needed = psychometric_count - len(psych_questions)
+        logger.info(f"Not enough DB psychometric cards, generating {needed} via AI...")
+
+        # Build list of existing questions so AI knows what to avoid
+        all_existing_texts = set()
+        for c in db_psych_cards:
+            all_existing_texts.add(c.question)
+        for q in psych_questions:
+            all_existing_texts.add(q["question"])
+        # Add hardcoded fallback questions to avoid AI generating duplicates of those
+        for fb in _get_fallback_psych_questions(100):  # Get all (capped at 8)
+            all_existing_texts.add(fb["question"])
+        existing_text = "\n".join(f"- {q}" for q in sorted(all_existing_texts))
+
+        ai_psych = await _generate_psychometric_questions(
+            count=needed,
+            existing_questions=existing_text,
+        )
+        # Filter out any AI-generated questions that still match DB ones
+        if ai_psych:
+            seen_questions = {q["question"] for q in psych_questions}
+            seen_questions.update(c.question for c in db_psych_cards)
+            for gen_q in ai_psych:
+                if gen_q["question"] not in seen_questions:
+                    psych_questions.append(gen_q)
+                    seen_questions.add(gen_q["question"])
+
+    # If STILL not enough → use hardcoded fallback as last resort
+    if len(psych_questions) < psychometric_count:
+        needed = psychometric_count - len(psych_questions)
+        logger.info(f"AI generation also failed, using hardcoded fallback for {needed} questions")
+        seen_questions = {q["question"] for q in psych_questions}
+        for fb_q in _get_fallback_psych_questions(needed):
+            if fb_q["question"] not in seen_questions:
+                psych_questions.append(fb_q)
+                seen_questions.add(fb_q["question"])
 
     # ── 2. Generate academic diagnostic questions via AI ───────────────────
     # Try AI first (level-adapted), fall back to hardcoded if AI fails
