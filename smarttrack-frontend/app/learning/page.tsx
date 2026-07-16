@@ -333,6 +333,13 @@ export default function Learning() {
         if (!getAccessToken()) { router.push('/login'); return; }
         const cached = getStoredUser(); if (cached) setUser(cached);
         const fresh = await getCurrentUser(); setUser(fresh);
+        
+        // SHS 3 students go to the WASSCE Revision Hub instead
+        if (fresh.shs_level === 'SHS 3') {
+          router.push('/revision');
+          return;
+        }
+        
         setCompletedLessons(loadCompletedLessons());
       } catch { router.push('/login'); }
       finally { setLoading(false); }
@@ -411,6 +418,20 @@ export default function Learning() {
     if (lesson.prerequisites.length === 0) return true;
     return lesson.prerequisites.every((preId) => completedLessons.has(preId));
   };
+
+  // SHS 3 redirect guard — prevent flash of SHS 1/2 UI
+  if (user?.shs_level === 'SHS 3') {
+    return (
+      <AppLayout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="w-10 h-10 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+            <p className="text-sm text-gray-500">Opening WASSCE Revision Hub...</p>
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
 
   if (loading) return (
     <AppLayout><div className="flex items-center justify-center min-h-screen">
