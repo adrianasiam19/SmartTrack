@@ -13,6 +13,7 @@ from app.auth.router import router as auth_router
 from app.config import settings
 from app.database import engine
 from app.revision.router import router as revision_router
+from app.assessment.starter_router import router as starter_router
 from app.users.router import router as users_router
 
 
@@ -71,6 +72,7 @@ app.include_router(assessment_router, prefix="/api/v1")
 app.include_router(ai_chat_router, prefix="/api/v1")
 app.include_router(daily_streak_router, prefix="/api/v1")
 app.include_router(revision_router, prefix="/api/v1")
+app.include_router(starter_router, prefix="/api/v1")
 
 
 # ── Root route ────────────────────────────────────────────────────────────────

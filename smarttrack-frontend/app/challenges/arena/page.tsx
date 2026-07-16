@@ -35,6 +35,13 @@ import {
   getRandomStarterQuestions,
   type StarterQuestion,
 } from '../../lib/starterArenaData';
+import {
+  startStarterArena,
+  completeStarterArena,
+  type StarterQuestion as StarterArenaQuestion,
+  type StoredResponse,
+  type LearnerProfile,
+} from '../../lib/starterArenaApi';
 
 type ArenaPhase = 'intro' | 'gameplay' | 'feedback' | 'psychometric' | 'loading_more' | 'complete';
 
@@ -132,12 +139,42 @@ function ChallengeArena() {
   const psychometricInProgressRef = useRef(false);
   const psychometricCompletedRef = useRef(false);
 
+  // New Starter Arena state
+  const [starterSessionId, setStarterSessionId] = useState<string>('');
+  const [psychResponses, setPsychResponses] = useState<StoredResponse[]>([]);
+  const [academicResponses, setAcademicResponses] = useState<StoredResponse[]>([]);
+  const [learnerProfile, setLearnerProfile] = useState<LearnerProfile | null>(null);
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [encouragementMsg, setEncouragementMsg] = useState<string>('');
+
   const retriesRef = useRef(0);
   const responseTimesRef = useRef<number[]>([]);
   const bgFetchRef = useRef(false);
 
+  const ENCOURAGEMENTS = [
+    'You\'re doing great! Keep going! 🎉',
+    'Atlas is learning more about you!',
+    'Almost there! You\'re doing amazing! ✨',
+    'Every answer helps! You\'re on fire! 🔥',
+    'Wonderful progress! Keep it up! 💪',
+    'You\'re almost done! Fantastic effort! 🌟',
+  ];
+
   useEffect(() => {
     if (isPlacement && phase === 'complete') {
+      // Generate learner profile
+      if (psychResponses.length > 0 || academicResponses.length > 0) {
+        setProfileLoading(true);
+        completeStarterArena(starterSessionId, psychResponses, academicResponses)
+          .then((result) => {
+            if (result.success && result.profile) {
+              setLearnerProfile(result.profile);
+            }
+          })
+          .catch(() => {})
+          .finally(() => setProfileLoading(false));
+      }
+
       // Optimistically update local state first
       const cached = getStoredUser();
       if (cached) {
@@ -149,14 +186,10 @@ function ChallengeArena() {
       updateUserProfile({ onboarding_completed: true }).catch(() => {
         // Non-critical — local state is already updated
       });
-      const timer = setTimeout(() => {
-        router.push('/dashboard');
-      }, 1200);
-      return () => clearTimeout(timer);
     }
-  }, [isPlacement, phase, router]);
+  }, [isPlacement, phase, router, starterSessionId, psychResponses, academicResponses]);
 
-  const MAX_QUESTIONS = isPlacement ? 12 : 10;
+  const MAX_QUESTIONS = isPlacement ? 18 : 10; // Starter Arena uses actual count from API, this is max fallback
   const QUESTION_TIMEOUT = isPlacement ? 45 : 30;
 
   const decryptAnswer = (hash: string): string => {
@@ -225,8 +258,32 @@ function ChallengeArena() {
       let initialQuestions: Question[] = [];
 
       if (isPlacement) {
-        const raw = getRandomStarterQuestions(MAX_QUESTIONS);
-        initialQuestions = raw.map(starterToQuestion);
+        // Use the new adaptive Starter Arena API
+        try {
+          const session = await startStarterArena(8, 10);
+          setStarterSessionId(session.session_id);
+          initialQuestions = session.questions.map((sq: StarterArenaQuestion, idx: number) => ({
+            id: -(idx + 1),
+            domain: sq.domain || sq.category || 'Discovery',
+            question: sq.question,
+            question_type: 'mcq' as QuestionType,
+            options: sq.type === 'psychometric'
+              ? (sq.options as Array<{value: string; label: string}>).reduce((acc, opt) => {
+                  acc[opt.value] = opt.label;
+                  return acc;
+                }, {} as Record<string, string>)
+              : (sq.options as Record<string, string>),
+            answer_hash: btoa(`ST_SEC_2024:${sq.correct_key || 'A'}`),
+            _category: sq.type,
+            _explanation: sq.explanation,
+            _xp: 0,
+          }));
+          setEncouragementMsg('');
+        } catch (e: any) {
+          console.warn('Adaptive Starter Arena failed, falling back:', e);
+          const raw = getRandomStarterQuestions(MAX_QUESTIONS);
+          initialQuestions = raw.map(starterToQuestion);
+        }
       } else if (isLogicArena) {
         initialQuestions = getRandomLogicQuestions(MAX_QUESTIONS);
       } else if (isQuantArena) {
@@ -278,6 +335,31 @@ function ChallengeArena() {
       setLastStreak(0);
       setLevelUp(false);
       setNewRank(null);
+
+      // Track response for learner profile
+      const isPsychometric = currentQuestion._category === 'psychometric';
+      const response: StoredResponse = {
+        question_id: String(currentQuestion.id),
+        question: currentQuestion.question,
+        type: isPsychometric ? 'psychometric' : 'academic',
+        answer: answerKey,
+        correct: localIsCorrect,
+        domain: currentQuestion.domain,
+        time_taken: timeTaken,
+      };
+      if (isPsychometric) {
+        setPsychResponses(prev => [...prev, response]);
+      } else {
+        setAcademicResponses(prev => [...prev, response]);
+      }
+
+      // Show encouragement every 3 questions
+      const newCount = session.questionsAnswered + 1;
+      if (newCount % 3 === 0 && newCount < MAX_QUESTIONS) {
+        setEncouragementMsg(ENCOURAGEMENTS[Math.floor(newCount / 3) - 1] || ENCOURAGEMENTS[0]);
+      } else {
+        setEncouragementMsg('');
+      }
 
       const countsTowardAccuracy = !isPreference;
 
@@ -733,7 +815,10 @@ function ChallengeArena() {
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-3">
             {isPlacement ? (
-              <span className="text-sm text-gray-500">Discovery</span>
+              <span className="text-sm text-gray-500 flex items-center gap-2">
+                <span className="w-2 h-2 bg-[#4F46E5] rounded-full" />
+                {currentQuestion._category === 'psychometric' ? 'Discover You' : 'Quick Challenge'}
+              </span>
             ) : (
               <span className="text-sm font-semibold text-[#4F46E5]">+{session.xpEarned} XP</span>
             )}
@@ -925,24 +1010,108 @@ function ChallengeArena() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-lg mx-auto"
+          className="max-w-2xl mx-auto"
         >
-          <div className="bg-white border border-gray-200 rounded-2xl p-10 text-center shadow-sm">
+          <div className="bg-white border border-gray-200 rounded-2xl p-8 sm:p-10 text-center shadow-sm">
             <div className="mb-6 flex justify-center">
-              <div className="w-20 h-20 bg-[#EEF2FF] rounded-full border-2 border-[#C7D2FE] flex items-center justify-center">
-                <span className="text-3xl font-bold text-[#4F46E5]">A</span>
+              <div className="w-20 h-20 bg-gradient-to-br from-[#2563EB] to-[#7C3AED] rounded-full flex items-center justify-center shadow-lg">
+                <span className="text-3xl font-bold text-white">A</span>
               </div>
             </div>
 
-            <h1 className="text-3xl font-bold text-[#1E293B] mb-2">Discovery Complete!</h1>
-            <p className="text-gray-500 mb-4 max-w-sm mx-auto leading-relaxed">
-              Atlas now understands your strengths and interests better.
+            <h1 className="text-3xl font-bold text-[#1E293B] mb-2">🎉 Discovery Complete!</h1>
+            <p className="text-gray-500 mb-6 max-w-md mx-auto leading-relaxed">
+              Amazing! Atlas has learned so much about you. Here&apos;s what we discovered:
             </p>
 
-            <div className="flex items-center justify-center gap-3 text-gray-400 text-sm">
-              <div className="w-5 h-5 border-2 border-[#C7D2FE] border-t-[#4F46E5] rounded-full animate-spin" />
-              <span>Building your profile...</span>
-            </div>
+            {profileLoading ? (
+              <div className="flex items-center justify-center gap-3 text-gray-400 text-sm py-8">
+                <div className="w-5 h-5 border-2 border-[#C7D2FE] border-t-[#2563EB] rounded-full animate-spin" />
+                <span>Building your personalised profile...</span>
+              </div>
+            ) : learnerProfile ? (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="text-left space-y-4"
+              >
+                {/* Learning Style */}
+                <div className="bg-gradient-to-r from-[#EEF2FF] to-[#E0E7FF] rounded-xl p-4 border border-[#C7D2FE]">
+                  <p className="text-xs font-bold uppercase tracking-wider text-[#4F46E5] mb-1">Learning Style</p>
+                  <p className="text-lg font-bold text-[#1E293B]">{learnerProfile.learning_style.primary}</p>
+                  <p className="text-sm text-gray-600 mt-1">{learnerProfile.learning_style.description}</p>
+                </div>
+
+                {/* Strengths & Weaknesses */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-green-50 rounded-xl p-4 border border-green-200">
+                    <p className="text-xs font-bold uppercase tracking-wider text-green-700 mb-2">Strengths</p>
+                    <ul className="space-y-1">
+                      {learnerProfile.academic_strengths.map((s, i) => (
+                        <li key={i} className="text-sm text-green-800 flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                          {s}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
+                    <p className="text-xs font-bold uppercase tracking-wider text-amber-700 mb-2">Focus Areas</p>
+                    <ul className="space-y-1">
+                      {learnerProfile.academic_weaknesses.map((w, i) => (
+                        <li key={i} className="text-sm text-amber-800 flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
+                          {w}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Confidence & Reasoning */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-white border border-gray-200 rounded-xl p-4">
+                    <p className="text-xs text-gray-500 mb-1">Confidence</p>
+                    <p className="text-lg font-bold text-[#1E293B]">{learnerProfile.confidence_level}</p>
+                  </div>
+                  <div className="bg-white border border-gray-200 rounded-xl p-4">
+                    <p className="text-xs text-gray-500 mb-1">Reasoning</p>
+                    <p className="text-lg font-bold text-[#1E293B]">{learnerProfile.reasoning_ability}</p>
+                  </div>
+                </div>
+
+                {/* Recommended Focus */}
+                <div className="bg-gradient-to-r from-[#FFFBEB] to-[#FEF3C7] rounded-xl p-4 border border-[#FDE68A]">
+                  <p className="text-xs font-bold uppercase tracking-wider text-amber-700 mb-1">Recommended Focus</p>
+                  <p className="text-sm text-amber-900">{learnerProfile.recommended_focus}</p>
+                </div>
+
+                {/* Recommended Challenges */}
+                <div className="bg-white border border-gray-200 rounded-xl p-4">
+                  <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Recommended Challenges</p>
+                  <div className="flex flex-wrap gap-2">
+                    {learnerProfile.recommended_challenges.map((c, i) => (
+                      <span key={i} className="px-3 py-1 bg-[#EEF2FF] text-[#4F46E5] text-sm rounded-full border border-[#C7D2FE]">
+                        {c}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            ) : (
+              <div className="flex items-center justify-center gap-3 text-gray-400 text-sm py-8">
+                <div className="w-5 h-5 border-2 border-[#C7D2FE] border-t-[#2563EB] rounded-full animate-spin" />
+                <span>Building your profile...</span>
+              </div>
+            )}
+
+            <button
+              onClick={() => router.push('/dashboard')}
+              className="mt-8 w-full px-8 py-4 bg-gradient-to-r from-[#2563EB] to-[#7C3AED] text-white rounded-xl font-bold text-lg hover:shadow-lg transition-all"
+            >
+              Go to Dashboard
+            </button>
           </div>
         </motion.div>
       );
