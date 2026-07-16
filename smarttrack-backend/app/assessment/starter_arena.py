@@ -200,13 +200,223 @@ async def get_ai_response(messages: list, model: str = "") -> str:
     return ""
 
 
+def _get_fallback_psych_questions(count: int) -> list:
+    """Return hardcoded fallback psychometric questions when AI/DB fails."""
+    fallback = [
+        {
+            "id": "psych_fb_1",
+            "type": "psychometric",
+            "category": "Learning Style",
+            "question": "When studying a new topic, what helps you understand it best?",
+            "options": [
+                {"value": "A", "label": "Reading notes and textbooks"},
+                {"value": "B", "label": "Watching videos and diagrams"},
+                {"value": "C", "label": "Discussing with friends"},
+                {"value": "D", "label": "Practicing with examples"},
+            ],
+            "display": "choose",
+        },
+        {
+            "id": "psych_fb_2",
+            "type": "psychometric",
+            "category": "Interest",
+            "question": "Which school subject do you enjoy the most?",
+            "options": [
+                {"value": "A", "label": "Mathematics — solving problems"},
+                {"value": "B", "label": "Science — discovering how things work"},
+                {"value": "C", "label": "English — reading and writing"},
+                {"value": "D", "label": "Social Studies — understanding the world"},
+            ],
+            "display": "choose",
+        },
+        {
+            "id": "psych_fb_3",
+            "type": "psychometric",
+            "category": "Personality",
+            "question": "How do you prefer to work on projects?",
+            "options": [
+                {"value": "A", "label": "Alone, at my own pace"},
+                {"value": "B", "label": "In a small group, sharing ideas"},
+                {"value": "C", "label": "With a partner I trust"},
+                {"value": "D", "label": "Leading the team"},
+            ],
+            "display": "choose",
+        },
+        {
+            "id": "psych_fb_4",
+            "type": "psychometric",
+            "category": "Thinking Style",
+            "question": "When faced with a difficult problem, what do you usually do?",
+            "options": [
+                {"value": "A", "label": "Break it down step by step"},
+                {"value": "B", "label": "Think of creative solutions"},
+                {"value": "C", "label": "Ask someone for help"},
+                {"value": "D", "label": "Keep trying different approaches"},
+            ],
+            "display": "choose",
+        },
+        {
+            "id": "psych_fb_5",
+            "type": "psychometric",
+            "category": "Motivation",
+            "question": "What motivates you most in your studies?",
+            "options": [
+                {"value": "A", "label": "Getting good grades"},
+                {"value": "B", "label": "Learning new things"},
+                {"value": "C", "label": "Making my family proud"},
+                {"value": "D", "label": "Preparing for my future career"},
+            ],
+            "display": "choose",
+        },
+        {
+            "id": "psych_fb_6",
+            "type": "psychometric",
+            "category": "Study Habit",
+            "question": "When do you study most effectively?",
+            "options": [
+                {"value": "A", "label": "Early morning, when it's quiet"},
+                {"value": "B", "label": "Afternoon, after school"},
+                {"value": "C", "label": "Evening, before bed"},
+                {"value": "D", "label": "In short bursts throughout the day"},
+            ],
+            "display": "choose",
+        },
+        {
+            "id": "psych_fb_7",
+            "type": "psychometric",
+            "category": "Collaboration",
+            "question": "In a group discussion, you usually:",
+            "options": [
+                {"value": "A", "label": "Listen first, then share your thoughts"},
+                {"value": "B", "label": "Lead the conversation"},
+                {"value": "C", "label": "Take notes and organize ideas"},
+                {"value": "D", "label": "Encourage others to speak"},
+            ],
+            "display": "choose",
+        },
+        {
+            "id": "psych_fb_8",
+            "type": "psychometric",
+            "category": "Interest",
+            "question": "What kind of career interests you most?",
+            "options": [
+                {"value": "A", "label": "Science and technology"},
+                {"value": "B", "label": "Arts and creativity"},
+                {"value": "C", "label": "Business and leadership"},
+                {"value": "D", "label": "Healthcare and helping others"},
+            ],
+            "display": "choose",
+        },
+    ]
+    random.shuffle(fallback)
+    return fallback[:count]
+
+
+def _get_fallback_academic_questions(count: int, shs_level: str) -> list:
+    """Return hardcoded fallback academic diagnostic questions when AI fails."""
+    fallback = [
+        {
+            "id": "acad_fb_1",
+            "type": "academic",
+            "domain": "Core Mathematics",
+            "question": "What is 25% of 200?",
+            "options": {"A": "25", "B": "50", "C": "75", "D": "100"},
+            "correct_key": "B",
+            "explanation": "25% means 25/100 = 0.25. So 0.25 x 200 = 50.",
+        },
+        {
+            "id": "acad_fb_2",
+            "type": "academic",
+            "domain": "English Language",
+            "question": "Which of the following is a complete sentence?",
+            "options": {"A": "Running quickly.", "B": "The boy runs.", "C": "Under the table.", "D": "Beautiful flowers."},
+            "correct_key": "B",
+            "explanation": "'The boy runs' has both a subject (the boy) and a verb (runs), making it a complete sentence.",
+        },
+        {
+            "id": "acad_fb_3",
+            "type": "academic",
+            "domain": "Integrated Science",
+            "question": "Which organ in the human body pumps blood?",
+            "options": {"A": "Lungs", "B": "Liver", "C": "Heart", "D": "Kidneys"},
+            "correct_key": "C",
+            "explanation": "The heart is a muscular organ that pumps blood throughout the body via the circulatory system.",
+        },
+        {
+            "id": "acad_fb_4",
+            "type": "academic",
+            "domain": "Logical Reasoning",
+            "question": "If all birds can fly, and a penguin is a bird, can a penguin fly?",
+            "options": {"A": "Yes, because all birds fly", "B": "No, because penguins cannot fly", "C": "Only if it's young", "D": "Penguins are not birds"},
+            "correct_key": "B",
+            "explanation": "While all birds share common characteristics, not all birds can fly. Penguins are birds but they are flightless.",
+        },
+        {
+            "id": "acad_fb_5",
+            "type": "academic",
+            "domain": "Social Studies",
+            "question": "What is the capital city of Ghana?",
+            "options": {"A": "Kumasi", "B": "Accra", "C": "Takoradi", "D": "Tamale"},
+            "correct_key": "B",
+            "explanation": "Accra is the capital and largest city of Ghana, located along the Atlantic coast.",
+        },
+        {
+            "id": "acad_fb_6",
+            "type": "academic",
+            "domain": "Analytical Thinking",
+            "question": "A shirt costs GHS 80 and is on sale for 20% off. What is the sale price?",
+            "options": {"A": "GHS 60", "B": "GHS 64", "C": "GHS 72", "D": "GHS 16"},
+            "correct_key": "B",
+            "explanation": "20% of 80 = 16. So the sale price is 80 - 16 = GHS 64.",
+        },
+        {
+            "id": "acad_fb_7",
+            "type": "academic",
+            "domain": "Core Mathematics",
+            "question": "Solve for x: 2x + 5 = 15",
+            "options": {"A": "x = 5", "B": "x = 10", "C": "x = 7.5", "D": "x = 20"},
+            "correct_key": "A",
+            "explanation": "2x + 5 = 15. Subtract 5 from both sides: 2x = 10. Divide by 2: x = 5.",
+        },
+        {
+            "id": "acad_fb_8",
+            "type": "academic",
+            "domain": "English Language",
+            "question": "Choose the correct spelling:",
+            "options": {"A": "Acommodate", "B": "Accommodate", "C": "Acomodate", "D": "Accomodate"},
+            "correct_key": "B",
+            "explanation": "The correct spelling is 'accommodate' with double 'c' and double 'm'.",
+        },
+        {
+            "id": "acad_fb_9",
+            "type": "academic",
+            "domain": "Integrated Science",
+            "question": "What gas do plants absorb from the atmosphere during photosynthesis?",
+            "options": {"A": "Oxygen", "B": "Nitrogen", "C": "Carbon dioxide", "D": "Hydrogen"},
+            "correct_key": "C",
+            "explanation": "Plants absorb carbon dioxide (CO2) from the atmosphere and use it with sunlight to produce glucose and oxygen.",
+        },
+        {
+            "id": "acad_fb_10",
+            "type": "academic",
+            "domain": "Logical Reasoning",
+            "question": "All squares are rectangles. Some rectangles are not squares. Therefore:",
+            "options": {"A": "Some squares are not rectangles", "B": "All rectangles are squares", "C": "Some rectangles are squares", "D": "No squares are rectangles"},
+            "correct_key": "C",
+            "explanation": "All squares are rectangles by definition, so some rectangles (the ones that have equal sides) are squares.",
+        },
+    ]
+    random.shuffle(fallback)
+    return fallback[:count]
+
+
 async def generate_starter_session(
     db: AsyncSession,
     user_id: str,
     shs_level: str = "SHS 1",
     programme: str = "General Science",
-    psychometric_count: int = 5,
-    academic_count: int = 5,
+    psychometric_count: int = 6,
+    academic_count: int = 6,
 ) -> dict:
     """
     Generate a complete Starter Arena session with mixed questions.
@@ -260,22 +470,24 @@ async def generate_starter_session(
             "display": "choose",
         })
 
-    # If we don't have enough from DB, generate the rest via AI
+    # If we don't have enough from DB, use hardcoded fallback psychometric questions INSTANTLY
+    # (AI generation is skipped at startup for speed — LLM can be used later for refinement)
     if len(psych_questions) < psychometric_count:
-        needed = psychometric_count - len(psych_questions)
-        existing_descriptions = [
-            f"- {q['question']}" for q in psych_questions
-        ]
-        ai_psych = await _generate_psychometric_questions(
-            needed, existing_questions="\n".join(existing_descriptions) or "None"
-        )
-        psych_questions.extend(ai_psych)
+        logger.info(f"Using fallback psychometric questions (needed {psychometric_count - len(psych_questions)})")
+        psych_questions.extend(_get_fallback_psych_questions(psychometric_count - len(psych_questions)))
 
-    # ── 2. Generate academic diagnostic questions via AI ──────────────────
+    # ── 2. Generate academic diagnostic questions via AI ───────────────────
+    # Try AI first (level-adapted), fall back to hardcoded if AI fails
     academic_questions = await _generate_academic_questions(
         count=academic_count,
         shs_level=shs_level,
     )
+    if not academic_questions:
+        logger.info("AI academic generation failed, using hardcoded fallback")
+        academic_questions = _get_fallback_academic_questions(
+            count=academic_count,
+            shs_level=shs_level,
+        )
 
     # ── 3. Alternate questions naturally ──────────────────────────────────
     # Weave psychometric and academic questions alternately for a conversational flow
@@ -353,51 +565,92 @@ async def generate_learner_profile(
     academic_responses: list,
 ) -> dict:
     """
-    Generate a detailed learner profile after the Starter Arena is complete.
+    Generate a learner profile from Starter Arena responses.
 
-    Returns a dict with the learner profile structure.
+    Uses a quick fallback profile instantly — no slow AI call at the end.
+    The responses are stored locally and can be analyzed deeper later.
     """
-    prompt = LEARNER_PROFILE_PROMPT.format(
+    # Instant: use fallback profile based on response analysis
+    # This avoids the long "loading insight" wait
+    return _quick_learner_profile(
         shs_level=shs_level,
         programme=programme,
-        psychometric_responses=json.dumps(psychometric_responses, indent=2),
-        academic_responses=json.dumps(academic_responses, indent=2),
+        psychometric_responses=psychometric_responses,
+        academic_responses=academic_responses,
     )
 
-    response = await get_ai_response([
-        {"role": "system", "content": STARTER_SYSTEM_PROMPT},
-        {"role": "user", "content": prompt},
-    ])
 
-    if not response:
-        return _fallback_learner_profile(shs_level, programme)
+def _quick_learner_profile(
+    shs_level: str,
+    programme: str,
+    psychometric_responses: list,
+    academic_responses: list,
+) -> dict:
+    """Build a learner profile instantly from response data (no AI call)."""
+    # Calculate accuracy from academic responses
+    academic_correct = sum(1 for r in academic_responses if r.get("correct"))
+    academic_total = len(academic_responses)
+    accuracy = (academic_correct / academic_total * 100) if academic_total > 0 else 0
 
-    try:
-        response = response.strip()
-        if response.startswith("```json"):
-            response = response[7:]
-        elif response.startswith("```"):
-            response = response[3:]
-        if response.endswith("```"):
-            response = response[:-3]
-        return json.loads(response)
-    except Exception as e:
-        logger.error(f"Failed to parse learner profile: {e}")
-        return _fallback_learner_profile(shs_level, programme)
+    # Estimate confidence from response times
+    avg_time = 0
+    if academic_responses:
+        times = [r.get("time_taken", 0) for r in academic_responses]
+        avg_time = sum(times) / len(times) if times else 0
 
+    # Build profile based on actual data
+    strengths = []
+    weaknesses = []
+    recommended_challenges = []
 
-def _fallback_learner_profile(shs_level: str, programme: str) -> dict:
-    """Return a basic fallback learner profile."""
+    if accuracy >= 70:
+        strengths.append("Strong academic foundation")
+        recommended_challenges.append("Competitive Challenges")
+    elif accuracy >= 50:
+        strengths.append("Good understanding of core concepts")
+        weaknesses.append("Could benefit from more practice")
+        recommended_challenges.append("Logic Arena")
+    else:
+        weaknesses.append("Core concepts need reinforcement")
+        recommended_challenges.append("Learning Center")
+
+    if avg_time < 15 and accuracy >= 60:
+        strengths.append("Quick thinking and good recall")
+    elif avg_time >= 15:
+        weaknesses.append("Could improve problem-solving speed")
+        recommended_challenges.append("Quantitative Sprint")
+
+    # Learning style from psychometric data
+    learning_style = "Visual"  # Default
+    for r in psychometric_responses:
+        q = r.get("question", "").lower()
+        a = r.get("answer", "")
+        if "study" in q or "learn" in q:
+            if a == "A":
+                learning_style = "Reading"
+            elif a == "B":
+                learning_style = "Visual"
+            elif a == "C":
+                learning_style = "Auditory"
+            elif a == "D":
+                learning_style = "Kinesthetic"
+            break
+
+    confidence = "High" if accuracy >= 70 else "Medium" if accuracy >= 40 else "Low"
+    reasoning = "High" if accuracy >= 75 else "Medium" if accuracy >= 45 else "Low"
+
     return {
         "learning_style": {
-            "primary": "Mixed",
-            "description": "Learning style analysis will improve as you complete more activities."
+            "primary": learning_style,
+            "description": f"Your responses suggest a {learning_style.lower()} learning preference. Atlas will tailor content to match your style."
         },
-        "academic_strengths": ["General knowledge"],
-        "academic_weaknesses": ["Areas to be identified through further assessment"],
-        "confidence_level": "Medium",
-        "reasoning_ability": "Medium",
-        "recommended_focus": "Complete the Starter Arena to receive personalized recommendations.",
-        "recommended_challenges": ["Logic Arena", "Quantitative Sprint"],
-        "recommendation_profile": "Profile generation in progress. Complete more challenges for better insights."
+        "academic_strengths": strengths + [f"Programme: {programme}"],
+        "academic_weaknesses": weaknesses or ["Areas to explore further"],
+        "confidence_level": confidence,
+        "reasoning_ability": reasoning,
+        "recommended_focus": f"Based on your Starter Arena results, focus on {weaknesses[0].lower() if weaknesses else 'strengthening your core subjects'} to build a strong foundation for {shs_level}.",
+        "recommended_challenges": recommended_challenges + ["Daily Challenges"],
+        "recommendation_profile": f"SHS {shs_level} student in {programme}. Accuracy: {accuracy:.0f}%, Confidence: {confidence}, Style: {learning_style}."
     }
+
+

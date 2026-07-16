@@ -75,8 +75,8 @@ export interface StoredResponse {
  * Start a new Starter Arena session with mixed psychometric + academic questions.
  */
 export async function startStarterArena(
-  psychometricCount: number = 5,
-  academicCount: number = 5
+  psychometricCount: number = 6,
+  academicCount: number = 6
 ): Promise<StartSessionResponse> {
   const response = await fetch(`${API_BASE_URL}/starter-arena/start`, {
     method: 'POST',
