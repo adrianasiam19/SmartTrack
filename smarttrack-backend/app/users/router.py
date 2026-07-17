@@ -49,6 +49,12 @@ async def update_profile(
     if body.onboarding_completed is not None:
         current_user.onboarding_completed = body.onboarding_completed
         updated = True
+    if body.starter_arena_completed is not None:
+        current_user.starter_arena_completed = body.starter_arena_completed
+        # Completing the Starter Arena also completes onboarding.
+        if body.starter_arena_completed:
+            current_user.onboarding_completed = True
+        updated = True
 
     if updated:
         db.add(current_user)

@@ -8,7 +8,7 @@ import BottomNav from '../components/BottomNav';
 import AppLayout from '../components/AppLayout';
 import XpGauge from '../components/XpGauge';
 import {
-  getCurrentUser, getAccessToken, getStoredUser, UserProfile,
+  getCurrentUser, getAccessToken, getStoredUser, resolvePostAuthDestination, UserProfile,
 } from '../lib/authApi';
 
 const FUN_FACTS = [
@@ -40,8 +40,20 @@ export default function Dashboard() {
         const token = getAccessToken();
         if (!token) { router.push('/login'); return; }
         const cached = getStoredUser();
-        if (cached) setUser(cached);
+        if (cached) {
+          const cachedDestination = resolvePostAuthDestination(cached);
+          if (cachedDestination !== '/dashboard') {
+            router.replace(cachedDestination);
+            return;
+          }
+          setUser(cached);
+        }
         const fresh = await getCurrentUser();
+        const destination = resolvePostAuthDestination(fresh);
+        if (destination !== '/dashboard') {
+          router.replace(destination);
+          return;
+        }
         setUser(fresh);
       } catch { router.push('/login'); }
       finally { setLoading(false); }

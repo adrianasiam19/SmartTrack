@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
 import { Eye, EyeOff, WifiOff, RefreshCw } from 'lucide-react';
-import { login, getStoredUser } from '../lib/authApi';
+import { login, getStoredUser, resolvePostAuthDestination } from '../lib/authApi';
 
 export default function Login() {
   const router = useRouter();
@@ -21,9 +21,8 @@ export default function Login() {
     try {
       const formData = new FormData(e.currentTarget);
       await login({ email: formData.get('email') as string, password: formData.get('password') as string });
-      const storedUser = getStoredUser();
-      if (storedUser && !storedUser.onboarding_completed) router.push('/onboarding');
-      else router.push('/dashboard');
+      // Prefer the freshly cached profile from login() → getCurrentUser().
+      router.push(resolvePostAuthDestination(getStoredUser()));
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Login failed';
       setError(message);

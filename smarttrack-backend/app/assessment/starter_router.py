@@ -154,6 +154,15 @@ async def complete_session(
             psychometric_responses=body.psychometric_responses,
             academic_responses=body.academic_responses,
         )
+
+        # Persist one-time completion flags on the server so returning logins
+        # never re-enter onboarding / Starter Arena.
+        current_user.starter_arena_completed = True
+        current_user.onboarding_completed = True
+        db.add(current_user)
+        await db.commit()
+        await db.refresh(current_user)
+
         return LearnerProfileResponse(success=True, profile=profile)
     except Exception as e:
         logger.error(f"Failed to generate learner profile: {e}")

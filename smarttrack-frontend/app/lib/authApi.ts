@@ -37,6 +37,7 @@ export interface UserProfile {
   shs_level: SHSLevel | null;
   school: string | null;
   onboarding_completed: boolean;
+  starter_arena_completed: boolean;
 
   // Gamification
   xp: number;
@@ -377,7 +378,20 @@ export const refreshAccessToken = async (): Promise<string> => {
   return data.access_token;
 };
 
-export const updateUserProfile = async (data: Partial<Pick<UserProfile, 'full_name' | 'avatar_url' | 'programme' | 'shs_level' | 'school' | 'onboarding_completed'>>): Promise<UserProfile> => {
+export const updateUserProfile = async (
+  data: Partial<
+    Pick<
+      UserProfile,
+      | 'full_name'
+      | 'avatar_url'
+      | 'programme'
+      | 'shs_level'
+      | 'school'
+      | 'onboarding_completed'
+      | 'starter_arena_completed'
+    >
+  >,
+): Promise<UserProfile> => {
   let response: Response;
   try {
     [response] = await fetchWithRetry(
@@ -403,5 +417,22 @@ export const updateUserProfile = async (data: Partial<Pick<UserProfile, 'full_na
   storeUser(user);
   return user;
 };
+
+/**
+ * Decide where an authenticated user should go next.
+ * New users: onboarding → Starter Arena → dashboard (each step only once).
+ * Returning users: dashboard.
+ */
+export function resolvePostAuthDestination(
+  user: Pick<UserProfile, 'onboarding_completed' | 'starter_arena_completed'> | null | undefined,
+): '/onboarding' | '/challenges/arena?mode=placement' | '/dashboard' {
+  if (!user) return '/onboarding';
+  if (!user.onboarding_completed) return '/onboarding';
+  // Explicit false only — missing/undefined means a legacy completed profile.
+  if (user.starter_arena_completed === false) {
+    return '/challenges/arena?mode=placement';
+  }
+  return '/dashboard';
+}
 
 export const isAuthenticated = (): boolean => !!getAccessToken();
