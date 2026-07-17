@@ -268,6 +268,130 @@ async function installAuthSession(tokens: AuthTokens): Promise<UserProfile | nul
   }
 }
 
+/** Canonical frontend redirect URI registered with Google Cloud Console. */
+export const getGoogleRedirectUri = (): string => {
+  if (typeof window === 'undefined') return 'http://localhost:3000/auth/callback';
+  return `${window.location.origin}/auth/callback`;
+};
+
+/**
+ * Start Google Sign-In: clear any previous session, fetch the consent URL,
+ * then navigate to Google.
+ */
+export const startGoogleSignIn = async (): Promise<void> => {
+  clearClientSession();
+  const redirectUri = getGoogleRedirectUri();
+  let response: Response;
+  try {
+    [response] = await fetchWithRetry(
+      `${API_BASE_URL}/auth/google/url?redirect_uri=${encodeURIComponent(redirectUri)}`,
+      { method: 'GET' },
+      1,
+      500,
+    );
+  } catch (err) {
+    throw new Error(getFetchErrorMessage(err));
+  }
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.detail || 'Google Sign-In is unavailable right now.');
+  }
+
+  const data = (await response.json()) as { url?: string };
+  if (!data.url) {
+    throw new Error('Google Sign-In is unavailable right now.');
+  }
+  window.location.href = data.url;
+};
+
+/**
+ * Finish Google Sign-In after Google redirects back with an authorization code.
+ */
+export const completeGoogleSignIn = async (
+  code: string,
+  redirectUri: string = getGoogleRedirectUri(),
+): Promise<UserProfile | null> => {
+  let response: Response;
+  try {
+    [response] = await fetchWithRetry(
+      `${API_BASE_URL}/auth/google/callback`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, redirect_uri: redirectUri }),
+      },
+      1,
+      500,
+    );
+  } catch (err) {
+    throw new Error(getFetchErrorMessage(err));
+  }
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.detail || 'Failed to complete Google Sign-In.');
+  }
+
+  const tokens: AuthTokens = await response.json();
+  return installAuthSession(tokens);
+};
+
+export const requestPasswordReset = async (
+  email: string,
+): Promise<{ message: string; dev_reset_link?: string | null }> => {
+  let response: Response;
+  try {
+    [response] = await fetchWithRetry(
+      `${API_BASE_URL}/auth/forgot-password`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim().toLowerCase() }),
+      },
+      1,
+      500,
+    );
+  } catch (err) {
+    throw new Error(getFetchErrorMessage(err));
+  }
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.detail || 'Unable to send password reset email.');
+  }
+
+  return response.json();
+};
+
+export const resetPassword = async (
+  token: string,
+  password: string,
+): Promise<{ message: string }> => {
+  let response: Response;
+  try {
+    [response] = await fetchWithRetry(
+      `${API_BASE_URL}/auth/reset-password`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, password }),
+      },
+      1,
+      500,
+    );
+  } catch (err) {
+    throw new Error(getFetchErrorMessage(err));
+  }
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.detail || 'Unable to reset password.');
+  }
+
+  return response.json();
+};
+
 /**
  * Register a new account.
  * Always starts from a clean client session so no previous user state can leak.

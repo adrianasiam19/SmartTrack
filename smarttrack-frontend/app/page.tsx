@@ -4,13 +4,27 @@ import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useState, useCallback } from 'react';
 import AtlasIntroAnimation from './components/AtlasIntroAnimation';
+import { startGoogleSignIn } from './lib/authApi';
 
 export default function Home() {
   const [showIntro, setShowIntro] = useState(true);
+  const [googleError, setGoogleError] = useState('');
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const handleIntroFinish = useCallback(() => {
     setShowIntro(false);
   }, []);
+
+  const handleGoogle = async () => {
+    setGoogleError('');
+    setIsGoogleLoading(true);
+    try {
+      await startGoogleSignIn();
+    } catch (err) {
+      setGoogleError(err instanceof Error ? err.message : 'Google Sign-In failed');
+      setIsGoogleLoading(false);
+    }
+  };
 
   if (showIntro) {
     return <AtlasIntroAnimation onFinish={handleIntroFinish} />;
@@ -129,9 +143,11 @@ export default function Home() {
               </div>
 
               {/* Google OAuth */}
-              <Link
-                href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/auth/google/login`}
-                className="flex items-center justify-center gap-3 w-full px-6 py-3 border border-[#E2E8F0] rounded-xl text-[#475569] font-medium text-base hover:bg-[#F8FAFC] hover:border-[#CBD5E1] transition-all duration-200"
+              <button
+                type="button"
+                onClick={handleGoogle}
+                disabled={isGoogleLoading}
+                className="flex items-center justify-center gap-3 w-full px-6 py-3 border border-[#E2E8F0] rounded-xl text-[#475569] font-medium text-base hover:bg-[#F8FAFC] hover:border-[#CBD5E1] transition-all duration-200 disabled:opacity-50"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
@@ -139,8 +155,11 @@ export default function Home() {
                   <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
                   <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                 </svg>
-                <span>Continue with Google</span>
-              </Link>
+                <span>{isGoogleLoading ? 'Redirecting to Google…' : 'Continue with Google'}</span>
+              </button>
+              {googleError && (
+                <p className="text-sm text-[#DC2626] text-center mt-3">{googleError}</p>
+              )}
             </div>
 
             {/* Trust indicator */}
