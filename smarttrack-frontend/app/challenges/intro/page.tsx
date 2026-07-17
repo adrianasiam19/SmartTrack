@@ -12,6 +12,7 @@ export default function ChallengeIntro() {
   const router = useRouter();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [starting, setStarting] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -25,11 +26,18 @@ export default function ChallengeIntro() {
     load();
   }, [router]);
 
-  if (loading) {
+  if (loading || starting) {
     return (
       <AppLayout>
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="w-8 h-8 border-2 border-[#2563EB] border-t-transparent rounded-full animate-spin" />
+        <div className="flex items-center justify-center min-h-screen px-6">
+          <div className="flex flex-col items-center gap-4 text-center">
+            <div className="w-10 h-10 border-2 border-[#2563EB] border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm font-medium text-[#1E293B]">
+              {starting
+                ? 'Atlas AI is preparing today\'s challenge…'
+                : 'Loading…'}
+            </p>
+          </div>
         </div>
       </AppLayout>
     );
@@ -171,10 +179,13 @@ export default function ChallengeIntro() {
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => router.push('/challenges/atlas?autostart=1')}
+                  onClick={() => {
+                    setStarting(true);
+                    router.push('/challenges/atlas?autostart=1');
+                  }}
                   className="inline-flex px-8 py-3 bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] text-white font-bold text-base rounded-xl hover:from-[#3B82F6] hover:to-[#2563EB] shadow-lg shadow-[#2563EB]/25 hover:shadow-xl hover:shadow-[#2563EB]/30 transition-all duration-200"
                 >
-                  START TODAY'S CHALLENGE
+                  START TODAY&apos;S CHALLENGE
                 </motion.button>
 
                 <motion.button
