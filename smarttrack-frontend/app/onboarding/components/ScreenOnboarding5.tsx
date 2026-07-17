@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { updateUserProfile } from '../../lib/authApi';
+import { getAuthEpoch, updateUserProfile } from '../../lib/authApi';
 
 interface Props {
   onComplete: () => void;
@@ -15,6 +15,7 @@ export default function ScreenOnboarding5({ onComplete }: Props) {
 
   useEffect(() => {
     let cancelled = false;
+    const epoch = getAuthEpoch();
 
     const finishWalkthrough = async () => {
       try {
@@ -22,12 +23,12 @@ export default function ScreenOnboarding5({ onComplete }: Props) {
         // Mark the welcome walkthrough complete before entering Starter Arena.
         // Starter Arena completion is a separate one-time flag.
         await updateUserProfile({ onboarding_completed: true });
-        if (cancelled) return;
+        if (cancelled || getAuthEpoch() !== epoch) return;
         onComplete();
         setStatus('Starting your discovery...');
         router.replace('/challenges/arena?mode=placement');
       } catch {
-        if (cancelled) return;
+        if (cancelled || getAuthEpoch() !== epoch) return;
         // Still continue — Starter Arena completion will also mark both flags.
         onComplete();
         router.replace('/challenges/arena?mode=placement');

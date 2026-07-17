@@ -13,8 +13,10 @@ import PredictChallenge from '../../components/PredictChallenge';
 import PsychometricPrompt from '../../components/PsychometricPrompt';
 import {
   getAccessToken,
+  getAuthEpoch,
   getStoredUser,
   getCurrentUser,
+  getTokenUserId,
   storeUser,
   updateUserProfile,
   type UserProfile,
@@ -222,14 +224,21 @@ function ChallengeArena() {
   }, [router, isPlacement]);
 
   // Persist one-time Starter Arena completion before leaving placement mode.
+  // Bound to the auth epoch + JWT subject so a previous user's in-flight
+  // completion can never mark a newly registered account as finished.
   const markStarterArenaComplete = useCallback(async () => {
+    const epoch = getAuthEpoch();
+    const tokenUserId = getTokenUserId();
     const cached = getStoredUser();
-    if (cached) {
-      storeUser({
-        ...cached,
-        onboarding_completed: true,
-        starter_arena_completed: true,
-      });
+    if (cached && tokenUserId && cached.id === tokenUserId) {
+      storeUser(
+        {
+          ...cached,
+          onboarding_completed: true,
+          starter_arena_completed: true,
+        },
+        epoch,
+      );
       setUser({
         ...cached,
         onboarding_completed: true,
@@ -241,6 +250,8 @@ function ChallengeArena() {
         onboarding_completed: true,
         starter_arena_completed: true,
       });
+      if (getAuthEpoch() !== epoch) return;
+      if (tokenUserId && updated.id !== tokenUserId) return;
       setUser(updated);
     } catch {
       // Backend /starter-arena/complete also sets these flags as a safety net.

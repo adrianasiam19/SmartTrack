@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
 import { Eye, EyeOff, WifiOff, RefreshCw } from 'lucide-react';
-import { login, getStoredUser, resolvePostAuthDestination } from '../lib/authApi';
+import { clearClientSession, login, getCurrentUser, resolvePostAuthDestination } from '../lib/authApi';
 
 export default function Login() {
   const router = useRouter();
@@ -21,8 +21,9 @@ export default function Login() {
     try {
       const formData = new FormData(e.currentTarget);
       await login({ email: formData.get('email') as string, password: formData.get('password') as string });
-      // Prefer the freshly cached profile from login() → getCurrentUser().
-      router.push(resolvePostAuthDestination(getStoredUser()));
+      // Re-fetch so routing never depends on a previous user's cached flags.
+      const fresh = await getCurrentUser();
+      router.push(resolvePostAuthDestination(fresh));
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Login failed';
       setError(message);
@@ -110,6 +111,7 @@ export default function Login() {
           {/* Google OAuth */}
           <a
             href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/auth/google/login`}
+            onClick={() => clearClientSession()}
             className="flex items-center justify-center gap-3 w-full px-6 py-3 border border-[#E2E8F0] rounded-xl text-[#475569] font-medium text-base hover:bg-[#F8FAFC] hover:border-[#CBD5E1] transition-all duration-200"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
