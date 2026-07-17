@@ -82,10 +82,10 @@ class RecommendedModulesResponse(BaseModel):
     modules: List[LearningModuleResponse]
 
 
-# ── Gemini Challenge Generation ──────────────────────────────────────────────
+# ── AI Challenge Generation ──────────────────────────────────────────────────
 
 class GenerateChallengeRequest(BaseModel):
-    """Request to generate a challenge using Gemini AI."""
+    """Request to generate a challenge using AI (DeepSeek / NVIDIA)."""
     category: str  # Logic, Quantitative Thinking, Scientific Thinking, etc.
     difficulty: str  # Beginner, Intermediate, Advanced
     programme: str  # General Science, General Arts
@@ -135,7 +135,7 @@ class PsychometricSubmitResponse(BaseModel):
 
 
 class GeneratedChallenge(BaseModel):
-    """A generated challenge question from Gemini."""
+    """A generated challenge question from AI."""
     category: str
     difficulty: str
     concept: str

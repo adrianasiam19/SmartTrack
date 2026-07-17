@@ -28,7 +28,7 @@ from app.auth.dependencies import get_current_user
 from app.users.models import User, AcademicRecord
 import base64
 from app.assessment.ai_agent import get_ai_explanation
-from app.assessment.gemini_service import generate_challenge_question
+from app.assessment.deepseek_service import generate_challenge_question
 from app.assessment.prefetch_manager import prefetch_manager
 
 # Simple obfuscation secret
@@ -85,7 +85,7 @@ async def get_questions_by_domain(domain: str, db: AsyncSession = Depends(get_db
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Gemini AI Challenge Generation
+# AI Challenge Generation
 # ──────────────────────────────────────────────────────────────────────────────
 
 @router.post("/generate-challenge", response_model=GenerateChallengeResponse)
@@ -93,7 +93,7 @@ async def generate_challenge(
     request: GenerateChallengeRequest,
 ):
     """
-    Generate a dynamic SHS challenge question using Gemini AI.
+    Generate a dynamic SHS challenge question using AI (DeepSeek / NVIDIA).
     
     This endpoint allows the system to generate challenge questions on-the-fly
     instead of relying solely on hardcoded questions.

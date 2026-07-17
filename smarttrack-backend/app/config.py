@@ -22,8 +22,9 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_ID: str
     GOOGLE_CLIENT_SECRET: str
 
-    # ── Gemini AI ────────────────────────────────────────────────────────────
-    GEMINI_API_KEY: str = ""
+    # ── DeepSeek AI ────────────────────────────────────────────────────────────
+    DEEPSEEK_API_KEY: str = ""
+    DEEPSEEK_MODEL: str = "deepseek-chat"
 
     # ── NVIDIA AI ────────────────────────────────────────────────────────────
     NVIDIA_API_KEY: str = ""

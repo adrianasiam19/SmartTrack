@@ -224,7 +224,7 @@ function ChallengePlayContent() {
   const progressPercent = currentLevelIndex * (100 / LEVELS.length) +
     (currentQuestionIndex / questions.length) * (100 / LEVELS.length);
 
-  // Show empty state if no questions available
+  // Show redirect guidance if no questions are available in this legacy page
   if (questions.length === 0) {
     return (
       <AppLayout>
@@ -237,25 +237,26 @@ function ChallengePlayContent() {
                 animate={{ opacity: 1, y: 0 }}
                 className="text-center py-20"
               >
-                <div className="w-16 h-16 bg-[#EEF2FF] rounded-2xl flex items-center justify-center mx-auto mb-4 border border-[#C7D2FE]">
-                  <span className="text-2xl font-bold text-[#4F46E5]">!</span>
+                <div className="w-16 h-16 bg-[#EFF6FF] rounded-2xl flex items-center justify-center mx-auto mb-4 border border-[#C7D2FE]">
+                  <span className="text-2xl font-bold text-[#4F46E5]">i</span>
                 </div>
-                <h2 className="text-xl font-bold text-[#1E293B] mb-2">No Questions Available</h2>
+                <h2 className="text-xl font-bold text-[#1E293B] mb-2">Challenge session not available here</h2>
                 <p className="text-sm text-[#64748B] mb-6 max-w-sm mx-auto">
-                  Challenge content is being prepared. Check back later or explore other areas of the app.
+                  The active Atlas challenge is generated on demand and is available through the Atlas Hub.
+                  Click below to start today's fresh challenge with AI-generated questions.
                 </p>
                 <div className="flex gap-3 justify-center">
                   <button
-                    onClick={() => router.push('/dashboard')}
+                    onClick={() => router.push('/challenges/atlas')}
                     className="px-6 py-3 bg-[#2563EB] text-white font-semibold rounded-xl hover:bg-[#1D4ED8] transition-all"
                   >
-                    Go to Dashboard
+                    Open Atlas Hub
                   </button>
                   <button
                     onClick={() => router.push('/challenges/intro')}
                     className="px-6 py-3 border-2 border-[#E2E8F0] text-[#475569] font-semibold rounded-xl hover:bg-[#F8FAFC] transition-all"
                   >
-                    Back to Intro
+                    Back to Challenge Intro
                   </button>
                 </div>
               </motion.div>
