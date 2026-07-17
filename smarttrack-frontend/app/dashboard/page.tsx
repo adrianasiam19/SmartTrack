@@ -8,7 +8,11 @@ import BottomNav from '../components/BottomNav';
 import AppLayout from '../components/AppLayout';
 import XpGauge from '../components/XpGauge';
 import {
-  getCurrentUser, getAccessToken, resolvePostAuthDestination, UserProfile,
+  getCurrentUser,
+  getAccessToken,
+  getStoredUser,
+  resolvePostAuthDestination,
+  UserProfile,
 } from '../lib/authApi';
 
 const FUN_FACTS = [
@@ -39,7 +43,19 @@ export default function Dashboard() {
       try {
         const token = getAccessToken();
         if (!token) { router.push('/login'); return; }
-        // Route only from the authenticated backend profile for this token.
+
+        // Paint immediately from the profile cached at login, then refresh.
+        const cached = getStoredUser();
+        if (cached) {
+          const cachedDestination = resolvePostAuthDestination(cached);
+          if (cachedDestination !== '/dashboard') {
+            router.replace(cachedDestination);
+            return;
+          }
+          setUser(cached);
+          setLoading(false);
+        }
+
         const fresh = await getCurrentUser();
         const destination = resolvePostAuthDestination(fresh);
         if (destination !== '/dashboard') {
