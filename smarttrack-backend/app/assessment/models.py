@@ -187,6 +187,47 @@ class LearningModule(Base):
         return f"<LearningModule id={self.id} domain={self.domain} title='{self.title}'>"
 
 
+class CurriculumLesson(Base):
+    """Official SHS 1/2 curriculum source used by the grounded AI tutor."""
+    __tablename__ = "curriculum_lessons"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    curriculum_id: Mapped[str] = mapped_column(
+        String(120), unique=True, nullable=False, index=True
+    )
+    title: Mapped[str] = mapped_column(String(500), nullable=False, index=True)
+    subject: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
+    programme: Mapped[str] = mapped_column(String(20), nullable=False, index=True)
+    shs_levels: Mapped[list] = mapped_column(JSON, nullable=False)
+    unit_id: Mapped[str] = mapped_column(String(100), nullable=False)
+    difficulty: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    estimated_minutes: Mapped[int] = mapped_column(Integer, nullable=False, default=10)
+    xp_reward: Mapped[int] = mapped_column(Integer, nullable=False, default=10)
+    source_content: Mapped[dict] = mapped_column(JSON, nullable=False)
+    search_text: Mapped[str] = mapped_column(Text, nullable=False)
+    ai_content_by_level: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
+    ai_content_version: Mapped[str] = mapped_column(
+        String(30), nullable=False, default="v1"
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    def __repr__(self) -> str:
+        return (
+            f"<CurriculumLesson curriculum_id={self.curriculum_id} "
+            f"subject={self.subject}>"
+        )
+
+
 class PsychometricCard(Base):
     """
     Psychometric Insight Cards injected every 3-5 challenge questions.

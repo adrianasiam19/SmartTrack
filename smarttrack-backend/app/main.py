@@ -12,6 +12,7 @@ from app.assessment.router import router as assessment_router
 from app.auth.router import router as auth_router
 from app.config import settings
 from app.database import engine, Base
+from app.learning.router import router as learning_router
 from app.revision.router import router as revision_router
 from app.assessment.starter_router import router as starter_router
 from app.assessment.challenge_hub_router import router as challenge_hub_router
@@ -82,6 +83,7 @@ app.include_router(daily_streak_router, prefix="/api/v1")
 app.include_router(revision_router, prefix="/api/v1")
 app.include_router(starter_router, prefix="/api/v1")
 app.include_router(challenge_hub_router, prefix="/api/v1")
+app.include_router(learning_router, prefix="/api/v1")
 
 
 # ── Root route ────────────────────────────────────────────────────────────────

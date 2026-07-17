@@ -1,5 +1,6 @@
 # Alembic env.py — async version for SQLAlchemy 2.0 + asyncpg
 import asyncio
+import sys
 from logging.config import fileConfig
 
 from alembic import context
@@ -9,9 +10,12 @@ from app.config import settings
 
 # Import ALL models so Alembic can detect them
 from app.users.models import User, RefreshToken  # noqa: F401
-from app.assessment.models import Question, LearningModule, PsychometricCard, PsychometricResponse, ChallengeSession, ChallengeResponse  # noqa: F401
+from app.assessment.models import Question, LearningModule, CurriculumLesson, PsychometricCard, PsychometricResponse, ChallengeSession, ChallengeResponse  # noqa: F401
 
 from app.database import Base
+
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 # Alembic Config
 config = context.config
