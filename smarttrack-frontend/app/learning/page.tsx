@@ -3,16 +3,17 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Lock, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Lock, ChevronDown, Loader2, Search } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import BottomNav from '../components/BottomNav';
 import AppLayout from '../components/AppLayout';
-import LessonPlayer from '../components/LessonPlayer';
+import AITutorLesson from '../components/AITutorLesson';
 import {
   getAccessToken, getStoredUser, getCurrentUser, updateUserProfile, storeUser,
   type UserProfile, type Programme, type SHSLevel,
 } from '../lib/authApi';
 import { ALL_LESSONS, getLessonById, type Lesson } from '../lib/learningContent';
+import { searchCurriculumTopics, type CurriculumTopic } from '../lib/learningApi';
 import { getLearningStage, getCurrentZone, calculateZoneProgress } from '../lib/adaptiveEngine';
 
 // ── Core Subjects ──────────────────────────────────────────────────────────
@@ -308,6 +309,10 @@ export default function Learning() {
   const [onboardingError, setOnboardingError] = useState<string | null>(null);
   const [progDropdownOpen, setProgDropdownOpen] = useState(false);
   const progDropdownRef = useRef<HTMLDivElement>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<CurriculumTopic[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
 
   // Close programme dropdown on outside click
   useEffect(() => {
@@ -347,6 +352,37 @@ export default function Learning() {
     init();
   }, [router]);
 
+  useEffect(() => {
+    const query = searchQuery.trim();
+    if (query.length < 2 || !user || user.shs_level === 'SHS 3') {
+      setSearchResults([]);
+      setSearchError(null);
+      setSearchLoading(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timer = window.setTimeout(async () => {
+      setSearchLoading(true);
+      setSearchError(null);
+      try {
+        setSearchResults(await searchCurriculumTopics(query, controller.signal));
+      } catch (error) {
+        if (error instanceof Error && error.name !== 'AbortError') {
+          setSearchError(error.message);
+          setSearchResults([]);
+        }
+      } finally {
+        if (!controller.signal.aborted) setSearchLoading(false);
+      }
+    }, 300);
+
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [searchQuery, user]);
+
   // ── Drill-down navigation ────────────────────────────────────────────────
   const handleSelectSubject = (subject: SubjectId) => {
     setSelectedSubject(subject);
@@ -383,6 +419,15 @@ export default function Learning() {
   const handleSelectLesson = useCallback((lessonId: string) => {
     const lesson = getLessonById(lessonId);
     if (lesson) { setActiveLesson(lesson); }
+  }, []);
+
+  const handleSelectSearchResult = useCallback((topic: CurriculumTopic) => {
+    const lesson = getLessonById(topic.curriculum_id);
+    if (lesson) {
+      setActiveLesson(lesson);
+      setSearchQuery('');
+      setSearchResults([]);
+    }
   }, []);
 
   const handleLessonComplete = useCallback((xpEarned: number) => {
@@ -447,7 +492,7 @@ export default function Learning() {
           <Sidebar />
           <div className="flex-1 lg:pb-0 pb-20">
             <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-8 pb-8">
-              <LessonPlayer lesson={activeLesson} onComplete={handleLessonComplete} onBack={handleBackToPath} />
+              <AITutorLesson curriculumId={activeLesson.id} onComplete={handleLessonComplete} onBack={handleBackToPath} />
             </main>
           </div>
           <BottomNav />
@@ -501,6 +546,50 @@ export default function Learning() {
                 <p className="text-xs text-gray-500">Level</p>
               </div>
             </div>
+
+            {/* ── Curriculum-scoped topic search ── */}
+            {view === 'subjects' && (
+              <div className="relative mb-6">
+                <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 focus-within:border-[#4F46E5] focus-within:ring-2 focus-within:ring-[#4F46E5]/10 transition">
+                  <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                  <input
+                    value={searchQuery}
+                    onChange={(event) => setSearchQuery(event.target.value)}
+                    placeholder={`Search your ${shsLevel || 'SHS'} curriculum by topic or keyword…`}
+                    className="flex-1 bg-transparent text-sm text-[#1E293B] placeholder:text-gray-400 outline-none"
+                  />
+                  {searchLoading && <Loader2 className="w-4 h-4 text-[#4F46E5] animate-spin" />}
+                </div>
+
+                {searchQuery.trim().length >= 2 && (
+                  <div className="absolute z-30 top-full mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden">
+                    {searchError ? (
+                      <p className="p-4 text-sm text-red-600">{searchError}</p>
+                    ) : !searchLoading && searchResults.length === 0 ? (
+                      <p className="p-4 text-sm text-gray-500">No matching topic was found in your {shsLevel} curriculum.</p>
+                    ) : (
+                      <div className="max-h-80 overflow-y-auto divide-y divide-gray-100">
+                        {searchResults.map((topic) => (
+                          <button
+                            key={topic.curriculum_id}
+                            onClick={() => handleSelectSearchResult(topic)}
+                            className="w-full text-left px-4 py-3 hover:bg-[#EEF2FF] transition-colors"
+                          >
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="min-w-0">
+                                <p className="font-semibold text-sm text-[#1E293B] truncate">{topic.title}</p>
+                                <p className="text-xs text-gray-500 mt-0.5">{topic.subject} · {topic.shs_level}</p>
+                              </div>
+                              <span className="text-xs text-gray-400 flex-shrink-0">{topic.estimated_minutes} min</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* ── Breadcrumb ── */}
             {view !== 'subjects' && (

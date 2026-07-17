@@ -242,13 +242,13 @@ def generate():
     lessons = []
     lesson_index = 0
 
-    for sec in SECTIONS:
+    for section_index, sec in enumerate(SECTIONS):
         sec_text = text[sec["start"]:sec["end"]] if sec["start"] >= 0 else ""
         lesson_texts = extract_lessons(sec_text, SUBTOPICS_PER_SECTION)
 
         for li, lt in enumerate(lesson_texts):
             lesson_index += 1
-            lesson_id = f"coremath2-s2m{i + 1}t{li + 1}"
+            lesson_id = f"coremath2-s2m{section_index + 1}t{li + 1}"
             title = f"{sec['title']} — Lesson {li + 1}"
             lessons.append(lesson_to_ts(lesson_id, title, lt, sec["title"], lesson_index))
 
