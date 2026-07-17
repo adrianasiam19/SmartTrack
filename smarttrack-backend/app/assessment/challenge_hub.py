@@ -252,7 +252,8 @@ Return ONLY valid JSON array (no markdown, no code blocks, no extra text):
 def _validate_question_structure(question: dict) -> tuple[bool, str]:
     """Validate that a question dict matches the expected structure for its type.
     Returns (is_valid, error_message)."""
-    qtype = question.get("question_type", "")
+    qtype = _normalise_question_type(question.get("question_type", ""))
+    question["question_type"] = qtype
     if qtype not in QUESTION_TYPES:
         return False, f"Unknown question_type: '{qtype}'"
 
@@ -652,9 +653,42 @@ async def start_challenge_session(
     }
 
 
+def _normalise_question_type(raw_type: str | None) -> str:
+    """Map LLM variants (underscores, aliases) onto the canonical frontend types."""
+    if not raw_type:
+        return "mcq"
+    key = str(raw_type).strip().lower().replace("_", "-").replace(" ", "-")
+    aliases = {
+        "truefalse": "true-false",
+        "true-or-false": "true-false",
+        "fillblank": "fill-blank",
+        "fill-in-the-blank": "fill-blank",
+        "fill-in-blank": "fill-blank",
+        "shortanswer": "short-answer",
+        "short-ans": "short-answer",
+        "multiple-choice": "mcq",
+        "multiplechoice": "mcq",
+        "arrange": "order",
+        "arrange-in-order": "order",
+        "ordering": "order",
+        "match": "matching",
+        "interpretation": "scenario",
+        "comprehension": "scenario",
+    }
+    key = aliases.get(key, key)
+    if key not in QUESTION_TYPES:
+        return "mcq"
+    return key
+
+
 def _format_question(q: dict, subject: str, index: int) -> dict:
     """Normalise a question dict into the standard format for the frontend."""
-    qtype = q.get("question_type", "mcq")
+    qtype = _normalise_question_type(q.get("question_type", "mcq"))
+    # If the model returned options but labelled it as fill/short, treat as mcq/scenario
+    options = q.get("options")
+    if qtype in ("fill-blank", "short-answer") and isinstance(options, dict) and len(options) >= 2:
+        qtype = "mcq" if len(options) >= 4 else "true-false"
+
     formatted = {
         "id": q.get("id", f"{subject.lower().replace(' ', '_')}_{index + 1}"),
         "question": q.get("question", ""),
@@ -663,20 +697,22 @@ def _format_question(q: dict, subject: str, index: int) -> dict:
     }
 
     if qtype in ("mcq", "scenario"):
-        formatted["options"] = q.get("options", {"A": "", "B": "", "C": "", "D": ""})
+        formatted["options"] = options if isinstance(options, dict) else {"A": "", "B": "", "C": "", "D": ""}
         formatted["correct_answer"] = q.get("correct_answer", "")
     elif qtype == "true-false":
         # Normalise: guarantee A="True", B="False" and adjust correct_answer
-        raw_opts = q.get("options", {})
-        raw_answer = q.get("correct_answer", "A")
+        raw_opts = options if isinstance(options, dict) else {}
+        raw_answer = str(q.get("correct_answer", "A"))
         opt_a = str(raw_opts.get("A", "")).lower()
         opt_b = str(raw_opts.get("B", "")).lower()
+        # Also accept literal True/False as the answer value
+        if raw_answer.strip().lower() in ("true", "false"):
+            raw_answer = "A" if raw_answer.strip().lower() == "true" else "B"
         if "true" in opt_b and "false" in opt_a:
             # AI swapped them: B is True, A is False → swap back
             formatted["options"] = {"A": "True", "B": "False"}
             formatted["correct_answer"] = "A" if raw_answer.upper() == "B" else "B"
         else:
-            # Already correct
             formatted["options"] = {"A": "True", "B": "False"}
             formatted["correct_answer"] = raw_answer.upper() if raw_answer.upper() in ("A", "B") else "A"
     elif qtype in ("fill-blank", "short-answer"):
@@ -741,60 +777,75 @@ def submit_answer(
 ) -> dict | None:
     """Submit an answer, calculate XP, return feedback.
     Handles all question types for comparison."""
+    session = _challenge_sessions.get(session_id)
+    if not session:
+        return None
+
+    questions = session.get("questions", {}).get(subject, [])
+    if not questions or question_index >= len(questions):
+        logger.warning(
+            f"submit_answer: question_index {question_index} out of range "
+            f"for {subject} (len={len(questions)})"
+        )
+        return None
+
+    question = questions[question_index]
+    if not question:
+        logger.warning(f"submit_answer: question at index {question_index} is None/empty")
+        return None
+
+    # Prevent double-submit for the same question index
+    existing = session.get("responses", {}).get(subject, [])
+    if any(r.get("question_index") == question_index for r in existing):
+        logger.warning(
+            f"submit_answer: duplicate submit for {subject} Q{question_index} — ignoring"
+        )
+        return None
+
+    correct_answer = question.get("correct_answer", "")
+    qtype = question.get("question_type", "mcq")
+
+    # ── Determine if answer is correct based on question type ────────
+    is_correct = False
     try:
-        session = _challenge_sessions.get(session_id)
-        if not session:
-            return None
+        if qtype in ("mcq", "scenario", "true-false"):
+            is_correct = user_answer.strip().upper() == correct_answer.strip().upper()
 
-        questions = session.get("questions", {}).get(subject, [])
-        if not questions or question_index >= len(questions):
-            logger.warning(f"submit_answer: question_index {question_index} out of range for {subject} (len={len(questions)})")
-            return None
+        elif qtype in ("fill-blank", "short-answer"):
+            is_correct = user_answer.strip().lower() == correct_answer.strip().lower()
 
-        question = questions[question_index]
-        if not question:
-            logger.warning(f"submit_answer: question at index {question_index} is None/empty")
-            return None
+        elif qtype == "matching":
+            try:
+                user_matches = json.loads(user_answer) if user_answer else {}
+                correct_matches = json.loads(correct_answer) if correct_answer else {}
+                # Normalise keys to strings for stable comparison
+                user_norm = {str(k): str(v) for k, v in user_matches.items()}
+                correct_norm = {str(k): str(v) for k, v in correct_matches.items()}
+                is_correct = user_norm == correct_norm
+            except (json.JSONDecodeError, TypeError, AttributeError):
+                logger.warning(
+                    f"Matching JSON parse error: user='{str(user_answer)[:50]}', "
+                    f"correct='{str(correct_answer)[:50]}'"
+                )
+                is_correct = False
 
-        correct_answer = question.get("correct_answer", "")
-        qtype = question.get("question_type", "mcq")
-
-        # ── Determine if answer is correct based on question type ────────
+        elif qtype == "order":
+            try:
+                user_order = json.loads(user_answer) if user_answer else []
+                correct_order = json.loads(correct_answer) if correct_answer else []
+                is_correct = list(user_order) == list(correct_order)
+            except (json.JSONDecodeError, TypeError):
+                logger.warning(
+                    f"Order JSON parse error: user='{str(user_answer)[:50]}', "
+                    f"correct='{str(correct_answer)[:50]}'"
+                )
+                is_correct = False
+        else:
+            logger.warning(f"Unknown question_type '{qtype}', defaulting to letter comparison")
+            is_correct = user_answer.strip().upper() == correct_answer.strip().upper()
+    except Exception as e:
+        logger.warning(f"Answer comparison error for type {qtype}: {e}")
         is_correct = False
-        try:
-            if qtype in ("mcq", "scenario", "true-false"):
-                # Compare letter keys
-                is_correct = user_answer.strip().upper() == correct_answer.strip().upper()
-
-            elif qtype in ("fill-blank", "short-answer"):
-                # Case-insensitive text comparison, trimmed
-                is_correct = user_answer.strip().lower() == correct_answer.strip().lower()
-
-            elif qtype == "matching":
-                # Compare JSON objects
-                try:
-                    user_matches = json.loads(user_answer) if user_answer else {}
-                    correct_matches = json.loads(correct_answer) if correct_answer else {}
-                    is_correct = user_matches == correct_matches
-                except (json.JSONDecodeError, TypeError):
-                    logger.warning(f"Matching JSON parse error: user='{user_answer[:50]}', correct='{correct_answer[:50]}'")
-                    is_correct = False
-
-            elif qtype == "order":
-                # Compare JSON arrays
-                try:
-                    user_order = json.loads(user_answer) if user_answer else []
-                    correct_order = json.loads(correct_answer) if correct_answer else []
-                    is_correct = user_order == correct_order
-                except (json.JSONDecodeError, TypeError):
-                    logger.warning(f"Order JSON parse error: user='{user_answer[:50]}', correct='{correct_answer[:50]}'")
-                    is_correct = False
-            else:
-                logger.warning(f"Unknown question_type '{qtype}', defaulting to letter comparison")
-                is_correct = user_answer.strip().upper() == correct_answer.strip().upper()
-        except Exception as e:
-            logger.warning(f"Answer comparison error for type {qtype}: {e}")
-            is_correct = False
 
     xp_change = XP_CORRECT if is_correct else XP_WRONG
     session["total_xp"] += xp_change
