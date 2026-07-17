@@ -21,15 +21,30 @@ const getAuthHeaders = (): HeadersInit => {
 
 // ── Types ─────────────────────────────────────────────────────────────────
 
+export type StarterQuestionType = 'psychometric' | 'cognitive' | 'academic';
+
+export type StarterQuestionFormat =
+  | 'choose'
+  | 'multiple-choice'
+  | 'scenario'
+  | 'short-response'
+  | 'ranking'
+  | 'best-solution'
+  | 'situational-judgement'
+  | string;
+
 export interface StarterQuestion {
   id: string;
-  type: 'psychometric' | 'academic';
+  type: StarterQuestionType;
   question: string;
   options: Record<string, string> | Array<{ value: string; label: string }>;
   domain?: string;
   category?: string;
+  cognitive_skill?: string;
+  format?: StarterQuestionFormat;
+  source?: string;
   display?: string;
-  correct_key?: string;
+  correct_key?: string | null;
   explanation?: string;
 }
 
@@ -51,6 +66,9 @@ export interface LearnerProfile {
   recommended_focus: string;
   recommended_challenges: string[];
   recommendation_profile: string;
+  cognitive_skills?: string[];
+  psychometric_categories?: string[];
+  interests?: string[];
 }
 
 export interface CompleteSessionResponse {
@@ -62,17 +80,38 @@ export interface CompleteSessionResponse {
 export interface StoredResponse {
   question_id: string;
   question: string;
-  type: 'psychometric' | 'academic';
+  type: StarterQuestionType;
   answer: string;
-  correct?: boolean;
+  correct?: boolean | null;
   domain?: string;
+  category?: string;
+  cognitive_skill?: string;
+  format?: string;
+  source?: string;
+  options?: Record<string, string> | Array<{ value: string; label: string }>;
   time_taken: number;
+}
+
+/** Normalise array or dict options into a keyed map for UI rendering. */
+export function normalizeStarterOptions(
+  options: StarterQuestion['options'] | undefined | null
+): Record<string, string> {
+  if (!options) return {};
+  if (Array.isArray(options)) {
+    return options.reduce((acc, opt) => {
+      if (opt?.value) acc[String(opt.value)] = String(opt.label ?? opt.value);
+      return acc;
+    }, {} as Record<string, string>);
+  }
+  return Object.fromEntries(
+    Object.entries(options).map(([key, value]) => [String(key), String(value)])
+  );
 }
 
 // ── API Functions ─────────────────────────────────────────────────────────
 
 /**
- * Start a new Starter Arena session with mixed psychometric + academic questions.
+ * Start a new Starter Arena session with mixed psychometric + cognitive questions.
  */
 export async function startStarterArena(
   psychometricCount: number = 6,
@@ -101,7 +140,7 @@ export async function startStarterArena(
 export async function completeStarterArena(
   sessionId: string,
   psychometricResponses: StoredResponse[],
-  academicResponses: StoredResponse[]
+  cognitiveResponses: StoredResponse[]
 ): Promise<CompleteSessionResponse> {
   const response = await fetch(`${API_BASE_URL}/starter-arena/complete`, {
     method: 'POST',
@@ -109,7 +148,8 @@ export async function completeStarterArena(
     body: JSON.stringify({
       session_id: sessionId,
       psychometric_responses: psychometricResponses,
-      academic_responses: academicResponses,
+      cognitive_responses: cognitiveResponses,
+      academic_responses: cognitiveResponses,
     }),
   });
 

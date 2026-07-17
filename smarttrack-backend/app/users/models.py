@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -38,6 +38,7 @@ class User(Base):
     starter_arena_completed: Mapped[bool] = mapped_column(
         Boolean, default=False, nullable=False
     )
+    learner_profile: Mapped[dict | None] = mapped_column(JSON, nullable=True)
 
     # ── Gamification ──────────────────────────────────────────────────────────
     xp: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
