@@ -10,7 +10,7 @@ from app.config import settings
 
 # Import ALL models so Alembic can detect them
 from app.users.models import User, RefreshToken  # noqa: F401
-from app.assessment.models import Question, LearningModule, CurriculumLesson, PsychometricCard, PsychometricResponse, ChallengeSession, ChallengeResponse  # noqa: F401
+from app.assessment.models import Question, LearningModule, CurriculumLesson, PsychometricCard, PsychometricResponse, StarterArenaResponse, ChallengeSession, ChallengeResponse  # noqa: F401
 
 from app.database import Base
 

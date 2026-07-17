@@ -32,6 +32,7 @@ class UserPublic(UserBase):
     school: str | None = None
     onboarding_completed: bool = False
     starter_arena_completed: bool = False
+    learner_profile: dict | None = None
 
     # Gamification
     xp: int = 0

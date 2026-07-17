@@ -28,7 +28,8 @@ export type QuestionType =
   | 'match'         // Drag-and-drop matching
   | 'rank'          // Order/ranking
   | 'scenario'      // Scenario-based decision
-  | 'discover';     // Click-to-discover card
+  | 'discover'      // Click-to-discover card
+  | 'short-response';
 
 export interface Question {
   id: number;
@@ -43,6 +44,11 @@ export interface Question {
   _mission?: string;
   _explanation?: string;
   _xp?: number;
+  /** Stable backend id for Starter Arena persistence */
+  _sourceId?: string;
+  _format?: string;
+  _cognitiveSkill?: string;
+  _source?: string;
   /** For fill-blank: expected answer(s) */
   _answers?: string[];
   /** For fill-blank: hints */

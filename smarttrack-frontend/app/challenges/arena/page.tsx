@@ -38,10 +38,47 @@ import {
 import {
   startStarterArena,
   completeStarterArena,
+  normalizeStarterOptions,
   type StarterQuestion as StarterArenaQuestion,
   type StoredResponse,
   type LearnerProfile,
 } from '../../lib/starterArenaApi';
+
+function mapStarterFormatToQuestionType(format?: string | null): QuestionType {
+  switch (format) {
+    case 'short-response':
+      return 'short-response';
+    case 'ranking':
+      return 'rank';
+    case 'scenario':
+    case 'best-solution':
+    case 'situational-judgement':
+      return 'scenario';
+    case 'choose':
+      return 'discover';
+    default:
+      return 'mcq';
+  }
+}
+
+function formatLabel(format?: string | null): string {
+  switch (format) {
+    case 'short-response':
+      return 'Share your thinking';
+    case 'ranking':
+      return 'Rank your preferences';
+    case 'scenario':
+      return 'Scenario';
+    case 'best-solution':
+      return 'Best solution';
+    case 'situational-judgement':
+      return 'Situational judgement';
+    case 'multiple-choice':
+      return 'Quick reflection';
+    default:
+      return 'Getting to know you';
+  }
+}
 
 type ArenaPhase = 'intro' | 'gameplay' | 'feedback' | 'psychometric' | 'loading_more' | 'complete';
 
@@ -147,6 +184,8 @@ function ChallengeArena() {
   const [learnerProfile, setLearnerProfile] = useState<LearnerProfile | null>(null);
   const [profileLoading, setProfileLoading] = useState(false);
   const [encouragementMsg, setEncouragementMsg] = useState<string>('');
+  const [shortResponseDraft, setShortResponseDraft] = useState('');
+  const [rankingOrder, setRankingOrder] = useState<string[]>([]);
 
   const retriesRef = useRef(0);
   const responseTimesRef = useRef<number[]>([]);
@@ -287,29 +326,37 @@ function ChallengeArena() {
       let initialQuestions: Question[] = [];
 
       if (isPlacement) {
-        // Use the new adaptive Starter Arena API
+        // Adaptive Starter Arena already alternates psych + cognitive questions.
         try {
           const session = await startStarterArena(6, 6);
           setStarterSessionId(session.session_id);
-          // Use the actual total_count from the API for progress tracking
           setSession((prev) => ({ ...prev, totalQuestions: session.total_count }));
-          initialQuestions = session.questions.map((sq: StarterArenaQuestion, idx: number) => ({
-            id: -(idx + 1),
-            domain: sq.domain || sq.category || 'Discovery',
-            question: sq.question,
-            question_type: 'mcq' as QuestionType,
-            options: sq.type === 'psychometric'
-              ? (sq.options as Array<{value: string; label: string}>).reduce((acc, opt) => {
-                  acc[opt.value] = opt.label;
-                  return acc;
-                }, {} as Record<string, string>)
-              : (sq.options as Record<string, string>),
-            answer_hash: btoa(`ST_SEC_2024:${sq.correct_key || 'A'}`),
-            _category: sq.type,
-            _explanation: sq.explanation,
-            _xp: 0,
-          }));
+          initialQuestions = session.questions.map((sq: StarterArenaQuestion, idx: number) => {
+            const options = normalizeStarterOptions(sq.options);
+            const questionType = mapStarterFormatToQuestionType(sq.format || sq.display);
+            return {
+              id: -(idx + 1),
+              domain:
+                sq.domain ||
+                sq.category ||
+                sq.cognitive_skill ||
+                (sq.type === 'psychometric' ? 'Discover You' : 'How You Think'),
+              question: sq.question,
+              question_type: questionType,
+              options,
+              answer_hash: btoa(`ST_SEC_2024:${sq.correct_key || 'NONE'}`),
+              _category: sq.type === 'academic' ? 'cognitive' : sq.type,
+              _explanation: sq.explanation,
+              _sourceId: sq.id,
+              _format: sq.format || sq.display || questionType,
+              _cognitiveSkill: sq.cognitive_skill,
+              _source: sq.source,
+              _xp: 0,
+            };
+          });
           setEncouragementMsg('');
+          setShortResponseDraft('');
+          setRankingOrder([]);
         } catch (e: any) {
           console.warn('Adaptive Starter Arena failed, falling back:', e);
           const raw = getRandomStarterQuestions(MAX_QUESTIONS);
@@ -331,7 +378,9 @@ function ChallengeArena() {
 
         setCurrentQuestion(initialQuestions[0]);
         setQuestionQueue(initialQuestions.slice(1));
-        setShuffledKeys(shuffledOptionKeys(initialQuestions[0].options));
+        setShuffledKeys(shuffledOptionKeys(initialQuestions[0].options || {}));
+        setShortResponseDraft('');
+        setRankingOrder([]);
         setPhase('gameplay');
         setQuestionStartTime(Date.now());
         setSession((prev) => ({ ...prev, startTime: Date.now() }));
@@ -355,7 +404,14 @@ function ChallengeArena() {
     responseTimesRef.current.push(timeTaken);
 
     const localCorrect = decryptAnswer(currentQuestion.answer_hash);
-    const isPreference = currentQuestion.question_type === 'discover';
+    const isPreference =
+      isPlacement ||
+      currentQuestion.question_type === 'discover' ||
+      currentQuestion.question_type === 'short-response' ||
+      currentQuestion.question_type === 'rank' ||
+      currentQuestion.question_type === 'scenario' ||
+      !localCorrect ||
+      localCorrect === 'NONE';
     const localIsCorrect = isPreference ? true : answerKey === localCorrect;
 
     setIsCorrect(localIsCorrect);
@@ -367,15 +423,20 @@ function ChallengeArena() {
       setLevelUp(false);
       setNewRank(null);
 
-      // Track response for learner profile
+      // Track response for learner profile using the stable backend question id.
       const isPsychometric = currentQuestion._category === 'psychometric';
       const response: StoredResponse = {
-        question_id: String(currentQuestion.id),
+        question_id: currentQuestion._sourceId || String(currentQuestion.id),
         question: currentQuestion.question,
-        type: isPsychometric ? 'psychometric' : 'academic',
+        type: isPsychometric ? 'psychometric' : 'cognitive',
         answer: answerKey,
-        correct: localIsCorrect,
+        correct: null,
         domain: currentQuestion.domain,
+        category: isPsychometric ? currentQuestion.domain : undefined,
+        cognitive_skill: currentQuestion._cognitiveSkill,
+        format: currentQuestion._format,
+        source: currentQuestion._source || (isPsychometric ? 'database' : 'llm'),
+        options: currentQuestion.options,
         time_taken: timeTaken,
       };
       if (isPsychometric) {
@@ -386,7 +447,6 @@ function ChallengeArena() {
         academicResponsesRef.current = [...academicResponsesRef.current, response];
       }
 
-      // Show encouragement every 3 questions
       const newCount = session.questionsAnswered + 1;
       if (newCount % 3 === 0 && newCount < MAX_QUESTIONS) {
         setEncouragementMsg(ENCOURAGEMENTS[Math.floor(newCount / 3) - 1] || ENCOURAGEMENTS[0]);
@@ -394,12 +454,10 @@ function ChallengeArena() {
         setEncouragementMsg('');
       }
 
-      const countsTowardAccuracy = !isPreference;
-
       setSession((prev) => ({
         ...prev,
         questionsAnswered: prev.questionsAnswered + 1,
-        correctAnswers: prev.correctAnswers + (countsTowardAccuracy && localIsCorrect ? 1 : 0),
+        correctAnswers: prev.correctAnswers + 1,
         totalTime: prev.totalTime + timeTaken,
       }));
     } else {
@@ -480,14 +538,20 @@ function ChallengeArena() {
       }
     }
 
-    const interactiveTypes = ['fill-blank', 'predict', 'match'];
+    const interactiveTypes = ['fill-blank', 'predict', 'match', 'short-response', 'rank'];
     const isInteractive = interactiveTypes.includes(currentQuestion.question_type || 'mcq');
 
     setLoading(false);
     const newCount = session.questionsAnswered + 1;
     const isLastQuestion = newCount >= MAX_QUESTIONS;
 
-    const willShowPsychometric = !isLastQuestion && isPlacement && newCount % PSYCHOMETRIC_EVERY_N === 0 && !psychometricInProgressRef.current;
+    // Non-placement arenas may still inject occasional psychometric cards.
+    // Placement mode must NOT — the adaptive session already alternates them.
+    const willShowPsychometric =
+      !isPlacement &&
+      !isLastQuestion &&
+      newCount % PSYCHOMETRIC_EVERY_N === 0 &&
+      !psychometricInProgressRef.current;
     if (willShowPsychometric) {
       psychometricInProgressRef.current = true;
       psychometricCompletedRef.current = false;
@@ -505,14 +569,19 @@ function ChallengeArena() {
     const handleAdvance = async () => {
       if (isLastQuestion) {
         if (isPlacement) {
-          // Persist completion flags before leaving so the next login skips this flow.
+          try {
+            const result = await completeStarterArena(
+              starterSessionId,
+              psychResponsesRef.current,
+              academicResponsesRef.current,
+            );
+            if (result.success && result.profile) {
+              setLearnerProfile(result.profile);
+            }
+          } catch {
+            // Completion endpoint also sets flags; continue to dashboard.
+          }
           await markStarterArenaComplete();
-          // Use refs for latest response data (state might be stale in closure)
-          completeStarterArena(
-            starterSessionId,
-            psychResponsesRef.current,
-            academicResponsesRef.current,
-          ).catch(() => {});
           router.replace('/dashboard');
         } else {
           const avgTime = responseTimesRef.current.length > 0
@@ -530,7 +599,7 @@ function ChallengeArena() {
           });
           setPhase('complete');
         }
-      } else if (isPlacement && newCount % PSYCHOMETRIC_EVERY_N === 0) {
+      } else if (!isPlacement && newCount % PSYCHOMETRIC_EVERY_N === 0) {
         setPhase('psychometric');
       } else {
         advanceToNextQuestion();
@@ -569,15 +638,26 @@ function ChallengeArena() {
         setCurrentQuestion(nextQ);
         setSelectedAnswer(null);
         setIsCorrect(null);
+        setShortResponseDraft('');
+        setRankingOrder([]);
         setTimeLeft(QUESTION_TIMEOUT);
         setQuestionStartTime(Date.now());
-        setShuffledKeys(shuffledOptionKeys(nextQ.options));
+        setShuffledKeys(shuffledOptionKeys(nextQ.options || {}));
         bgFetchRef.current = false;
         setPhase('gameplay');
       } else {
         setPhase('loading_more');
       }
       return next;
+    });
+  };
+
+  const toggleRankingChoice = (key: string) => {
+    setRankingOrder((prev) => {
+      if (prev.includes(key)) {
+        return prev.filter((item) => item !== key);
+      }
+      return [...prev, key];
     });
   };
 
@@ -651,10 +731,9 @@ function ChallengeArena() {
 
   const modeLabel = isPlacement ? 'Starter Arena' : domainName;
 
-  const psychometricCount = Math.min(
-    Math.floor(MAX_QUESTIONS / PSYCHOMETRIC_EVERY_N),
-    MAX_QUESTIONS
-  );
+  const psychometricCount = isPlacement
+    ? Math.ceil(MAX_QUESTIONS / 2)
+    : Math.min(Math.floor(MAX_QUESTIONS / PSYCHOMETRIC_EVERY_N), MAX_QUESTIONS);
 
   const renderMcqOptions = (options: Record<string, string>, questionType?: QuestionType) => {
     if (questionType === 'discover') {
@@ -838,7 +917,7 @@ function ChallengeArena() {
       <p className="text-xs text-gray-400 mt-4">
         {MAX_QUESTIONS} activities
         {!isPlacement && ` \u00B7 ${QUESTION_TIMEOUT}s each`}
-        {isPlacement && psychometricCount > 0 && ` \u00B7 ${psychometricCount} insight moments`}
+        {isPlacement && psychometricCount > 0 && ` · balanced insights & thinking moments`}
       </p>
     </motion.div>
   );
@@ -862,7 +941,9 @@ function ChallengeArena() {
             {isPlacement ? (
               <span className="text-sm text-gray-500 flex items-center gap-2">
                 <span className="w-2 h-2 bg-[#4F46E5] rounded-full" />
-                {currentQuestion._category === 'psychometric' ? 'Discover You' : 'Quick Challenge'}
+                {currentQuestion._category === 'psychometric'
+                  ? 'Discover You'
+                  : 'How You Think'}
               </span>
             ) : (
               <span className="text-sm font-semibold text-[#4F46E5]">+{session.xpEarned} XP</span>
@@ -905,12 +986,9 @@ function ChallengeArena() {
           {currentQuestion.domain}
         </span>
 
-        {isPlacement && questionType !== 'mcq' && (
+        {isPlacement && (
           <span className="inline-block px-3 py-1 text-xs font-medium bg-[#FFFBEB] text-[#D97706] rounded-full border border-[#FDE68A] mb-4 ml-2">
-            {questionType === 'fill-blank' && 'Fill in'}
-            {questionType === 'predict' && 'Pattern'}
-            {questionType === 'match' && 'Match'}
-            {questionType === 'discover' && 'Discover'}
+            {formatLabel(currentQuestion._format)}
           </span>
         )}
 
@@ -923,7 +1001,77 @@ function ChallengeArena() {
           renderPredict()
         ) : questionType === 'match' ? (
           renderMatch()
-        ) : questionType === 'discover' ? (
+        ) : questionType === 'short-response' ? (
+          <>
+            <h2 className="text-xl font-semibold text-[#1E293B] mb-4 leading-relaxed">
+              {currentQuestion.question}
+            </h2>
+            <p className="text-sm text-gray-500 mb-4">
+              There is no single right answer — Atlas just wants to understand how you think.
+            </p>
+            <textarea
+              value={shortResponseDraft}
+              onChange={(e) => setShortResponseDraft(e.target.value)}
+              rows={4}
+              placeholder="Share your idea in a few sentences..."
+              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-[#1E293B] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/
+              disabled={loading || selectedAnswer !== null}
+            />
+            <button
+              onClick={() => handleSubmitAnswer(shortResponseDraft.trim())}
+              disabled={loading || selectedAnswer !== null || shortResponseDraft.trim().length < 3}
+              className="mt-4 px-6 py-3 rounded-xl bg-[#4F46E5] text-white font-medium disabled:opacity-50"
+            >
+              Continue
+            </button>
+          </>
+        ) : questionType === 'rank' ? (
+          <>
+            <h2 className="text-xl font-semibold text-[#1E293B] mb-4 leading-relaxed">
+              {currentQuestion.question}
+            </h2>
+            <p className="text-sm text-gray-500 mb-4">
+              Tap the options in the order that feels most like you (1 = most preferred).
+            </p>
+            <div className="space-y-3">
+              {shuffledKeys.map((key) => {
+                const rank = rankingOrder.indexOf(key);
+                return (
+                  <button
+                    key={key}
+                    onClick={() => toggleRankingChoice(key)}
+                    disabled={loading || selectedAnswer !== null}
+                    className={`w-full text-left px-6 py-4 rounded-xl border transition-all duration-200 ${
+                      rank >= 0
+                        ? 'border-[#4F46E5] bg-[#EEF2FF] shadow-sm'
+                        : 'border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50'
+                    } disabled:opacity-70`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                        rank >= 0 ? 'border-[#4F46E5] bg-[#4F46E5] text-white' : 'border-gray-300 text-gray-400'
+                      }`}>
+                        {rank >= 0 ? rank + 1 : key}
+                      </div>
+                      <span className="text-[#1E293B] text-sm leading-relaxed">{options[key]}</span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+            <button
+              onClick={() => handleSubmitAnswer(rankingOrder.join('>'))}
+              disabled={
+                loading ||
+                selectedAnswer !== null ||
+                rankingOrder.length !== shuffledKeys.length
+              }
+              className="mt-4 px-6 py-3 rounded-xl bg-[#4F46E5] text-white font-medium disabled:opacity-50"
+            >
+              Save ranking
+            </button>
+          </>
+        ) : questionType === 'discover' || questionType === 'scenario' || isPlacement ? (
           <>
             <h2 className="text-xl font-semibold text-[#1E293B] mb-6 leading-relaxed">
               {currentQuestion.question}
@@ -939,16 +1087,24 @@ function ChallengeArena() {
           </>
         )}
 
-        {selectedAnswer && isCorrect !== null && questionType === 'mcq' && explanation && (
+        {selectedAnswer && isCorrect !== null && explanation && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             className={`mt-6 p-4 rounded-xl border ${
-              isCorrect ? 'bg-[#EEF2FF] border-[#C7D2FE]' : 'bg-[#FFFBEB] border-[#FDE68A]'
+              isPlacement || isCorrect
+                ? 'bg-[#EEF2FF] border-[#C7D2FE]'
+                : 'bg-[#FFFBEB] border-[#FDE68A]'
             }`}
           >
-            <p className={`text-sm font-medium mb-1 ${isCorrect ? 'text-[#4F46E5]' : 'text-[#D97706]'}`}>
-              {isCorrect ? (isPlacement ? 'Nice!' : 'Correct!') : (isPlacement ? 'Interesting!' : 'Not quite!')}
+            <p className={`text-sm font-medium mb-1 ${
+              isPlacement || isCorrect ? 'text-[#4F46E5]' : 'text-[#D97706]'
+            }`}>
+              {isPlacement
+                ? 'Thanks — Atlas is learning about you!'
+                : isCorrect
+                ? 'Correct!'
+                : 'Not quite!'}
             </p>
             <p className="text-gray-500 text-sm leading-relaxed">{explanation}</p>
           </motion.div>

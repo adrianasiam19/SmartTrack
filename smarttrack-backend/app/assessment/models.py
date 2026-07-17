@@ -1,7 +1,18 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import JSON, DateTime, Integer, String, ForeignKey, Boolean, Text, func
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+    func,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -275,6 +286,44 @@ class PsychometricResponse(Base):
 
     def __repr__(self) -> str:
         return f"<PsychometricResponse user_id={self.user_id} card_id={self.card_id}>"
+
+
+class StarterArenaResponse(Base):
+    """Durable record of every psychometric and cognitive Starter Arena answer."""
+    __tablename__ = "starter_arena_responses"
+    __table_args__ = (
+        UniqueConstraint(
+            "user_id",
+            "session_id",
+            "question_id",
+            name="uq_starter_response_user_session_question",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    session_id: Mapped[str] = mapped_column(String(120), nullable=False, index=True)
+    question_id: Mapped[str] = mapped_column(String(120), nullable=False)
+    question_text: Mapped[str] = mapped_column(Text, nullable=False)
+    question_type: Mapped[str] = mapped_column(String(30), nullable=False)
+    source: Mapped[str] = mapped_column(String(20), nullable=False)
+    category: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    cognitive_skill: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    question_format: Mapped[str] = mapped_column(String(40), nullable=False)
+    options: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
+    answer: Mapped[str] = mapped_column(Text, nullable=False)
+    correct: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    time_taken_seconds: Mapped[float] = mapped_column(Float, nullable=False, default=0)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
+    )
 
 
 class DailyStreakProgress(Base):
