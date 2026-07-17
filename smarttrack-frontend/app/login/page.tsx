@@ -1,13 +1,12 @@
 'use client';
 
-import Link from 'next/link';
+import { useEffect, useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { FormEvent, useState } from 'react';
 import { Eye, EyeOff, WifiOff, RefreshCw } from 'lucide-react';
+import Link from 'next/link';
 import {
   clearClientSession,
   login,
-  getCurrentUser,
   resolvePostAuthDestination,
   startGoogleSignIn,
 } from '../lib/authApi';
@@ -20,6 +19,13 @@ export default function Login() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isNetworkError, setIsNetworkError] = useState(false);
 
+  // Warm the common post-login routes so navigation feels instant.
+  useEffect(() => {
+    router.prefetch('/dashboard');
+    router.prefetch('/onboarding');
+    router.prefetch('/challenges/arena?mode=placement');
+  }, [router]);
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
@@ -27,17 +33,16 @@ export default function Login() {
     setIsLoading(true);
     try {
       const formData = new FormData(e.currentTarget);
-      await login({
+      const user = await login({
         email: formData.get('email') as string,
         password: formData.get('password') as string,
       });
-      const fresh = await getCurrentUser();
-      router.push(resolvePostAuthDestination(fresh));
+      // Navigate immediately — login() already loaded and cached the profile.
+      router.replace(resolvePostAuthDestination(user));
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Login failed';
       setError(message);
       setIsNetworkError(message.toLowerCase().includes('connect to the server'));
-    } finally {
       setIsLoading(false);
     }
   };

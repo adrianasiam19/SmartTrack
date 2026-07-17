@@ -395,8 +395,9 @@ export const resetPassword = async (
 /**
  * Register a new account.
  * Always starts from a clean client session so no previous user state can leak.
+ * Returns the installed profile when available so callers can route immediately.
  */
-export const register = async (data: RegisterRequest): Promise<AuthTokens> => {
+export const register = async (data: RegisterRequest): Promise<UserProfile | null> => {
   // Drop any previous user before contacting the API so in-flight writers are invalidated early.
   clearClientSession();
 
@@ -420,16 +421,15 @@ export const register = async (data: RegisterRequest): Promise<AuthTokens> => {
   }
 
   const tokens: AuthTokens = await response.json();
-  await installAuthSession(tokens);
-  return tokens;
+  return installAuthSession(tokens);
 };
 
 /**
  * Log in with email + password.
  * Retries automatically on transient network errors.
- * Same persistence guarantees as `register`.
+ * Returns the installed profile so the UI can navigate without a second /me fetch.
  */
-export const login = async (data: LoginRequest): Promise<AuthTokens> => {
+export const login = async (data: LoginRequest): Promise<UserProfile | null> => {
   clearClientSession();
 
   let response: Response;
@@ -452,8 +452,7 @@ export const login = async (data: LoginRequest): Promise<AuthTokens> => {
   }
 
   const tokens: AuthTokens = await response.json();
-  await installAuthSession(tokens);
-  return tokens;
+  return installAuthSession(tokens);
 };
 
 /**
