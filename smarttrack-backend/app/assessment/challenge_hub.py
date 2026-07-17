@@ -741,49 +741,60 @@ def submit_answer(
 ) -> dict | None:
     """Submit an answer, calculate XP, return feedback.
     Handles all question types for comparison."""
-    session = _challenge_sessions.get(session_id)
-    if not session:
-        return None
-
-    questions = session["questions"].get(subject, [])
-    if question_index >= len(questions):
-        return None
-
-    question = questions[question_index]
-    correct_answer = question.get("correct_answer", "")
-    qtype = question.get("question_type", "mcq")
-
-    # ── Determine if answer is correct based on question type ────────────
-    is_correct = False
     try:
-        if qtype in ("mcq", "scenario", "true-false"):
-            # Compare letter keys
-            is_correct = user_answer.strip().upper() == correct_answer.strip().upper()
+        session = _challenge_sessions.get(session_id)
+        if not session:
+            return None
 
-        elif qtype in ("fill-blank", "short-answer"):
-            # Case-insensitive text comparison, trimmed
-            is_correct = user_answer.strip().lower() == correct_answer.strip().lower()
+        questions = session.get("questions", {}).get(subject, [])
+        if not questions or question_index >= len(questions):
+            logger.warning(f"submit_answer: question_index {question_index} out of range for {subject} (len={len(questions)})")
+            return None
 
-        elif qtype == "matching":
-            # Compare JSON objects
-            try:
-                user_matches = json.loads(user_answer)
-                correct_matches = json.loads(correct_answer)
-                is_correct = user_matches == correct_matches
-            except (json.JSONDecodeError, TypeError):
-                is_correct = False
+        question = questions[question_index]
+        if not question:
+            logger.warning(f"submit_answer: question at index {question_index} is None/empty")
+            return None
 
-        elif qtype == "order":
-            # Compare JSON arrays
-            try:
-                user_order = json.loads(user_answer)
-                correct_order = json.loads(correct_answer)
-                is_correct = user_order == correct_order
-            except (json.JSONDecodeError, TypeError):
-                is_correct = False
-    except Exception as e:
-        logger.warning(f"Answer comparison error for type {qtype}: {e}")
+        correct_answer = question.get("correct_answer", "")
+        qtype = question.get("question_type", "mcq")
+
+        # ── Determine if answer is correct based on question type ────────
         is_correct = False
+        try:
+            if qtype in ("mcq", "scenario", "true-false"):
+                # Compare letter keys
+                is_correct = user_answer.strip().upper() == correct_answer.strip().upper()
+
+            elif qtype in ("fill-blank", "short-answer"):
+                # Case-insensitive text comparison, trimmed
+                is_correct = user_answer.strip().lower() == correct_answer.strip().lower()
+
+            elif qtype == "matching":
+                # Compare JSON objects
+                try:
+                    user_matches = json.loads(user_answer) if user_answer else {}
+                    correct_matches = json.loads(correct_answer) if correct_answer else {}
+                    is_correct = user_matches == correct_matches
+                except (json.JSONDecodeError, TypeError):
+                    logger.warning(f"Matching JSON parse error: user='{user_answer[:50]}', correct='{correct_answer[:50]}'")
+                    is_correct = False
+
+            elif qtype == "order":
+                # Compare JSON arrays
+                try:
+                    user_order = json.loads(user_answer) if user_answer else []
+                    correct_order = json.loads(correct_answer) if correct_answer else []
+                    is_correct = user_order == correct_order
+                except (json.JSONDecodeError, TypeError):
+                    logger.warning(f"Order JSON parse error: user='{user_answer[:50]}', correct='{correct_answer[:50]}'")
+                    is_correct = False
+            else:
+                logger.warning(f"Unknown question_type '{qtype}', defaulting to letter comparison")
+                is_correct = user_answer.strip().upper() == correct_answer.strip().upper()
+        except Exception as e:
+            logger.warning(f"Answer comparison error for type {qtype}: {e}")
+            is_correct = False
 
     xp_change = XP_CORRECT if is_correct else XP_WRONG
     session["total_xp"] += xp_change

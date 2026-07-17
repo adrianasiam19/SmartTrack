@@ -189,6 +189,10 @@ function AtlasChallengeContent() {
 
   const handleSubmitAnswer = async (userAnswer: string) => {
     if (!session) return;
+
+    // Clear any previous error before trying
+    setErrorMessage(null);
+
     const currentSubject = subject;
     const qi = questionIndex;
     const timeTaken = (Date.now() - startTimeRef.current) / 1000;
@@ -206,9 +210,21 @@ function AtlasChallengeContent() {
           time_taken_seconds: timeTaken,
         }),
       });
-      if (!res.ok) throw new Error('Submit failed');
+      if (!res.ok) {
+        let detail = 'Submit failed';
+        try {
+          const errBody = await res.json();
+          detail = errBody?.detail || `HTTP ${res.status}: ${res.statusText}`;
+        } catch {
+          detail = `HTTP ${res.status}: ${res.statusText}`;
+        }
+        throw new Error(detail);
+      }
       const data = await res.json();
       const r = data.result;
+      if (!r) {
+        throw new Error('Invalid response from server');
+      }
       setFeedback(r);
       setTotalXp(r.total_xp || 0);
 
@@ -241,9 +257,13 @@ function AtlasChallengeContent() {
         startTimer(session.timer_seconds || 120);
       }, 1500);
 
-    } catch (e) {
-      console.error(e);
-      alert('Failed to submit answer');
+    } catch (e: any) {
+      console.error('Submit error:', e);
+      const msg = e?.message || 'Failed to submit answer';
+      setErrorMessage(msg);
+      // Restart the timer so the user can retry
+      const timerSecs = session.timer_seconds || 120;
+      startTimer(timerSecs);
     }
   };
 
@@ -1073,6 +1093,13 @@ function AtlasChallengeContent() {
                 </div>
               )}
             </div>
+
+            {/* Error message banner */}
+            {errorMessage && (
+              <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700">
+                {errorMessage}
+              </div>
+            )}
 
             {/* Feedback */}
             {feedback && (
