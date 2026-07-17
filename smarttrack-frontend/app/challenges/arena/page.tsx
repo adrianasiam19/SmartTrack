@@ -1036,7 +1036,7 @@ function ChallengeArena() {
               onChange={(e) => setShortResponseDraft(e.target.value)}
               rows={4}
               placeholder="Share your idea in a few sentences..."
-              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-[#1E293B] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/
+              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-[#1E293B] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/40"
               disabled={loading || selectedAnswer !== null}
             />
             <button
