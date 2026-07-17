@@ -16,6 +16,7 @@ from typing import Optional
 
 from app.assessment.challenge_hub import (
     start_challenge_session,
+    continue_challenge_level as continue_challenge_level_service,
     get_current_questions,
     get_current_subject_index,
     submit_answer,
@@ -136,13 +137,17 @@ async def submit_challenge_answer(
     if body.subject not in CORE_SUBJECTS:
         raise HTTPException(status_code=400, detail=f"Invalid subject. Must be one of: {', '.join(CORE_SUBJECTS)}")
 
-    result = submit_answer(
-        session_id=body.session_id,
-        subject=body.subject,
-        question_index=body.question_index,
-        user_answer=body.user_answer,
-        time_taken_seconds=body.time_taken_seconds,
-    )
+    try:
+        result = submit_answer(
+            session_id=body.session_id,
+            subject=body.subject,
+            question_index=body.question_index,
+            user_answer=body.user_answer,
+            time_taken_seconds=body.time_taken_seconds,
+        )
+    except Exception as e:
+        logger.error(f"submit_answer unexpectedly raised: {type(e).__name__}: {e}")
+        raise HTTPException(status_code=500, detail=f"Internal error processing answer: {str(e)}")
 
     if result is None:
         raise HTTPException(status_code=404, detail="Session or question not found")
@@ -154,6 +159,10 @@ async def submit_challenge_answer(
 
 
 class CompleteSessionRequest(BaseModel):
+    session_id: str
+
+
+class ContinueLevelRequest(BaseModel):
     session_id: str
 
 
@@ -181,6 +190,30 @@ async def complete_challenge_session(
     return {
         "success": True,
         "summary": summary,
+    }
+
+
+@router.post("/continue")
+async def continue_challenge(
+    body: ContinueLevelRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Continue to the next Challenge Level by generating the next 24 questions.
+    """
+    result = await continue_challenge_level_service(
+        db=db,
+        user_id=current_user.id,
+        session_id=body.session_id,
+    )
+
+    if "error" in result:
+        raise HTTPException(status_code=400, detail=result["error"])
+
+    return {
+        "success": True,
+        "session": result,
     }
 
 
