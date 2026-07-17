@@ -7,9 +7,14 @@
  *   • Access + refresh tokens live in localStorage.
  *   • The user profile is stored as one canonical object under `atlasUser`,
  *     always shaped exactly like the backend `UserPublic` response.
- *     No more hardcoded names, no more `fullname` vs `full_name` drift.
  *   • Consumers should treat `getCurrentUser()` (backend) as the source of
  *     truth and use `getStoredUser()` only for instant first paint.
+ *
+ * Session isolation:
+ *   • Every login/register/logout bumps an in-memory auth epoch.
+ *   • Stale async writes from a previous user are ignored after the epoch changes.
+ *   • Profiles are only cached when their `id` matches the JWT `sub`.
+ *   • All Atlas user-scoped localStorage keys are wiped on auth transitions.
  */
 
 const API_BASE_URL =
@@ -38,6 +43,7 @@ export interface UserProfile {
   school: string | null;
   onboarding_completed: boolean;
   starter_arena_completed: boolean;
+  learner_profile?: Record<string, unknown> | null;
 
   // Gamification
   xp: number;
@@ -65,51 +71,141 @@ const STORAGE_KEYS = {
   user: 'atlasUser',
 } as const;
 
+/** Exact keys that belong to a previous Atlas user/session. */
+const USER_SCOPED_EXACT_KEYS = [
+  STORAGE_KEYS.accessToken,
+  STORAGE_KEYS.refreshToken,
+  STORAGE_KEYS.user,
+  'atlasUserEmail',
+  'atlasChallengeData',
+  'atlas_academic_data',
+  'atlas_completed_lessons',
+  'atlas_daily_streak_visited',
+  'atlas_revision_bookmarks',
+  'atlas_revision_history',
+  'atlas_revision_recent',
+] as const;
+
+/**
+ * In-memory generation counter. Incremented on every auth boundary so async
+ * work started for User A cannot mutate User B's client state.
+ */
+let authEpoch = 0;
+
 const isBrowser = (): boolean => typeof window !== 'undefined';
+
+export const getAuthEpoch = (): number => authEpoch;
+
+/** Decode the JWT `sub` claim without verifying the signature (client-side binding only). */
+export const getTokenUserId = (): string | null => {
+  const token = getAccessToken();
+  if (!token) return null;
+  try {
+    const [, payloadPart] = token.split('.');
+    if (!payloadPart) return null;
+    const normalized = payloadPart.replace(/-/g, '+').replace(/_/g, '/');
+    const padded = normalized.padEnd(normalized.length + ((4 - (normalized.length % 4)) % 4), '=');
+    const payload = JSON.parse(atob(padded)) as { sub?: unknown };
+    return typeof payload.sub === 'string' && payload.sub.length > 0 ? payload.sub : null;
+  } catch {
+    return null;
+  }
+};
+
+const removeMatchingStorageKeys = (storage: Storage): void => {
+  const keys: string[] = [];
+  for (let i = 0; i < storage.length; i += 1) {
+    const key = storage.key(i);
+    if (!key) continue;
+    const isExact = (USER_SCOPED_EXACT_KEYS as readonly string[]).includes(key);
+    const isPrefixed =
+      key.startsWith('atlas_') ||
+      key.startsWith('atlasUser') ||
+      key.startsWith('smarttrack_');
+    if (isExact || isPrefixed) keys.push(key);
+  }
+  keys.forEach((key) => storage.removeItem(key));
+};
+
+/**
+ * Wipe every piece of client auth + user-scoped state and invalidate in-flight writers.
+ * Returns the new auth epoch.
+ */
+export const clearClientSession = (): number => {
+  authEpoch += 1;
+  if (!isBrowser()) return authEpoch;
+
+  removeMatchingStorageKeys(window.localStorage);
+  removeMatchingStorageKeys(window.sessionStorage);
+
+  // Belt-and-braces for the canonical auth keys.
+  window.localStorage.removeItem(STORAGE_KEYS.accessToken);
+  window.localStorage.removeItem(STORAGE_KEYS.refreshToken);
+  window.localStorage.removeItem(STORAGE_KEYS.user);
+
+  return authEpoch;
+};
+
+/** @deprecated Prefer clearClientSession — kept as a compatible alias. */
+export const clearTokens = (): void => {
+  clearClientSession();
+};
 
 export const storeTokens = (tokens: AuthTokens): void => {
   if (!isBrowser()) return;
-  localStorage.setItem(STORAGE_KEYS.accessToken, tokens.access_token);
-  localStorage.setItem(STORAGE_KEYS.refreshToken, tokens.refresh_token);
+  window.localStorage.setItem(STORAGE_KEYS.accessToken, tokens.access_token);
+  window.localStorage.setItem(STORAGE_KEYS.refreshToken, tokens.refresh_token);
 };
 
-/** Store the full user profile exactly as the backend returned it. */
-export const storeUser = (user: UserProfile): void => {
-  if (!isBrowser()) return;
-  localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(user));
+/**
+ * Store the full user profile exactly as the backend returned it.
+ * Refuses writes that belong to a previous auth epoch or a different JWT subject.
+ */
+export const storeUser = (user: UserProfile, epoch?: number): boolean => {
+  if (!isBrowser()) return false;
+  if (epoch !== undefined && epoch !== authEpoch) {
+    console.warn('Ignored stale storeUser from a previous auth session');
+    return false;
+  }
+
+  const tokenUserId = getTokenUserId();
+  if (tokenUserId && user.id && user.id !== tokenUserId) {
+    console.warn('Ignored storeUser for a profile that does not match the access token');
+    return false;
+  }
+
+  window.localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(user));
+  return true;
 };
 
 /** Retrieve cached user profile (may be stale; refetch when possible). */
 export const getStoredUser = (): UserProfile | null => {
   if (!isBrowser()) return null;
-  const raw = localStorage.getItem(STORAGE_KEYS.user);
+  const raw = window.localStorage.getItem(STORAGE_KEYS.user);
   if (!raw) return null;
   try {
-    return JSON.parse(raw) as UserProfile;
+    const user = JSON.parse(raw) as UserProfile;
+    const tokenUserId = getTokenUserId();
+    // A cached profile that does not match the current token is poisoned — drop it.
+    if (tokenUserId && user.id && user.id !== tokenUserId) {
+      window.localStorage.removeItem(STORAGE_KEYS.user);
+      return null;
+    }
+    return user;
   } catch {
+    window.localStorage.removeItem(STORAGE_KEYS.user);
     return null;
   }
 };
 
 export const getAccessToken = (): string | null => {
   if (!isBrowser()) return null;
-  return localStorage.getItem(STORAGE_KEYS.accessToken);
+  return window.localStorage.getItem(STORAGE_KEYS.accessToken);
 };
 
 export const getRefreshToken = (): string | null => {
   if (!isBrowser()) return null;
-  return localStorage.getItem(STORAGE_KEYS.refreshToken);
-};
-
-/** Clear every piece of auth state — used on logout and on 401s. */
-export const clearTokens = (): void => {
-  if (!isBrowser()) return;
-  localStorage.removeItem(STORAGE_KEYS.accessToken);
-  localStorage.removeItem(STORAGE_KEYS.refreshToken);
-  localStorage.removeItem(STORAGE_KEYS.user);
-  // Legacy keys from earlier versions — clean them up so no stale data survives.
-  localStorage.removeItem('atlasUserEmail');
-  localStorage.removeItem('atlasChallengeData');
+  return window.localStorage.getItem(STORAGE_KEYS.refreshToken);
 };
 
 export const getAuthHeaders = (): HeadersInit => {
@@ -119,45 +215,6 @@ export const getAuthHeaders = (): HeadersInit => {
     Authorization: `Bearer ${token}`,
     'Content-Type': 'application/json',
   };
-};
-
-/**
- * Register a new account.
- * After success: stores tokens, fetches user profile, caches it.
- */
-export const register = async (data: RegisterRequest): Promise<AuthTokens> => {
-  let response: Response;
-  try {
-    [response] = await fetchWithRetry(
-      `${API_BASE_URL}/auth/register`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      },
-    );
-  } catch (err) {
-    throw new Error(getFetchErrorMessage(err));
-  }
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.detail || 'Registration failed');
-  }
-
-  const tokens: AuthTokens = await response.json();
-  // Wipe any leftover state from a previous session, THEN store the new tokens.
-  clearTokens();
-  storeTokens(tokens);
-
-  try {
-    const userProfile = await getCurrentUser();
-    storeUser(userProfile);
-  } catch (e) {
-    console.warn('Failed to fetch user profile after registration:', e);
-  }
-
-  return tokens;
 };
 
 /**
@@ -198,12 +255,59 @@ export function getFetchErrorMessage(err: unknown): string {
   return 'An unexpected error occurred. Please try again.';
 }
 
+async function installAuthSession(tokens: AuthTokens): Promise<UserProfile | null> {
+  const epoch = clearClientSession();
+  storeTokens(tokens);
+  try {
+    const userProfile = await getCurrentUser(epoch);
+    storeUser(userProfile, epoch);
+    return userProfile;
+  } catch (e) {
+    console.warn('Failed to fetch user profile after auth transition:', e);
+    return null;
+  }
+}
+
+/**
+ * Register a new account.
+ * Always starts from a clean client session so no previous user state can leak.
+ */
+export const register = async (data: RegisterRequest): Promise<AuthTokens> => {
+  // Drop any previous user before contacting the API so in-flight writers are invalidated early.
+  clearClientSession();
+
+  let response: Response;
+  try {
+    [response] = await fetchWithRetry(
+      `${API_BASE_URL}/auth/register`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      },
+    );
+  } catch (err) {
+    throw new Error(getFetchErrorMessage(err));
+  }
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.detail || 'Registration failed');
+  }
+
+  const tokens: AuthTokens = await response.json();
+  await installAuthSession(tokens);
+  return tokens;
+};
+
 /**
  * Log in with email + password.
  * Retries automatically on transient network errors.
  * Same persistence guarantees as `register`.
  */
 export const login = async (data: LoginRequest): Promise<AuthTokens> => {
+  clearClientSession();
+
   let response: Response;
   try {
     [response] = await fetchWithRetry(
@@ -215,7 +319,6 @@ export const login = async (data: LoginRequest): Promise<AuthTokens> => {
       },
     );
   } catch (err) {
-    // Network-level failure even after retries
     throw new Error(getFetchErrorMessage(err));
   }
 
@@ -225,17 +328,7 @@ export const login = async (data: LoginRequest): Promise<AuthTokens> => {
   }
 
   const tokens: AuthTokens = await response.json();
-  // Clear any previous user (different account) before installing new tokens.
-  clearTokens();
-  storeTokens(tokens);
-
-  try {
-    const userProfile = await getCurrentUser();
-    storeUser(userProfile);
-  } catch (e) {
-    console.warn('Failed to fetch user profile after login:', e);
-  }
-
+  await installAuthSession(tokens);
   return tokens;
 };
 
@@ -254,7 +347,6 @@ export async function fetchWithAuth(
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     };
-    // Merge any caller-provided headers last so they can override Content-Type
     if (options.headers) {
       const callerHeaders = options.headers as Record<string, string>;
       Object.assign(headers, callerHeaders);
@@ -262,19 +354,16 @@ export async function fetchWithAuth(
     return fetch(url, { ...options, headers });
   };
 
-  // 1. First attempt with the current access token
   let token = getAccessToken();
   let res = await doFetch(token ?? undefined);
 
-  // 2. If 401, try to refresh the token
   if (res.status === 401 && token) {
     try {
       const newToken = await refreshAccessToken();
       res = await doFetch(newToken);
     } catch {
-      // Refresh failed — redirect to login
       if (typeof window !== 'undefined') {
-        clearTokens();
+        clearClientSession();
         window.location.href = '/login';
       }
       throw new Error('Session expired. Please log in again.');
@@ -288,7 +377,7 @@ export async function fetchWithAuth(
  * Fetch the authenticated user from the backend.
  * The backend is the source of truth — also keeps localStorage in sync.
  */
-export const getCurrentUser = async (): Promise<UserProfile> => {
+export const getCurrentUser = async (epoch: number = authEpoch): Promise<UserProfile> => {
   let response: Response;
   try {
     [response] = await fetchWithRetry(
@@ -297,7 +386,7 @@ export const getCurrentUser = async (): Promise<UserProfile> => {
         method: 'GET',
         headers: getAuthHeaders(),
       },
-      1,  // fewer retries for profile fetch
+      1,
       500,
     );
   } catch (err) {
@@ -307,23 +396,30 @@ export const getCurrentUser = async (): Promise<UserProfile> => {
     throw new Error('Failed to fetch user profile');
   }
 
+  if (epoch !== authEpoch) {
+    throw new Error('Auth session changed');
+  }
+
   if (!response.ok) {
     if (response.status === 401) {
-      clearTokens();
+      clearClientSession();
       throw new Error('Unauthorized');
     }
     throw new Error('Failed to fetch user profile');
   }
 
   const user = (await response.json()) as UserProfile;
-  storeUser(user);
+  if (epoch !== authEpoch) {
+    throw new Error('Auth session changed');
+  }
+  storeUser(user, epoch);
   return user;
 };
 
 export const logout = async (): Promise<void> => {
   const refreshToken = getRefreshToken();
   if (!refreshToken) {
-    clearTokens();
+    clearClientSession();
     return;
   }
 
@@ -341,11 +437,12 @@ export const logout = async (): Promise<void> => {
   } catch (error) {
     console.error('Logout error (server unreachable):', error);
   } finally {
-    clearTokens();
+    clearClientSession();
   }
 };
 
 export const refreshAccessToken = async (): Promise<string> => {
+  const epoch = authEpoch;
   const refreshToken = getRefreshToken();
   if (!refreshToken) {
     throw new Error('No refresh token available');
@@ -363,18 +460,23 @@ export const refreshAccessToken = async (): Promise<string> => {
       1,
       500,
     );
-  } catch (err) {
-    clearTokens();
+  } catch {
+    clearClientSession();
     throw new Error('Unable to connect to the server. Please log in again.');
   }
 
   if (!response.ok) {
-    clearTokens();
+    clearClientSession();
     throw new Error('Session expired. Please log in again.');
   }
 
+  if (epoch !== authEpoch) {
+    throw new Error('Auth session changed');
+  }
+
   const data: { access_token: string } = await response.json();
-  localStorage.setItem(STORAGE_KEYS.accessToken, data.access_token);
+  if (!isBrowser()) return data.access_token;
+  window.localStorage.setItem(STORAGE_KEYS.accessToken, data.access_token);
   return data.access_token;
 };
 
@@ -392,6 +494,9 @@ export const updateUserProfile = async (
     >
   >,
 ): Promise<UserProfile> => {
+  const epoch = authEpoch;
+  const expectedUserId = getTokenUserId();
+
   let response: Response;
   try {
     [response] = await fetchWithRetry(
@@ -408,18 +513,31 @@ export const updateUserProfile = async (
     throw new Error(getFetchErrorMessage(err));
   }
 
+  if (epoch !== authEpoch) {
+    throw new Error('Auth session changed');
+  }
+
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
     throw new Error(error.detail || 'Failed to update profile');
   }
 
   const user = (await response.json()) as UserProfile;
-  storeUser(user);
+  if (epoch !== authEpoch) {
+    throw new Error('Auth session changed');
+  }
+  if (expectedUserId && user.id !== expectedUserId) {
+    throw new Error('Auth session changed');
+  }
+
+  storeUser(user, epoch);
   return user;
 };
 
 /**
  * Decide where an authenticated user should go next.
+ * Decisions must be based only on the currently authenticated user's flags.
+ *
  * New users: onboarding → Starter Arena → dashboard (each step only once).
  * Returning users: dashboard.
  */
@@ -428,8 +546,9 @@ export function resolvePostAuthDestination(
 ): '/onboarding' | '/challenges/arena?mode=placement' | '/dashboard' {
   if (!user) return '/onboarding';
   if (!user.onboarding_completed) return '/onboarding';
-  // Explicit false only — missing/undefined means a legacy completed profile.
-  if (user.starter_arena_completed === false) {
+  // New accounts always persist an explicit boolean. Treat any non-true value
+  // as "Starter Arena still required" so a missing/stale field never skips it.
+  if (user.starter_arena_completed !== true) {
     return '/challenges/arena?mode=placement';
   }
   return '/dashboard';

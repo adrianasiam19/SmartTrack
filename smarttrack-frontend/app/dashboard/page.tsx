@@ -8,7 +8,7 @@ import BottomNav from '../components/BottomNav';
 import AppLayout from '../components/AppLayout';
 import XpGauge from '../components/XpGauge';
 import {
-  getCurrentUser, getAccessToken, getStoredUser, resolvePostAuthDestination, UserProfile,
+  getCurrentUser, getAccessToken, resolvePostAuthDestination, UserProfile,
 } from '../lib/authApi';
 
 const FUN_FACTS = [
@@ -39,15 +39,7 @@ export default function Dashboard() {
       try {
         const token = getAccessToken();
         if (!token) { router.push('/login'); return; }
-        const cached = getStoredUser();
-        if (cached) {
-          const cachedDestination = resolvePostAuthDestination(cached);
-          if (cachedDestination !== '/dashboard') {
-            router.replace(cachedDestination);
-            return;
-          }
-          setUser(cached);
-        }
+        // Route only from the authenticated backend profile for this token.
         const fresh = await getCurrentUser();
         const destination = resolvePostAuthDestination(fresh);
         if (destination !== '/dashboard') {

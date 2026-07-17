@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Lock, ChevronDown } from 'lucide-react';
-import { register, Programme, SHSLevel } from '../lib/authApi';
+import { clearClientSession, register, Programme, SHSLevel } from '../lib/authApi';
 
 interface PasswordRequirement { label: string; met: boolean; }
 
@@ -39,6 +39,11 @@ export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const [progDropdownOpen, setProgDropdownOpen] = useState(false);
   const progDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Creating an account must never inherit another user's client session.
+  useEffect(() => {
+    clearClientSession();
+  }, []);
 
   // Close programme dropdown on outside click
   useEffect(() => {
@@ -225,6 +230,7 @@ export default function Register() {
           {/* Google OAuth */}
           <a
             href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/auth/google/login`}
+            onClick={() => clearClientSession()}
             className="flex items-center justify-center gap-3 w-full px-6 py-3 border border-[#E2E8F0] rounded-xl text-[#475569] font-medium text-base hover:bg-[#F8FAFC] hover:border-[#CBD5E1] transition-all duration-200"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
