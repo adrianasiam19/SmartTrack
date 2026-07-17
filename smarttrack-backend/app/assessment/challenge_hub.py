@@ -3,6 +3,16 @@ challenge_hub.py — Atlas Adaptive Challenge Hub
 
 Generates WASSCE-style challenge questions via AI for the 4 Core Subjects.
 Manages session state, XP scoring (+5/-5), and adaptive difficulty.
+
+KEY DESIGN — Atlas Controls Question Types
+The LLM does NOT randomly decide question types. Atlas explicitly assigns
+a specific question type to each of the 6 questions per subject, then
+instructs the LLM to generate that exact format. This ensures:
+- The frontend always knows what UI to render
+- The response structure is predictable
+- Varied question types provide an engaging experience
+
+Supported types: mcq, fill-blank, short-answer, true-false, matching, order, scenario
 """
 import asyncio
 import json
@@ -21,7 +31,6 @@ from app.users.models import User
 logger = logging.getLogger(__name__)
 
 # ── In-memory session store for active challenges ─────────────────────────
-# AI-generated questions are cached here during the session (not persisted).
 _challenge_sessions: dict = {}
 
 # ── Core Subjects (exactly 4, in order) ────────────────────────────────────
@@ -32,237 +41,135 @@ CORE_SUBJECTS = [
     "Social Studies",
 ]
 
-# ── Question types to vary across the 6 questions ──────────────────────────
+# ── Question types supported by the Challenge Hub ──────────────────────────
 QUESTION_TYPES = [
     "mcq",
-    "mcq",
     "fill-blank",
+    "short-answer",
     "true-false",
-    "mcq",
+    "matching",
+    "order",
     "scenario",
+]
+
+# ── Per-type format specifications used in prompts ─────────────────────────
+QUESTION_TYPE_JSON_TEMPLATES = {
+    "mcq": (
+        '{\n'
+        '  "id": "unique_id",\n'
+        '  "question": "Question text (can include a short scenario/passage)",\n'
+        '  "options": {"A": "First option", "B": "Second option", "C": "Third option", "D": "Fourth option"},\n'
+        '  "correct_answer": "A",\n'
+        '  "question_type": "mcq",\n'
+        '  "explanation": "Educational explanation (2-3 sentences)"\n'
+        '}'
+    ),
+    "fill-blank": (
+        '{\n'
+        '  "id": "unique_id",\n'
+        '  "question": "Question text with _____ or ... marking the blank",\n'
+        '  "correct_answer": "The word or phrase that completes the blank",\n'
+        '  "question_type": "fill-blank",\n'
+        '  "explanation": "Educational explanation (2-3 sentences)"\n'
+        '}'
+    ),
+    "short-answer": (
+        '{\n'
+        '  "id": "unique_id",\n'
+        '  "question": "Question that can be answered in one sentence or phrase",\n'
+        '  "correct_answer": "The expected short answer",\n'
+        '  "question_type": "short-answer",\n'
+        '  "explanation": "Educational explanation (2-3 sentences)"\n'
+        '}'
+    ),
+    "true-false": (
+        '{\n'
+        '  "id": "unique_id",\n'
+        '  "question": "Statement that is either true or false",\n'
+        '  "options": {"A": "True", "B": "False"},\n'
+        '  "correct_answer": "A",\n'
+        '  "question_type": "true-false",\n'
+        '  "explanation": "Educational explanation (2-3 sentences)"\n'
+        '}'
+    ),
+    "matching": (
+        '{\n'
+        '  "id": "unique_id",\n'
+        '  "question": "Instructions telling the student what to match",\n'
+        '  "left_items": ["Item A1", "Item A2", "Item A3", "Item A4"],\n'
+        '  "right_items": ["Item B1", "Item B2", "Item B3", "Item B4"],\n'
+        '  "correct_matches": {"0": "1", "1": "2", "2": "3", "3": "0"},\n'
+        '  "question_type": "matching",\n'
+        '  "explanation": "Educational explanation (2-3 sentences)"\n'
+        '}'
+    ),
+    "order": (
+        '{\n'
+        '  "id": "unique_id",\n'
+        '  "question": "Instructions telling the student what to arrange in the correct order",\n'
+        '  "items": ["Step/item 1 as presented", "Step/item 2 as presented", "Step/item 3 as presented", "Step/item 4 as presented"],\n'
+        '  "correct_order": [2, 0, 3, 1],\n'
+        '  "question_type": "order",\n'
+        '  "explanation": "Educational explanation (2-3 sentences)"\n'
+        '}'
+    ),
+    "scenario": (
+        '{\n'
+        '  "id": "unique_id",\n'
+        '  "question": "A short passage describing a scenario, followed by the question to answer",\n'
+        '  "options": {"A": "First option", "B": "Second option", "C": "Third option", "D": "Fourth option"},\n'
+        '  "correct_answer": "A",\n'
+        '  "question_type": "scenario",\n'
+        '  "explanation": "Educational explanation (2-3 sentences)"\n'
+        '}'
+    ),
+}
+
+QUESTION_TYPE_LABELS = {
+    "mcq": "Multiple Choice — exactly 4 options (A, B, C, D)",
+    "fill-blank": "Fill in the Blank — question has a _____ blank, answer is the missing text",
+    "short-answer": "Short Answer — student writes a word or short phrase",
+    "true-false": "True or False — exactly 2 options (A: True, B: False)",
+    "matching": "Matching — 4 items in left column match 4 items in right column",
+    "order": "Arrange in Correct Order — 4 items placed in the right sequence",
+    "scenario": "Scenario-Based — short passage followed by a multiple-choice question with 4 options",
+}
+
+# ── Rotations: ensure a balanced mix within each subject's 6 questions ─────
+# Each row is a sequence of 6 question types used for one subject.
+# Atlas rotates these deterministically so the LLM does not decide.
+QUESTION_TYPE_ROTATIONS = [
+    ["mcq", "fill-blank", "true-false", "short-answer", "mcq", "scenario"],
+    ["mcq", "true-false", "fill-blank", "mcq", "scenario", "short-answer"],
+    ["fill-blank", "mcq", "short-answer", "scenario", "true-false", "mcq"],
+    ["scenario", "mcq", "fill-blank", "true-false", "short-answer", "matching"],
+    ["mcq", "scenario", "true-false", "fill-blank", "order", "mcq"],
+    ["true-false", "mcq", "fill-blank", "scenario", "short-answer", "order"],
+    ["fill-blank", "true-false", "mcq", "matching", "scenario", "short-answer"],
+    ["short-answer", "mcq", "scenario", "true-false", "fill-blank", "order"],
+    ["matching", "fill-blank", "mcq", "scenario", "true-false", "short-answer"],
+    ["order", "mcq", "true-false", "fill-blank", "scenario", "short-answer"],
 ]
 
 # ── Timer durations per challenge level ────────────────────────────────────
 TIMER_SECONDS = {
-    1: 120,  # 2 minutes
-    2: 120,  # 2 minutes
-    3: 180,  # 3 minutes
+    1: 180,  # 3 minutes (increased for short-answer/fill-blank)
+    2: 180,  # 3 minutes
+    3: 240,  # 4 minutes
 }
 
 # ── XP scoring ─────────────────────────────────────────────────────────────
 XP_CORRECT = 5
 XP_WRONG = -5
 
-# ── Fallback questions when AI fails ───────────────────────────────────────
-FALLBACK_QUESTIONS = {
-    "Core Mathematics": [
-        {
-            "id": "ch_math_fb_1",
-            "question": "What is the value of 3² + 4²?",
-            "options": {"A": "7", "B": "12", "C": "25", "D": "49"},
-            "correct_answer": "C",
-            "question_type": "mcq",
-            "explanation": "3² = 9 and 4² = 16. 9 + 16 = 25.",
-        },
-        {
-            "id": "ch_math_fb_2",
-            "question": "Solve for x: 3x − 7 = 14",
-            "options": {"A": "3", "B": "5", "C": "7", "D": "21"},
-            "correct_answer": "C",
-            "question_type": "mcq",
-            "explanation": "3x − 7 = 14 → 3x = 21 → x = 7.",
-        },
-        {
-            "id": "ch_math_fb_3",
-            "question": "A bag contains 3 red, 5 blue, and 2 green marbles. What is the probability of picking a blue marble?",
-            "options": {"A": "1/2", "B": "1/3", "C": "3/10", "D": "2/5"},
-            "correct_answer": "A",
-            "question_type": "mcq",
-            "explanation": "Total marbles = 3 + 5 + 2 = 10. Blue marbles = 5. Probability = 5/10 = 1/2.",
-        },
-        {
-            "id": "ch_math_fb_4",
-            "question": "Complete: The sum of angles in a triangle is ______ degrees.",
-            "options": {"A": "90", "B": "180", "C": "270", "D": "360"},
-            "correct_answer": "B",
-            "question_type": "fill-blank",
-            "explanation": "The interior angles of any triangle always sum to 180°.",
-        },
-        {
-            "id": "ch_math_fb_5",
-            "question": "The gradient of a horizontal line is zero.",
-            "options": {"A": "True", "B": "False"},
-            "correct_answer": "A",
-            "question_type": "true-false",
-            "explanation": "A horizontal line has no vertical change, so its gradient (slope) is 0.",
-        },
-        {
-            "id": "ch_math_fb_6",
-            "question": "A student scored 45 out of 60 in a test. What is the percentage score?",
-            "options": {"A": "65%", "B": "70%", "C": "75%", "D": "80%"},
-            "correct_answer": "C",
-            "question_type": "mcq",
-            "explanation": "Percentage = (45/60) × 100 = 75%.",
-        },
-    ],
-    "English Language": [
-        {
-            "id": "ch_eng_fb_1",
-            "question": "Identify the figure of speech: 'The wind whispered through the trees.'",
-            "options": {"A": "Simile", "B": "Metaphor", "C": "Personification", "D": "Hyperbole"},
-            "correct_answer": "C",
-            "question_type": "mcq",
-            "explanation": "The wind is given the human action of whispering — this is personification.",
-        },
-        {
-            "id": "ch_eng_fb_2",
-            "question": "Choose the correct form: 'Neither the teacher nor the students ______ present.'",
-            "options": {"A": "was", "B": "were", "C": "is", "D": "has"},
-            "correct_answer": "B",
-            "question_type": "mcq",
-            "explanation": "When 'neither...nor' joins a singular and plural subject, the verb agrees with the nearest subject (students → were).",
-        },
-        {
-            "id": "ch_eng_fb_3",
-            "question": "Fill in the blank: She has been studying ______ three hours.",
-            "options": {"A": "since", "B": "for", "C": "during", "D": "in"},
-            "correct_answer": "B",
-            "question_type": "fill-blank",
-            "explanation": "'For' is used with a duration of time (three hours). 'Since' is used with a specific point in time.",
-        },
-        {
-            "id": "ch_eng_fb_4",
-            "question": "An adverb modifies a verb, adjective, or another adverb.",
-            "options": {"A": "True", "B": "False"},
-            "correct_answer": "A",
-            "question_type": "true-false",
-            "explanation": "Adverbs modify verbs (run quickly), adjectives (very tall), or other adverbs (quite easily).",
-        },
-        {
-            "id": "ch_eng_fb_5",
-            "question": "Which word is a synonym for 'benevolent'?",
-            "options": {"A": "Malevolent", "B": "Kind", "C": "Hostile", "D": "Indifferent"},
-            "correct_answer": "B",
-            "question_type": "mcq",
-            "explanation": "'Benevolent' means well-meaning and kindly — 'kind' is its synonym.",
-        },
-        {
-            "id": "ch_eng_fb_6",
-            "question": "Read the passage: 'The old man sat quietly by the window, watching the rain fall.' The mood created is one of:",
-            "options": {"A": "Excitement", "B": "Tranquility", "C": "Anger", "D": "Confusion"},
-            "correct_answer": "B",
-            "question_type": "scenario",
-            "explanation": "Words like 'quietly', 'watching the rain fall' convey a peaceful, tranquil mood.",
-        },
-    ],
-    "Integrated Science": [
-        {
-            "id": "ch_sci_fb_1",
-            "question": "Which organelle is known as the 'powerhouse of the cell'?",
-            "options": {"A": "Nucleus", "B": "Ribosome", "C": "Mitochondrion", "D": "Golgi apparatus"},
-            "correct_answer": "C",
-            "question_type": "mcq",
-            "explanation": "Mitochondria generate most of the cell's ATP through cellular respiration — hence 'powerhouse'.",
-        },
-        {
-            "id": "ch_sci_fb_2",
-            "question": "What is the chemical symbol for potassium?",
-            "options": {"A": "Po", "B": "Pt", "C": "K", "D": "P"},
-            "correct_answer": "C",
-            "question_type": "mcq",
-            "explanation": "K comes from the Latin word 'kalium'. Potassium's symbol is K.",
-        },
-        {
-            "id": "ch_sci_fb_3",
-            "question": "The boiling point of water at sea level is ______ °C.",
-            "options": {"A": "90", "B": "100", "C": "110", "D": "212"},
-            "correct_answer": "B",
-            "question_type": "fill-blank",
-            "explanation": "Water boils at 100°C (212°F) at standard atmospheric pressure at sea level.",
-        },
-        {
-            "id": "ch_sci_fb_4",
-            "question": "Sound travels faster in air than in water.",
-            "options": {"A": "True", "B": "False"},
-            "correct_answer": "B",
-            "question_type": "true-false",
-            "explanation": "Sound travels faster in denser media. It travels about 4.3× faster in water than in air.",
-        },
-        {
-            "id": "ch_sci_fb_5",
-            "question": "Which nutrient is the body's primary source of energy?",
-            "options": {"A": "Protein", "B": "Carbohydrate", "C": "Fat", "D": "Vitamin"},
-            "correct_answer": "B",
-            "question_type": "mcq",
-            "explanation": "Carbohydrates are broken down into glucose, which is the body's main energy source.",
-        },
-        {
-            "id": "ch_sci_fb_6",
-            "question": "A plant is placed in a dark room for a week. What will most likely happen?",
-            "options": {"A": "It grows faster", "B": "It turns yellow", "C": "It flowers", "D": "No change"},
-            "correct_answer": "B",
-            "question_type": "scenario",
-            "explanation": "Without light, chlorophyll breaks down and the plant cannot photosynthesise, causing it to turn yellow (etiolation).",
-        },
-    ],
-    "Social Studies": [
-        {
-            "id": "ch_sst_fb_1",
-            "question": "Which of the following is NOT a function of government?",
-            "options": {"A": "Providing education", "B": "Maintaining law and order", "C": "Setting private business prices", "D": "Defending the country"},
-            "correct_answer": "C",
-            "question_type": "mcq",
-            "explanation": "In a market economy, the government does not set private business prices — that's determined by supply and demand.",
-        },
-        {
-            "id": "ch_sst_fb_2",
-            "question": "What is the main purpose of the United Nations?",
-            "options": {"A": "To control global trade", "B": "To maintain international peace and security", "C": "To set education standards", "D": "To create world laws"},
-            "correct_answer": "B",
-            "question_type": "mcq",
-            "explanation": "The UN's primary purpose is maintaining international peace and security, though it also addresses humanitarian and development issues.",
-        },
-        {
-            "id": "ch_sst_fb_3",
-            "question": "Ghana's system of government is modelled after the ______ system.",
-            "options": {"A": "Presidential", "B": "Parliamentary", "C": "Monarchical", "D": "Federal"},
-            "correct_answer": "A",
-            "question_type": "fill-blank",
-            "explanation": "Ghana operates a presidential system of government, with an elected President as both Head of State and Government.",
-        },
-        {
-            "id": "ch_sst_fb_4",
-            "question": "Democracy means 'rule by the people'.",
-            "options": {"A": "True", "B": "False"},
-            "correct_answer": "A",
-            "question_type": "true-false",
-            "explanation": "Democracy comes from Greek 'demos' (people) and 'kratos' (rule) — literally 'rule by the people'.",
-        },
-        {
-            "id": "ch_sst_fb_5",
-            "question": "What is the main cause of deforestation in Ghana?",
-            "options": {"A": "Urbanisation", "B": "Illegal logging and agriculture", "C": "Tourism", "D": "Mining only"},
-            "correct_answer": "B",
-            "question_type": "mcq",
-            "explanation": "Illegal logging (galamsey) and expansion of agriculture (especially cocoa farming) are the primary causes of deforestation in Ghana.",
-        },
-        {
-            "id": "ch_sst_fb_6",
-            "question": "Which right allows citizens to vote in elections?",
-            "options": {"A": "Economic right", "B": "Political right", "C": "Social right", "D": "Cultural right"},
-            "correct_answer": "B",
-            "question_type": "mcq",
-            "explanation": "The right to vote is a fundamental political right that enables citizens to participate in choosing their leaders.",
-        },
-    ],
-}
-
 # ── AI Generation Prompt Templates ─────────────────────────────────────────
 
 CHALLENGE_SYSTEM_PROMPT = (
     "You are an expert WASSCE question setter for the Ghana Education Service SHS curriculum. "
     "Generate high-quality, engaging questions that test understanding, not just memorisation. "
-    "Follow WASSCE standards for question style and difficulty."
+    "Follow WASSCE standards for question style and difficulty.\n\n"
+    "CRITICAL: You MUST follow the exact JSON structure specified for EACH question type. "
+    "Do NOT deviate from the given format. Each question's structure depends on its question_type."
 )
 
 LEVEL_DESCRIPTIONS = {
@@ -277,89 +184,358 @@ SHS_LEVEL_MAP = {
     "SHS 3": "SHS 3 (final year — WASSCE revision level)",
 }
 
-QUESTION_TYPE_LABELS = {
-    "mcq": "Multiple choice (4 options A-D, choose one correct answer)",
-    "fill-blank": "Fill in the blank / complete the statement",
-    "true-false": "True or False statement",
-    "scenario": "Scenario-based question (short passage or real-world situation to analyse)",
-}
+# ── Retry limit for invalid AI responses ───────────────────────────────────
+MAX_RETRIES_PER_QUESTION = 2
 
 
-def _build_ai_prompt(subject: str, shs_level: str, challenge_level: int) -> str:
-    """Build the AI prompt for generating 6 questions for one subject."""
+def _get_subject_rotation_index(subject: str) -> int:
+    """Deterministically pick a rotation for a subject so the same subject
+    gets a different rotation on each session."""
+    return hash(subject + str(datetime.now(timezone.utc).date())) % len(QUESTION_TYPE_ROTATIONS)
+
+
+def _build_ai_prompt(
+    subject: str,
+    shs_level: str,
+    challenge_level: int,
+    question_types: list[str],
+) -> str:
+    """Build the AI prompt that explicitly assigns a type to each of the 6 questions."""
     level_desc = LEVEL_DESCRIPTIONS.get(challenge_level, LEVEL_DESCRIPTIONS[1])
     shs_desc = SHS_LEVEL_MAP.get(shs_level, "SHS 1")
-    question_types_str = "\n".join(
-        f"  Question {i+1}: {QUESTION_TYPE_LABELS[qtype]}"
-        for i, qtype in enumerate(QUESTION_TYPES)
-    )
 
-    prompt = f"""Generate exactly 6 {subject} questions for a {shs_desc} student.
+    # Build per-question instructions
+    questions_spec = []
+    for i, qtype in enumerate(question_types):
+        tmpl = QUESTION_TYPE_JSON_TEMPLATES.get(qtype, QUESTION_TYPE_JSON_TEMPLATES["mcq"])
+        label = QUESTION_TYPE_LABELS.get(qtype, qtype)
+        questions_spec.append(
+            f"  Question {i+1} — TYPE: {label}\n"
+            f"    Return EXACTLY this JSON structure:\n"
+            f"    {tmpl}"
+        )
+
+    question_types_str = "\n\n".join(questions_spec)
+
+    prompt = f"""Generate exactly 6 questions for {subject} for a {shs_desc} student.
 
 DIFFICULTY LEVEL: {challenge_level} — {level_desc}
 
-QUESTION TYPES (one per question, in order):
+IMPORTANT — Atlas has already chosen the TYPE for each question below.
+You MUST follow the specified type and JSON structure for each one.
+Do NOT change the question type — generate the exact format requested.
+
+Here are the 6 questions to generate:
+
 {question_types_str}
 
-Each question must:
-- Be appropriate for {shs_desc} level
+RULES:
+- Each question must be appropriate for {shs_desc} level
 - Match the {challenge_level} difficulty description above
 - Include a clear, correct answer
 - Include a helpful educational explanation (2-3 sentences)
 - Be original and interesting (not a recycled standard question)
+- Cover different topics within {subject} — do NOT repeat the same concept
 
-Return ONLY valid JSON array (no markdown, no code blocks):
+Return ONLY valid JSON array (no markdown, no code blocks, no extra text):
 [
-  {{
-    "id": "{subject.lower().replace(' ', '_')}_q1",
-    "question": "Question text here",
-    "options": {{"A": "Option A", "B": "Option B", "C": "Option C", "D": "Option D"}},
-    "correct_answer": "A",
-    "question_type": "mcq",
-    "explanation": "Educational explanation why this answer is correct"
-  }},
-  ...
-]
-
-IMPORTANT:
-- For fill-blank: options should be possible completions
-- For true-false: options must be {{"A": "True", "B": "False"}}
-- For scenario: include a brief scenario in the question text
-- correct_answer must be "A", "B", "C", or "D" (matching one of the option keys)
-- All 6 questions must be different and cover different topics within {subject}"""
+  {{question 1 JSON}},
+  {{question 2 JSON}},
+  {{question 3 JSON}},
+  {{question 4 JSON}},
+  {{question 5 JSON}},
+  {{question 6 JSON}}
+]"""
     return prompt
+
+
+def _validate_question_structure(question: dict) -> tuple[bool, str]:
+    """Validate that a question dict matches the expected structure for its type.
+    Returns (is_valid, error_message)."""
+    qtype = question.get("question_type", "")
+    if qtype not in QUESTION_TYPES:
+        return False, f"Unknown question_type: '{qtype}'"
+
+    if not question.get("question"):
+        return False, "Missing 'question' field"
+
+    if not question.get("explanation"):
+        return False, "Missing 'explanation' field"
+
+    if not question.get("correct_answer"):
+        return False, "Missing 'correct_answer' field"
+
+    # ── Per-type validation ────────────────────────────────────────────────
+    if qtype in ("mcq", "scenario"):
+        options = question.get("options")
+        if not options or not isinstance(options, dict):
+            return False, f"'{qtype}' requires 'options' as a dict with exactly 4 entries (A, B, C, D)"
+        if len(options) != 4:
+            return False, f"'{qtype}' requires exactly 4 options (A, B, C, D), got {len(options)}"
+        for letter in ("A", "B", "C", "D"):
+            if letter not in options:
+                return False, f"'{qtype}' missing option {letter}"
+        # Validate correct_answer is one of the keys
+        if question["correct_answer"] not in ("A", "B", "C", "D"):
+            return False, f"'{qtype}' correct_answer must be 'A', 'B', 'C', or 'D' (letter key), got '{question['correct_answer']}'"
+
+    elif qtype == "fill-blank":
+        # Must have a blank marker in the question text
+        question_text = question.get("question", "")
+        if "____" not in question_text and "..." not in question_text and "___" not in question_text:
+            return False, "'fill-blank' question text must contain a blank marker (_____ or ...)"
+        # Should NOT have options
+        if question.get("options"):
+            return False, "'fill-blank' must NOT include options"
+
+    elif qtype == "short-answer":
+        # Should NOT have options
+        if question.get("options"):
+            return False, "'short-answer' must NOT include options"
+        # correct_answer should be reasonably short
+        answer = question.get("correct_answer", "")
+        if len(answer) > 200:
+            return False, f"'short-answer' correct_answer too long ({len(answer)} chars, max 200)"
+
+    elif qtype == "true-false":
+        options = question.get("options")
+        if not options or not isinstance(options, dict):
+            return False, "'true-false' requires 'options' as a dict with exactly 'A' and 'B'"
+        if "A" not in options or "B" not in options or len(options) != 2:
+            return False, "'true-false' options must be exactly {{'A': 'True', 'B': 'False'}}"
+        # Normalise values if needed
+        opt_a = str(options.get("A", "")).lower()
+        opt_b = str(options.get("B", "")).lower()
+        if "true" not in opt_a and "true" not in opt_b:
+            return False, "'true-false' options must include 'True' and 'False' as values"
+        if question["correct_answer"] not in ("A", "B"):
+            return False, "'true-false' correct_answer must be 'A' or 'B'"
+
+    elif qtype == "matching":
+        left_items = question.get("left_items")
+        right_items = question.get("right_items")
+        matches = question.get("correct_matches")
+        if not left_items or not isinstance(left_items, list) or len(left_items) < 2:
+            return False, "'matching' requires 'left_items' array with at least 2 items"
+        if not right_items or not isinstance(right_items, list) or len(right_items) < 2:
+            return False, "'matching' requires 'right_items' array with at least 2 items"
+        if len(left_items) != len(right_items):
+            return False, f"'matching' left_items ({len(left_items)}) and right_items ({len(right_items)}) must have same count"
+        if not matches or not isinstance(matches, dict):
+            return False, "'matching' requires 'correct_matches' as a dict mapping left index -> right index"
+        # Validate indices
+        for lidx, ridx in matches.items():
+            try:
+                li = int(lidx)
+                ri = int(ridx)
+                if li < 0 or li >= len(left_items):
+                    return False, f"'matching' left index {li} out of range"
+                if ri < 0 or ri >= len(right_items):
+                    return False, f"'matching' right index {ri} out of range"
+            except ValueError:
+                return False, f"'matching' key/value in correct_matches must be integers, got '{lidx}': '{ridx}'"
+
+    elif qtype == "order":
+        items = question.get("items")
+        correct_order = question.get("correct_order")
+        if not items or not isinstance(items, list) or len(items) < 2:
+            return False, "'order' requires 'items' array with at least 2 items"
+        if not correct_order or not isinstance(correct_order, list) or len(correct_order) != len(items):
+            return False, f"'order' requires 'correct_order' array with exactly {len(items)} indices"
+        # Validate indices
+        seen = set()
+        for idx in correct_order:
+            if not isinstance(idx, int):
+                return False, f"'order' correct_order must contain integers, got {type(idx).__name__}"
+            if idx < 0 or idx >= len(items):
+                return False, f"'order' index {idx} out of range for {len(items)} items"
+            if idx in seen:
+                return False, f"'order' duplicate index {idx}"
+            seen.add(idx)
+
+    return True, ""
+
+
+async def _generate_single_question(
+    subject: str,
+    shs_level: str,
+    challenge_level: int,
+    qtype: str,
+    q_index: int,
+) -> dict | None:
+    """Generate a single question of a specific type with up to MAX_RETRIES attempts."""
+    level_desc = LEVEL_DESCRIPTIONS.get(challenge_level, LEVEL_DESCRIPTIONS[1])
+    shs_desc = SHS_LEVEL_MAP.get(shs_level, "SHS 1")
+    tmpl = QUESTION_TYPE_JSON_TEMPLATES.get(qtype, QUESTION_TYPE_JSON_TEMPLATES["mcq"])
+    label = QUESTION_TYPE_LABELS.get(qtype, qtype)
+
+    prompt = f"""Generate exactly ONE question for {subject} for a {shs_desc} student.
+
+DIFFICULTY LEVEL: {challenge_level} — {level_desc}
+
+TYPE: {label}
+
+You MUST return ONLY valid JSON with exactly this structure (no markdown, no code blocks):
+{tmpl}
+
+The question must:
+- Be appropriate for {shs_desc} level
+- Match the {challenge_level} difficulty
+- Include a clear correct_answer
+- Include an educational explanation (2-3 sentences)
+- Be original
+
+Return ONLY the JSON object, no extra text."""
+
+    for attempt in range(MAX_RETRIES_PER_QUESTION + 1):
+        try:
+            response = await get_ai_response([
+                {"role": "system", "content": CHALLENGE_SYSTEM_PROMPT},
+                {"role": "user", "content": prompt},
+            ])
+            if not response:
+                continue
+
+            response = response.strip()
+            if response.startswith("```json"):
+                response = response[7:]
+            elif response.startswith("```"):
+                response = response[3:]
+            if response.endswith("```"):
+                response = response[:-3]
+            response = response.strip()
+
+            question = json.loads(response)
+
+            # Ensure id and question_type are set
+            if not question.get("id"):
+                question["id"] = f"{subject.lower().replace(' ', '_')}_{q_index + 1}"
+            question["question_type"] = qtype
+
+            valid, error = _validate_question_structure(question)
+            if valid:
+                return question
+            else:
+                logger.warning(f"Attempt {attempt + 1} for {subject} Q{q_index + 1} ({qtype}) invalid: {error}")
+                continue
+
+        except json.JSONDecodeError as e:
+            logger.warning(f"Attempt {attempt + 1} for {subject} Q{q_index + 1} ({qtype}) JSON parse error: {e}")
+            continue
+        except Exception as e:
+            logger.warning(f"Attempt {attempt + 1} for {subject} Q{q_index + 1} ({qtype}) error: {e}")
+            continue
+
+    return None
 
 
 async def _call_ai_for_subject(
     subject: str, shs_level: str, challenge_level: int
 ) -> list:
-    """Call AI to generate 6 questions for one subject. Returns list of question dicts."""
-    prompt = _build_ai_prompt(subject, shs_level, challenge_level)
+    """Generate 6 questions for one subject.
+    Uses batch generation first, then falls back to per-question generation
+    for any that fail validation."""
+    question_types = _get_rotation_for_subject(subject)
+
+    # ── 1. Try generating all 6 in one batch call ─────────────────────────
+    prompt = _build_ai_prompt(subject, shs_level, challenge_level, question_types)
     response = await get_ai_response([
         {"role": "system", "content": CHALLENGE_SYSTEM_PROMPT},
         {"role": "user", "content": prompt},
     ])
-    if not response:
-        logger.warning(f"AI returned empty response for {subject}")
-        return []
+    if response:
+        try:
+            response = response.strip()
+            if response.startswith("```json"):
+                response = response[7:]
+            elif response.startswith("```"):
+                response = response[3:]
+            if response.endswith("```"):
+                response = response[:-3]
+            response = response.strip()
+            batch_questions = json.loads(response)
+            if not isinstance(batch_questions, list):
+                batch_questions = []
 
-    try:
-        response = response.strip()
-        if response.startswith("```json"):
-            response = response[7:]
-        elif response.startswith("```"):
-            response = response[3:]
-        if response.endswith("```"):
-            response = response[:-3]
-        response = response.strip()
-        questions = json.loads(response)
-        if not isinstance(questions, list):
-            logger.warning(f"AI response for {subject} is not a list: {type(questions)}")
-            return []
-        return questions
-    except Exception as e:
-        logger.error(f"Failed to parse AI response for {subject}: {e}")
-        return []
+            # Validate each question against its expected type
+            valid_questions = []
+            invalid_indices = []
+            for i, q in enumerate(batch_questions[:6]):
+                expected_type = question_types[i] if i < len(question_types) else "mcq"
+                # Ensure type matches what Atlas assigned
+                q["question_type"] = expected_type
+                if not q.get("id"):
+                    q["id"] = f"{subject.lower().replace(' ', '_')}_{i + 1}"
+
+                valid, error = _validate_question_structure(q)
+                if valid:
+                    valid_questions.append(q)
+                else:
+                    logger.warning(f"Batch Q{i + 1} ({expected_type}) invalid: {error}")
+                    invalid_indices.append(i)
+
+            if invalid_indices:
+                # ── 2. Regenerate invalid questions individually ────────
+                logger.info(f"Regenerating {len(invalid_indices)} invalid questions for {subject}")
+                gen_tasks = []
+                for idx in invalid_indices:
+                    gen_tasks.append(
+                        _generate_single_question(
+                            subject, shs_level, challenge_level,
+                            question_types[idx], idx,
+                        )
+                    )
+                regenerated = await asyncio.gather(*gen_tasks)
+
+                # Insert regenerated questions at correct positions
+                result_questions = list(batch_questions[:6])
+                for idx, new_q in zip(invalid_indices, regenerated):
+                    if new_q:
+                        result_questions[idx] = new_q
+                    # If still failed, we keep the invalid one (better than nothing)
+
+                # Final validation pass
+                validated = []
+                for q in result_questions[:6]:
+                    expected_type = question_types[len(validated)]
+                    q["question_type"] = expected_type
+                    v, _ = _validate_question_structure(q)
+                    if v:
+                        validated.append(q)
+                    else:
+                        # Keep it anyway as last resort
+                        validated.append(q)
+                if len(validated) >= 4:
+                    return validated[:6]
+
+            if len(valid_questions) >= 4:
+                return valid_questions[:6]
+
+        except Exception as e:
+            logger.error(f"Failed to parse batch AI response for {subject}: {e}")
+
+    # ── 3. Fallback: generate each question individually ───────────────────
+    logger.info(f"Generating questions individually for {subject}")
+    tasks = [
+        _generate_single_question(subject, shs_level, challenge_level, qtype, i)
+        for i, qtype in enumerate(question_types)
+    ]
+    results = await asyncio.gather(*tasks)
+
+    # Filter out None (failed) questions
+    questions = [q for q in results if q is not None]
+
+    # If we still don't have enough, pad with fallback
+    if len(questions) < 6:
+        logger.warning(f"Only generated {len(questions)} valid questions for {subject}; will pad with fallback")
+
+    return questions[:6]
+
+
+def _get_rotation_for_subject(subject: str) -> list[str]:
+    """Pick a rotation for the subject based on today's date + subject name."""
+    idx = _get_subject_rotation_index(subject)
+    return QUESTION_TYPE_ROTATIONS[idx]
 
 
 async def generate_subject_questions(
@@ -367,18 +543,26 @@ async def generate_subject_questions(
 ) -> list:
     """Generate 6 questions for a subject. Tries AI first, falls back to hardcoded."""
     ai_questions = await _call_ai_for_subject(subject, shs_level, challenge_level)
-    if len(ai_questions) >= 6:
-        logger.info(f"AI generated {len(ai_questions)} questions for {subject}")
+
+    # Count valid questions
+    valid_count = sum(1 for q in ai_questions if q and q.get("question"))
+    if valid_count >= 4:
+        logger.info(f"AI generated {valid_count} valid questions for {subject}")
+        # Pad with fallback if less than 6
+        if len(ai_questions) < 6:
+            fallback = list(FALLBACK_QUESTIONS.get(subject, []))
+            while len(ai_questions) < 6 and fallback:
+                fb = fallback.pop(0)
+                ai_questions.append(fb)
         return ai_questions[:6]
 
     # Fallback: use hardcoded questions
-    logger.info(f"Using fallback questions for {subject} (AI returned {len(ai_questions)})")
+    logger.info(f"Using fallback questions for {subject} (AI returned {valid_count} valid)")
     fallback = FALLBACK_QUESTIONS.get(subject, [])
     if not fallback:
         logger.error(f"No fallback questions for {subject}")
         return []
 
-    # Shuffle fallback questions for variety, but keep deterministic enough
     shuffled = list(fallback)
     random.shuffle(shuffled)
     return shuffled[:6]
@@ -390,13 +574,7 @@ async def start_challenge_session(
     shs_level: str,
     challenge_level: int = 1,
 ) -> dict:
-    """
-    Start a new Challenge Hub session.
-    Generates all 24 questions (6 per subject) in parallel via AI.
-    Creates a DB record and returns session data for the frontend.
-    Returns instant fallback questions while AI generates in background.
-    """
-    # Create DB record
+    """Start a new Challenge Hub session."""
     db_session = ChallengeSession(
         user_id=user_id,
         challenge_level=challenge_level,
@@ -408,44 +586,37 @@ async def start_challenge_session(
 
     session_id = str(db_session.id)
 
-    # Try to generate all 4 subjects in parallel via AI
-    subjects_data = {}
-    try:
-        tasks = [
-            generate_subject_questions(subject, shs_level, challenge_level)
-            for subject in CORE_SUBJECTS
-        ]
-        results = await asyncio.gather(*tasks, return_exceptions=True)
-
-        for i, subject in enumerate(CORE_SUBJECTS):
-            result = results[i]
-            if isinstance(result, Exception):
-                logger.warning(f"Failed to generate {subject}: {result}")
+    async def _gen_one(subject: str) -> tuple:
+        try:
+            result = await generate_subject_questions(subject, shs_level, challenge_level)
+            if not result:
+                logger.warning(f"AI returned no questions for {subject}; using fallback.")
                 result = FALLBACK_QUESTIONS.get(subject, [])
-            subjects_data[subject] = result
-    except Exception as e:
-        logger.error(f"Critical error in question generation: {e}")
-        for subject in CORE_SUBJECTS:
-            subjects_data[subject] = FALLBACK_QUESTIONS.get(subject, [])
+        except Exception as e:
+            logger.warning(f"Failed to generate {subject}: {e}")
+            result = FALLBACK_QUESTIONS.get(subject, [])
+        return subject, result
 
-    # Build the full question list for all subjects
+    subjects_data = {}
+    results = await asyncio.gather(
+        *[_gen_one(s) for s in CORE_SUBJECTS],
+        return_exceptions=True,
+    )
+    for r in results:
+        if isinstance(r, Exception):
+            logger.warning(f"Subject generation raised: {r}")
+            continue
+        subject, data = r
+        subjects_data[subject] = data
+
     all_questions = {}
     for subject in CORE_SUBJECTS:
         questions = subjects_data.get(subject, [])
-        # Ensure exactly 6 questions, properly formatted
         formatted = []
         for i, q in enumerate(questions[:6]):
-            formatted.append({
-                "id": q.get("id", f"{subject.lower().replace(' ', '_')}_{i+1}"),
-                "question": q.get("question", ""),
-                "options": q.get("options", {"A": "", "B": "", "C": "", "D": ""}),
-                "correct_answer": q.get("correct_answer", "A"),
-                "question_type": q.get("question_type", "mcq"),
-                "explanation": q.get("explanation", ""),
-            })
+            formatted.append(_format_question(q, subject, i))
         all_questions[subject] = formatted
 
-    # Store in-memory session
     _challenge_sessions[session_id] = {
         "session_id": session_id,
         "db_session_id": db_session.id,
@@ -456,14 +627,13 @@ async def start_challenge_session(
         "current_subject_index": 0,
         "current_question_index": 0,
         "questions": all_questions,
-        "responses": {},  # subject -> list of response dicts
+        "responses": {},
         "total_xp": 0,
         "correct_count": 0,
         "wrong_count": 0,
         "started_at": datetime.now(timezone.utc).isoformat(),
     }
 
-    # Return first question data to frontend
     first_subject = CORE_SUBJECTS[0]
     first_questions = all_questions.get(first_subject, [])
 
@@ -476,8 +646,39 @@ async def start_challenge_session(
         "current_question_index": 0,
         "questions": first_questions,
         "total_xp": 0,
-        "timer_seconds": TIMER_SECONDS.get(challenge_level, 120),
+        "timer_seconds": TIMER_SECONDS.get(challenge_level, 180),
     }
+
+
+def _format_question(q: dict, subject: str, index: int) -> dict:
+    """Normalise a question dict into the standard format for the frontend."""
+    qtype = q.get("question_type", "mcq")
+    formatted = {
+        "id": q.get("id", f"{subject.lower().replace(' ', '_')}_{index + 1}"),
+        "question": q.get("question", ""),
+        "question_type": qtype,
+        "explanation": q.get("explanation", ""),
+    }
+
+    if qtype in ("mcq", "scenario", "true-false"):
+        formatted["options"] = q.get("options", {"A": "", "B": "", "C": "", "D": ""})
+        formatted["correct_answer"] = q.get("correct_answer", "")
+    elif qtype in ("fill-blank", "short-answer"):
+        formatted["options"] = None
+        formatted["correct_answer"] = q.get("correct_answer", "")
+    elif qtype == "matching":
+        formatted["left_items"] = q.get("left_items", [])
+        formatted["right_items"] = q.get("right_items", [])
+        formatted["correct_matches"] = q.get("correct_matches", {})
+        formatted["correct_answer"] = json.dumps(q.get("correct_matches", {}), sort_keys=True)
+        formatted["options"] = None
+    elif qtype == "order":
+        formatted["items"] = q.get("items", [])
+        formatted["correct_order"] = q.get("correct_order", [])
+        formatted["correct_answer"] = json.dumps(q.get("correct_order", []))
+        formatted["options"] = None
+
+    return formatted
 
 
 def get_current_subject_index(session_id: str) -> int | None:
@@ -511,7 +712,7 @@ def get_current_questions(session_id: str, subject_index: int) -> dict | None:
         "subject": subject,
         "subject_index": subject_index,
         "questions": questions,
-        "timer_seconds": TIMER_SECONDS.get(session["challenge_level"], 120),
+        "timer_seconds": TIMER_SECONDS.get(session["challenge_level"], 180),
     }
 
 
@@ -522,7 +723,8 @@ def submit_answer(
     user_answer: str,
     time_taken_seconds: float,
 ) -> dict | None:
-    """Submit an answer, calculate XP, return feedback."""
+    """Submit an answer, calculate XP, return feedback.
+    Handles all question types for comparison."""
     session = _challenge_sessions.get(session_id)
     if not session:
         return None
@@ -533,7 +735,39 @@ def submit_answer(
 
     question = questions[question_index]
     correct_answer = question.get("correct_answer", "")
-    is_correct = user_answer.strip().upper() == correct_answer.strip().upper()
+    qtype = question.get("question_type", "mcq")
+
+    # ── Determine if answer is correct based on question type ────────────
+    is_correct = False
+    try:
+        if qtype in ("mcq", "scenario", "true-false"):
+            # Compare letter keys
+            is_correct = user_answer.strip().upper() == correct_answer.strip().upper()
+
+        elif qtype in ("fill-blank", "short-answer"):
+            # Case-insensitive text comparison, trimmed
+            is_correct = user_answer.strip().lower() == correct_answer.strip().lower()
+
+        elif qtype == "matching":
+            # Compare JSON objects
+            try:
+                user_matches = json.loads(user_answer)
+                correct_matches = json.loads(correct_answer)
+                is_correct = user_matches == correct_matches
+            except (json.JSONDecodeError, TypeError):
+                is_correct = False
+
+        elif qtype == "order":
+            # Compare JSON arrays
+            try:
+                user_order = json.loads(user_answer)
+                correct_order = json.loads(correct_answer)
+                is_correct = user_order == correct_order
+            except (json.JSONDecodeError, TypeError):
+                is_correct = False
+    except Exception as e:
+        logger.warning(f"Answer comparison error for type {qtype}: {e}")
+        is_correct = False
 
     xp_change = XP_CORRECT if is_correct else XP_WRONG
     session["total_xp"] += xp_change
@@ -548,7 +782,7 @@ def submit_answer(
     session["responses"][subject].append({
         "question_index": question_index,
         "question_text": question.get("question", ""),
-        "question_type": question.get("question_type", "mcq"),
+        "question_type": qtype,
         "user_answer": user_answer,
         "correct_answer": correct_answer,
         "is_correct": is_correct,
@@ -563,12 +797,17 @@ def submit_answer(
     current_subject_idx = CORE_SUBJECTS.index(subject)
     next_subject = None
     session_complete = False
+    level_complete = False
 
     if subject_complete:
         next_idx = current_subject_idx + 1
         if next_idx >= len(CORE_SUBJECTS):
-            session_complete = True
-            session["status"] = "completed"
+            if session["challenge_level"] >= 3:
+                session_complete = True
+                session["status"] = "completed"
+            else:
+                level_complete = True
+                session["status"] = "level_complete"
         else:
             next_subject = CORE_SUBJECTS[next_idx]
             session["current_subject_index"] = next_idx
@@ -580,6 +819,7 @@ def submit_answer(
         "explanation": question.get("explanation", ""),
         "xp_earned": xp_change,
         "subject_complete": subject_complete,
+        "level_complete": level_complete,
         "session_complete": session_complete,
         "next_subject": next_subject,
         "total_xp": session["total_xp"],
@@ -587,26 +827,99 @@ def submit_answer(
     }
 
 
-async def complete_session(
-    db: AsyncSession, user_id, session_id: str
+async def continue_challenge_level(
+    db: AsyncSession,
+    user_id,
+    session_id: str,
 ) -> dict:
-    """
-    Finalise a challenge session:
-    1. Save all response data to DB
-    2. Update user XP
-    3. Calculate summary
-    4. Return full summary
-    """
+    """Generate the next challenge level's 24 questions when the student chooses to continue."""
     session = _challenge_sessions.get(session_id)
     if not session:
         return {"error": "Session not found"}
 
-    # Get the DB session record
+    if session["user_id"] != user_id:
+        return {"error": "Unauthorized"}
+
+    if session["status"] != "level_complete":
+        return {"error": "Current level is not ready to continue"}
+
+    if session["challenge_level"] >= 3:
+        return {"error": "No further challenge levels available"}
+
+    next_level = session["challenge_level"] + 1
     db_session = await db.get(ChallengeSession, session["db_session_id"])
     if not db_session:
         return {"error": "DB session not found"}
 
-    # Save all responses to DB
+    db_session.challenge_level = next_level
+    await db.commit()
+    await db.refresh(db_session)
+
+    session["challenge_level"] = next_level
+    session["status"] = "in_progress"
+    session["current_subject_index"] = 0
+    session["current_question_index"] = 0
+
+    async def _gen_one(subject: str) -> tuple:
+        try:
+            result = await generate_subject_questions(subject, session["shs_level"], next_level)
+            if not result:
+                logger.warning(f"AI returned no questions for {subject} on level {next_level}; using fallback.")
+                result = FALLBACK_QUESTIONS.get(subject, [])
+        except Exception as e:
+            logger.warning(f"Failed to generate {subject} for level {next_level}: {e}")
+            result = FALLBACK_QUESTIONS.get(subject, [])
+        return subject, result
+
+    subjects_data = {}
+    results = await asyncio.gather(
+        *[_gen_one(s) for s in CORE_SUBJECTS],
+        return_exceptions=True,
+    )
+    for r in results:
+        if isinstance(r, Exception):
+            logger.warning(f"Subject generation raised: {r}")
+            continue
+        subject, data = r
+        subjects_data[subject] = data
+
+    all_questions = {}
+    for subject in CORE_SUBJECTS:
+        questions = subjects_data.get(subject, [])
+        formatted = []
+        for i, q in enumerate(questions[:6]):
+            formatted.append(_format_question(q, subject, i))
+        all_questions[subject] = formatted
+
+    session["questions"] = all_questions
+
+    first_subject = CORE_SUBJECTS[0]
+    first_questions = all_questions.get(first_subject, [])
+
+    return {
+        "session_id": session_id,
+        "challenge_level": next_level,
+        "current_subject": first_subject,
+        "current_subject_index": 0,
+        "current_question_index": 0,
+        "questions": first_questions,
+        "total_xp": session["total_xp"],
+        "timer_seconds": TIMER_SECONDS.get(next_level, 180),
+    }
+
+
+async def complete_session(
+    db: AsyncSession, user_id, session_id: str
+) -> dict:
+    """Finalise a challenge session: save to DB, update XP, return summary."""
+    session = _challenge_sessions.get(session_id)
+    if not session:
+        return {"error": "Session not found"}
+
+    db_session = await db.get(ChallengeSession, session["db_session_id"])
+    if not db_session:
+        return {"error": "DB session not found"}
+
     saved_count = 0
     for subject, responses in session["responses"].items():
         questions = session["questions"].get(subject, [])
@@ -631,23 +944,19 @@ async def complete_session(
             db.add(db_resp)
             saved_count += 1
 
-    # Update session record
     db_session.status = "completed"
     db_session.total_xp = session["total_xp"]
     db_session.correct_count = session["correct_count"]
     db_session.wrong_count = session["wrong_count"]
     db_session.completed_at = datetime.now(timezone.utc)
 
-    # Update user XP
     user = await db.get(User, user_id)
     if user:
-        # Ensure XP doesn't go below 0
         new_xp = max(0, (user.xp or 0) + session["total_xp"])
         user.xp = new_xp
 
     await db.commit()
 
-    # Calculate summary
     total_answered = session["correct_count"] + session["wrong_count"]
     accuracy = round((session["correct_count"] / total_answered * 100)) if total_answered > 0 else 0
 
@@ -664,12 +973,9 @@ async def complete_session(
             "xp": sum(r["xp_earned"] for r in responses),
         })
 
-    # Determine strongest/weakest
     sorted_perf = sorted(subject_performance, key=lambda x: x["accuracy"], reverse=True)
     strongest = sorted_perf[0]["subject"] if sorted_perf else ""
     weakest = sorted_perf[-1]["subject"] if sorted_perf else ""
-
-    # Weak topics = subjects with < 60% accuracy
     weak_topics = [s["subject"] for s in sorted_perf if s["accuracy"] < 60]
 
     summary = {
@@ -685,9 +991,6 @@ async def complete_session(
         "subject_performance": subject_performance,
         "subjects_completed": len(CORE_SUBJECTS),
     }
-
-    # Clean up in-memory session after some time (but keep it for now)
-    # _challenge_sessions.pop(session_id, None)
 
     return summary
 
@@ -728,3 +1031,203 @@ def get_session_summary(session_id: str) -> dict | None:
         "weak_topics": [s["subject"] for s in sorted_perf if s["accuracy"] < 60],
         "subject_performance": subject_performance,
     }
+
+
+# ══════════════════════════════════════════════════════════════════════════
+#  FALLBACK QUESTIONS — each subject has 6+ varied-type fallback questions
+# ══════════════════════════════════════════════════════════════════════════
+
+FALLBACK_QUESTIONS = {
+    "Core Mathematics": [
+        {
+            "id": "ch_math_fb_1",
+            "question": "What is the value of 3² + 4²?",
+            "options": {"A": "7", "B": "12", "C": "25", "D": "49"},
+            "correct_answer": "C",
+            "question_type": "mcq",
+            "explanation": "3² = 9 and 4² = 16. 9 + 16 = 25.",
+        },
+        {
+            "id": "ch_math_fb_2",
+            "question": "The sum of angles in a triangle is ______ degrees.",
+            "correct_answer": "180",
+            "question_type": "fill-blank",
+            "explanation": "The interior angles of any triangle always sum to 180°.",
+        },
+        {
+            "id": "ch_math_fb_3",
+            "question": "The gradient of a horizontal line is zero.",
+            "options": {"A": "True", "B": "False"},
+            "correct_answer": "A",
+            "question_type": "true-false",
+            "explanation": "A horizontal line has no vertical change, so its gradient (slope) is 0.",
+        },
+        {
+            "id": "ch_math_fb_4",
+            "question": "What is the formula for the area of a circle?",
+            "correct_answer": "πr²",
+            "question_type": "short-answer",
+            "explanation": "The area of a circle is π times the radius squared (πr²).",
+        },
+        {
+            "id": "ch_math_fb_5",
+            "question": "A bag contains 3 red, 5 blue, and 2 green marbles. What is the probability of picking a blue marble?",
+            "options": {"A": "1/2", "B": "1/3", "C": "3/10", "D": "2/5"},
+            "correct_answer": "A",
+            "question_type": "mcq",
+            "explanation": "Total marbles = 3 + 5 + 2 = 10. Blue marbles = 5. Probability = 5/10 = 1/2.",
+        },
+        {
+            "id": "ch_math_fb_6",
+            "question": "A student scored 45 out of 60 in a test. She wants to know her percentage score.",
+            "options": {"A": "65%", "B": "70%", "C": "75%", "D": "80%"},
+            "correct_answer": "C",
+            "question_type": "scenario",
+            "explanation": "Percentage = (45/60) × 100 = 75%.",
+        },
+    ],
+    "English Language": [
+        {
+            "id": "ch_eng_fb_1",
+            "question": "Identify the figure of speech: 'The wind whispered through the trees.'",
+            "options": {"A": "Simile", "B": "Metaphor", "C": "Personification", "D": "Hyperbole"},
+            "correct_answer": "C",
+            "question_type": "mcq",
+            "explanation": "The wind is given the human action of whispering — this is personification.",
+        },
+        {
+            "id": "ch_eng_fb_2",
+            "question": "She has been studying ______ three hours.",
+            "correct_answer": "for",
+            "question_type": "fill-blank",
+            "explanation": "'For' is used with a duration of time. 'Since' is used with a specific point in time.",
+        },
+        {
+            "id": "ch_eng_fb_3",
+            "question": "An adverb modifies a verb, adjective, or another adverb.",
+            "options": {"A": "True", "B": "False"},
+            "correct_answer": "A",
+            "question_type": "true-false",
+            "explanation": "Adverbs modify verbs (run quickly), adjectives (very tall), or other adverbs (quite easily).",
+        },
+        {
+            "id": "ch_eng_fb_4",
+            "question": "What is the past tense of 'go'?",
+            "correct_answer": "went",
+            "question_type": "short-answer",
+            "explanation": "'Go' is an irregular verb — its past tense is 'went'.",
+        },
+        {
+            "id": "ch_eng_fb_5",
+            "question": "Which word is a synonym for 'benevolent'?",
+            "options": {"A": "Malevolent", "B": "Kind", "C": "Hostile", "D": "Indifferent"},
+            "correct_answer": "B",
+            "question_type": "mcq",
+            "explanation": "'Benevolent' means well-meaning and kindly — 'kind' is its synonym.",
+        },
+        {
+            "id": "ch_eng_fb_6",
+            "question": "The old man sat quietly by the window, watching the rain fall. The mood created in this passage is one of:",
+            "options": {"A": "Excitement", "B": "Tranquility", "C": "Anger", "D": "Confusion"},
+            "correct_answer": "B",
+            "question_type": "scenario",
+            "explanation": "Words like 'quietly' and 'watching the rain fall' convey a peaceful, tranquil mood.",
+        },
+    ],
+    "Integrated Science": [
+        {
+            "id": "ch_sci_fb_1",
+            "question": "Which organelle is known as the 'powerhouse of the cell'?",
+            "options": {"A": "Nucleus", "B": "Ribosome", "C": "Mitochondrion", "D": "Golgi apparatus"},
+            "correct_answer": "C",
+            "question_type": "mcq",
+            "explanation": "Mitochondria generate most of the cell's ATP through cellular respiration — hence 'powerhouse'.",
+        },
+        {
+            "id": "ch_sci_fb_2",
+            "question": "The boiling point of water at sea level is ______ °C.",
+            "correct_answer": "100",
+            "question_type": "fill-blank",
+            "explanation": "Water boils at 100°C (212°F) at standard atmospheric pressure at sea level.",
+        },
+        {
+            "id": "ch_sci_fb_3",
+            "question": "Sound travels faster in air than in water.",
+            "options": {"A": "True", "B": "False"},
+            "correct_answer": "B",
+            "question_type": "true-false",
+            "explanation": "Sound travels faster in denser media — about 4.3× faster in water than in air.",
+        },
+        {
+            "id": "ch_sci_fb_4",
+            "question": "What gas do plants absorb during photosynthesis?",
+            "correct_answer": "Carbon dioxide",
+            "question_type": "short-answer",
+            "explanation": "Plants absorb carbon dioxide (CO₂) from the atmosphere and convert it into glucose and oxygen using sunlight.",
+        },
+        {
+            "id": "ch_sci_fb_5",
+            "question": "Which nutrient is the body's primary source of energy?",
+            "options": {"A": "Protein", "B": "Carbohydrate", "C": "Fat", "D": "Vitamin"},
+            "correct_answer": "B",
+            "question_type": "mcq",
+            "explanation": "Carbohydrates are broken down into glucose, which is the body's main energy source.",
+        },
+        {
+            "id": "ch_sci_fb_6",
+            "question": "A plant is placed in a dark room for a week. What will most likely happen?",
+            "options": {"A": "It grows faster", "B": "It turns yellow", "C": "It flowers", "D": "No change"},
+            "correct_answer": "B",
+            "question_type": "scenario",
+            "explanation": "Without light, chlorophyll breaks down and the plant cannot photosynthesise, causing it to turn yellow (etiolation).",
+        },
+    ],
+    "Social Studies": [
+        {
+            "id": "ch_sst_fb_1",
+            "question": "Which of the following is NOT a function of government?",
+            "options": {"A": "Providing education", "B": "Maintaining law and order", "C": "Setting private business prices", "D": "Defending the country"},
+            "correct_answer": "C",
+            "question_type": "mcq",
+            "explanation": "In a market economy, the government does not set private business prices — that's determined by supply and demand.",
+        },
+        {
+            "id": "ch_sst_fb_2",
+            "question": "Ghana's system of government is modelled after the ______ system.",
+            "correct_answer": "Presidential",
+            "question_type": "fill-blank",
+            "explanation": "Ghana operates a presidential system of government with an elected President as both Head of State and Government.",
+        },
+        {
+            "id": "ch_sst_fb_3",
+            "question": "Democracy means 'rule by the people'.",
+            "options": {"A": "True", "B": "False"},
+            "correct_answer": "A",
+            "question_type": "true-false",
+            "explanation": "Democracy comes from Greek 'demos' (people) and 'kratos' (rule) — literally 'rule by the people'.",
+        },
+        {
+            "id": "ch_sst_fb_4",
+            "question": "What is the main cause of deforestation in Ghana?",
+            "correct_answer": "Illegal logging and agriculture",
+            "question_type": "short-answer",
+            "explanation": "Illegal logging (galamsey) and expansion of agriculture (especially cocoa farming) are the primary causes of deforestation in Ghana.",
+        },
+        {
+            "id": "ch_sst_fb_5",
+            "question": "What is the main purpose of the United Nations?",
+            "options": {"A": "To control global trade", "B": "To maintain international peace and security", "C": "To set education standards", "D": "To create world laws"},
+            "correct_answer": "B",
+            "question_type": "mcq",
+            "explanation": "The UN's primary purpose is maintaining international peace and security.",
+        },
+        {
+            "id": "ch_sst_fb_6",
+            "question": "Which right allows citizens to vote in elections?",
+            "options": {"A": "Economic right", "B": "Political right", "C": "Social right", "D": "Cultural right"},
+            "correct_answer": "B",
+            "question_type": "mcq",
+            "explanation": "The right to vote is a fundamental political right that enables citizens to participate in choosing their leaders.",
+        },
+    ],
+}
