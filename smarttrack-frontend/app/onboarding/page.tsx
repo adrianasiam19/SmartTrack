@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
-import { getAccessToken } from '../lib/authApi';
+import { getAccessToken, getCurrentUser, getStoredUser, resolvePostAuthDestination } from '../lib/authApi';
 
 import ScreenOnboarding1 from './components/ScreenOnboarding1';
 import ScreenOnboarding2 from './components/ScreenOnboarding2';
@@ -62,6 +62,20 @@ export default function OnboardingPage() {
       try {
         if (!getAccessToken()) {
           router.push('/login');
+          return;
+        }
+        const cached = getStoredUser();
+        if (cached) {
+          const cachedDestination = resolvePostAuthDestination(cached);
+          if (cachedDestination !== '/onboarding') {
+            router.replace(cachedDestination);
+            return;
+          }
+        }
+        const fresh = await getCurrentUser();
+        const destination = resolvePostAuthDestination(fresh);
+        if (destination !== '/onboarding') {
+          router.replace(destination);
           return;
         }
       } catch {

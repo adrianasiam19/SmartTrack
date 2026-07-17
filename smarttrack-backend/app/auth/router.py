@@ -71,6 +71,7 @@ async def register(body: schemas.RegisterRequest, db: AsyncSession = Depends(get
         shs_level=body.shs_level,
         school=body.school,
         onboarding_completed=False,
+        starter_arena_completed=False,
         # Initialize gamification stats
         xp=0,
         rank="Beginner",

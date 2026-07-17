@@ -34,6 +34,10 @@ class User(Base):
     onboarding_completed: Mapped[bool] = mapped_column(
         Boolean, default=False, nullable=False
     )
+    # True only after the one-time Starter Arena assessment finishes.
+    starter_arena_completed: Mapped[bool] = mapped_column(
+        Boolean, default=False, nullable=False
+    )
 
     # ── Gamification ──────────────────────────────────────────────────────────
     xp: Mapped[int] = mapped_column(Integer, default=0, nullable=False)

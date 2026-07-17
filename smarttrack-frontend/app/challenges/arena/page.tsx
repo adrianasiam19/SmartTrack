@@ -164,33 +164,71 @@ function ChallengeArena() {
   ];
 
   useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const cached = getStoredUser();
+        if (cached) setUser(cached);
+        if (!getAccessToken()) { router.push('/login'); return; }
+        const fresh = await getCurrentUser();
+        setUser(fresh);
+
+        // Returning users who already finished Starter Arena should never
+        // be forced through placement mode again.
+        if (isPlacement && fresh.starter_arena_completed) {
+          router.replace('/dashboard');
+        }
+      } catch { router.push('/login'); }
+    };
+    loadUser();
+  }, [router, isPlacement]);
+
+  // Persist one-time Starter Arena completion before leaving placement mode.
+  const markStarterArenaComplete = useCallback(async () => {
+    const cached = getStoredUser();
+    if (cached) {
+      storeUser({
+        ...cached,
+        onboarding_completed: true,
+        starter_arena_completed: true,
+      });
+      setUser({
+        ...cached,
+        onboarding_completed: true,
+        starter_arena_completed: true,
+      });
+    }
+    try {
+      const updated = await updateUserProfile({
+        onboarding_completed: true,
+        starter_arena_completed: true,
+      });
+      setUser(updated);
+    } catch {
+      // Backend /starter-arena/complete also sets these flags as a safety net.
+    }
+  }, []);
+
+  useEffect(() => {
     if (isPlacement && phase === 'complete') {
       // Generate learner profile
       if (psychResponses.length > 0 || academicResponses.length > 0) {
         setProfileLoading(true);
         completeStarterArena(starterSessionId, psychResponses, academicResponses)
-          .then((result) => {
+          .then(async (result) => {
             if (result.success && result.profile) {
               setLearnerProfile(result.profile);
             }
+            await markStarterArenaComplete();
           })
-          .catch(() => {})
+          .catch(async () => {
+            await markStarterArenaComplete();
+          })
           .finally(() => setProfileLoading(false));
+      } else {
+        markStarterArenaComplete();
       }
-
-      // Optimistically update local state first
-      const cached = getStoredUser();
-      if (cached) {
-        const updated = { ...cached, onboarding_completed: true };
-        storeUser(updated);
-        setUser(updated);
-      }
-      // Attempt to persist to backend
-      updateUserProfile({ onboarding_completed: true }).catch(() => {
-        // Non-critical — local state is already updated
-      });
     }
-  }, [isPlacement, phase, router, starterSessionId, psychResponses, academicResponses]);
+  }, [isPlacement, phase, starterSessionId, psychResponses, academicResponses, markStarterArenaComplete]);
 
   // For placement: use actual count from API (defaults to 12 if not available yet)
   const MAX_QUESTIONS = isPlacement ? (session.totalQuestions || 12) : 10;
@@ -204,19 +242,6 @@ function ChallengeArena() {
       return '';
     }
   };
-
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const cached = getStoredUser();
-        if (cached) setUser(cached);
-        if (!getAccessToken()) { router.push('/login'); return; }
-        const fresh = await getCurrentUser();
-        setUser(fresh);
-      } catch { router.push('/login'); }
-    };
-    loadUser();
-  }, [router]);
 
   const isLogicArena = category === 'logic-arena';
   const isScientificArena = category === 'scientific-thinking';
@@ -477,18 +502,18 @@ function ChallengeArena() {
         });
     }
 
-    const handleAdvance = () => {
+    const handleAdvance = async () => {
       if (isLastQuestion) {
         if (isPlacement) {
-          // Auto-redirect to dashboard — save profile in background
-          const cached = getStoredUser();
-          if (cached) {
-            storeUser({ ...cached, onboarding_completed: true });
-          }
-          updateUserProfile({ onboarding_completed: true }).catch(() => {});
+          // Persist completion flags before leaving so the next login skips this flow.
+          await markStarterArenaComplete();
           // Use refs for latest response data (state might be stale in closure)
-          completeStarterArena(starterSessionId, psychResponsesRef.current, academicResponsesRef.current).catch(() => {});
-          router.push('/dashboard');
+          completeStarterArena(
+            starterSessionId,
+            psychResponsesRef.current,
+            academicResponsesRef.current,
+          ).catch(() => {});
+          router.replace('/dashboard');
         } else {
           const avgTime = responseTimesRef.current.length > 0
             ? responseTimesRef.current.reduce((a, b) => a + b, 0) / responseTimesRef.current.length
