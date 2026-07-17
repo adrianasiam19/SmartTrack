@@ -302,12 +302,14 @@ def _validate_question_structure(question: dict) -> tuple[bool, str]:
         if not options or not isinstance(options, dict):
             return False, "'true-false' requires 'options' as a dict with exactly 'A' and 'B'"
         if "A" not in options or "B" not in options or len(options) != 2:
-            return False, "'true-false' options must be exactly {{'A': 'True', 'B': 'False'}}"
-        # Normalise values if needed
+            return False, "'true-false' options must be exactly {'A': 'True', 'B': 'False'}"
+        # ENFORCE that A = True and B = False (frontend hardcodes this mapping)
         opt_a = str(options.get("A", "")).lower()
         opt_b = str(options.get("B", "")).lower()
-        if "true" not in opt_a and "true" not in opt_b:
-            return False, "'true-false' options must include 'True' and 'False' as values"
+        if "true" not in opt_a:
+            return False, "'true-false' option A must contain 'True', got '" + str(options.get("A", "")) + "'"
+        if "false" not in opt_b:
+            return False, "'true-false' option B must contain 'False', got '" + str(options.get("B", "")) + "'"
         if question["correct_answer"] not in ("A", "B"):
             return False, "'true-false' correct_answer must be 'A' or 'B'"
 
@@ -660,9 +662,23 @@ def _format_question(q: dict, subject: str, index: int) -> dict:
         "explanation": q.get("explanation", ""),
     }
 
-    if qtype in ("mcq", "scenario", "true-false"):
+    if qtype in ("mcq", "scenario"):
         formatted["options"] = q.get("options", {"A": "", "B": "", "C": "", "D": ""})
         formatted["correct_answer"] = q.get("correct_answer", "")
+    elif qtype == "true-false":
+        # Normalise: guarantee A="True", B="False" and adjust correct_answer
+        raw_opts = q.get("options", {})
+        raw_answer = q.get("correct_answer", "A")
+        opt_a = str(raw_opts.get("A", "")).lower()
+        opt_b = str(raw_opts.get("B", "")).lower()
+        if "true" in opt_b and "false" in opt_a:
+            # AI swapped them: B is True, A is False → swap back
+            formatted["options"] = {"A": "True", "B": "False"}
+            formatted["correct_answer"] = "A" if raw_answer.upper() == "B" else "B"
+        else:
+            # Already correct
+            formatted["options"] = {"A": "True", "B": "False"}
+            formatted["correct_answer"] = raw_answer.upper() if raw_answer.upper() in ("A", "B") else "A"
     elif qtype in ("fill-blank", "short-answer"):
         formatted["options"] = None
         formatted["correct_answer"] = q.get("correct_answer", "")
@@ -1132,6 +1148,25 @@ FALLBACK_QUESTIONS = {
             "correct_answer": "B",
             "question_type": "scenario",
             "explanation": "Words like 'quietly' and 'watching the rain fall' convey a peaceful, tranquil mood.",
+        },
+        {
+            "id": "ch_eng_fb_7",
+            "question": "Match each literary device to its correct definition.",
+            "left_items": ["Simile", "Metaphor", "Personification", "Alliteration"],
+            "right_items": ["Giving human qualities to non-human things", "Using 'like' or 'as' to compare", "Same starting sound in nearby words", "Direct comparison without 'like' or 'as'"],
+            "correct_matches": {"0": "1", "1": "3", "2": "0", "3": "2"},
+            "correct_answer": '{"0":"1","1":"3","2":"0","3":"2"}',
+            "question_type": "matching",
+            "explanation": "A simile uses 'like/as', a metaphor is a direct comparison, personification gives human traits to objects, alliteration repeats starting sounds.",
+        },
+        {
+            "id": "ch_eng_fb_8",
+            "question": "Arrange these steps for writing an essay in the correct order.",
+            "items": ["Write the conclusion", "Brainstorm ideas", "Write the introduction", "Write body paragraphs", "Revise and edit"],
+            "correct_order": [1, 2, 4, 3, 0],
+            "correct_answer": "[1, 2, 4, 3, 0]",
+            "question_type": "order",
+            "explanation": "First brainstorm ideas, then write the introduction, then body paragraphs, then conclusion, and finally revise and edit.",
         },
     ],
     "Integrated Science": [
