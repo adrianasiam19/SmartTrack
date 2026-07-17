@@ -1,8 +1,8 @@
 """
-test_gemini_integration.py — Test script for Gemini AI integration
+test_deepseek_integration.py — Test script for DeepSeek AI integration
 
-This script tests the Gemini integration without running the full FastAPI server.
-Run it with: python test_gemini_integration.py
+This script tests the DeepSeek integration without running the full FastAPI server.
+Run it with: python test_deepseek_integration.py
 """
 import asyncio
 import json
@@ -13,7 +13,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 from app.config import settings
-from app.assessment.gemini_service import gemini_generator
+from app.assessment.deepseek_service import deepseek_generator
 
 
 def print_section(title: str):
@@ -41,28 +41,28 @@ def print_result(result: dict):
         print(f"[FAIL] ERROR: {result['error']}")
 
 
-async def test_gemini_integration():
-    """Test the Gemini integration."""
-    print_section("GEMINI AI INTEGRATION TEST")
-    
+async def test_deepseek_integration():
+    """Test the DeepSeek integration."""
+    print_section("DEEPSEEK AI INTEGRATION TEST")
+
     # Check API key configuration
     print("1. Checking Configuration...")
-    if not settings.NVIDIA_API_KEY and not settings.GEMINI_API_KEY:
-        print("[WARN] Neither NVIDIA_API_KEY nor GEMINI_API_KEY is set in .env file")
+    if not settings.NVIDIA_API_KEY and not settings.DEEPSEEK_API_KEY:
+        print("[WARN] Neither NVIDIA_API_KEY nor DEEPSEEK_API_KEY is set in .env file")
         print("       Please add at least one API key to .env and try again\n")
         return False
     else:
         if settings.NVIDIA_API_KEY:
             print("[PASS] NVIDIA_API_KEY is configured")
-        if settings.GEMINI_API_KEY:
-            print("[PASS] GEMINI_API_KEY is configured")
+        if settings.DEEPSEEK_API_KEY:
+            print(f"[PASS] DEEPSEEK_API_KEY is configured (model: {settings.DEEPSEEK_MODEL})")
         print()
-    
+
     # Test parameters validation
     print("2. Testing Parameter Validation...")
-    
+
     # Valid parameters
-    valid_result = gemini_generator.validate_parameters(
+    valid_result = deepseek_generator.validate_parameters(
         category="Logic",
         difficulty="Intermediate",
         programme="General Science"
@@ -72,9 +72,9 @@ async def test_gemini_integration():
     else:
         print(f"[FAIL] Valid parameters rejected: {valid_result[1]}\n")
         return False
-    
+
     # Invalid category
-    invalid_result = gemini_generator.validate_parameters(
+    invalid_result = deepseek_generator.validate_parameters(
         category="InvalidCategory",
         difficulty="Intermediate",
         programme="General Science"
@@ -84,28 +84,28 @@ async def test_gemini_integration():
     else:
         print("[FAIL] Invalid parameters were not rejected\n")
         return False
-    
+
     # Generate a challenge
     print("3. Generating Challenge Question...")
     print("   Category: Logic")
     print("   Difficulty: Intermediate")
     print("   Programme: General Science")
     print("   Concept: Logical reasoning\n")
-    
-    result = await gemini_generator.generate_challenge(
+
+    result = await deepseek_generator.generate_challenge(
         category="Logic",
         difficulty="Intermediate",
         programme="General Science",
         concept="Logical reasoning"
     )
-    
+
     print_result(result)
-    
+
     if result["success"]:
         print("\n" + "=" * 80)
         print("  ALL TESTS PASSED!")
         print("=" * 80)
-        print("\nThe Gemini integration is working correctly!")
+        print("\nThe DeepSeek integration is working correctly!")
         print("\nNext steps:")
         print("1. Start the backend server: python -m uvicorn app.main:app --reload")
         print("2. Test the API endpoint with:")
@@ -126,7 +126,7 @@ async def test_gemini_integration():
 def main():
     """Main test entry point."""
     try:
-        success = asyncio.run(test_gemini_integration())
+        success = asyncio.run(test_deepseek_integration())
         sys.exit(0 if success else 1)
     except Exception as e:
         print(f"\n[FAIL] Unexpected error: {e}")

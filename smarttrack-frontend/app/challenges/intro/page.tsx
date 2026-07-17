@@ -167,19 +167,29 @@ export default function ChallengeIntro() {
               <p className="text-sm text-[#64748B] mb-4">
                 Completing challenges also helps Atlas build a stronger recommendation profile for you.
               </p>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => router.push('/challenges/play')}
-                className="inline-flex px-10 py-4 bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] text-white font-bold text-lg rounded-xl hover:from-[#3B82F6] hover:to-[#2563EB] shadow-lg shadow-[#2563EB]/25 hover:shadow-xl hover:shadow-[#2563EB]/30 transition-all duration-200"
-              >
-                START TODAY&apos;S CHALLENGE
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => router.push('/challenges/atlas')}
-                className="inline-flex px-10 py-4 bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] text-white font-bold text-lg rounded-xl hover:from-[#3B82F6] hover:to-[#2563EB] shadow-lg shadow-[#2563EB]/25 hover:shadow-xl hover:shadow-[#2563EB]/30 transition-all duration-200"
-              >
-                START TODAY'S CHALLENGE
-              </motion.button>
+              <div className="flex justify-center gap-4">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => router.push('/challenges/atlas?autostart=1')}
+                  className="inline-flex px-8 py-3 bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] text-white font-bold text-base rounded-xl hover:from-[#3B82F6] hover:to-[#2563EB] shadow-lg shadow-[#2563EB]/25 hover:shadow-xl hover:shadow-[#2563EB]/30 transition-all duration-200"
+                >
+                  START TODAY'S CHALLENGE
+                </motion.button>
+
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => router.push('/challenges/atlas')}
+                  className="inline-flex px-6 py-3 bg-white border border-[#E2E8F0] text-[#1E293B] font-semibold text-base rounded-xl hover:bg-[#F8FAFF] transition-all duration-150"
+                >
+                  Open Atlas Hub
+                </motion.button>
+              </div>
+            </motion.div>
+          </main>
+        </div>
+      </div>
+    </AppLayout>
+  );
 }

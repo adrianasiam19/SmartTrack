@@ -239,6 +239,51 @@ export const login = async (data: LoginRequest): Promise<AuthTokens> => {
 };
 
 /**
+ * fetchWithAuth — A fetch wrapper that automatically adds the auth header,
+ * handles 401 by refreshing the access token, and retries the original request.
+ *
+ * If the refresh also fails the user is redirected to login.
+ */
+export async function fetchWithAuth(
+  url: string,
+  options: RequestInit = {},
+): Promise<Response> {
+  const doFetch = (token?: string): Promise<Response> => {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+    // Merge any caller-provided headers last so they can override Content-Type
+    if (options.headers) {
+      const callerHeaders = options.headers as Record<string, string>;
+      Object.assign(headers, callerHeaders);
+    }
+    return fetch(url, { ...options, headers });
+  };
+
+  // 1. First attempt with the current access token
+  let token = getAccessToken();
+  let res = await doFetch(token ?? undefined);
+
+  // 2. If 401, try to refresh the token
+  if (res.status === 401 && token) {
+    try {
+      const newToken = await refreshAccessToken();
+      res = await doFetch(newToken);
+    } catch {
+      // Refresh failed — redirect to login
+      if (typeof window !== 'undefined') {
+        clearTokens();
+        window.location.href = '/login';
+      }
+      throw new Error('Session expired. Please log in again.');
+    }
+  }
+
+  return res;
+}
+
+/**
  * Fetch the authenticated user from the backend.
  * The backend is the source of truth — also keeps localStorage in sync.
  */
