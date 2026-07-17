@@ -720,6 +720,17 @@ function ChallengeArena() {
     responseTimesRef.current = [];
     psychometricInProgressRef.current = false;
     psychometricCompletedRef.current = false;
+    setPrefetchedPsychCard(null);
+    setStarterSessionId('');
+    setPsychResponses([]);
+    setAcademicResponses([]);
+    psychResponsesRef.current = [];
+    academicResponsesRef.current = [];
+    setLearnerProfile(null);
+    setProfileLoading(false);
+    setEncouragementMsg('');
+    setShortResponseDraft('');
+    setRankingOrder([]);
   };
 
   const timerPercent = (timeLeft / QUESTION_TIMEOUT) * 100;
