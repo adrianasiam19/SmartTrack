@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import Sidebar from '../../components/Sidebar';
 import BottomNav from '../../components/BottomNav';
 import AppLayout from '../../components/AppLayout';
-import { getAccessToken, getCurrentUser, getStoredUser, fetchWithAuth } from '../../lib/authApi';
+import { getAccessToken, getCurrentUser, getStoredUser, fetchWithAuth, storeUser } from '../../lib/authApi';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
@@ -101,6 +101,10 @@ function AtlasChallengeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const autostart = searchParams.get('autostart') === '1';
+  const requestedLevel = (() => {
+    const raw = Number(searchParams.get('level') || '1');
+    return (raw === 2 || raw === 3 ? raw : 1) as LevelId;
+  })();
 
   const [screen, setScreen] = useState<Screen>(autostart ? 'generating' : 'auth');
   const [loadingStage, setLoadingStage] = useState(
@@ -244,12 +248,44 @@ function AtlasChallengeContent() {
       if (!res.ok) throw new Error('Complete failed');
       const data = await res.json();
       setFinalSummary(data.summary || null);
+      try {
+        const fresh = await getCurrentUser();
+        setUser(fresh as AtlasUser);
+      } catch {
+        // Non-fatal: summary still shows session XP.
+      }
       setScreen('final_summary');
     } catch (e) {
       console.error(e);
       setErrorMessage('Failed to finalise the challenge session. Please try again.');
     }
   }, []);
+
+  const exitChallengeAndPersist = useCallback(async () => {
+    if (!session?.session_id) {
+      router.push('/challenges/intro');
+      return;
+    }
+    setErrorMessage(null);
+    try {
+      // Finalise so responses are saved; XP for finished L1/L2 is already
+      // credited at level_complete, and /complete only applies any remainder.
+      const res = await fetchWithAuth(`${API_BASE}/challenge-hub/complete`, {
+        method: 'POST',
+        body: JSON.stringify({ session_id: session.session_id }),
+      });
+      if (!res.ok) throw new Error('Complete failed');
+      try {
+        await getCurrentUser();
+      } catch {
+        // Non-fatal: XP was persisted server-side.
+      }
+      router.push('/challenges/intro');
+    } catch (e) {
+      console.error(e);
+      setErrorMessage('Could not save your progress. Please try again, or continue the challenge.');
+    }
+  }, [router, session?.session_id]);
 
   const handleSubmitAnswer = useCallback(
     async (userAnswer: string) => {
@@ -297,6 +333,13 @@ function AtlasChallengeContent() {
         feedbackRef.current = true;
         setFeedback(r);
         setTotalXp(r.total_xp || 0);
+        if (typeof r.user_xp === 'number') {
+          const cached = getStoredUser();
+          if (cached) {
+            // Keep local profile in sync after L1/L2 XP is persisted server-side.
+            storeUser({ ...cached, xp: r.user_xp });
+          }
+        }
 
         // Show feedback briefly, then advance
         window.setTimeout(async () => {
@@ -405,8 +448,8 @@ function AtlasChallengeContent() {
     if (!autostart || hasAutostartedRef.current) return;
     if (!getAccessToken()) return;
     hasAutostartedRef.current = true;
-    void startChallenge(1);
-  }, [autostart, startChallenge]);
+    void startChallenge(requestedLevel);
+  }, [autostart, requestedLevel, startChallenge]);
 
   const startCurrentSubject = () => {
     if (!session) return;
@@ -678,7 +721,7 @@ function AtlasChallengeContent() {
                 )}
                 <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
                   <button
-                    onClick={() => router.push('/challenges/intro')}
+                    onClick={() => void exitChallengeAndPersist()}
                     className="px-6 py-3 border border-gray-200 rounded-xl"
                   >
                     Exit challenge

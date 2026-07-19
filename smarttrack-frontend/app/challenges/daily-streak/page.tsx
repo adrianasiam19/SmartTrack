@@ -105,8 +105,30 @@ export default function DailyStreakPage() {
               )}
             </motion.div>
 
+            {/* Live challenge — avoid the old empty subject banks */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05 }}
+              className="mb-8"
+            >
+              <button
+                type="button"
+                onClick={() => router.push('/challenges/atlas?autostart=1')}
+                className="w-full bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] text-white rounded-2xl p-6 text-left shadow-lg shadow-[#2563EB]/20 hover:shadow-xl transition-all"
+              >
+                <h2 className="text-lg font-bold mb-1">Start today&apos;s live challenge</h2>
+                <p className="text-sm text-[#BFDBFE]">
+                  Real Atlas AI questions across all four core subjects — Levels 1 to 3.
+                </p>
+              </button>
+            </motion.div>
+
             {/* Subjects */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <p className="sm:col-span-2 text-sm text-[#64748B]">
+                Or pick a subject — starting a level opens the same live Atlas questions.
+              </p>
               {SUBJECTS.map((subject, idx) => {
                 const progress = getSubjectProgress(subject.id);
                 const completedCount = progress
