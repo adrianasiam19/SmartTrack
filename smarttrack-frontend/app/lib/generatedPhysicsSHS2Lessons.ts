@@ -1,6 +1,6 @@
 /**
  * generatedPhysicsSHS2Lessons.ts
- * Auto-generated Physics SHS 2 lessons from Ministry of Education curriculum materials.
+ * Auto-generated Physics Phase 2 lessons from Ministry of Education curriculum materials.
  * Source: Physics Year2.pdf (Ministry of Education, Ghana, 2025)
  * Contains 8 sections with 16 lessons total.
  */

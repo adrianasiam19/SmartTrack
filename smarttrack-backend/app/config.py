@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import List
+from typing import Dict, List
 
 
 class Settings(BaseSettings):
@@ -43,9 +43,33 @@ class Settings(BaseSettings):
     SMTP_USE_TLS: bool = True
     MAIL_FROM: str = ""
 
+    # ── Phase / Level progression ───────────────────────────────────────────
+    LEVEL_PASS_THRESHOLD: float = 0.70
+    CHALLENGE_QUESTIONS_PER_SESSION: int = 10
+    SUBJECT_MIX: str = "english:3,core_maths:3,integrated_science:2,social_studies:2"
+    DIFFICULTY_ROLLING_WINDOW: int = 20
+    DIFFICULTY_LOW_ACCURACY: float = 0.50
+    DIFFICULTY_HIGH_ACCURACY: float = 0.85
+    DIFFICULTY_ADJ_STEP: int = 1
+    DIFFICULTY_MIN: int = 1
+    DIFFICULTY_MAX: int = 15
+    LEARNING_NUDGE_LEVELS: int = 2
+    PSYCHO_CHECKPOINT_COUNT: int = 12
+
     @property
     def cors_origins_list(self) -> List[str]:
         return [o.strip() for o in self.CORS_ORIGINS.split(",")]
+
+    @property
+    def subject_mix_map(self) -> Dict[str, int]:
+        result: Dict[str, int] = {}
+        for part in self.SUBJECT_MIX.split(","):
+            part = part.strip()
+            if not part or ":" not in part:
+                continue
+            subject, count = part.split(":", 1)
+            result[subject.strip()] = int(count.strip())
+        return result
 
 
 settings = Settings()

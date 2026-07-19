@@ -12,6 +12,7 @@ export interface CurriculumTopic {
   estimated_minutes: number;
   difficulty: number;
   xp_reward: number;
+  reason?: string | null;
 }
 
 export interface WorkedExample {
@@ -45,6 +46,13 @@ export interface TutorMessage {
   content: string;
 }
 
+export interface LibraryHome {
+  continue_learning: CurriculumTopic | null;
+  recommended: CurriculumTopic[];
+  recent: CurriculumTopic[];
+  bookmarks: CurriculumTopic[];
+}
+
 function authHeaders(): HeadersInit {
   const token = getAccessToken();
   return {
@@ -54,23 +62,91 @@ function authHeaders(): HeadersInit {
 }
 
 async function readError(response: Response, fallback: string): Promise<Error> {
+  if (response.status === 401) {
+    return new Error('Your session expired. Please sign in again, then retry.');
+  }
   const body = await response.json().catch(() => null);
-  return new Error(body?.detail || fallback);
+  const detail = body?.detail;
+  if (typeof detail === 'string' && detail.trim()) {
+    if (/could not validate credentials/i.test(detail)) {
+      return new Error('Your session expired. Please sign in again, then retry.');
+    }
+    return new Error(detail);
+  }
+  return new Error(fallback);
 }
 
 export async function searchCurriculumTopics(
   query: string,
   signal?: AbortSignal,
+  subject?: string,
 ): Promise<CurriculumTopic[]> {
-  const params = new URLSearchParams({ query, limit: '20' });
+  const params = new URLSearchParams({ q: query, limit: '20' });
+  if (subject) params.set('subject', subject);
+  const response = await fetch(`${API_BASE_URL}/learning/search?${params}`, {
+    headers: authHeaders(),
+    signal,
+  });
+  if (!response.ok) {
+    throw await readError(response, 'Unable to search the curriculum.');
+  }
+  return response.json();
+}
+
+export async function listTopicsBySubject(
+  subject: string,
+  signal?: AbortSignal,
+): Promise<CurriculumTopic[]> {
+  const params = new URLSearchParams({ subject, limit: '100' });
   const response = await fetch(`${API_BASE_URL}/learning/topics?${params}`, {
     headers: authHeaders(),
     signal,
   });
   if (!response.ok) {
-    throw await readError(response, 'Unable to search your curriculum.');
+    throw await readError(response, 'Unable to load topics.');
   }
   return response.json();
+}
+
+export async function getLibraryHome(signal?: AbortSignal): Promise<LibraryHome> {
+  const response = await fetch(`${API_BASE_URL}/learning/library`, {
+    headers: authHeaders(),
+    signal,
+  });
+  if (!response.ok) {
+    throw await readError(response, 'Unable to load Learning Center.');
+  }
+  return response.json();
+}
+
+export async function toggleLearningBookmark(curriculumId: string): Promise<{
+  curriculum_id: string;
+  bookmarked: boolean;
+  bookmarks: CurriculumTopic[];
+}> {
+  const response = await fetch(
+    `${API_BASE_URL}/learning/bookmarks/${encodeURIComponent(curriculumId)}/toggle`,
+    { method: 'POST', headers: authHeaders() },
+  );
+  if (!response.ok) {
+    throw await readError(response, 'Could not update bookmark.');
+  }
+  return response.json();
+}
+
+export async function getRelatedTopics(
+  curriculumId: string,
+  signal?: AbortSignal,
+): Promise<CurriculumTopic[]> {
+  const response = await fetch(
+    `${API_BASE_URL}/learning/lessons/${encodeURIComponent(curriculumId)}/related`,
+    { headers: authHeaders(), signal },
+  );
+  if (!response.ok) {
+    throw await readError(response, 'Unable to load related topics.');
+  }
+  const body: { topics: CurriculumTopic[] } = await response.json();
+  return body.topics;
 }
 
 export async function getAITaughtLesson(
@@ -109,4 +185,23 @@ export async function askCurriculumTutor(
   }
   const body: { response: string } = await response.json();
   return body.response;
+}
+
+export async function completeCurriculumLesson(curriculumId: string): Promise<{
+  xp_earned: number;
+  user_xp: number;
+  rank: string;
+  already_completed: boolean;
+}> {
+  const response = await fetch(
+    `${API_BASE_URL}/learning/lessons/${encodeURIComponent(curriculumId)}/complete`,
+    {
+      method: 'POST',
+      headers: authHeaders(),
+    },
+  );
+  if (!response.ok) {
+    throw await readError(response, 'Could not save lesson completion.');
+  }
+  return response.json();
 }

@@ -1,0 +1,6245 @@
+{
+  "count": 780,
+  "items": [
+    {
+      "bank_id": "qb-026",
+      "number": 26,
+      "category": "Study Habits",
+      "label": "A",
+      "text": "Early morning before school",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-026",
+      "number": 26,
+      "category": "Study Habits",
+      "label": "B",
+      "text": "Right after school in the afternoon",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-026",
+      "number": 26,
+      "category": "Study Habits",
+      "label": "C",
+      "text": "In the evening after dinner",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-026",
+      "number": 26,
+      "category": "Study Habits",
+      "label": "D",
+      "text": "Late at night",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-027",
+      "number": 27,
+      "category": "Study Habits",
+      "label": "A",
+      "text": "I follow a fixed timetable",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-027",
+      "number": 27,
+      "category": "Study Habits",
+      "label": "B",
+      "text": "I study whenever I feel motivated",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-027",
+      "number": 27,
+      "category": "Study Habits",
+      "label": "C",
+      "text": "I study based on upcoming deadlines",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-027",
+      "number": 27,
+      "category": "Study Habits",
+      "label": "D",
+      "text": "I study a little bit every day, no strict plan",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-028",
+      "number": 28,
+      "category": "Study Habits",
+      "label": "A",
+      "text": "Focus on one subject for a long stretch",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-028",
+      "number": 28,
+      "category": "Study Habits",
+      "label": "B",
+      "text": "Switch between subjects every so often",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-028",
+      "number": 28,
+      "category": "Study Habits",
+      "label": "C",
+      "text": "Study in short, timed bursts with breaks",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-028",
+      "number": 28,
+      "category": "Study Habits",
+      "label": "D",
+      "text": "Study different topics depending on your mood",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-029",
+      "number": 29,
+      "category": "Study Habits",
+      "label": "A",
+      "text": "In your room, alone",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-029",
+      "number": 29,
+      "category": "Study Habits",
+      "label": "B",
+      "text": "In a library or quiet public space",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-029",
+      "number": 29,
+      "category": "Study Habits",
+      "label": "C",
+      "text": "With friends or classmates",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-029",
+      "number": 29,
+      "category": "Study Habits",
+      "label": "D",
+      "text": "Anywhere, as long as you have your materials",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-030",
+      "number": 30,
+      "category": "Study Habits",
+      "label": "A",
+      "text": "Start revising weeks in advance",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-030",
+      "number": 30,
+      "category": "Study Habits",
+      "label": "B",
+      "text": "Revise steadily over the final week",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-030",
+      "number": 30,
+      "category": "Study Habits",
+      "label": "C",
+      "text": "Do a big push a few days before",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-030",
+      "number": 30,
+      "category": "Study Habits",
+      "label": "D",
+      "text": "Cram the night before",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-031",
+      "number": 31,
+      "category": "Study Habits",
+      "label": "A",
+      "text": "Skip it and come back later",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-031",
+      "number": 31,
+      "category": "Study Habits",
+      "label": "B",
+      "text": "Ask someone immediately",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-031",
+      "number": 31,
+      "category": "Study Habits",
+      "label": "C",
+      "text": "Look it up online or in a book",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-031",
+      "number": 31,
+      "category": "Study Habits",
+      "label": "D",
+      "text": "Keep trying until it makes sense",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-032",
+      "number": 32,
+      "category": "Study Habits",
+      "label": "A",
+      "text": "A written planner or diary",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-032",
+      "number": 32,
+      "category": "Study Habits",
+      "label": "B",
+      "text": "Reminders on my phone",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-032",
+      "number": 32,
+      "category": "Study Habits",
+      "label": "C",
+      "text": "I just remember them",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-032",
+      "number": 32,
+      "category": "Study Habits",
+      "label": "D",
+      "text": "My teachers or parents remind me",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-033",
+      "number": 33,
+      "category": "Study Habits",
+      "label": "A",
+      "text": "Break it into small, manageable parts",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-033",
+      "number": 33,
+      "category": "Study Habits",
+      "label": "B",
+      "text": "Push through it all at once",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-033",
+      "number": 33,
+      "category": "Study Habits",
+      "label": "C",
+      "text": "Study it together with a friend",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-033",
+      "number": 33,
+      "category": "Study Habits",
+      "label": "D",
+      "text": "Leave it for last and hope for the best",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-034",
+      "number": 34,
+      "category": "Study Habits",
+      "label": "A",
+      "text": "My phone and social media",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-034",
+      "number": 34,
+      "category": "Study Habits",
+      "label": "B",
+      "text": "Noise around me",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-034",
+      "number": 34,
+      "category": "Study Habits",
+      "label": "C",
+      "text": "Daydreaming or losing focus",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-034",
+      "number": 34,
+      "category": "Study Habits",
+      "label": "D",
+      "text": "Feeling tired or sleepy",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-035",
+      "number": 35,
+      "category": "Study Habits",
+      "label": "A",
+      "text": "Every day, without fail",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-035",
+      "number": 35,
+      "category": "Study Habits",
+      "label": "B",
+      "text": "A few times a week",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-035",
+      "number": 35,
+      "category": "Study Habits",
+      "label": "C",
+      "text": "Only before a test",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-035",
+      "number": 35,
+      "category": "Study Habits",
+      "label": "D",
+      "text": "Rarely, I rely on the class itself",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-036",
+      "number": 36,
+      "category": "Study Habits",
+      "label": "A",
+      "text": "Write everything the teacher says",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-036",
+      "number": 36,
+      "category": "Study Habits",
+      "label": "B",
+      "text": "Summarise the main points only",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-036",
+      "number": 36,
+      "category": "Study Habits",
+      "label": "C",
+      "text": "Draw diagrams and mind maps",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-036",
+      "number": 36,
+      "category": "Study Habits",
+      "label": "D",
+      "text": "Type or record instead of writing by hand",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-037",
+      "number": 37,
+      "category": "Study Habits",
+      "label": "A",
+      "text": "Music helps me focus",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-037",
+      "number": 37,
+      "category": "Study Habits",
+      "label": "B",
+      "text": "Silence helps me focus best",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-037",
+      "number": 37,
+      "category": "Study Habits",
+      "label": "C",
+      "text": "It depends on the subject",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-037",
+      "number": 37,
+      "category": "Study Habits",
+      "label": "D",
+      "text": "I don't really notice either way",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-038",
+      "number": 38,
+      "category": "Study Habits",
+      "label": "A",
+      "text": "Start immediately and work steadily",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-038",
+      "number": 38,
+      "category": "Study Habits",
+      "label": "B",
+      "text": "Plan it out first, then begin",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-038",
+      "number": 38,
+      "category": "Study Habits",
+      "label": "C",
+      "text": "Wait until closer to the deadline",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-038",
+      "number": 38,
+      "category": "Study Habits",
+      "label": "D",
+      "text": "Work in bursts of energy whenever inspired",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-039",
+      "number": 39,
+      "category": "Study Habits",
+      "label": "A",
+      "text": "I love them, I learn a lot from others",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-039",
+      "number": 39,
+      "category": "Study Habits",
+      "label": "B",
+      "text": "I like them occasionally",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-039",
+      "number": 39,
+      "category": "Study Habits",
+      "label": "C",
+      "text": "I prefer to study alone",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-039",
+      "number": 39,
+      "category": "Study Habits",
+      "label": "D",
+      "text": "It depends on who is in the group",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-040",
+      "number": 40,
+      "category": "Study Habits",
+      "label": "A",
+      "text": "Go over your mistakes carefully",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-040",
+      "number": 40,
+      "category": "Study Habits",
+      "label": "B",
+      "text": "Ask the teacher for help",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-040",
+      "number": 40,
+      "category": "Study Habits",
+      "label": "C",
+      "text": "Study harder for the next one",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-040",
+      "number": 40,
+      "category": "Study Habits",
+      "label": "D",
+      "text": "Move on without dwelling on it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-041",
+      "number": 41,
+      "category": "Study Habits",
+      "label": "A",
+      "text": "Wanting good grades",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-041",
+      "number": 41,
+      "category": "Study Habits",
+      "label": "B",
+      "text": "Fear of falling behind",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-041",
+      "number": 41,
+      "category": "Study Habits",
+      "label": "C",
+      "text": "Enjoying the subject itself",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-041",
+      "number": 41,
+      "category": "Study Habits",
+      "label": "D",
+      "text": "Encouragement from family or friends",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-042",
+      "number": 42,
+      "category": "Study Habits",
+      "label": "A",
+      "text": "Prioritise by deadline",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-042",
+      "number": 42,
+      "category": "Study Habits",
+      "label": "B",
+      "text": "Prioritise by how hard each one is",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-042",
+      "number": 42,
+      "category": "Study Habits",
+      "label": "C",
+      "text": "Do a bit of each every day",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-042",
+      "number": 42,
+      "category": "Study Habits",
+      "label": "D",
+      "text": "Focus on one at a time until it's done",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-043",
+      "number": 43,
+      "category": "Study Habits",
+      "label": "A",
+      "text": "Less than 20 minutes",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-043",
+      "number": 43,
+      "category": "Study Habits",
+      "label": "B",
+      "text": "About 30 to 45 minutes",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-043",
+      "number": 43,
+      "category": "Study Habits",
+      "label": "C",
+      "text": "About an hour",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-043",
+      "number": 43,
+      "category": "Study Habits",
+      "label": "D",
+      "text": "I can go for hours without a break",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-044",
+      "number": 44,
+      "category": "Study Habits",
+      "label": "A",
+      "text": "Strict - I like structure",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-044",
+      "number": 44,
+      "category": "Study Habits",
+      "label": "B",
+      "text": "Mostly structured, with some flexibility",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-044",
+      "number": 44,
+      "category": "Study Habits",
+      "label": "C",
+      "text": "Mostly flexible",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-044",
+      "number": 44,
+      "category": "Study Habits",
+      "label": "D",
+      "text": "Completely flexible, no set schedule",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-045",
+      "number": 45,
+      "category": "Study Habits",
+      "label": "A",
+      "text": "Create summary notes",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-045",
+      "number": 45,
+      "category": "Study Habits",
+      "label": "B",
+      "text": "Test yourself with practice questions",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-045",
+      "number": 45,
+      "category": "Study Habits",
+      "label": "C",
+      "text": "Teach the material to someone else",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-045",
+      "number": 45,
+      "category": "Study Habits",
+      "label": "D",
+      "text": "Reread your notes and textbook",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-046",
+      "number": 46,
+      "category": "Study Habits",
+      "label": "A",
+      "text": "Make a plan to catch up quickly",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-046",
+      "number": 46,
+      "category": "Study Habits",
+      "label": "B",
+      "text": "Ask a teacher or tutor for extra help",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-046",
+      "number": 46,
+      "category": "Study Habits",
+      "label": "C",
+      "text": "Try to catch up gradually on your own",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-046",
+      "number": 46,
+      "category": "Study Habits",
+      "label": "D",
+      "text": "Feel stressed but push through anyway",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-047",
+      "number": 47,
+      "category": "Study Habits",
+      "label": "A",
+      "text": "I prioritise sleep over late-night studying",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-047",
+      "number": 47,
+      "category": "Study Habits",
+      "label": "B",
+      "text": "I sometimes sacrifice sleep to study more",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-047",
+      "number": 47,
+      "category": "Study Habits",
+      "label": "C",
+      "text": "I often stay up late studying",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-047",
+      "number": 47,
+      "category": "Study Habits",
+      "label": "D",
+      "text": "My sleep isn't really connected to my study habits",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-048",
+      "number": 48,
+      "category": "Study Habits",
+      "label": "A",
+      "text": "The hardest subject, to get it out of the way",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-048",
+      "number": 48,
+      "category": "Study Habits",
+      "label": "B",
+      "text": "The easiest subject, to build momentum",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-048",
+      "number": 48,
+      "category": "Study Habits",
+      "label": "C",
+      "text": "Whatever is due soonest",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-048",
+      "number": 48,
+      "category": "Study Habits",
+      "label": "D",
+      "text": "Whatever interests you most that day",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-049",
+      "number": 49,
+      "category": "Study Habits",
+      "label": "A",
+      "text": "I use several study apps regularly",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-049",
+      "number": 49,
+      "category": "Study Habits",
+      "label": "B",
+      "text": "I use one or two occasionally",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-049",
+      "number": 49,
+      "category": "Study Habits",
+      "label": "C",
+      "text": "I prefer traditional books and notebooks",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-049",
+      "number": 49,
+      "category": "Study Habits",
+      "label": "D",
+      "text": "I haven't really tried study apps",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-050",
+      "number": 50,
+      "category": "Study Habits",
+      "label": "A",
+      "text": "Review what you covered",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-050",
+      "number": 50,
+      "category": "Study Habits",
+      "label": "B",
+      "text": "Plan what to study next",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-050",
+      "number": 50,
+      "category": "Study Habits",
+      "label": "C",
+      "text": "Just stop and relax",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-050",
+      "number": 50,
+      "category": "Study Habits",
+      "label": "D",
+      "text": "Check if you understood everything",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-051",
+      "number": 51,
+      "category": "Problem-Solving Style",
+      "label": "A",
+      "text": "Break it down into smaller parts",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-051",
+      "number": 51,
+      "category": "Problem-Solving Style",
+      "label": "B",
+      "text": "Think about similar problems you've solved before",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-051",
+      "number": 51,
+      "category": "Problem-Solving Style",
+      "label": "C",
+      "text": "Ask someone else for their opinion",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-051",
+      "number": 51,
+      "category": "Problem-Solving Style",
+      "label": "D",
+      "text": "Just try different solutions until one works",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-052",
+      "number": 52,
+      "category": "Problem-Solving Style",
+      "label": "A",
+      "text": "Follow a clear, step-by-step method",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-052",
+      "number": 52,
+      "category": "Problem-Solving Style",
+      "label": "B",
+      "text": "Look for patterns and shortcuts",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-052",
+      "number": 52,
+      "category": "Problem-Solving Style",
+      "label": "C",
+      "text": "Talk it through with a classmate",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-052",
+      "number": 52,
+      "category": "Problem-Solving Style",
+      "label": "D",
+      "text": "Try a few approaches until you find one that fits",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-053",
+      "number": 53,
+      "category": "Problem-Solving Style",
+      "label": "A",
+      "text": "Analyse what went wrong first",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-053",
+      "number": 53,
+      "category": "Problem-Solving Style",
+      "label": "B",
+      "text": "Try a completely different approach",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-053",
+      "number": 53,
+      "category": "Problem-Solving Style",
+      "label": "C",
+      "text": "Get advice from someone else",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-053",
+      "number": 53,
+      "category": "Problem-Solving Style",
+      "label": "D",
+      "text": "Adjust it slightly and try again",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-054",
+      "number": 54,
+      "category": "Problem-Solving Style",
+      "label": "A",
+      "text": "I enjoy them and want to solve them logically",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-054",
+      "number": 54,
+      "category": "Problem-Solving Style",
+      "label": "B",
+      "text": "I enjoy them but prefer creative guesses",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-054",
+      "number": 54,
+      "category": "Problem-Solving Style",
+      "label": "C",
+      "text": "I enjoy solving them with others",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-054",
+      "number": 54,
+      "category": "Problem-Solving Style",
+      "label": "D",
+      "text": "I find them fun but not something I seek out",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-055",
+      "number": 55,
+      "category": "Problem-Solving Style",
+      "label": "A",
+      "text": "Suggest a structured plan for the group",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-055",
+      "number": 55,
+      "category": "Problem-Solving Style",
+      "label": "B",
+      "text": "Come up with creative ideas",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-055",
+      "number": 55,
+      "category": "Problem-Solving Style",
+      "label": "C",
+      "text": "Listen to everyone before deciding",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-055",
+      "number": 55,
+      "category": "Problem-Solving Style",
+      "label": "D",
+      "text": "Just start trying things with the group",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-056",
+      "number": 56,
+      "category": "Problem-Solving Style",
+      "label": "A",
+      "text": "Go back and find exactly where it went wrong",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-056",
+      "number": 56,
+      "category": "Problem-Solving Style",
+      "label": "B",
+      "text": "Start over with a new approach",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-056",
+      "number": 56,
+      "category": "Problem-Solving Style",
+      "label": "C",
+      "text": "Ask someone to check your work",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-056",
+      "number": 56,
+      "category": "Problem-Solving Style",
+      "label": "D",
+      "text": "Fix it quickly and move on",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-057",
+      "number": 57,
+      "category": "Problem-Solving Style",
+      "label": "A",
+      "text": "Logical or mathematical problems",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-057",
+      "number": 57,
+      "category": "Problem-Solving Style",
+      "label": "B",
+      "text": "Creative or open-ended problems",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-057",
+      "number": 57,
+      "category": "Problem-Solving Style",
+      "label": "C",
+      "text": "People-related or social problems",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-057",
+      "number": 57,
+      "category": "Problem-Solving Style",
+      "label": "D",
+      "text": "Practical, hands-on problems",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-058",
+      "number": 58,
+      "category": "Problem-Solving Style",
+      "label": "A",
+      "text": "Move on and come back to it later",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-058",
+      "number": 58,
+      "category": "Problem-Solving Style",
+      "label": "B",
+      "text": "Try to think of it differently",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-058",
+      "number": 58,
+      "category": "Problem-Solving Style",
+      "label": "C",
+      "text": "Make an educated guess and move on",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-058",
+      "number": 58,
+      "category": "Problem-Solving Style",
+      "label": "D",
+      "text": "Keep working on it until you solve it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-059",
+      "number": 59,
+      "category": "Problem-Solving Style",
+      "label": "A",
+      "text": "Research and plan carefully first",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-059",
+      "number": 59,
+      "category": "Problem-Solving Style",
+      "label": "B",
+      "text": "Brainstorm several possible ideas",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-059",
+      "number": 59,
+      "category": "Problem-Solving Style",
+      "label": "C",
+      "text": "Ask others how they'd approach it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-059",
+      "number": 59,
+      "category": "Problem-Solving Style",
+      "label": "D",
+      "text": "Dive in and learn by doing",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-060",
+      "number": 60,
+      "category": "Problem-Solving Style",
+      "label": "A",
+      "text": "Organise it into categories or steps",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-060",
+      "number": 60,
+      "category": "Problem-Solving Style",
+      "label": "B",
+      "text": "Look for the bigger picture or pattern",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-060",
+      "number": 60,
+      "category": "Problem-Solving Style",
+      "label": "C",
+      "text": "Discuss it with someone to understand it better",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-060",
+      "number": 60,
+      "category": "Problem-Solving Style",
+      "label": "D",
+      "text": "Apply it to a real example",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-061",
+      "number": 61,
+      "category": "Problem-Solving Style",
+      "label": "A",
+      "text": "Compare them carefully using facts",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-061",
+      "number": 61,
+      "category": "Problem-Solving Style",
+      "label": "B",
+      "text": "Go with your gut feeling",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-061",
+      "number": 61,
+      "category": "Problem-Solving Style",
+      "label": "C",
+      "text": "Ask for a second opinion",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-061",
+      "number": 61,
+      "category": "Problem-Solving Style",
+      "label": "D",
+      "text": "Test both and see which works better",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-062",
+      "number": 62,
+      "category": "Problem-Solving Style",
+      "label": "A",
+      "text": "Rely on logic and evidence",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-062",
+      "number": 62,
+      "category": "Problem-Solving Style",
+      "label": "B",
+      "text": "Look for a creative compromise",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-062",
+      "number": 62,
+      "category": "Problem-Solving Style",
+      "label": "C",
+      "text": "Try to understand the other person's view",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-062",
+      "number": 62,
+      "category": "Problem-Solving Style",
+      "label": "D",
+      "text": "Focus on what's practical and workable",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-063",
+      "number": 63,
+      "category": "Problem-Solving Style",
+      "label": "A",
+      "text": "Follow a systematic troubleshooting process",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-063",
+      "number": 63,
+      "category": "Problem-Solving Style",
+      "label": "B",
+      "text": "Try random things until something works",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-063",
+      "number": 63,
+      "category": "Problem-Solving Style",
+      "label": "C",
+      "text": "Search for help or ask someone",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-063",
+      "number": 63,
+      "category": "Problem-Solving Style",
+      "label": "D",
+      "text": "Look for the root cause before fixing anything",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-064",
+      "number": 64,
+      "category": "Problem-Solving Style",
+      "label": "A",
+      "text": "Analytical and methodical",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-064",
+      "number": 64,
+      "category": "Problem-Solving Style",
+      "label": "B",
+      "text": "Creative and flexible",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-064",
+      "number": 64,
+      "category": "Problem-Solving Style",
+      "label": "C",
+      "text": "Collaborative",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-064",
+      "number": 64,
+      "category": "Problem-Solving Style",
+      "label": "D",
+      "text": "Practical and action-based",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-065",
+      "number": 65,
+      "category": "Problem-Solving Style",
+      "label": "A",
+      "text": "Study the cause of the problem first",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-065",
+      "number": 65,
+      "category": "Problem-Solving Style",
+      "label": "B",
+      "text": "Brainstorm several creative fixes",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-065",
+      "number": 65,
+      "category": "Problem-Solving Style",
+      "label": "C",
+      "text": "Ask students and staff for their input",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-065",
+      "number": 65,
+      "category": "Problem-Solving Style",
+      "label": "D",
+      "text": "Suggest a simple, workable fix right away",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-066",
+      "number": 66,
+      "category": "Problem-Solving Style",
+      "label": "A",
+      "text": "Motivated to figure out the best possible answer",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-066",
+      "number": 66,
+      "category": "Problem-Solving Style",
+      "label": "B",
+      "text": "Excited to explore different possibilities",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-066",
+      "number": 66,
+      "category": "Problem-Solving Style",
+      "label": "C",
+      "text": "More comfortable working with others on it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-066",
+      "number": 66,
+      "category": "Problem-Solving Style",
+      "label": "D",
+      "text": "Eager to just try something and adjust as you go",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-067",
+      "number": 67,
+      "category": "Problem-Solving Style",
+      "label": "A",
+      "text": "Stay calm and work through it systematically",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-067",
+      "number": 67,
+      "category": "Problem-Solving Style",
+      "label": "B",
+      "text": "Think quickly and creatively",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-067",
+      "number": 67,
+      "category": "Problem-Solving Style",
+      "label": "C",
+      "text": "Ask for help to speed things up",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-067",
+      "number": 67,
+      "category": "Problem-Solving Style",
+      "label": "D",
+      "text": "Just start solving and adjust as needed",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-068",
+      "number": 68,
+      "category": "Problem-Solving Style",
+      "label": "A",
+      "text": "Clear rules and steps",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-068",
+      "number": 68,
+      "category": "Problem-Solving Style",
+      "label": "B",
+      "text": "A mix of both",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-068",
+      "number": 68,
+      "category": "Problem-Solving Style",
+      "label": "C",
+      "text": "Depends on who I'm working with",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-068",
+      "number": 68,
+      "category": "Problem-Solving Style",
+      "label": "D",
+      "text": "Open exploration, mostly",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-069",
+      "number": 69,
+      "category": "Problem-Solving Style",
+      "label": "A",
+      "text": "Investigate until you understand it fully",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-069",
+      "number": 69,
+      "category": "Problem-Solving Style",
+      "label": "B",
+      "text": "Accept it works and move on",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-069",
+      "number": 69,
+      "category": "Problem-Solving Style",
+      "label": "C",
+      "text": "Ask someone to explain it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-069",
+      "number": 69,
+      "category": "Problem-Solving Style",
+      "label": "D",
+      "text": "Try it again to confirm it wasn't luck",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-070",
+      "number": 70,
+      "category": "Problem-Solving Style",
+      "label": "A",
+      "text": "Understanding exactly how it works",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-070",
+      "number": 70,
+      "category": "Problem-Solving Style",
+      "label": "B",
+      "text": "Coming up with an original idea",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-070",
+      "number": 70,
+      "category": "Problem-Solving Style",
+      "label": "C",
+      "text": "Solving it as a team",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-070",
+      "number": 70,
+      "category": "Problem-Solving Style",
+      "label": "D",
+      "text": "Seeing it actually work in practice",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-071",
+      "number": 71,
+      "category": "Problem-Solving Style",
+      "label": "A",
+      "text": "Reassess and re-plan calmly",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-071",
+      "number": 71,
+      "category": "Problem-Solving Style",
+      "label": "B",
+      "text": "Look for a creative workaround",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-071",
+      "number": 71,
+      "category": "Problem-Solving Style",
+      "label": "C",
+      "text": "Reach out to others for support",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-071",
+      "number": 71,
+      "category": "Problem-Solving Style",
+      "label": "D",
+      "text": "Keep pushing forward with what you have",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-072",
+      "number": 72,
+      "category": "Problem-Solving Style",
+      "label": "A",
+      "text": "Structured and careful",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-072",
+      "number": 72,
+      "category": "Problem-Solving Style",
+      "label": "B",
+      "text": "Imaginative and flexible",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-072",
+      "number": 72,
+      "category": "Problem-Solving Style",
+      "label": "C",
+      "text": "Cooperative",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-072",
+      "number": 72,
+      "category": "Problem-Solving Style",
+      "label": "D",
+      "text": "Fast and handson",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-073",
+      "number": 73,
+      "category": "Problem-Solving Style",
+      "label": "A",
+      "text": "Ask for clarification before starting",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-073",
+      "number": 73,
+      "category": "Problem-Solving Style",
+      "label": "B",
+      "text": "Interpret it your own way and start",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-073",
+      "number": 73,
+      "category": "Problem-Solving Style",
+      "label": "C",
+      "text": "Discuss it with classmates first",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-073",
+      "number": 73,
+      "category": "Problem-Solving Style",
+      "label": "D",
+      "text": "Just start and adjust as you learn more",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-074",
+      "number": 74,
+      "category": "Problem-Solving Style",
+      "label": "A",
+      "text": "Diagnose the exact issue first",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-074",
+      "number": 74,
+      "category": "Problem-Solving Style",
+      "label": "B",
+      "text": "Think of unusual ways to fix it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-074",
+      "number": 74,
+      "category": "Problem-Solving Style",
+      "label": "C",
+      "text": "Ask someone experienced for advice",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-074",
+      "number": 74,
+      "category": "Problem-Solving Style",
+      "label": "D",
+      "text": "Try fixing it directly and see what happens",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-075",
+      "number": 75,
+      "category": "Problem-Solving Style",
+      "label": "A",
+      "text": "Logical reasoning",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-075",
+      "number": 75,
+      "category": "Problem-Solving Style",
+      "label": "B",
+      "text": "Creative thinking",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-075",
+      "number": 75,
+      "category": "Problem-Solving Style",
+      "label": "C",
+      "text": "Getting input from others",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-075",
+      "number": 75,
+      "category": "Problem-Solving Style",
+      "label": "D",
+      "text": "Practical, hands-on action",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-076",
+      "number": 76,
+      "category": "Curiosity",
+      "label": "A",
+      "text": "Very often, I ask \"why\" about everything",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-076",
+      "number": 76,
+      "category": "Curiosity",
+      "label": "B",
+      "text": "Fairly often, especially about things that interest me",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-076",
+      "number": 76,
+      "category": "Curiosity",
+      "label": "C",
+      "text": "Sometimes, when something catches my attention",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-076",
+      "number": 76,
+      "category": "Curiosity",
+      "label": "D",
+      "text": "Rarely, I focus on what I need to know",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-077",
+      "number": 77,
+      "category": "Curiosity",
+      "label": "A",
+      "text": "Look it up right away",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-077",
+      "number": 77,
+      "category": "Curiosity",
+      "label": "B",
+      "text": "Try to guess its meaning from context",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-077",
+      "number": 77,
+      "category": "Curiosity",
+      "label": "C",
+      "text": "Ask someone what it means",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-077",
+      "number": 77,
+      "category": "Curiosity",
+      "label": "D",
+      "text": "Move on without worrying about it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-078",
+      "number": 78,
+      "category": "Curiosity",
+      "label": "A",
+      "text": "Want to know more about it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-078",
+      "number": 78,
+      "category": "Curiosity",
+      "label": "B",
+      "text": "Try to connect it to something else you know",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-078",
+      "number": 78,
+      "category": "Curiosity",
+      "label": "C",
+      "text": "Share it with someone else",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-078",
+      "number": 78,
+      "category": "Curiosity",
+      "label": "D",
+      "text": "File it away and move on",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-079",
+      "number": 79,
+      "category": "Curiosity",
+      "label": "A",
+      "text": "I love learning about new topics on my own",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-079",
+      "number": 79,
+      "category": "Curiosity",
+      "label": "B",
+      "text": "I enjoy it when I have time",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-079",
+      "number": 79,
+      "category": "Curiosity",
+      "label": "C",
+      "text": "I only explore if someone recommends it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-079",
+      "number": 79,
+      "category": "Curiosity",
+      "label": "D",
+      "text": "I mostly stick to what's required",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-080",
+      "number": 80,
+      "category": "Curiosity",
+      "label": "A",
+      "text": "Want to research the topic further afterward",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-080",
+      "number": 80,
+      "category": "Curiosity",
+      "label": "B",
+      "text": "Enjoy it in the moment and move on",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-080",
+      "number": 80,
+      "category": "Curiosity",
+      "label": "C",
+      "text": "Discuss it with someone else",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-080",
+      "number": 80,
+      "category": "Curiosity",
+      "label": "D",
+      "text": "Only pay attention if it directly relates to you",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-081",
+      "number": 81,
+      "category": "Curiosity",
+      "label": "A",
+      "text": "I feel a strong urge to figure it out",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-081",
+      "number": 81,
+      "category": "Curiosity",
+      "label": "B",
+      "text": "I get mildly curious but don't always follow up",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-081",
+      "number": 81,
+      "category": "Curiosity",
+      "label": "C",
+      "text": "I ask someone to explain it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-081",
+      "number": 81,
+      "category": "Curiosity",
+      "label": "D",
+      "text": "I don't think about it much further",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-082",
+      "number": 82,
+      "category": "Curiosity",
+      "label": "A",
+      "text": "Excited, I love new experiences",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-082",
+      "number": 82,
+      "category": "Curiosity",
+      "label": "B",
+      "text": "Curious but a little cautious",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-082",
+      "number": 82,
+      "category": "Curiosity",
+      "label": "C",
+      "text": "I prefer to try new things with others",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-082",
+      "number": 82,
+      "category": "Curiosity",
+      "label": "D",
+      "text": "I usually stick to what I know",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-083",
+      "number": 83,
+      "category": "Curiosity",
+      "label": "A",
+      "text": "Very likely, I do this often",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-083",
+      "number": 83,
+      "category": "Curiosity",
+      "label": "B",
+      "text": "Somewhat likely",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-083",
+      "number": 83,
+      "category": "Curiosity",
+      "label": "C",
+      "text": "Only if someone else brings it up",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-083",
+      "number": 83,
+      "category": "Curiosity",
+      "label": "D",
+      "text": "Not very likely",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-084",
+      "number": 84,
+      "category": "Curiosity",
+      "label": "A",
+      "text": "Yes, I ask questions often",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-084",
+      "number": 84,
+      "category": "Curiosity",
+      "label": "B",
+      "text": "Sometimes, when I'm unsure",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-084",
+      "number": 84,
+      "category": "Curiosity",
+      "label": "C",
+      "text": "Rarely, I prefer to figure it out myself",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-084",
+      "number": 84,
+      "category": "Curiosity",
+      "label": "D",
+      "text": "I mostly listen and take notes",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-085",
+      "number": 85,
+      "category": "Curiosity",
+      "label": "A",
+      "text": "Explore everything to see how it all works",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-085",
+      "number": 85,
+      "category": "Curiosity",
+      "label": "B",
+      "text": "Explore a bit, then focus on what's useful",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-085",
+      "number": 85,
+      "category": "Curiosity",
+      "label": "C",
+      "text": "Ask someone to show you around first",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-085",
+      "number": 85,
+      "category": "Curiosity",
+      "label": "D",
+      "text": "Only use what you need",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-086",
+      "number": 86,
+      "category": "Curiosity",
+      "label": "A",
+      "text": "Intrigued, I want to learn about them",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-086",
+      "number": 86,
+      "category": "Curiosity",
+      "label": "B",
+      "text": "Neutral, depends on the topic",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-086",
+      "number": 86,
+      "category": "Curiosity",
+      "label": "C",
+      "text": "A little unsure until I know more",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-086",
+      "number": 86,
+      "category": "Curiosity",
+      "label": "D",
+      "text": "Not particularly interested",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-087",
+      "number": 87,
+      "category": "Curiosity",
+      "label": "A",
+      "text": "Want them to explain more",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-087",
+      "number": 87,
+      "category": "Curiosity",
+      "label": "B",
+      "text": "Make a mental note to look it up later",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-087",
+      "number": 87,
+      "category": "Curiosity",
+      "label": "C",
+      "text": "Ask a friend about it after class",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-087",
+      "number": 87,
+      "category": "Curiosity",
+      "label": "D",
+      "text": "Let it go and focus on the lesson",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-088",
+      "number": 88,
+      "category": "Curiosity",
+      "label": "A",
+      "text": "Very often",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-088",
+      "number": 88,
+      "category": "Curiosity",
+      "label": "B",
+      "text": "Fairly often",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-088",
+      "number": 88,
+      "category": "Curiosity",
+      "label": "C",
+      "text": "Sometimes",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-088",
+      "number": 88,
+      "category": "Curiosity",
+      "label": "D",
+      "text": "Rarely",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-089",
+      "number": 89,
+      "category": "Curiosity",
+      "label": "A",
+      "text": "Determined to find out",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-089",
+      "number": 89,
+      "category": "Curiosity",
+      "label": "B",
+      "text": "Mildly interested in finding out",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-089",
+      "number": 89,
+      "category": "Curiosity",
+      "label": "C",
+      "text": "Comfortable asking someone who knows",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-089",
+      "number": 89,
+      "category": "Curiosity",
+      "label": "D",
+      "text": "Fine not knowing right away",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-090",
+      "number": 90,
+      "category": "Curiosity",
+      "label": "A",
+      "text": "Yes, all the time",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-090",
+      "number": 90,
+      "category": "Curiosity",
+      "label": "B",
+      "text": "Occasionally",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-090",
+      "number": 90,
+      "category": "Curiosity",
+      "label": "C",
+      "text": "Only in discussions with others",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-090",
+      "number": 90,
+      "category": "Curiosity",
+      "label": "D",
+      "text": "Not really",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-091",
+      "number": 91,
+      "category": "Curiosity",
+      "label": "A",
+      "text": "I want to know exactly why it happened",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-091",
+      "number": 91,
+      "category": "Curiosity",
+      "label": "B",
+      "text": "I find it interesting but move on",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-091",
+      "number": 91,
+      "category": "Curiosity",
+      "label": "C",
+      "text": "I ask others what they think happened",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-091",
+      "number": 91,
+      "category": "Curiosity",
+      "label": "D",
+      "text": "I just note it and continue",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-092",
+      "number": 92,
+      "category": "Curiosity",
+      "label": "A",
+      "text": "Fall into research rabbit holes",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-092",
+      "number": 92,
+      "category": "Curiosity",
+      "label": "B",
+      "text": "Look up specific things you need",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-092",
+      "number": 92,
+      "category": "Curiosity",
+      "label": "C",
+      "text": "See what your friends are looking at",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-092",
+      "number": 92,
+      "category": "Curiosity",
+      "label": "D",
+      "text": "Stick to entertainment",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-093",
+      "number": 93,
+      "category": "Curiosity",
+      "label": "A",
+      "text": "I find them fascinating",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-093",
+      "number": 93,
+      "category": "Curiosity",
+      "label": "B",
+      "text": "I find them interesting but sometimes uncomfortable",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-093",
+      "number": 93,
+      "category": "Curiosity",
+      "label": "C",
+      "text": "I like discussing them with others",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-093",
+      "number": 93,
+      "category": "Curiosity",
+      "label": "D",
+      "text": "I prefer subjects that feel familiar",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-094",
+      "number": 94,
+      "category": "Curiosity",
+      "label": "A",
+      "text": "How the universe works",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-094",
+      "number": 94,
+      "category": "Curiosity",
+      "label": "B",
+      "text": "How people and societies work",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-094",
+      "number": 94,
+      "category": "Curiosity",
+      "label": "C",
+      "text": "How to build or create things",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-094",
+      "number": 94,
+      "category": "Curiosity",
+      "label": "D",
+      "text": "Whatever comes up naturally",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-095",
+      "number": 95,
+      "category": "Curiosity",
+      "label": "A",
+      "text": "Yes, frequently",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-095",
+      "number": 95,
+      "category": "Curiosity",
+      "label": "B",
+      "text": "Sometimes",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-095",
+      "number": 95,
+      "category": "Curiosity",
+      "label": "C",
+      "text": "Only when something reminds me",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-095",
+      "number": 95,
+      "category": "Curiosity",
+      "label": "D",
+      "text": "Not really",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-096",
+      "number": 96,
+      "category": "Curiosity",
+      "label": "A",
+      "text": "That makes me want to figure it out even more",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-096",
+      "number": 96,
+      "category": "Curiosity",
+      "label": "B",
+      "text": "I find it a bit intriguing",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-096",
+      "number": 96,
+      "category": "Curiosity",
+      "label": "C",
+      "text": "I'd want to ask an expert",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-096",
+      "number": 96,
+      "category": "Curiosity",
+      "label": "D",
+      "text": "I accept it and move on",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-097",
+      "number": 97,
+      "category": "Curiosity",
+      "label": "A",
+      "text": "Often, I think of more things I want to know",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-097",
+      "number": 97,
+      "category": "Curiosity",
+      "label": "B",
+      "text": "Sometimes",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-097",
+      "number": 97,
+      "category": "Curiosity",
+      "label": "C",
+      "text": "Only if I discuss it with a friend",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-097",
+      "number": 97,
+      "category": "Curiosity",
+      "label": "D",
+      "text": "Not usually",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-098",
+      "number": 98,
+      "category": "Curiosity",
+      "label": "A",
+      "text": "With excitement to explore",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-098",
+      "number": 98,
+      "category": "Curiosity",
+      "label": "B",
+      "text": "With mild interest",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-098",
+      "number": 98,
+      "category": "Curiosity",
+      "label": "C",
+      "text": "With interest if others are involved",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-098",
+      "number": 98,
+      "category": "Curiosity",
+      "label": "D",
+      "text": "With caution, preferring the familiar",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-099",
+      "number": 99,
+      "category": "Curiosity",
+      "label": "A",
+      "text": "Yes, I enjoy learning random facts",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-099",
+      "number": 99,
+      "category": "Curiosity",
+      "label": "B",
+      "text": "Sometimes, if it's interesting",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-099",
+      "number": 99,
+      "category": "Curiosity",
+      "label": "C",
+      "text": "I enjoy sharing facts others find",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-099",
+      "number": 99,
+      "category": "Curiosity",
+      "label": "D",
+      "text": "Not particularly",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-100",
+      "number": 100,
+      "category": "Curiosity",
+      "label": "A",
+      "text": "I want to know how and why everything works",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-100",
+      "number": 100,
+      "category": "Curiosity",
+      "label": "B",
+      "text": "I'm curious about specific things I love",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-100",
+      "number": 100,
+      "category": "Curiosity",
+      "label": "C",
+      "text": "I get curious when others spark my interest",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-100",
+      "number": 100,
+      "category": "Curiosity",
+      "label": "D",
+      "text": "I'm mostly focused on what's useful to me",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-151",
+      "number": 151,
+      "category": "Teamwork",
+      "label": "A",
+      "text": "Coordinating everyone's efforts",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-151",
+      "number": 151,
+      "category": "Teamwork",
+      "label": "B",
+      "text": "Sharing and building on ideas together",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-151",
+      "number": 151,
+      "category": "Teamwork",
+      "label": "C",
+      "text": "Supporting your teammates",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-151",
+      "number": 151,
+      "category": "Teamwork",
+      "label": "D",
+      "text": "Focusing on your individual part of the work",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-152",
+      "number": 152,
+      "category": "Teamwork",
+      "label": "A",
+      "text": "I trust the team and share responsibility",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-152",
+      "number": 152,
+      "category": "Teamwork",
+      "label": "B",
+      "text": "I'm okay with it if roles are clear",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-152",
+      "number": 152,
+      "category": "Teamwork",
+      "label": "C",
+      "text": "I prefer to double-check others' work",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-152",
+      "number": 152,
+      "category": "Teamwork",
+      "label": "D",
+      "text": "I'd rather do it myself to be sure",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-153",
+      "number": 153,
+      "category": "Teamwork",
+      "label": "A",
+      "text": "Offer to help them directly",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-153",
+      "number": 153,
+      "category": "Teamwork",
+      "label": "B",
+      "text": "Encourage them and check in often",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-153",
+      "number": 153,
+      "category": "Teamwork",
+      "label": "C",
+      "text": "Let the teacher or group leader know",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-153",
+      "number": 153,
+      "category": "Teamwork",
+      "label": "D",
+      "text": "Focus on your own tasks and trust they'll manage",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-154",
+      "number": 154,
+      "category": "Teamwork",
+      "label": "A",
+      "text": "Talk it through calmly until we agree",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-154",
+      "number": 154,
+      "category": "Teamwork",
+      "label": "B",
+      "text": "Compromise so everyone is satisfied",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-154",
+      "number": 154,
+      "category": "Teamwork",
+      "label": "C",
+      "text": "Let the majority decide",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-154",
+      "number": 154,
+      "category": "Teamwork",
+      "label": "D",
+      "text": "Avoid conflict and go with the flow",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-155",
+      "number": 155,
+      "category": "Teamwork",
+      "label": "A",
+      "text": "In a large team",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-155",
+      "number": 155,
+      "category": "Teamwork",
+      "label": "B",
+      "text": "In a small group",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-155",
+      "number": 155,
+      "category": "Teamwork",
+      "label": "C",
+      "text": "With just one partner",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-155",
+      "number": 155,
+      "category": "Teamwork",
+      "label": "D",
+      "text": "Alone",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-156",
+      "number": 156,
+      "category": "Teamwork",
+      "label": "A",
+      "text": "I'm happy to share credit equally",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-156",
+      "number": 156,
+      "category": "Teamwork",
+      "label": "B",
+      "text": "I'm fine with it as long as everyone contributed",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-156",
+      "number": 156,
+      "category": "Teamwork",
+      "label": "C",
+      "text": "I don't think about it much",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-156",
+      "number": 156,
+      "category": "Teamwork",
+      "label": "D",
+      "text": "I prefer recognition for my individual effort",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-157",
+      "number": 157,
+      "category": "Teamwork",
+      "label": "A",
+      "text": "Help find a solution everyone agrees on",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-157",
+      "number": 157,
+      "category": "Teamwork",
+      "label": "B",
+      "text": "Support the idea that seems best for the group",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-157",
+      "number": 157,
+      "category": "Teamwork",
+      "label": "C",
+      "text": "Go with what most people want",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-157",
+      "number": 157,
+      "category": "Teamwork",
+      "label": "D",
+      "text": "Voice your own opinion and stick to it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-158",
+      "number": 158,
+      "category": "Teamwork",
+      "label": "A",
+      "text": "Frequently, to keep everyone updated",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-158",
+      "number": 158,
+      "category": "Teamwork",
+      "label": "B",
+      "text": "Regularly, when there's something important",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-158",
+      "number": 158,
+      "category": "Teamwork",
+      "label": "C",
+      "text": "Mostly when asked",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-158",
+      "number": 158,
+      "category": "Teamwork",
+      "label": "D",
+      "text": "Rarely, I prefer working independently",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-159",
+      "number": 159,
+      "category": "Teamwork",
+      "label": "A",
+      "text": "Clear organisation and roles",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-159",
+      "number": 159,
+      "category": "Teamwork",
+      "label": "B",
+      "text": "Good communication",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-159",
+      "number": 159,
+      "category": "Teamwork",
+      "label": "C",
+      "text": "Support and encouragement",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-159",
+      "number": 159,
+      "category": "Teamwork",
+      "label": "D",
+      "text": "Everyone doing their fair share",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-160",
+      "number": 160,
+      "category": "Teamwork",
+      "label": "A",
+      "text": "I try to fix it and keep the team on track",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-160",
+      "number": 160,
+      "category": "Teamwork",
+      "label": "B",
+      "text": "I stay positive and adjust with the team",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-160",
+      "number": 160,
+      "category": "Teamwork",
+      "label": "C",
+      "text": "I feel frustrated but keep supporting the group",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-160",
+      "number": 160,
+      "category": "Teamwork",
+      "label": "D",
+      "text": "I focus on making sure my part is still solid",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-161",
+      "number": 161,
+      "category": "Teamwork",
+      "label": "A",
+      "text": "Yes, I love collaborative brainstorming",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-161",
+      "number": 161,
+      "category": "Teamwork",
+      "label": "B",
+      "text": "Sometimes, depending on the group",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-161",
+      "number": 161,
+      "category": "Teamwork",
+      "label": "C",
+      "text": "I prefer listening and choosing the best idea",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-161",
+      "number": 161,
+      "category": "Teamwork",
+      "label": "D",
+      "text": "I prefer thinking through ideas alone first",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-162",
+      "number": 162,
+      "category": "Teamwork",
+      "label": "A",
+      "text": "Talk to them directly about it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-162",
+      "number": 162,
+      "category": "Teamwork",
+      "label": "B",
+      "text": "Offer to help them catch up",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-162",
+      "number": 162,
+      "category": "Teamwork",
+      "label": "C",
+      "text": "Mention it to the teacher or group leader",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-162",
+      "number": 162,
+      "category": "Teamwork",
+      "label": "D",
+      "text": "Quietly pick up the extra work yourself",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-163",
+      "number": 163,
+      "category": "Teamwork",
+      "label": "A",
+      "text": "Organiser",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-163",
+      "number": 163,
+      "category": "Teamwork",
+      "label": "B",
+      "text": "Idea contributor",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-163",
+      "number": 163,
+      "category": "Teamwork",
+      "label": "C",
+      "text": "Peacemaker or motivator",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-163",
+      "number": 163,
+      "category": "Teamwork",
+      "label": "D",
+      "text": "Independent task-doer",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-164",
+      "number": 164,
+      "category": "Teamwork",
+      "label": "A",
+      "text": "I really enjoy them",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-164",
+      "number": 164,
+      "category": "Teamwork",
+      "label": "B",
+      "text": "I enjoy them sometimes",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-164",
+      "number": 164,
+      "category": "Teamwork",
+      "label": "C",
+      "text": "I go along with them",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-164",
+      "number": 164,
+      "category": "Teamwork",
+      "label": "D",
+      "text": "I'd rather not participate",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-165",
+      "number": 165,
+      "category": "Teamwork",
+      "label": "A",
+      "text": "Proud of how well we worked together",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-165",
+      "number": 165,
+      "category": "Teamwork",
+      "label": "B",
+      "text": "Happy that everyone's ideas came together",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-165",
+      "number": 165,
+      "category": "Teamwork",
+      "label": "C",
+      "text": "Glad I could support the team",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-165",
+      "number": 165,
+      "category": "Teamwork",
+      "label": "D",
+      "text": "Satisfied that I did my part well",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-166",
+      "number": 166,
+      "category": "Teamwork",
+      "label": "A",
+      "text": "Very comfortable",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-166",
+      "number": 166,
+      "category": "Teamwork",
+      "label": "B",
+      "text": "Fairly comfortable, if it's constructive",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-166",
+      "number": 166,
+      "category": "Teamwork",
+      "label": "C",
+      "text": "A little uneasy, but I'll do it kindly",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-166",
+      "number": 166,
+      "category": "Teamwork",
+      "label": "D",
+      "text": "I prefer not to give feedback directly",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-167",
+      "number": 167,
+      "category": "Teamwork",
+      "label": "A",
+      "text": "Yes, I trust the team fully",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-167",
+      "number": 167,
+      "category": "Teamwork",
+      "label": "B",
+      "text": "Mostly, depending on the person",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-167",
+      "number": 167,
+      "category": "Teamwork",
+      "label": "C",
+      "text": "I like to check in occasionally",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-167",
+      "number": 167,
+      "category": "Teamwork",
+      "label": "D",
+      "text": "I prefer handling important tasks myself",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-168",
+      "number": 168,
+      "category": "Teamwork",
+      "label": "A",
+      "text": "Take initiative to get to know everyone",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-168",
+      "number": 168,
+      "category": "Teamwork",
+      "label": "B",
+      "text": "Wait to be introduced, then get involved",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-168",
+      "number": 168,
+      "category": "Teamwork",
+      "label": "C",
+      "text": "Observe first before contributing",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-168",
+      "number": 168,
+      "category": "Teamwork",
+      "label": "D",
+      "text": "Focus on the task rather than the people",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-169",
+      "number": 169,
+      "category": "Teamwork",
+      "label": "A",
+      "text": "I'm happy to compromise for the group's benefit",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-169",
+      "number": 169,
+      "category": "Teamwork",
+      "label": "B",
+      "text": "I compromise if the reasoning makes sense",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-169",
+      "number": 169,
+      "category": "Teamwork",
+      "label": "C",
+      "text": "I compromise, but it can be hard",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-169",
+      "number": 169,
+      "category": "Teamwork",
+      "label": "D",
+      "text": "I prefer sticking with my own approach",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-170",
+      "number": 170,
+      "category": "Teamwork",
+      "label": "A",
+      "text": "A natural collaborator",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-170",
+      "number": 170,
+      "category": "Teamwork",
+      "label": "B",
+      "text": "A helpful contributor",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-170",
+      "number": 170,
+      "category": "Teamwork",
+      "label": "C",
+      "text": "A supportive teammate",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-170",
+      "number": 170,
+      "category": "Teamwork",
+      "label": "D",
+      "text": "An independent worker who still gets things done",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-171",
+      "number": 171,
+      "category": "Persistence",
+      "label": "A",
+      "text": "Keep trying until you succeed",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-171",
+      "number": 171,
+      "category": "Persistence",
+      "label": "B",
+      "text": "Take a break, then come back to it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-171",
+      "number": 171,
+      "category": "Persistence",
+      "label": "C",
+      "text": "Ask for help and keep going",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-171",
+      "number": 171,
+      "category": "Persistence",
+      "label": "D",
+      "text": "Move on to something else",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-172",
+      "number": 172,
+      "category": "Persistence",
+      "label": "A",
+      "text": "I try again immediately with a new approach",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-172",
+      "number": 172,
+      "category": "Persistence",
+      "label": "B",
+      "text": "I take some time to think, then try again",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-172",
+      "number": 172,
+      "category": "Persistence",
+      "label": "C",
+      "text": "I ask for advice before trying again",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-172",
+      "number": 172,
+      "category": "Persistence",
+      "label": "D",
+      "text": "I feel discouraged and may not try again soon",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-173",
+      "number": 173,
+      "category": "Persistence",
+      "label": "A",
+      "text": "Practice consistently until you improve",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-173",
+      "number": 173,
+      "category": "Persistence",
+      "label": "B",
+      "text": "Practice when you feel motivated",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-173",
+      "number": 173,
+      "category": "Persistence",
+      "label": "C",
+      "text": "Practice with support from others",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-173",
+      "number": 173,
+      "category": "Persistence",
+      "label": "D",
+      "text": "Give it a few tries, then decide if it's worth continuing",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-174",
+      "number": 174,
+      "category": "Persistence",
+      "label": "A",
+      "text": "As long as it takes",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-174",
+      "number": 174,
+      "category": "Persistence",
+      "label": "B",
+      "text": "Quite a while, unless it's clearly not working",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-174",
+      "number": 174,
+      "category": "Persistence",
+      "label": "C",
+      "text": "A while, especially with encouragement",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-174",
+      "number": 174,
+      "category": "Persistence",
+      "label": "D",
+      "text": "Not very long if I'm not seeing progress",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-175",
+      "number": 175,
+      "category": "Persistence",
+      "label": "A",
+      "text": "Almost always",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-175",
+      "number": 175,
+      "category": "Persistence",
+      "label": "B",
+      "text": "Most of the time",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-175",
+      "number": 175,
+      "category": "Persistence",
+      "label": "C",
+      "text": "Sometimes, depending on the goal",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-175",
+      "number": 175,
+      "category": "Persistence",
+      "label": "D",
+      "text": "It varies a lot",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-176",
+      "number": 176,
+      "category": "Persistence",
+      "label": "A",
+      "text": "They motivate me to try harder",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-176",
+      "number": 176,
+      "category": "Persistence",
+      "label": "B",
+      "text": "They're frustrating but I bounce back",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-176",
+      "number": 176,
+      "category": "Persistence",
+      "label": "C",
+      "text": "They're discouraging, but support helps",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-176",
+      "number": 176,
+      "category": "Persistence",
+      "label": "D",
+      "text": "They make me want to try something different",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-177",
+      "number": 177,
+      "category": "Persistence",
+      "label": "A",
+      "text": "Stay committed until it's finished",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-177",
+      "number": 177,
+      "category": "Persistence",
+      "label": "B",
+      "text": "Adjust your plan and keep working",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-177",
+      "number": 177,
+      "category": "Persistence",
+      "label": "C",
+      "text": "Ask for help to speed things up",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-177",
+      "number": 177,
+      "category": "Persistence",
+      "label": "D",
+      "text": "Consider whether it's still worth finishing",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-178",
+      "number": 178,
+      "category": "Persistence",
+      "label": "A",
+      "text": "Stay consistent over the whole period",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-178",
+      "number": 178,
+      "category": "Persistence",
+      "label": "B",
+      "text": "Work steadily with occasional breaks",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-178",
+      "number": 178,
+      "category": "Persistence",
+      "label": "C",
+      "text": "Need reminders to stay on track",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-178",
+      "number": 178,
+      "category": "Persistence",
+      "label": "D",
+      "text": "Tend to focus mostly near the deadline",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-179",
+      "number": 179,
+      "category": "Persistence",
+      "label": "A",
+      "text": "I use it to improve and keep going",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-179",
+      "number": 179,
+      "category": "Persistence",
+      "label": "B",
+      "text": "I take it in, then adjust",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-179",
+      "number": 179,
+      "category": "Persistence",
+      "label": "C",
+      "text": "It affects me, but I push through",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-179",
+      "number": 179,
+      "category": "Persistence",
+      "label": "D",
+      "text": "I sometimes lose motivation",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-180",
+      "number": 180,
+      "category": "Persistence",
+      "label": "A",
+      "text": "Push through and complete it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-180",
+      "number": 180,
+      "category": "Persistence",
+      "label": "B",
+      "text": "Take a short break, then finish it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-180",
+      "number": 180,
+      "category": "Persistence",
+      "label": "C",
+      "text": "Ask someone to help you get through it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-180",
+      "number": 180,
+      "category": "Persistence",
+      "label": "D",
+      "text": "Leave it for another time if possible",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-181",
+      "number": 181,
+      "category": "Persistence",
+      "label": "A",
+      "text": "Try a completely new strategy and keep going",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-181",
+      "number": 181,
+      "category": "Persistence",
+      "label": "B",
+      "text": "Take a step back, then try again",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-181",
+      "number": 181,
+      "category": "Persistence",
+      "label": "C",
+      "text": "Seek guidance to understand what's going wrong",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-181",
+      "number": 181,
+      "category": "Persistence",
+      "label": "D",
+      "text": "Consider whether to try something else instead",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-182",
+      "number": 182,
+      "category": "Persistence",
+      "label": "A",
+      "text": "My determination to finish what I start",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-182",
+      "number": 182,
+      "category": "Persistence",
+      "label": "B",
+      "text": "Remembering why the goal matters to me",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-182",
+      "number": 182,
+      "category": "Persistence",
+      "label": "C",
+      "text": "Support from people around me",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-182",
+      "number": 182,
+      "category": "Persistence",
+      "label": "D",
+      "text": "Knowing I can always try a new approach",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-183",
+      "number": 183,
+      "category": "Persistence",
+      "label": "A",
+      "text": "Work harder to get better at it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-183",
+      "number": 183,
+      "category": "Persistence",
+      "label": "B",
+      "text": "Keep enjoying it at your own pace",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-183",
+      "number": 183,
+      "category": "Persistence",
+      "label": "C",
+      "text": "Ask someone experienced for tips",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-183",
+      "number": 183,
+      "category": "Persistence",
+      "label": "D",
+      "text": "Might try a different hobby instead",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-184",
+      "number": 184,
+      "category": "Persistence",
+      "label": "A",
+      "text": "I stay patient and keep working",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-184",
+      "number": 184,
+      "category": "Persistence",
+      "label": "B",
+      "text": "It's okay as long as I see some progress",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-184",
+      "number": 184,
+      "category": "Persistence",
+      "label": "C",
+      "text": "It's frustrating but I keep going with support",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-184",
+      "number": 184,
+      "category": "Persistence",
+      "label": "D",
+      "text": "I get impatient and may lose interest",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-185",
+      "number": 185,
+      "category": "Persistence",
+      "label": "A",
+      "text": "Very reliable, I always finish what I start",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-185",
+      "number": 185,
+      "category": "Persistence",
+      "label": "B",
+      "text": "Mostly reliable",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-185",
+      "number": 185,
+      "category": "Persistence",
+      "label": "C",
+      "text": "Reliable when I have support",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-185",
+      "number": 185,
+      "category": "Persistence",
+      "label": "D",
+      "text": "It depends on how interested I stay",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-186",
+      "number": 186,
+      "category": "Persistence",
+      "label": "A",
+      "text": "I find a way around them and keep going",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-186",
+      "number": 186,
+      "category": "Persistence",
+      "label": "B",
+      "text": "I adapt my plan and continue",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-186",
+      "number": 186,
+      "category": "Persistence",
+      "label": "C",
+      "text": "I look for help to overcome them",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-186",
+      "number": 186,
+      "category": "Persistence",
+      "label": "D",
+      "text": "I might reconsider my approach entirely",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-187",
+      "number": 187,
+      "category": "Persistence",
+      "label": "A",
+      "text": "I welcome them as opportunities to grow",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-187",
+      "number": 187,
+      "category": "Persistence",
+      "label": "B",
+      "text": "I accept them and work through them",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-187",
+      "number": 187,
+      "category": "Persistence",
+      "label": "C",
+      "text": "I feel more confident facing them with others",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-187",
+      "number": 187,
+      "category": "Persistence",
+      "label": "D",
+      "text": "I prefer to avoid unnecessary challenges",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-188",
+      "number": 188,
+      "category": "Persistence",
+      "label": "A",
+      "text": "Keep going because you believe in finishing it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-188",
+      "number": 188,
+      "category": "Persistence",
+      "label": "B",
+      "text": "Continue if you still see value in it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-188",
+      "number": 188,
+      "category": "Persistence",
+      "label": "C",
+      "text": "Look for someone to help you finish it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-188",
+      "number": 188,
+      "category": "Persistence",
+      "label": "D",
+      "text": "Consider whether it's worth continuing alone",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-189",
+      "number": 189,
+      "category": "Persistence",
+      "label": "A",
+      "text": "Deeply proud, it was worth every effort",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-189",
+      "number": 189,
+      "category": "Persistence",
+      "label": "B",
+      "text": "Relieved and satisfied",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-189",
+      "number": 189,
+      "category": "Persistence",
+      "label": "C",
+      "text": "Grateful for the support that helped me",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-189",
+      "number": 189,
+      "category": "Persistence",
+      "label": "D",
+      "text": "Happy, and ready for the next challenge",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-190",
+      "number": 190,
+      "category": "Persistence",
+      "label": "A",
+      "text": "\"I don't give up easily\"",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-190",
+      "number": 190,
+      "category": "Persistence",
+      "label": "B",
+      "text": "\"I keep going, but I know when to pause\"",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-190",
+      "number": 190,
+      "category": "Persistence",
+      "label": "C",
+      "text": "\"I keep going with a little help\"",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-190",
+      "number": 190,
+      "category": "Persistence",
+      "label": "D",
+      "text": "\"I know when it's time to try something new\"",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-191",
+      "number": 191,
+      "category": "Motivation",
+      "label": "A",
+      "text": "Personal pride in doing my best",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-191",
+      "number": 191,
+      "category": "Motivation",
+      "label": "B",
+      "text": "Achieving specific goals, like a certain grade",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-191",
+      "number": 191,
+      "category": "Motivation",
+      "label": "C",
+      "text": "Making my family proud",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-191",
+      "number": 191,
+      "category": "Motivation",
+      "label": "D",
+      "text": "Preparing for a career I want",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-192",
+      "number": 192,
+      "category": "Motivation",
+      "label": "A",
+      "text": "Knowing I did my personal best",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-192",
+      "number": 192,
+      "category": "Motivation",
+      "label": "B",
+      "text": "Reaching the target I set",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-192",
+      "number": 192,
+      "category": "Motivation",
+      "label": "C",
+      "text": "Others recognising my effort",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-192",
+      "number": 192,
+      "category": "Motivation",
+      "label": "D",
+      "text": "Knowing it helps me move toward my future goals",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-193",
+      "number": 193,
+      "category": "Motivation",
+      "label": "A",
+      "text": "The chance to learn something new",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-193",
+      "number": 193,
+      "category": "Motivation",
+      "label": "B",
+      "text": "Working toward my goals",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-193",
+      "number": 193,
+      "category": "Motivation",
+      "label": "C",
+      "text": "Spending time with friends and family",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-193",
+      "number": 193,
+      "category": "Motivation",
+      "label": "D",
+      "text": "Opportunities to achieve something meaningful",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-194",
+      "number": 194,
+      "category": "Motivation",
+      "label": "A",
+      "text": "Reminding yourself of your personal standards",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-194",
+      "number": 194,
+      "category": "Motivation",
+      "label": "B",
+      "text": "Focusing on your goals and deadlines",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-194",
+      "number": 194,
+      "category": "Motivation",
+      "label": "C",
+      "text": "Talking to someone who supports you",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-194",
+      "number": 194,
+      "category": "Motivation",
+      "label": "D",
+      "text": "Thinking about your future plans",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-195",
+      "number": 195,
+      "category": "Motivation",
+      "label": "A",
+      "text": "The satisfaction of doing something well",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-195",
+      "number": 195,
+      "category": "Motivation",
+      "label": "B",
+      "text": "Achieving a clear result or milestone",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-195",
+      "number": 195,
+      "category": "Motivation",
+      "label": "C",
+      "text": "Praise or appreciation from others",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-195",
+      "number": 195,
+      "category": "Motivation",
+      "label": "D",
+      "text": "Progress toward a long-term dream",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-196",
+      "number": 196,
+      "category": "Motivation",
+      "label": "A",
+      "text": "It pushes me to improve myself",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-196",
+      "number": 196,
+      "category": "Motivation",
+      "label": "B",
+      "text": "It motivates me to hit specific targets",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-196",
+      "number": 196,
+      "category": "Motivation",
+      "label": "C",
+      "text": "I enjoy it more when it's friendly and social",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-196",
+      "number": 196,
+      "category": "Motivation",
+      "label": "D",
+      "text": "I focus more on my own growth than beating others",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-197",
+      "number": 197,
+      "category": "Motivation",
+      "label": "A",
+      "text": "Personal growth goals",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-197",
+      "number": 197,
+      "category": "Motivation",
+      "label": "B",
+      "text": "Clear, measurable goals",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-197",
+      "number": 197,
+      "category": "Motivation",
+      "label": "C",
+      "text": "Goals that involve people I care about",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-197",
+      "number": 197,
+      "category": "Motivation",
+      "label": "D",
+      "text": "Goals connected to my future career",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-198",
+      "number": 198,
+      "category": "Motivation",
+      "label": "A",
+      "text": "I mostly feel satisfied internally",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-198",
+      "number": 198,
+      "category": "Motivation",
+      "label": "B",
+      "text": "Whoever helped me track my progress",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-198",
+      "number": 198,
+      "category": "Motivation",
+      "label": "C",
+      "text": "My family or close friends",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-198",
+      "number": 198,
+      "category": "Motivation",
+      "label": "D",
+      "text": "I think about how it helps my next step",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-199",
+      "number": 199,
+      "category": "Motivation",
+      "label": "A",
+      "text": "Not living up to your own standards",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-199",
+      "number": 199,
+      "category": "Motivation",
+      "label": "B",
+      "text": "Missing a goal you set for yourself",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-199",
+      "number": 199,
+      "category": "Motivation",
+      "label": "C",
+      "text": "Letting down someone who believed in you",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-199",
+      "number": 199,
+      "category": "Motivation",
+      "label": "D",
+      "text": "Not making progress toward your future",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-200",
+      "number": 200,
+      "category": "Motivation",
+      "label": "A",
+      "text": "I appreciate it, but I mostly care about my own opinion of my work",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-200",
+      "number": 200,
+      "category": "Motivation",
+      "label": "B",
+      "text": "I appreciate it, especially when I've hit a goal",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-200",
+      "number": 200,
+      "category": "Motivation",
+      "label": "C",
+      "text": "It means a lot to me",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-200",
+      "number": 200,
+      "category": "Motivation",
+      "label": "D",
+      "text": "It's nice, but I care more about long-term progress",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-201",
+      "number": 201,
+      "category": "Motivation",
+      "label": "A",
+      "text": "My own standards and values",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-201",
+      "number": 201,
+      "category": "Motivation",
+      "label": "B",
+      "text": "My personal goals",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-201",
+      "number": 201,
+      "category": "Motivation",
+      "label": "C",
+      "text": "Thinking about the people who count on me",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-201",
+      "number": 201,
+      "category": "Motivation",
+      "label": "D",
+      "text": "My vision for my future",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-202",
+      "number": 202,
+      "category": "Motivation",
+      "label": "A",
+      "text": "Help you grow as a person",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-202",
+      "number": 202,
+      "category": "Motivation",
+      "label": "B",
+      "text": "Help you achieve something specific",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-202",
+      "number": 202,
+      "category": "Motivation",
+      "label": "C",
+      "text": "Let you spend time with others",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-202",
+      "number": 202,
+      "category": "Motivation",
+      "label": "D",
+      "text": "Build toward your future plans",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-203",
+      "number": 203,
+      "category": "Motivation",
+      "label": "A",
+      "text": "Becoming the best version of myself",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-203",
+      "number": 203,
+      "category": "Motivation",
+      "label": "B",
+      "text": "Reaching the goals I've set",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-203",
+      "number": 203,
+      "category": "Motivation",
+      "label": "C",
+      "text": "Making the people I love proud",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-203",
+      "number": 203,
+      "category": "Motivation",
+      "label": "D",
+      "text": "Building a good future for myself",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-204",
+      "number": 204,
+      "category": "Motivation",
+      "label": "A",
+      "text": "I stay motivated because it matters to me",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-204",
+      "number": 204,
+      "category": "Motivation",
+      "label": "B",
+      "text": "I stay motivated if I can track progress",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-204",
+      "number": 204,
+      "category": "Motivation",
+      "label": "C",
+      "text": "I need occasional encouragement to keep going",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-204",
+      "number": 204,
+      "category": "Motivation",
+      "label": "D",
+      "text": "I stay motivated by imagining the future payoff",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-205",
+      "number": 205,
+      "category": "Motivation",
+      "label": "A",
+      "text": "\"I push myself to be better every day\"",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-205",
+      "number": 205,
+      "category": "Motivation",
+      "label": "B",
+      "text": "\"I set goals and work to achieve them\"",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-205",
+      "number": 205,
+      "category": "Motivation",
+      "label": "C",
+      "text": "\"I'm motivated by the people around me\"",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-205",
+      "number": 205,
+      "category": "Motivation",
+      "label": "D",
+      "text": "\"I always keep my future in mind\"",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-206",
+      "number": 206,
+      "category": "Motivation",
+      "label": "A",
+      "text": "Wanting to master it for yourself",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-206",
+      "number": 206,
+      "category": "Motivation",
+      "label": "B",
+      "text": "Wanting to reach a specific grade",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-206",
+      "number": 206,
+      "category": "Motivation",
+      "label": "C",
+      "text": "Encouragement from teachers or family",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-206",
+      "number": 206,
+      "category": "Motivation",
+      "label": "D",
+      "text": "Knowing it matters for your future path",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-207",
+      "number": 207,
+      "category": "Motivation",
+      "label": "A",
+      "text": "Not very, I'm driven by my own standards",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-207",
+      "number": 207,
+      "category": "Motivation",
+      "label": "B",
+      "text": "Somewhat, especially when I reach a goal",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-207",
+      "number": 207,
+      "category": "Motivation",
+      "label": "C",
+      "text": "Fairly important to me",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-207",
+      "number": 207,
+      "category": "Motivation",
+      "label": "D",
+      "text": "Less important than long-term progress",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-208",
+      "number": 208,
+      "category": "Motivation",
+      "label": "A",
+      "text": "Becoming skilled and respected in what I do",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-208",
+      "number": 208,
+      "category": "Motivation",
+      "label": "B",
+      "text": "Achieving specific milestones and success",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-208",
+      "number": 208,
+      "category": "Motivation",
+      "label": "C",
+      "text": "Making a difference for people around me",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-208",
+      "number": 208,
+      "category": "Motivation",
+      "label": "D",
+      "text": "Building the life I've always dreamed of",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-209",
+      "number": 209,
+      "category": "Motivation",
+      "label": "A",
+      "text": "My personal discipline",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-209",
+      "number": 209,
+      "category": "Motivation",
+      "label": "B",
+      "text": "Tracking my progress carefully",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-209",
+      "number": 209,
+      "category": "Motivation",
+      "label": "C",
+      "text": "Support and encouragement from others",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-209",
+      "number": 209,
+      "category": "Motivation",
+      "label": "D",
+      "text": "Keeping my future goals in mind",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-210",
+      "number": 210,
+      "category": "Motivation",
+      "label": "A",
+      "text": "Self-improvement",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-210",
+      "number": 210,
+      "category": "Motivation",
+      "label": "B",
+      "text": "Achievement",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-210",
+      "number": 210,
+      "category": "Motivation",
+      "label": "C",
+      "text": "Connection with others",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-210",
+      "number": 210,
+      "category": "Motivation",
+      "label": "D",
+      "text": "A clear vision for the future",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-231",
+      "number": 231,
+      "category": "Decision Making",
+      "label": "A",
+      "text": "Gather all the facts first",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-231",
+      "number": 231,
+      "category": "Decision Making",
+      "label": "B",
+      "text": "Trust your instincts",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-231",
+      "number": 231,
+      "category": "Decision Making",
+      "label": "C",
+      "text": "Ask others for advice",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-231",
+      "number": 231,
+      "category": "Decision Making",
+      "label": "D",
+      "text": "Weigh the pros and cons carefully",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-232",
+      "number": 232,
+      "category": "Decision Making",
+      "label": "A",
+      "text": "I prefer to take my time instead",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-232",
+      "number": 232,
+      "category": "Decision Making",
+      "label": "B",
+      "text": "I'm comfortable deciding quickly when needed",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-232",
+      "number": 232,
+      "category": "Decision Making",
+      "label": "C",
+      "text": "I like to check with someone first",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-232",
+      "number": 232,
+      "category": "Decision Making",
+      "label": "D",
+      "text": "I decide quickly but review it after",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-233",
+      "number": 233,
+      "category": "Decision Making",
+      "label": "A",
+      "text": "Research more before deciding",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-233",
+      "number": 233,
+      "category": "Decision Making",
+      "label": "B",
+      "text": "Go with what feels right",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-233",
+      "number": 233,
+      "category": "Decision Making",
+      "label": "C",
+      "text": "Ask someone you trust",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-233",
+      "number": 233,
+      "category": "Decision Making",
+      "label": "D",
+      "text": "List out the advantages of each",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-234",
+      "number": 234,
+      "category": "Decision Making",
+      "label": "A",
+      "text": "I stay calm and think it through logically",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-234",
+      "number": 234,
+      "category": "Decision Making",
+      "label": "B",
+      "text": "I go with my gut feeling",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-234",
+      "number": 234,
+      "category": "Decision Making",
+      "label": "C",
+      "text": "I look for guidance from someone nearby",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-234",
+      "number": 234,
+      "category": "Decision Making",
+      "label": "D",
+      "text": "I try to think fast and stay flexible",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-235",
+      "number": 235,
+      "category": "Decision Making",
+      "label": "A",
+      "text": "More information or research",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-235",
+      "number": 235,
+      "category": "Decision Making",
+      "label": "B",
+      "text": "Sleeping on it and reflecting",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-235",
+      "number": 235,
+      "category": "Decision Making",
+      "label": "C",
+      "text": "Talking to friends or family",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-235",
+      "number": 235,
+      "category": "Decision Making",
+      "label": "D",
+      "text": "Comparing the possible outcomes",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-236",
+      "number": 236,
+      "category": "Decision Making",
+      "label": "A",
+      "text": "Rarely, I stick with my choice",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-236",
+      "number": 236,
+      "category": "Decision Making",
+      "label": "B",
+      "text": "Sometimes, if new information comes up",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-236",
+      "number": 236,
+      "category": "Decision Making",
+      "label": "C",
+      "text": "Occasionally, especially after talking to others",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-236",
+      "number": 236,
+      "category": "Decision Making",
+      "label": "D",
+      "text": "Fairly often, if I find a better option",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-237",
+      "number": 237,
+      "category": "Decision Making",
+      "label": "A",
+      "text": "What makes logical sense for my future",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-237",
+      "number": 237,
+      "category": "Decision Making",
+      "label": "B",
+      "text": "What feels right to me",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-237",
+      "number": 237,
+      "category": "Decision Making",
+      "label": "C",
+      "text": "What people I trust recommend",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-237",
+      "number": 237,
+      "category": "Decision Making",
+      "label": "D",
+      "text": "What has the best possible outcome",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-238",
+      "number": 238,
+      "category": "Decision Making",
+      "label": "A",
+      "text": "I think it through carefully to be fair",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-238",
+      "number": 238,
+      "category": "Decision Making",
+      "label": "B",
+      "text": "I consider how it feels to everyone involved",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-238",
+      "number": 238,
+      "category": "Decision Making",
+      "label": "C",
+      "text": "I ask others for their input",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-238",
+      "number": 238,
+      "category": "Decision Making",
+      "label": "D",
+      "text": "I weigh the impact on everyone before deciding",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-239",
+      "number": 239,
+      "category": "Decision Making",
+      "label": "A",
+      "text": "Choose based on the facts and likely outcome",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-239",
+      "number": 239,
+      "category": "Decision Making",
+      "label": "B",
+      "text": "Go with whichever feels more right",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-239",
+      "number": 239,
+      "category": "Decision Making",
+      "label": "C",
+      "text": "Ask someone you trust for their opinion",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-239",
+      "number": 239,
+      "category": "Decision Making",
+      "label": "D",
+      "text": "Weigh the risk against the potential reward",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-240",
+      "number": 240,
+      "category": "Decision Making",
+      "label": "A",
+      "text": "Confident, because I researched it well",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-240",
+      "number": 240,
+      "category": "Decision Making",
+      "label": "B",
+      "text": "At peace, because it felt right",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-240",
+      "number": 240,
+      "category": "Decision Making",
+      "label": "C",
+      "text": "Reassured, because others supported it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-240",
+      "number": 240,
+      "category": "Decision Making",
+      "label": "D",
+      "text": "Satisfied, because I considered all angles",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-241",
+      "number": 241,
+      "category": "Decision Making",
+      "label": "A",
+      "text": "Narrow them down using clear criteria",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-241",
+      "number": 241,
+      "category": "Decision Making",
+      "label": "B",
+      "text": "Choose the one that feels most natural",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-241",
+      "number": 241,
+      "category": "Decision Making",
+      "label": "C",
+      "text": "Ask someone to help you decide",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-241",
+      "number": 241,
+      "category": "Decision Making",
+      "label": "D",
+      "text": "Compare them all before deciding",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-242",
+      "number": 242,
+      "category": "Decision Making",
+      "label": "A",
+      "text": "Think about what would be most useful",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-242",
+      "number": 242,
+      "category": "Decision Making",
+      "label": "B",
+      "text": "Go with whatever feels enjoyable",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-242",
+      "number": 242,
+      "category": "Decision Making",
+      "label": "C",
+      "text": "See what friends are doing",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-242",
+      "number": 242,
+      "category": "Decision Making",
+      "label": "D",
+      "text": "Weigh a few options and pick the best one",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-243",
+      "number": 243,
+      "category": "Decision Making",
+      "label": "A",
+      "text": "Research and facts",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-243",
+      "number": 243,
+      "category": "Decision Making",
+      "label": "B",
+      "text": "Your own feelings and passions",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-243",
+      "number": 243,
+      "category": "Decision Making",
+      "label": "C",
+      "text": "Advice from people you trust",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-243",
+      "number": 243,
+      "category": "Decision Making",
+      "label": "D",
+      "text": "A careful comparison of your options",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-244",
+      "number": 244,
+      "category": "Decision Making",
+      "label": "A",
+      "text": "Very comfortable",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-244",
+      "number": 244,
+      "category": "Decision Making",
+      "label": "B",
+      "text": "Comfortable, if it feels right",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-244",
+      "number": 244,
+      "category": "Decision Making",
+      "label": "C",
+      "text": "A little uneasy, I prefer input",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-244",
+      "number": 244,
+      "category": "Decision Making",
+      "label": "D",
+      "text": "Comfortable, as long as I've thought it through",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-245",
+      "number": 245,
+      "category": "Decision Making",
+      "label": "A",
+      "text": "Being thorough and logical",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-245",
+      "number": 245,
+      "category": "Decision Making",
+      "label": "B",
+      "text": "Trusting your instincts",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-245",
+      "number": 245,
+      "category": "Decision Making",
+      "label": "C",
+      "text": "Considering others' perspectives",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-245",
+      "number": 245,
+      "category": "Decision Making",
+      "label": "D",
+      "text": "Weighing all possible outcomes",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-246",
+      "number": 246,
+      "category": "Decision Making",
+      "label": "A",
+      "text": "Analyse what went wrong",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-246",
+      "number": 246,
+      "category": "Decision Making",
+      "label": "B",
+      "text": "Trust that it was the right call at the time",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-246",
+      "number": 246,
+      "category": "Decision Making",
+      "label": "C",
+      "text": "Talk to others about what to do next",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-246",
+      "number": 246,
+      "category": "Decision Making",
+      "label": "D",
+      "text": "Learn and adjust your approach",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-247",
+      "number": 247,
+      "category": "Decision Making",
+      "label": "A",
+      "text": "Researching career paths and requirements",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-247",
+      "number": 247,
+      "category": "Decision Making",
+      "label": "B",
+      "text": "Following what genuinely excites you",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-247",
+      "number": 247,
+      "category": "Decision Making",
+      "label": "C",
+      "text": "Getting advice from people you trust",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-247",
+      "number": 247,
+      "category": "Decision Making",
+      "label": "D",
+      "text": "Comparing several options carefully",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-248",
+      "number": 248,
+      "category": "Decision Making",
+      "label": "A",
+      "text": "Think it through carefully first",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-248",
+      "number": 248,
+      "category": "Decision Making",
+      "label": "B",
+      "text": "Buy what feels right in the moment",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-248",
+      "number": 248,
+      "category": "Decision Making",
+      "label": "C",
+      "text": "Ask someone for their opinion",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-248",
+      "number": 248,
+      "category": "Decision Making",
+      "label": "D",
+      "text": "Compare value before deciding",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-249",
+      "number": 249,
+      "category": "Decision Making",
+      "label": "A",
+      "text": "I still try to find the most logical choice",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-249",
+      "number": 249,
+      "category": "Decision Making",
+      "label": "B",
+      "text": "I go with what feels best",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-249",
+      "number": 249,
+      "category": "Decision Making",
+      "label": "C",
+      "text": "I like getting perspectives from others",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-249",
+      "number": 249,
+      "category": "Decision Making",
+      "label": "D",
+      "text": "I compare outcomes as best I can",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-250",
+      "number": 250,
+      "category": "Decision Making",
+      "label": "A",
+      "text": "Careful and analytical",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-250",
+      "number": 250,
+      "category": "Decision Making",
+      "label": "B",
+      "text": "Instinctive and personal",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-250",
+      "number": 250,
+      "category": "Decision Making",
+      "label": "C",
+      "text": "Collaborative",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-250",
+      "number": 250,
+      "category": "Decision Making",
+      "label": "D",
+      "text": "Balanced and comparative",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-271",
+      "number": 271,
+      "category": "Time Management",
+      "label": "A",
+      "text": "I plan out each day in detail",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-271",
+      "number": 271,
+      "category": "Time Management",
+      "label": "B",
+      "text": "I have a rough idea and adjust as needed",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-271",
+      "number": 271,
+      "category": "Time Management",
+      "label": "C",
+      "text": "I rely on reminders and to-do lists",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-271",
+      "number": 271,
+      "category": "Time Management",
+      "label": "D",
+      "text": "I go with the flow",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-272",
+      "number": 272,
+      "category": "Time Management",
+      "label": "A",
+      "text": "Prioritise by importance",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-272",
+      "number": 272,
+      "category": "Time Management",
+      "label": "B",
+      "text": "Prioritise by deadline",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-272",
+      "number": 272,
+      "category": "Time Management",
+      "label": "C",
+      "text": "Do the easiest ones first",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-272",
+      "number": 272,
+      "category": "Time Management",
+      "label": "D",
+      "text": "Do whatever feels most urgent at the time",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-273",
+      "number": 273,
+      "category": "Time Management",
+      "label": "A",
+      "text": "Almost always",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-273",
+      "number": 273,
+      "category": "Time Management",
+      "label": "B",
+      "text": "Often",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-273",
+      "number": 273,
+      "category": "Time Management",
+      "label": "C",
+      "text": "Sometimes",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-273",
+      "number": 273,
+      "category": "Time Management",
+      "label": "D",
+      "text": "Rarely, I usually finish right before deadlines",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-274",
+      "number": 274,
+      "category": "Time Management",
+      "label": "A",
+      "text": "They help me stay organised",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-274",
+      "number": 274,
+      "category": "Time Management",
+      "label": "B",
+      "text": "They motivate me to get things done",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-274",
+      "number": 274,
+      "category": "Time Management",
+      "label": "C",
+      "text": "They cause me some stress but I manage",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-274",
+      "number": 274,
+      "category": "Time Management",
+      "label": "D",
+      "text": "They often sneak up on me",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-275",
+      "number": 275,
+      "category": "Time Management",
+      "label": "A",
+      "text": "Getting ahead on upcoming tasks",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-275",
+      "number": 275,
+      "category": "Time Management",
+      "label": "B",
+      "text": "Relaxing, then getting back to tasks",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-275",
+      "number": 275,
+      "category": "Time Management",
+      "label": "C",
+      "text": "Whatever feels most needed at the time",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-275",
+      "number": 275,
+      "category": "Time Management",
+      "label": "D",
+      "text": "Whatever I feel like in the moment",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-276",
+      "number": 276,
+      "category": "Time Management",
+      "label": "A",
+      "text": "I use a planner or schedule",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-276",
+      "number": 276,
+      "category": "Time Management",
+      "label": "B",
+      "text": "I check the clock regularly",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-276",
+      "number": 276,
+      "category": "Time Management",
+      "label": "C",
+      "text": "I rely on reminders from my phone",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-276",
+      "number": 276,
+      "category": "Time Management",
+      "label": "D",
+      "text": "I don't track it closely",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-277",
+      "number": 277,
+      "category": "Time Management",
+      "label": "A",
+      "text": "Balance them with a clear plan",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-277",
+      "number": 277,
+      "category": "Time Management",
+      "label": "B",
+      "text": "Manage them reasonably well",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-277",
+      "number": 277,
+      "category": "Time Management",
+      "label": "C",
+      "text": "Sometimes struggle to fit everything in",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-277",
+      "number": 277,
+      "category": "Time Management",
+      "label": "D",
+      "text": "Often feel like there isn't enough time",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-278",
+      "number": 278,
+      "category": "Time Management",
+      "label": "A",
+      "text": "Adjust my schedule calmly",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-278",
+      "number": 278,
+      "category": "Time Management",
+      "label": "B",
+      "text": "Feel a bit stressed but manage",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-278",
+      "number": 278,
+      "category": "Time Management",
+      "label": "C",
+      "text": "Ask for help to catch up",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-278",
+      "number": 278,
+      "category": "Time Management",
+      "label": "D",
+      "text": "Push other tasks aside to finish it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-279",
+      "number": 279,
+      "category": "Time Management",
+      "label": "A",
+      "text": "A strict, structured routine",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-279",
+      "number": 279,
+      "category": "Time Management",
+      "label": "B",
+      "text": "A loose routine with some structure",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-279",
+      "number": 279,
+      "category": "Time Management",
+      "label": "C",
+      "text": "Mostly flexible",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-279",
+      "number": 279,
+      "category": "Time Management",
+      "label": "D",
+      "text": "Completely flexible, no set routine",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-280",
+      "number": 280,
+      "category": "Time Management",
+      "label": "A",
+      "text": "As soon as they're given",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-280",
+      "number": 280,
+      "category": "Time Management",
+      "label": "B",
+      "text": "A few days after they're given",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-280",
+      "number": 280,
+      "category": "Time Management",
+      "label": "C",
+      "text": "About a week before the deadline",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-280",
+      "number": 280,
+      "category": "Time Management",
+      "label": "D",
+      "text": "Close to the deadline",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-281",
+      "number": 281,
+      "category": "Time Management",
+      "label": "A",
+      "text": "I avoid it, I prefer focusing on one thing",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-281",
+      "number": 281,
+      "category": "Time Management",
+      "label": "B",
+      "text": "I can do it occasionally when needed",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-281",
+      "number": 281,
+      "category": "Time Management",
+      "label": "C",
+      "text": "I multitask fairly often",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-281",
+      "number": 281,
+      "category": "Time Management",
+      "label": "D",
+      "text": "I multitask most of the time",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-282",
+      "number": 282,
+      "category": "Time Management",
+      "label": "A",
+      "text": "Focus on completing the most important parts",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-282",
+      "number": 282,
+      "category": "Time Management",
+      "label": "B",
+      "text": "Work faster to complete everything",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-282",
+      "number": 282,
+      "category": "Time Management",
+      "label": "C",
+      "text": "Ask for an extension if possible",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-282",
+      "number": 282,
+      "category": "Time Management",
+      "label": "D",
+      "text": "Rush through and hope for the best",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-283",
+      "number": 283,
+      "category": "Time Management",
+      "label": "A",
+      "text": "Balancing study, rest, and activities",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-283",
+      "number": 283,
+      "category": "Time Management",
+      "label": "B",
+      "text": "Mostly catching up on schoolwork",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-283",
+      "number": 283,
+      "category": "Time Management",
+      "label": "C",
+      "text": "Mostly relaxing and socialising",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-283",
+      "number": 283,
+      "category": "Time Management",
+      "label": "D",
+      "text": "It varies a lot from week to week",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-284",
+      "number": 284,
+      "category": "Time Management",
+      "label": "A",
+      "text": "Better than most",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-284",
+      "number": 284,
+      "category": "Time Management",
+      "label": "B",
+      "text": "About average",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-284",
+      "number": 284,
+      "category": "Time Management",
+      "label": "C",
+      "text": "I struggle a bit more than others",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-284",
+      "number": 284,
+      "category": "Time Management",
+      "label": "D",
+      "text": "It varies depending on the week",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-285",
+      "number": 285,
+      "category": "Time Management",
+      "label": "A",
+      "text": "Getting absorbed in interesting work",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-285",
+      "number": 285,
+      "category": "Time Management",
+      "label": "B",
+      "text": "Social media or entertainment",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-285",
+      "number": 285,
+      "category": "Time Management",
+      "label": "C",
+      "text": "Talking with friends",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-285",
+      "number": 285,
+      "category": "Time Management",
+      "label": "D",
+      "text": "Unexpected interruptions",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-286",
+      "number": 286,
+      "category": "Time Management",
+      "label": "A",
+      "text": "Plan and prepare well in advance",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-286",
+      "number": 286,
+      "category": "Time Management",
+      "label": "B",
+      "text": "Prepare steadily over a few days",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-286",
+      "number": 286,
+      "category": "Time Management",
+      "label": "C",
+      "text": "Prepare mostly the day before",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-286",
+      "number": 286,
+      "category": "Time Management",
+      "label": "D",
+      "text": "Prepare at the last minute",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-287",
+      "number": 287,
+      "category": "Time Management",
+      "label": "A",
+      "text": "Very likely",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-287",
+      "number": 287,
+      "category": "Time Management",
+      "label": "B",
+      "text": "Fairly likely",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-287",
+      "number": 287,
+      "category": "Time Management",
+      "label": "C",
+      "text": "Sometimes",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-287",
+      "number": 287,
+      "category": "Time Management",
+      "label": "D",
+      "text": "Rarely, I tend to push it back",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-288",
+      "number": 288,
+      "category": "Time Management",
+      "label": "A",
+      "text": "Adjust calmly and get back on track",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-288",
+      "number": 288,
+      "category": "Time Management",
+      "label": "B",
+      "text": "Get a little frustrated but manage",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-288",
+      "number": 288,
+      "category": "Time Management",
+      "label": "C",
+      "text": "Struggle to regain focus",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-288",
+      "number": 288,
+      "category": "Time Management",
+      "label": "D",
+      "text": "Often lose track of the rest of my plan",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-289",
+      "number": 289,
+      "category": "Time Management",
+      "label": "A",
+      "text": "A written planner or calendar",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-289",
+      "number": 289,
+      "category": "Time Management",
+      "label": "B",
+      "text": "Phone reminders and alarms",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-289",
+      "number": 289,
+      "category": "Time Management",
+      "label": "C",
+      "text": "To-do lists",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-289",
+      "number": 289,
+      "category": "Time Management",
+      "label": "D",
+      "text": "I mostly manage without any tool",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-290",
+      "number": 290,
+      "category": "Time Management",
+      "label": "A",
+      "text": "I'm very organised and punctual",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-290",
+      "number": 290,
+      "category": "Time Management",
+      "label": "B",
+      "text": "I'm mostly on top of things",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-290",
+      "number": 290,
+      "category": "Time Management",
+      "label": "C",
+      "text": "I manage, but it takes effort",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-290",
+      "number": 290,
+      "category": "Time Management",
+      "label": "D",
+      "text": "I often feel like time gets away from me",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-291",
+      "number": 291,
+      "category": "Confidence",
+      "label": "A",
+      "text": "Confident, I'm willing to take the risk",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-291",
+      "number": 291,
+      "category": "Confidence",
+      "label": "B",
+      "text": "A bit nervous, but I'll try",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-291",
+      "number": 291,
+      "category": "Confidence",
+      "label": "C",
+      "text": "Hesitant, but I push through",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-291",
+      "number": 291,
+      "category": "Confidence",
+      "label": "D",
+      "text": "I prefer to avoid the risk of failing",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-292",
+      "number": 292,
+      "category": "Confidence",
+      "label": "A",
+      "text": "I take it well and use it to improve",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-292",
+      "number": 292,
+      "category": "Confidence",
+      "label": "B",
+      "text": "It stings a little, but I recover quickly",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-292",
+      "number": 292,
+      "category": "Confidence",
+      "label": "C",
+      "text": "It affects me for a while",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-292",
+      "number": 292,
+      "category": "Confidence",
+      "label": "D",
+      "text": "I try not to let it show, but it's hard",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-293",
+      "number": 293,
+      "category": "Confidence",
+      "label": "A",
+      "text": "Proud and confident in my abilities",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-293",
+      "number": 293,
+      "category": "Confidence",
+      "label": "B",
+      "text": "Happy, but I don't dwell on it much",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-293",
+      "number": 293,
+      "category": "Confidence",
+      "label": "C",
+      "text": "Relieved more than proud",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-293",
+      "number": 293,
+      "category": "Confidence",
+      "label": "D",
+      "text": "Grateful, but I wonder if I got lucky",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-294",
+      "number": 294,
+      "category": "Confidence",
+      "label": "A",
+      "text": "Very comfortable",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-294",
+      "number": 294,
+      "category": "Confidence",
+      "label": "B",
+      "text": "Comfortable most of the time",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-294",
+      "number": 294,
+      "category": "Confidence",
+      "label": "C",
+      "text": "A little nervous, but I'll speak up",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-294",
+      "number": 294,
+      "category": "Confidence",
+      "label": "D",
+      "text": "I usually keep my opinions to myself",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-295",
+      "number": 295,
+      "category": "Confidence",
+      "label": "A",
+      "text": "Laugh it off and move on",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-295",
+      "number": 295,
+      "category": "Confidence",
+      "label": "B",
+      "text": "Feel a little embarrassed but recover quickly",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-295",
+      "number": 295,
+      "category": "Confidence",
+      "label": "C",
+      "text": "Feel quite self-conscious about it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-295",
+      "number": 295,
+      "category": "Confidence",
+      "label": "D",
+      "text": "Try to avoid drawing attention to it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-296",
+      "number": 296,
+      "category": "Confidence",
+      "label": "A",
+      "text": "Confident in my strengths",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-296",
+      "number": 296,
+      "category": "Confidence",
+      "label": "B",
+      "text": "Fairly confident, with room to grow",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-296",
+      "number": 296,
+      "category": "Confidence",
+      "label": "C",
+      "text": "Unsure at times",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-296",
+      "number": 296,
+      "category": "Confidence",
+      "label": "D",
+      "text": "I often compare myself and feel behind",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-297",
+      "number": 297,
+      "category": "Confidence",
+      "label": "A",
+      "text": "\"I can figure this out\"",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-297",
+      "number": 297,
+      "category": "Confidence",
+      "label": "B",
+      "text": "\"This might be hard, but I'll try\"",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-297",
+      "number": 297,
+      "category": "Confidence",
+      "label": "C",
+      "text": "\"I hope I don't mess this up\"",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-297",
+      "number": 297,
+      "category": "Confidence",
+      "label": "D",
+      "text": "\"I'm not sure I can do this\"",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-298",
+      "number": 298,
+      "category": "Confidence",
+      "label": "A",
+      "text": "I accept them confidently",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-298",
+      "number": 298,
+      "category": "Confidence",
+      "label": "B",
+      "text": "I appreciate them, a little shyly",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-298",
+      "number": 298,
+      "category": "Confidence",
+      "label": "C",
+      "text": "I sometimes brush them off",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-298",
+      "number": 298,
+      "category": "Confidence",
+      "label": "D",
+      "text": "I find them a bit uncomfortable",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-299",
+      "number": 299,
+      "category": "Confidence",
+      "label": "A",
+      "text": "Excited and self-assured",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-299",
+      "number": 299,
+      "category": "Confidence",
+      "label": "B",
+      "text": "A little nervous but hopeful",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-299",
+      "number": 299,
+      "category": "Confidence",
+      "label": "C",
+      "text": "Anxious but willing to adjust",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-299",
+      "number": 299,
+      "category": "Confidence",
+      "label": "D",
+      "text": "Quite uneasy about it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-300",
+      "number": 300,
+      "category": "Confidence",
+      "label": "A",
+      "text": "I set them confidently and go for them",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-300",
+      "number": 300,
+      "category": "Confidence",
+      "label": "B",
+      "text": "I set them, with some doubt",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-300",
+      "number": 300,
+      "category": "Confidence",
+      "label": "C",
+      "text": "I set smaller, safer goals instead",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-300",
+      "number": 300,
+      "category": "Confidence",
+      "label": "D",
+      "text": "I avoid setting goals that feel too big",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-301",
+      "number": 301,
+      "category": "Confidence",
+      "label": "A",
+      "text": "Defend it confidently with reasoning",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-301",
+      "number": 301,
+      "category": "Confidence",
+      "label": "B",
+      "text": "Consider their point but stand your ground",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-301",
+      "number": 301,
+      "category": "Confidence",
+      "label": "C",
+      "text": "Start doubting yourself a little",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-301",
+      "number": 301,
+      "category": "Confidence",
+      "label": "D",
+      "text": "Often change your opinion to avoid conflict",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-302",
+      "number": 302,
+      "category": "Confidence",
+      "label": "A",
+      "text": "Comfortable and open",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-302",
+      "number": 302,
+      "category": "Confidence",
+      "label": "B",
+      "text": "A little nervous, but I warm up quickly",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-302",
+      "number": 302,
+      "category": "Confidence",
+      "label": "C",
+      "text": "Anxious until I know someone",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-302",
+      "number": 302,
+      "category": "Confidence",
+      "label": "D",
+      "text": "Quite uncomfortable",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-303",
+      "number": 303,
+      "category": "Confidence",
+      "label": "A",
+      "text": "I know them clearly and use them confidently",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-303",
+      "number": 303,
+      "category": "Confidence",
+      "label": "B",
+      "text": "I'm aware of some of them",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-303",
+      "number": 303,
+      "category": "Confidence",
+      "label": "C",
+      "text": "I sometimes underestimate them",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-303",
+      "number": 303,
+      "category": "Confidence",
+      "label": "D",
+      "text": "I find it hard to recognise my strengths",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-304",
+      "number": 304,
+      "category": "Confidence",
+      "label": "A",
+      "text": "Say so confidently and ask for help",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-304",
+      "number": 304,
+      "category": "Confidence",
+      "label": "B",
+      "text": "Feel a little unsure but ask anyway",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-304",
+      "number": 304,
+      "category": "Confidence",
+      "label": "C",
+      "text": "Avoid drawing attention to it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-304",
+      "number": 304,
+      "category": "Confidence",
+      "label": "D",
+      "text": "Prefer to stay quiet",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-305",
+      "number": 305,
+      "category": "Confidence",
+      "label": "A",
+      "text": "Confident, I enjoy the challenge",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-305",
+      "number": 305,
+      "category": "Confidence",
+      "label": "B",
+      "text": "A little nervous, but excited too",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-305",
+      "number": 305,
+      "category": "Confidence",
+      "label": "C",
+      "text": "Uneasy, I prefer not to compete",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-305",
+      "number": 305,
+      "category": "Confidence",
+      "label": "D",
+      "text": "I avoid competition when I can",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-306",
+      "number": 306,
+      "category": "Confidence",
+      "label": "A",
+      "text": "\"I earned this\"",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-306",
+      "number": 306,
+      "category": "Confidence",
+      "label": "B",
+      "text": "\"That's nice to hear\"",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-306",
+      "number": 306,
+      "category": "Confidence",
+      "label": "C",
+      "text": "\"I hope I can keep it up\"",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-306",
+      "number": 306,
+      "category": "Confidence",
+      "label": "D",
+      "text": "\"I got lucky this time\"",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-307",
+      "number": 307,
+      "category": "Confidence",
+      "label": "A",
+      "text": "Confident and proud to do it",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-307",
+      "number": 307,
+      "category": "Confidence",
+      "label": "B",
+      "text": "A little nervous, but willing",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-307",
+      "number": 307,
+      "category": "Confidence",
+      "label": "C",
+      "text": "Anxious about the pressure",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-307",
+      "number": 307,
+      "category": "Confidence",
+      "label": "D",
+      "text": "I'd rather not be chosen",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-308",
+      "number": 308,
+      "category": "Confidence",
+      "label": "A",
+      "text": "Confident and ready",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-308",
+      "number": 308,
+      "category": "Confidence",
+      "label": "B",
+      "text": "Cautiously optimistic",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-308",
+      "number": 308,
+      "category": "Confidence",
+      "label": "C",
+      "text": "A bit unsure",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-308",
+      "number": 308,
+      "category": "Confidence",
+      "label": "D",
+      "text": "Nervous about how things will go",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-309",
+      "number": 309,
+      "category": "Confidence",
+      "label": "A",
+      "text": "Stay confident and bounce back quickly",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-309",
+      "number": 309,
+      "category": "Confidence",
+      "label": "B",
+      "text": "Feel down briefly, then recover",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-309",
+      "number": 309,
+      "category": "Confidence",
+      "label": "C",
+      "text": "It takes a while to feel confident again",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-309",
+      "number": 309,
+      "category": "Confidence",
+      "label": "D",
+      "text": "It really shakes my confidence",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-310",
+      "number": 310,
+      "category": "Confidence",
+      "label": "A",
+      "text": "\"I believe in my abilities\"",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-310",
+      "number": 310,
+      "category": "Confidence",
+      "label": "B",
+      "text": "\"I'm growing more confident over time\"",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-310",
+      "number": 310,
+      "category": "Confidence",
+      "label": "C",
+      "text": "\"I have confidence in some areas, not others\"",
+      "reason": "ambiguous_or_weak_heuristic"
+    },
+    {
+      "bank_id": "qb-310",
+      "number": 310,
+      "category": "Confidence",
+      "label": "D",
+      "text": "\"I often doubt myself\"",
+      "reason": "ambiguous_or_weak_heuristic"
+    }
+  ]
+}

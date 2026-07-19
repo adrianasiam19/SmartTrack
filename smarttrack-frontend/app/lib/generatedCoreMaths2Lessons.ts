@@ -1,4 +1,4 @@
-// Auto-generated from Core Maths SHS 2 document
+// Auto-generated from Core Maths Phase 2 document
 // Sections: 9 | Lessons: 36
 import { Lesson } from './learningContent';
 

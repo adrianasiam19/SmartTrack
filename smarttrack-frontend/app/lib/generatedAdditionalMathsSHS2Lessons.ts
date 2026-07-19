@@ -1,6 +1,6 @@
 /**
  * generatedAdditionalMathsSHS2Lessons.ts
- * Auto-generated Additional Mathematics SHS 2 lessons from Ministry of Education curriculum materials.
+ * Auto-generated Additional Mathematics Phase 2 lessons from Ministry of Education curriculum materials.
  * Source: Additional Maths Y2.pdf (Ministry of Education, 2025)
  * Contains 12 sections with 24 lessons total.
  */
@@ -27,7 +27,7 @@ export const ADD_MATHS_SHS2_LESSONS: Lesson[] = [
       {
         id: "add-math-2-s1t1-intro",
         type: "info",
-        content: "**Set Theory and De Morgan's Laws**\n\nIn SHS 2, we deepen our understanding of set theory by exploring De Morgan's Laws and their applications. Sets provide a foundation for understanding relationships between collections of objects, which is essential in probability, logic, and advanced mathematics.",
+        content: "**Set Theory and De Morgan's Laws**\n\nIn Phase 2, we deepen our understanding of set theory by exploring De Morgan's Laws and their applications. Sets provide a foundation for understanding relationships between collections of objects, which is essential in probability, logic, and advanced mathematics.",
       },
       {
         id: "add-math-2-s1t1-content-1",
@@ -79,7 +79,7 @@ export const ADD_MATHS_SHS2_LESSONS: Lesson[] = [
       {
         id: "add-math-2-s1t2-intro",
         type: "info",
-        content: "**The Binomial Theorem for Rational and Negative Indices**\n\nIn SHS 1, we learned to expand (a + b)ⁿ for positive integer n using Pascal's triangle and the combination formula. In SHS 2, we extend the binomial theorem to rational (fractional) and negative indices, which allows us to approximate roots and complex expressions.",
+        content: "**The Binomial Theorem for Rational and Negative Indices**\n\nIn Phase 1, we learned to expand (a + b)ⁿ for positive integer n using Pascal's triangle and the combination formula. In Phase 2, we extend the binomial theorem to rational (fractional) and negative indices, which allows us to approximate roots and complex expressions.",
       },
       {
         id: "add-math-2-s1t2-content-1",
@@ -451,7 +451,7 @@ export const ADD_MATHS_SHS2_LESSONS: Lesson[] = [
       {
         id: "add-math-2-s5t1-intro",
         type: "info",
-        content: "**Vectors in Two and Three Dimensions**\n\nVectors are quantities that have both magnitude and direction. They are essential in physics (force, velocity, acceleration), engineering, and computer graphics. In SHS 2, we extend vector concepts to three dimensions.",
+        content: "**Vectors in Two and Three Dimensions**\n\nVectors are quantities that have both magnitude and direction. They are essential in physics (force, velocity, acceleration), engineering, and computer graphics. In Phase 2, we extend vector concepts to three dimensions.",
       },
       {
         id: "add-math-2-s5t1-content-1",
@@ -769,7 +769,7 @@ export const ADD_MATHS_SHS2_LESSONS: Lesson[] = [
       {
         id: "add-math-2-s8t1-intro",
         type: "info",
-        content: "**Laws of Indices and Exponential Equations**\n\nIndices (exponents) and logarithms are powerful tools for working with exponential relationships. In SHS 2, we extend our knowledge to solve complex exponential equations and apply them to real-world growth and decay problems.",
+        content: "**Laws of Indices and Exponential Equations**\n\nIndices (exponents) and logarithms are powerful tools for working with exponential relationships. In Phase 2, we extend our knowledge to solve complex exponential equations and apply them to real-world growth and decay problems.",
       },
       {
         id: "add-math-2-s8t1-content-1",
@@ -875,7 +875,7 @@ export const ADD_MATHS_SHS2_LESSONS: Lesson[] = [
       {
         id: "add-math-2-s9t1-intro",
         type: "info",
-        content: "**Trigonometric Ratios and Compound Angle Formulae**\n\nTrigonometry deals with the relationships between angles and sides of triangles. In SHS 2, we extend trigonometric knowledge by exploring compound angle formulae, which allow us to find exact values for angles that are sums or differences of known angles.",
+        content: "**Trigonometric Ratios and Compound Angle Formulae**\n\nTrigonometry deals with the relationships between angles and sides of triangles. In Phase 2, we extend trigonometric knowledge by exploring compound angle formulae, which allow us to find exact values for angles that are sums or differences of known angles.",
       },
       {
         id: "add-math-2-s9t1-content-1",

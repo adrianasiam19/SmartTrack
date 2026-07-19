@@ -17,7 +17,16 @@ from app.revision.router import router as revision_router
 from app.assessment.starter_router import router as starter_router
 from app.assessment.challenge_hub_router import router as challenge_hub_router
 from app.users.router import router as users_router
+from app.phases.router import router as phases_router
+from app.psychometrics.router import router as psychometrics_router
+from app.recommendations.router import router as recommendations_router
 
+# Import models so create_all sees them
+import app.phases.models  # noqa: F401
+import app.psychometrics.models  # noqa: F401
+import app.recommendations.models  # noqa: F401
+import app.assessment.models  # noqa: F401
+import app.users.models  # noqa: F401
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -84,6 +93,9 @@ app.include_router(revision_router, prefix="/api/v1")
 app.include_router(starter_router, prefix="/api/v1")
 app.include_router(challenge_hub_router, prefix="/api/v1")
 app.include_router(learning_router, prefix="/api/v1")
+app.include_router(phases_router, prefix="/api/v1")
+app.include_router(psychometrics_router, prefix="/api/v1")
+app.include_router(recommendations_router, prefix="/api/v1")
 
 
 # ── Root route ────────────────────────────────────────────────────────────────

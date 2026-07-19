@@ -1,7 +1,7 @@
 /**
  * generatedSocialStudiesLessons.ts
  * ──────────────────────────────────
- * Auto-generated Social Studies SHS 1 lessons from
+ * Auto-generated Social Studies Phase 1 lessons from
  * Ministry of Education curriculum materials.
  *
  * DO NOT EDIT DIRECTLY — re-run scripts/generate_socialstudies_lessons.py instead.

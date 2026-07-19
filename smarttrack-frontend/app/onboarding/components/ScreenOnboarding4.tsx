@@ -24,7 +24,7 @@ export default function ScreenOnboarding4({ onNext }: Props) {
             Learn & Grow
           </h1>
           <p className="text-base text-[#475569] mb-6 leading-relaxed">
-            Access a rich library of lessons across core subjects — all tailored to the Ghanaian SHS curriculum.
+            Access a rich library of lessons across core subjects — tailored to your learning path.
           </p>
 
           <div className="space-y-3 mb-8">

@@ -22,7 +22,22 @@ const API_BASE_URL =
   'http://localhost:8000/api/v1';
 
 export type Programme = 'General Science' | 'General Arts' | 'Business' | 'Visual Arts' | 'Home Economics' | 'Technical';
+/** Internal API value — never show these labels in the UI. Use phaseLabelFromLevel(). */
 export type SHSLevel = 'SHS 1' | 'SHS 2' | 'SHS 3' | 'Completed SHS';
+
+/** User-facing phase labels mapped from internal level codes. */
+export const PHASE_LEVEL_OPTIONS: { value: SHSLevel; label: string }[] = [
+  { value: 'SHS 1', label: 'Phase 1' },
+  { value: 'SHS 2', label: 'Phase 2' },
+  { value: 'SHS 3', label: 'Phase 3' },
+  { value: 'Completed SHS', label: 'Completed' },
+];
+
+export function phaseLabelFromLevel(level: string | null | undefined): string {
+  if (!level) return 'Not set';
+  const match = PHASE_LEVEL_OPTIONS.find((o) => o.value === level);
+  return match?.label ?? level.replace(/^SHS\s*/i, 'Phase ').replace(/Completed SHS/i, 'Completed');
+}
 
 export interface AuthTokens {
   access_token: string;
@@ -56,7 +71,7 @@ export interface RegisterRequest {
   password: string;
   full_name: string;
   programme: Programme;
-  shs_level: SHSLevel;
+  shs_level?: SHSLevel | null;
   school?: string | null;
 }
 
@@ -144,11 +159,6 @@ export const clearClientSession = (): number => {
   window.localStorage.removeItem(STORAGE_KEYS.user);
 
   return authEpoch;
-};
-
-/** @deprecated Prefer clearClientSession — kept as a compatible alias. */
-export const clearTokens = (): void => {
-  clearClientSession();
 };
 
 export const storeTokens = (tokens: AuthTokens): void => {

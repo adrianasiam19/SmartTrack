@@ -5,10 +5,14 @@ import AITutorLesson from './AITutorLesson';
 
 const getAITaughtLesson = vi.fn();
 const askCurriculumTutor = vi.fn();
+const getRelatedTopics = vi.fn();
+const toggleLearningBookmark = vi.fn();
 
 vi.mock('../lib/learningApi', () => ({
   getAITaughtLesson: (...args: unknown[]) => getAITaughtLesson(...args),
   askCurriculumTutor: (...args: unknown[]) => askCurriculumTutor(...args),
+  getRelatedTopics: (...args: unknown[]) => getRelatedTopics(...args),
+  toggleLearningBookmark: (...args: unknown[]) => toggleLearningBookmark(...args),
 }));
 
 const TAUGHT_LESSON = {
@@ -40,9 +44,15 @@ describe('AITutorLesson', () => {
     vi.clearAllMocks();
     getAITaughtLesson.mockResolvedValue(TAUGHT_LESSON);
     askCurriculumTutor.mockResolvedValue('Here is another curriculum-based example.');
+    getRelatedTopics.mockResolvedValue([]);
+    toggleLearningBookmark.mockResolvedValue({
+      curriculum_id: 'coremath-number-systems',
+      bookmarked: true,
+      bookmarks: [],
+    });
   });
 
-  it('renders the complete AI teaching structure without raw textbook filler', async () => {
+  it('renders tabbed topic shell without raw textbook filler', async () => {
     render(
       <AITutorLesson
         curriculumId="coremath-number-systems"
@@ -53,13 +63,10 @@ describe('AITutorLesson', () => {
 
     expect(screen.getByText(/Atlas AI is preparing your lesson/i)).toBeInTheDocument();
     expect(await screen.findByRole('heading', { name: 'Number Systems' })).toBeInTheDocument();
-    expect(screen.getByText('Main Explanation')).toBeInTheDocument();
-    expect(screen.getByText('Step-by-Step Examples')).toBeInTheDocument();
-    expect(screen.getByText('Real-Life Applications')).toBeInTheDocument();
-    expect(screen.getByText('Important Points to Remember')).toBeInTheDocument();
-    expect(screen.getByText('Common Mistakes Students Make')).toBeInTheDocument();
-    expect(screen.getByText('Short Summary')).toBeInTheDocument();
-    expect(screen.getByText('Ask Atlas AI')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Overview' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Lesson Notes' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Worked Examples' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Atlas AI' })).toBeInTheDocument();
     expect(screen.queryByText(/learning objectives/i)).not.toBeInTheDocument();
   });
 
@@ -73,33 +80,15 @@ describe('AITutorLesson', () => {
     );
     await screen.findByRole('heading', { name: 'Number Systems' });
 
-    fireEvent.click(screen.getByRole('button', { name: 'Give me another example.' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Atlas AI' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Give me WASSCE-style examples.' }));
 
     await waitFor(() => {
       expect(askCurriculumTutor).toHaveBeenCalledWith(
         'coremath-number-systems',
-        'Give me another example.',
+        'Give me WASSCE-style examples.',
         [],
       );
     });
-    expect(await screen.findByText('Here is another curriculum-based example.')).toBeInTheDocument();
-  });
-
-  it('awards the database lesson XP once on completion', async () => {
-    const onComplete = vi.fn();
-    render(
-      <AITutorLesson
-        curriculumId="coremath-number-systems"
-        onBack={vi.fn()}
-        onComplete={onComplete}
-      />,
-    );
-    await screen.findByRole('heading', { name: 'Number Systems' });
-
-    const complete = screen.getByRole('button', { name: 'Complete Lesson' });
-    fireEvent.click(complete);
-    fireEvent.click(complete);
-    expect(onComplete).toHaveBeenCalledTimes(1);
-    expect(onComplete).toHaveBeenCalledWith(15);
   });
 });

@@ -1,7 +1,7 @@
 /**
  * generatedCoreMathsLessons.ts
  * ────────────────────────────
- * Auto-generated Core Mathematics SHS 1 lessons from
+ * Auto-generated Core Mathematics Phase 1 lessons from
  * Ministry of Education curriculum materials.
  *
  * DO NOT EDIT DIRECTLY — re-run scripts/generate_coremaths_lessons.py instead.

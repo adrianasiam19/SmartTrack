@@ -1075,6 +1075,9 @@ async def credit_pending_xp(
     if user:
         if delta != 0:
             user.xp = max(0, (user.xp or 0) + delta)
+        from app.users.gamification import rank_for_xp
+
+        user.rank = rank_for_xp(user.xp or 0)
         user_xp = user.xp or 0
 
     session["xp_credited"] = total_xp

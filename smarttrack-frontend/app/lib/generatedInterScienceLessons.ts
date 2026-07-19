@@ -1,7 +1,7 @@
 /**
  * generatedInterScienceLessons.ts
  * ────────────────────────────────
- * Auto-generated Integrated Science SHS 1 lessons from
+ * Auto-generated Integrated Science Phase 1 lessons from
  * Ministry of Education curriculum materials.
  *
  * DO NOT EDIT DIRECTLY — re-run scripts/generate_interscience_lessons.py instead.

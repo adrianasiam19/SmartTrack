@@ -1,7 +1,7 @@
 /**
  * generatedChemistryLessons.ts
  * ────────────────────────────
- * Auto-generated Chemistry SHS 1 lessons from
+ * Auto-generated Chemistry Phase 1 lessons from
  * Ministry of Education curriculum materials.
  *
  * DO NOT EDIT DIRECTLY — re-run scripts/generate_chemistry_lessons.py instead.

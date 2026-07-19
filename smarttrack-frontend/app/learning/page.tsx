@@ -1,989 +1,750 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Lock, ChevronDown, Loader2, Search } from 'lucide-react';
+import {
+  ArrowLeft,
+  Bookmark,
+  BookOpen,
+  Clock,
+  Loader2,
+  Search,
+  Sparkles,
+} from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import BottomNav from '../components/BottomNav';
 import AppLayout from '../components/AppLayout';
 import AITutorLesson from '../components/AITutorLesson';
 import {
-  getAccessToken, getStoredUser, getCurrentUser, updateUserProfile, storeUser,
-  type UserProfile, type Programme, type SHSLevel,
+  getAccessToken,
+  getStoredUser,
+  getCurrentUser,
+  storeUser,
+  type UserProfile,
 } from '../lib/authApi';
-import { ALL_LESSONS, getLessonById, type Lesson } from '../lib/learningContent';
-import { searchCurriculumTopics, type CurriculumTopic } from '../lib/learningApi';
-import { getLearningStage, getCurrentZone, calculateZoneProgress } from '../lib/adaptiveEngine';
+import { ALL_LESSONS } from '../lib/learningContent';
+import {
+  completeCurriculumLesson,
+  getLibraryHome,
+  listTopicsBySubject,
+  searchCurriculumTopics,
+  type CurriculumTopic,
+  type LibraryHome,
+} from '../lib/learningApi';
 
-// ── Core Subjects ──────────────────────────────────────────────────────────
-const SUBJECTS = [
-  { id: 'Core Mathematics', label: 'Core Mathematics', description: 'Number sense, algebra, geometry, statistics and problem solving', color: '#4F46E5' },
-  { id: 'English Language', label: 'English Language', description: 'Grammar, comprehension, composition, oral skills and literature', color: '#D97706' },
-  { id: 'Integrated Science', label: 'Integrated Science', description: 'Scientific method, materials, force, energy and health', color: '#059669' },
-  { id: 'Social Studies', label: 'Social Studies', description: 'Governance, history, economics and civic responsibility', color: '#7C3AED' },
+type View = 'home' | 'subject' | 'topic';
+
+const CORE_SUBJECTS = [
+  { id: 'English Language', label: 'English Language', color: '#D97706' },
+  { id: 'Core Mathematics', label: 'Core Mathematics', color: '#4F46E5' },
+  { id: 'Integrated Science', label: 'Integrated Science', color: '#059669' },
+  { id: 'Social Studies', label: 'Social Studies', color: '#7C3AED' },
 ] as const;
 
-// ── Elective Subjects ─────────────────────────────────────────────────────
-const ELECTIVE_SUBJECTS = [
-  { id: 'Biology', label: 'Biology', description: 'Living organisms, cells, genetics and ecology', color: '#16A34A', icon: '🧬' },
-  { id: 'Chemistry', label: 'Chemistry', description: 'Atoms, molecules, reactions and the periodic table', color: '#0EA5E9', icon: '⚗️' },
-  { id: 'Additional Mathematics', label: 'Additional Mathematics', description: 'Algebra, calculus, matrices, vectors and probability', color: '#7C3AED', icon: '🔢' },
-  { id: 'Physics', label: 'Physics', description: 'Motion, energy, light, electricity and nuclear physics', color: '#6366F1', icon: '⚛️' },
+const ELECTIVE_CANDIDATES = [
+  { id: 'Biology', label: 'Biology', color: '#16A34A' },
+  { id: 'Chemistry', label: 'Chemistry', color: '#0EA5E9' },
+  { id: 'Physics', label: 'Physics', color: '#6366F1' },
+  { id: 'Additional Mathematics', label: 'Elective Mathematics', color: '#7C3AED' },
+  { id: 'Elective Mathematics', label: 'Elective Mathematics', color: '#7C3AED' },
 ] as const;
 
-type SubjectId = (typeof SUBJECTS)[number]['id'] | (typeof ELECTIVE_SUBJECTS)[number]['id'];
-type DrillView = 'subjects' | 'elective-subjects' | 'modules' | 'lessons' | 'coming-soon';
+/** Local fallback when /learning/library is empty or unavailable */
+function buildLocalRecommendations(
+  completedIds: Set<string>,
+): CurriculumTopic[] {
+  const picks: CurriculumTopic[] = [];
+  const seen = new Set<string>();
+  const preferSubjects = [
+    'Core Mathematics',
+    'English Language',
+    'Integrated Science',
+    'Social Studies',
+    'Biology',
+    'Chemistry',
+    'Physics',
+    'Additional Mathematics',
+  ];
 
-// ── Module definitions ────────────────────────────────────────────────────
-const MODULE_NAMES: Record<string, Record<string, string>> = {
-  'Core Mathematics': {
-    m1: 'Number Sets',
-    m2: 'Fractions and Percentages',
-    m3: 'Algebraic Expressions and Factorisation',
-    m4: 'Linear Equations, Relations and Functions',
-    m5: 'Angles and the Pythagorean Theorem',
-    m6: 'Vectors and Trigonometry',
-    m7: 'Perimeter, Area and Volume',
-    m8: 'Data Organisation, Analysis and Presentation',
-    m9: 'Probability of Independent Events',
-    s2m1: 'Number Sets',
-    s2m2: 'Equations and Inequalities',
-    s2m3: 'Rigid Motion',
-    s2m4: 'Data Collection, Organisation and Representation',
-    s2m5: 'Ratios, Rates and Proportions',
-    s2m6: 'Patterns and Relations Involving Sequences and Series',
-    s2m7: 'Surface Areas and Volumes',
-    s2m8: 'Working with Data and Probability Experiments',
-    s2m9: 'Vectors and Trigonometry',
-  },
-  'English Language': {
-    s5: 'Discourse and Conversation',
-    s7: 'Oral Language, Reading and Grammar',
-    s8: 'Forms of Verbs and Writing Strategies',
-    s17: 'Conversation and Communication in Context',
-    s18: 'Reading',
-    s19: 'Subject and Predicate',
-    s20: 'Text Types and Purposes',
-    s21: 'Themes',
-    s22: 'Ideas',
-    s23: 'Analysing Non-Fiction Texts',
-    s24: 'Article Writing',
-    s2e1: 'Diphthongs and Reading Comprehension',
-    s2e2: 'Subordinate Clause, Paragraph Coherence and Poetry',
-    s2e3: 'Triphthongs, Question Types and Clauses',
-    s2e4: 'Noun Clause, Cohesive Devices and Poetry Appreciation',
-    s2e5: 'Affricates and Approximants, Grammatical Structures and Clauses',
-    s2e6: 'Relative/Adjectival Clause, Essay and Poetry',
-    s2e7: 'Consonant Clusters, Reading and Adverbial Clause',
-    s2e8: 'Adverbial Clause, Narrative Writing and Poetry',
-    s2e9: 'Consonant Clusters, Reading Fluently and Subject-Verb Agreement',
-    s2e10: 'Subject-Verb Agreement, Speech Writing and Imagery',
-    s2e11: 'Oral Narrative, Summary Writing and Subject-Verb Agreement',
-    s2e12: 'Active and Passive Voice, Speech Writing and Imagery',
-    s2e13: 'Stress, Intonation and Meaning, Active Voice and Summary Writing',
-    s2e14: 'Cues in Communication, Registers and Speech Writing',
-    s2e15: 'Cultural Perspective in Communication and Vocabulary in Context',
-    s2e16: 'Minutes Writing',
-    s2e17: 'Report Writing',
-    s2e18: 'Synonyms',
-    s2e19: 'Antonyms',
-    s2e20: 'Article Writing',
-    s2e21: 'Research and Presentation',
-    s2e22: 'Word Collocations',
-    s2e23: 'Formal Letter Writing',
-    s2e24: 'Research and Presentation',
-  },
-  'Integrated Science': {
-    s1: 'Exploring Materials — Characteristics of Science',
-    s2: 'Science and Materials in Nature',
-    s3: 'Diffusion and Osmosis',
-    s4: 'Reproduction in Plants and Humans',
-    s5: 'Solar Panels',
-    s6: 'Force',
-    s7: 'Basic Electronics',
-    s8: 'Promoting Health and Safety',
-    s9: 'Production in Local Industry',
-    gs: 'General Science Foundations',
-    's2-s1': 'Nature of Different Liquids in Life',
-    's2-s2': 'Human Excretory Organs',
-    's2-s3': 'Gaseous Exchange in Humans',
-    's2-s4': 'Concepts of Electricity',
-    's2-s5': 'Buoyancy Force',
-    's2-s6': 'Electronics',
-    's2-s7': 'Pathogenic Diseases',
-    's2-s8': 'Indigenous Beverages',
-  },
-  'Social Studies': {
-    s1: 'A Geographical and Historical Sketch of Africa',
-    s2: 'Civic Ideals and Practices',
-    s3: 'Indigenous Knowledge Systems',
-    s4: 'Ethics and Human Values',
-    s5: 'African Civilisations',
-    s6: 'Revolutions That Changed the World',
-    s7: 'Economic Activities in Africa',
-    s8: 'Entrepreneurship, Workplace Culture and Productivity',
-    s9: 'Consumer Rights, Protection and Responsibilities',
-    s10: 'Financial Literacy',
-    's2-s1': 'Identity and National Cohesion',
-    's2-s2': 'Environmental Literacy and Sustainability',
-    's2-s3': 'Law Enforcement Mechanisms in Ghana',
-    's2-s4': 'European Encounter, Colonialism and Neo-colonialism',
-    's2-s5': 'Nationalism, Citizenship and Nation Building',
-    's2-s6': 'Leisure and Tourism',
-    's2-s7': 'Revolutions that Changed the World',
-    's2-s8': 'The Youth and National Development',
-    's2-s9': 'Economic Activities in Ghana',
-    's2-s10': 'Entrepreneurship, Workplace Culture and Productivity',
-    's2-s11': 'Consumer Rights, Protection and Responsibilities',
-    's2-s12': 'Financial Literacy',
-  },
-  'Biology': {
-    s1: 'Introduction to Biology and the Scientific Method',
-    s2: 'Fish Farming, Processing and Conservation',
-    s3: 'Cell Biology',
-    s4: 'Organisms',
-    s5: 'Ecology',
-    's2-s1': 'Biology as the Science of Life',
-    's2-s2': 'Cytology',
-    's2-s3': 'Diversity of Living Things',
-    's2-s4': 'Systems of Life',
-  },
-  'Chemistry': {
-    s1: 'Introduction to Chemistry, Scientific Method and Atoms',
-    s2: 'The Concept of the Moles',
-    s3: 'Mole Ratios, Chemical Formulae and Chemical Equations',
-    s4: 'Kinetic Theory and the States of Matter (Part 1)',
-    s5: 'Kinetic Theory and the States of Matter (Part 2)',
-    s6: 'Periodic Properties',
-    s7: 'Inter Atomic Bonding',
-    s8: 'Intermolecular Bonding',
-    s9: 'Qualitative and Quantitative Analysis of Organic Compounds',
-    s10: 'Classifications of Organic Compounds',
-    's2-s1': 'Energy Changes',
-    's2-s2': 'Chemical Kinetics',
-    's2-s3': 'Dynamic Equilibrium',
-    's2-s4': 'Acids, Bases and Salts',
-    's2-s5': 'Periodic Trends',
-    's2-s6': 'The Halogens',
-    's2-s7': 'Chemical Bonding and Structure',
-    's2-s8': 'Organic Compounds',
-  },
-  'Additional Mathematics': {
-    s1: 'Binary Operations, Sets and Binomial',
-    s2: 'Surds, Indices and Logarithms',
-    s3: 'Sequences and Functions',
-    s4: 'Matrices',
-    s5: 'Straight Lines',
-    s6: 'Vectors',
-    s7: 'Trigonometric Functions and Their Applications',
-    s8: 'Limits and Differentiation',
-    s9: 'Statistics',
-    s10: 'Combinations, Permutations and Probability',
-    's2-s1': 'Sets and Binomial Expansions',
-    's2-s2': 'Sequences and Inequalities',
-    's2-s3': 'Polynomial Functions',
-    's2-s4': 'Circles and Loci',
-    's2-s5': 'Vectors',
-    's2-s6': 'Matrices',
-    's2-s7': 'Correlation',
-    's2-s8': 'Indices and Logarithms',
-    's2-s9': 'Trigonometric Identities',
-    's2-s10': 'Differentiation',
-    's2-s11': 'Integration',
-    's2-s12': 'Applications of Differentiation',
-  },
-  'Physics': {
-    s1: 'Introduction to Physics and Matter',
-    s2: 'Motion and Pressure',
-    s3: 'Thermometers and Temperature',
-    s4: 'Mirrors, Reflection and Refraction',
-    s5: 'Behaviour of Light Through Different Media',
-    s6: 'Electrical Charge and Magnetism',
-    s7: 'Semi Conductors, Transducers and Their Applications',
-    s8: 'Fundamental Concepts in Atomic and Nuclear Physics',
-    's2-s1': 'Dimension, Vectors, Flotation and Deformation',
-    's2-s2': 'Measurement of Heat',
-    's2-s3': 'Electrostatics',
-    's2-s4': 'Photoelectric Effect and Radioactivity',
-    's2-s5': 'Projectiles, Friction, Circular Motion',
-    's2-s6': 'Electromagnetism',
-    's2-s7': 'Waves',
-    's2-s8': 'Electric Fields, Magnetic Fields and Electronics',
-  },
-};
-
-function extractModuleKey(lessonId: string): string | null {
-  // coremath-m1t1 → m1, coremath2-s2m1t1 → s2m1, int-sci-s1t1 → s1, etc.
-  const math2Match = lessonId.match(/^coremath2-(s2m\d+)/);
-  if (math2Match) return math2Match[1];
-  const mathMatch = lessonId.match(/^coremath-(m\d+)/);
-  if (mathMatch) return mathMatch[1];
-  const intSciMatch = lessonId.match(/^int-sci-(s\d+)/);
-  if (intSciMatch) return intSciMatch[1];
-  const intSci2Match = lessonId.match(/^int-sci-2-(s\d+)/);
-  if (intSci2Match) return `s2-${intSci2Match[1]}`;
-  const eng2Match = lessonId.match(/^eng-lang2-(s2e\d+)/);
-  if (eng2Match) return eng2Match[1];
-  const engMatch = lessonId.match(/^eng-lang-(s\d+)/);
-  if (engMatch) return engMatch[1];
-  const socStMatch = lessonId.match(/^soc-st-(s\d+)/);
-  if (socStMatch) return socStMatch[1];
-  const socSt2Match = lessonId.match(/^soc-st-2-(s\d+)/);
-  if (socSt2Match) return `s2-${socSt2Match[1]}`;
-  const phys2Match = lessonId.match(/^phys-2-(s\d+)/);
-  if (phys2Match) return `s2-${phys2Match[1]}`;
-  const physMatch = lessonId.match(/^phys-(s\d+)/);
-  if (physMatch) return physMatch[1];
-  const addMath2Match = lessonId.match(/^add-math-2-(s\d+)/);
-  if (addMath2Match) return `s2-${addMath2Match[1]}`;
-  const addMathMatch = lessonId.match(/^add-math-(s\d+)/);
-  if (addMathMatch) return addMathMatch[1];
-  const chem2Match = lessonId.match(/^chem-2-(s\d+)/);
-  if (chem2Match) return `s2-${chem2Match[1]}`;
-  const chemMatch = lessonId.match(/^chem-(s\d+)/);
-  if (chemMatch) return chemMatch[1];
-  const bio2Match = lessonId.match(/^bio-2-(s\d+)/);
-  if (bio2Match) return `s2-${bio2Match[1]}`;
-  const bioMatch = lessonId.match(/^bio-(s\d+)/);
-  if (bioMatch) return bioMatch[1];
-  const sciMatch = lessonId.match(/^gen-sci-(s\d+)/);
-  if (sciMatch) return 'gs'; // all general science → one module
-  return null;
-}
-
-function getModuleLabel(subject: string, moduleKey: string): string {
-  return MODULE_NAMES[subject]?.[moduleKey] || `Module ${moduleKey.toUpperCase()}`;
-}
-
-// ── Helpers ───────────────────────────────────────────────────────────────
-function getLessonsForSubject(subject: string, programmeFilter?: string | null): Lesson[] {
-  // Map 'Integrated Science' to include 'General Science' lessons
-  const subjects = subject === 'Integrated Science'
-    ? ['Integrated Science', 'General Science']
-    : [subject];
-  let lessons = ALL_LESSONS.filter((l) => subjects.includes(l.subject));
-  // Apply programme filter: only show 'Both' or matching programme
-  if (programmeFilter) {
-    lessons = lessons.filter((l) => l.programme === 'Both' || l.programme === programmeFilter);
+  for (const subject of preferSubjects) {
+    if (picks.length >= 6) break;
+    const lesson = ALL_LESSONS.find(
+      (l) =>
+        l.subject === subject &&
+        !completedIds.has(l.id) &&
+        !seen.has(l.id),
+    );
+    if (!lesson) continue;
+    seen.add(lesson.id);
+    picks.push({
+      curriculum_id: lesson.id,
+      title: lesson.title,
+      subject: lesson.subject,
+      shs_level: '',
+      estimated_minutes: lesson.estimatedMinutes,
+      difficulty: lesson.difficulty,
+      xp_reward: lesson.xpReward,
+      reason: 'Great place to start',
+    });
   }
-  return lessons;
-}
 
-function getModulesForLevel(subject: string, shsLevel: string, programmeFilter?: string | null): { key: string; label: string; lessons: Lesson[] }[] {
-  const allLessons = getLessonsForSubject(subject, programmeFilter).filter((l) =>
-    l.suggestedLevel === shsLevel || l.shsLevels?.includes(shsLevel)
-  );
-  const grouped = new Map<string, Lesson[]>();
-  for (const lesson of allLessons) {
-    const key = extractModuleKey(lesson.id) || 'other';
-    if (!grouped.has(key)) grouped.set(key, []);
-    grouped.get(key)!.push(lesson);
+  if (picks.length < 6) {
+    for (const lesson of ALL_LESSONS) {
+      if (completedIds.has(lesson.id) || seen.has(lesson.id)) continue;
+      seen.add(lesson.id);
+      picks.push({
+        curriculum_id: lesson.id,
+        title: lesson.title,
+        subject: lesson.subject,
+        shs_level: '',
+        estimated_minutes: lesson.estimatedMinutes,
+        difficulty: lesson.difficulty,
+        xp_reward: lesson.xpReward,
+        reason: 'Great place to start',
+      });
+      if (picks.length >= 6) break;
+    }
   }
-  return Array.from(grouped.entries())
-    .map(([key, lessons]) => ({ key, label: getModuleLabel(subject, key), lessons }))
-    .filter((m) => m.lessons.length > 0);
+  return picks;
 }
 
-const COMPLETED_KEY = 'atlas_completed_lessons';
-function loadCompletedLessons(): Set<string> {
-  if (typeof window === 'undefined') return new Set();
-  try { const raw = localStorage.getItem(COMPLETED_KEY); return new Set<string>(raw ? JSON.parse(raw) : []); } catch { return new Set(); }
+function emptyLibrary(completedIds: Set<string>): LibraryHome {
+  return {
+    continue_learning: null,
+    recommended: buildLocalRecommendations(completedIds),
+    recent: [],
+    bookmarks: [],
+  };
 }
-function saveCompletedLessons(set: Set<string>) { localStorage.setItem(COMPLETED_KEY, JSON.stringify([...set])); }
 
-// ── Page Component ────────────────────────────────────────────────────────
-export default function Learning() {
+const SUBJECTS_WITH_CONTENT = (() => {
+  const counts = new Map<string, number>();
+  for (const lesson of ALL_LESSONS) {
+    counts.set(lesson.subject, (counts.get(lesson.subject) || 0) + 1);
+  }
+  return counts;
+})();
+
+function subjectHasContent(id: string) {
+  return (SUBJECTS_WITH_CONTENT.get(id) || 0) > 0;
+}
+
+function LearningInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [view, setView] = useState<DrillView>('subjects');
-  const [selectedSubject, setSelectedSubject] = useState<SubjectId | null>(null);
-  const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
-  const [selectedModule, setSelectedModule] = useState<{ key: string; label: string } | null>(null);
-  const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
-  const [completedLessons, setCompletedLessons] = useState<Set<string>>(new Set());
-  const [onboardingProg, setOnboardingProg] = useState<Programme>('General Science');
-  const [onboardingLevel, setOnboardingLevel] = useState<SHSLevel>('SHS 1');
-  const [onboardingSaving, setOnboardingSaving] = useState(false);
-  const [onboardingError, setOnboardingError] = useState<string | null>(null);
-  const [progDropdownOpen, setProgDropdownOpen] = useState(false);
-  const progDropdownRef = useRef<HTMLDivElement>(null);
+  const [view, setView] = useState<View>('home');
+  const [library, setLibrary] = useState<LibraryHome | null>(null);
+  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
+  const [subjectTopics, setSubjectTopics] = useState<CurriculumTopic[]>([]);
+  const [topicsLoading, setTopicsLoading] = useState(false);
+  const [activeTopicId, setActiveTopicId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<CurriculumTopic[]>([]);
-  const [searchLoading, setSearchLoading] = useState(false);
-  const [searchError, setSearchError] = useState<string | null>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchBusy, setSearchBusy] = useState(false);
+  const [highlight, setHighlight] = useState(0);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
-  // Close programme dropdown on outside click
-  useEffect(() => {
-    if (!progDropdownOpen) return;
-    const handleClick = (e: MouseEvent) => {
-      if (progDropdownRef.current && !progDropdownRef.current.contains(e.target as Node)) {
-        setProgDropdownOpen(false);
-      }
+  const bookmarkIds = useMemo(
+    () => new Set((library?.bookmarks || []).map((b) => b.curriculum_id)),
+    [library?.bookmarks],
+  );
+
+  const coreSubjects = useMemo(
+    () => CORE_SUBJECTS.filter((s) => subjectHasContent(s.id)),
+    [],
+  );
+
+  const electiveSubjects = useMemo(() => {
+    const seen = new Set<string>();
+    return ELECTIVE_CANDIDATES.filter((s) => {
+      if (!subjectHasContent(s.id)) return false;
+      // Deduplicate Elective/Additional Mathematics labels
+      const key = s.label;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }, []);
+
+  const refreshLibrary = useCallback(async (signal?: AbortSignal) => {
+    const profile = (getStoredUser()?.learner_profile || {}) as {
+      completed_lessons?: string[];
     };
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, [progDropdownOpen]);
-
-  const programme: 'Science' | 'Arts' | null = user?.programme === 'General Science' ? 'Science' : user?.programme === 'General Arts' ? 'Arts' : null;
-  const shsLevel = user?.shs_level || null;
-  const stage = getLearningStage(user?.programme || null, shsLevel);
-  const currentZone = getCurrentZone(user?.programme || null, shsLevel);
-  const zoneProgress = currentZone ? calculateZoneProgress(user?.xp || 0, currentZone) : 0;
+    const completed = new Set(
+      Array.isArray(profile.completed_lessons) ? profile.completed_lessons : [],
+    );
+    // Always show starter suggestions immediately (no Phase 1 required)
+    setLibrary((prev) =>
+      prev?.recommended?.length
+        ? prev
+        : emptyLibrary(completed),
+    );
+    try {
+      const data = await getLibraryHome(signal);
+      // Prefer API IDs only — local ALL_LESSONS IDs can 404 on /teach if DB is empty
+      setLibrary({
+        ...data,
+        recommended:
+          data.recommended?.length > 0
+            ? data.recommended
+            : [],
+      });
+    } catch {
+      // Offline / API down: show starter cards, but teach may still fail without seed
+      setLibrary(emptyLibrary(completed));
+    }
+  }, []);
 
   useEffect(() => {
     const init = async () => {
       try {
-        if (!getAccessToken()) { router.push('/login'); return; }
-        const cached = getStoredUser(); if (cached) setUser(cached);
-        const fresh = await getCurrentUser(); setUser(fresh);
-        
-        // SHS 3 students go to the WASSCE Revision Hub instead
-        if (fresh.shs_level === 'SHS 3') {
-          router.push('/revision');
+        if (!getAccessToken()) {
+          router.push('/login');
           return;
         }
-        
-        setCompletedLessons(loadCompletedLessons());
-      } catch { router.push('/login'); }
-      finally { setLoading(false); }
+        const cached = getStoredUser();
+        if (cached) setUser(cached);
+        const fresh = await getCurrentUser();
+        setUser(fresh);
+        storeUser(fresh);
+        await refreshLibrary();
+      } catch {
+        router.push('/login');
+      } finally {
+        setLoading(false);
+      }
     };
-    init();
-  }, [router]);
+    void init();
+  }, [router, refreshLibrary]);
+
+  // Deep-link: /learning?topic=curriculum_id
+  useEffect(() => {
+    const topic = searchParams.get('topic');
+    if (!topic || loading) return;
+    setActiveTopicId(topic);
+    setView('topic');
+  }, [searchParams, loading]);
 
   useEffect(() => {
-    const query = searchQuery.trim();
-    if (query.length < 2 || !user || user.shs_level === 'SHS 3') {
+    if (searchQuery.trim().length < 2) {
       setSearchResults([]);
-      setSearchError(null);
-      setSearchLoading(false);
+      setSearchBusy(false);
       return;
     }
-
+    abortRef.current?.abort();
     const controller = new AbortController();
-    const timer = window.setTimeout(async () => {
-      setSearchLoading(true);
-      setSearchError(null);
-      try {
-        setSearchResults(await searchCurriculumTopics(query, controller.signal));
-      } catch (error) {
-        if (error instanceof Error && error.name !== 'AbortError') {
-          setSearchError(error.message);
-          setSearchResults([]);
-        }
-      } finally {
-        if (!controller.signal.aborted) setSearchLoading(false);
-      }
-    }, 300);
-
+    abortRef.current = controller;
+    setSearchBusy(true);
+    const timer = window.setTimeout(() => {
+      searchCurriculumTopics(searchQuery.trim(), controller.signal)
+        .then((results) => {
+          setSearchResults(results);
+          setHighlight(0);
+          setSearchOpen(true);
+        })
+        .catch((err) => {
+          if (err instanceof Error && err.name !== 'AbortError') {
+            setSearchResults([]);
+          }
+        })
+        .finally(() => setSearchBusy(false));
+    }, 280);
     return () => {
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [searchQuery, user]);
+  }, [searchQuery]);
 
-  // ── Drill-down navigation ────────────────────────────────────────────────
-  const handleSelectSubject = (subject: SubjectId) => {
-    setSelectedSubject(subject);
-    setSelectedModule(null);
-    // Auto-navigate based on student's registered SHS level
-    if (shsLevel) {
-      const levelLessons = getLessonsForSubject(subject, programme)
-        .filter(l => l.suggestedLevel === shsLevel || l.shsLevels?.includes(shsLevel));
-      if (levelLessons.length > 0) {
-        setSelectedLevel(shsLevel);
-        setView('modules');
-      } else {
-        setSelectedLevel(null);
-        setView('coming-soon');
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setSearchOpen(false);
       }
-    } else {
-      setSelectedLevel(null);
-      setView('coming-soon');
-    }
+    };
+    document.addEventListener('mousedown', onClick);
+    return () => document.removeEventListener('mousedown', onClick);
+  }, []);
+
+  const openTopic = (curriculumId: string) => {
+    setActiveTopicId(curriculumId);
+    setView('topic');
+    setSearchOpen(false);
+    setSearchQuery('');
+    // Reflect in URL for shareable deep links
+    router.replace(`/learning?topic=${encodeURIComponent(curriculumId)}`, {
+      scroll: false,
+    });
   };
 
-  const handleSelectModule = (key: string, label: string) => {
-    setSelectedModule({ key, label });
-    setView('lessons');
+  const openSubject = async (subjectId: string) => {
+    setSelectedSubject(subjectId);
+    setView('subject');
+    setTopicsLoading(true);
+    try {
+      const topics = await listTopicsBySubject(subjectId);
+      setSubjectTopics(topics);
+    } catch {
+      // Fallback to local bundle
+      setSubjectTopics(
+        ALL_LESSONS.filter((l) => l.subject === subjectId).map((l) => ({
+          curriculum_id: l.id,
+          title: l.title,
+          subject: l.subject,
+          shs_level: '',
+          estimated_minutes: l.estimatedMinutes,
+          difficulty: l.difficulty,
+          xp_reward: l.xpReward,
+        })),
+      );
+    } finally {
+      setTopicsLoading(false);
+    }
   };
 
   const handleBack = () => {
-    if (view === 'lessons') { setView('modules'); setSelectedModule(null); }
-    else if (view === 'modules') { setView('subjects'); setSelectedSubject(null); setSelectedLevel(null); }
-    else if (view === 'elective-subjects') { setView('subjects'); }
-    else if (view === 'coming-soon') { setView('subjects'); setSelectedSubject(null); }
-  };
-
-  const handleSelectLesson = useCallback((lessonId: string) => {
-    const lesson = getLessonById(lessonId);
-    if (lesson) { setActiveLesson(lesson); }
-  }, []);
-
-  const handleSelectSearchResult = useCallback((topic: CurriculumTopic) => {
-    const lesson = getLessonById(topic.curriculum_id);
-    if (lesson) {
-      setActiveLesson(lesson);
-      setSearchQuery('');
-      setSearchResults([]);
+    if (view === 'topic') {
+      setActiveTopicId(null);
+      if (selectedSubject) {
+        setView('subject');
+        router.replace('/learning', { scroll: false });
+      } else {
+        setView('home');
+        router.replace('/learning', { scroll: false });
+        void refreshLibrary();
+      }
+    } else if (view === 'subject') {
+      setSelectedSubject(null);
+      setSubjectTopics([]);
+      setView('home');
+      void refreshLibrary();
     }
-  }, []);
-
-  const handleLessonComplete = useCallback((xpEarned: number) => {
-    if (!activeLesson || !user) return;
-    const newCompleted = new Set(completedLessons);
-    newCompleted.add(activeLesson.id);
-    setCompletedLessons(newCompleted); saveCompletedLessons(newCompleted);
-    const updatedUser = { ...user, xp: user.xp + xpEarned };
-    setUser(updatedUser); storeUser(updatedUser);
-    setTimeout(() => { setActiveLesson(null); }, 500);
-  }, [activeLesson, completedLessons, user]);
-
-  const handleBackToPath = useCallback(() => { setActiveLesson(null); }, []);
-
-  // ── Breadcrumb ───────────────────────────────────────────────────────────
-  const breadcrumb = useMemo(() => {
-    const parts: { label: string; action: () => void }[] = [{ label: 'Learning Center', action: () => { setView('subjects'); setSelectedSubject(null); setSelectedLevel(null); setSelectedModule(null); } }];
-    if (view === 'elective-subjects') parts.push({ label: 'Elective Subjects', action: () => { setView('subjects'); } });
-    if (selectedSubject && view !== 'elective-subjects') parts.push({ label: selectedSubject, action: () => { setView('subjects'); setSelectedSubject(null); setSelectedLevel(null); setSelectedModule(null); } });
-    if (selectedLevel && view !== 'coming-soon') parts.push({ label: selectedLevel, action: () => { setView('modules'); setSelectedModule(null); } });
-    if (selectedModule) parts.push({ label: selectedModule.label, action: () => { setView('lessons'); } });
-    return parts;
-  }, [selectedSubject, selectedLevel, selectedModule, view]);
-
-  // ── Current level lessons for display ────────────────────────────────────
-  const currentModuleLessons = useMemo(() => {
-    if (!selectedSubject || !selectedLevel || !selectedModule) return [];
-    return getModulesForLevel(selectedSubject, selectedLevel, programme)
-      .find((m) => m.key === selectedModule.key)?.lessons || [];
-  }, [selectedSubject, selectedLevel, selectedModule, programme]);
-
-  const isLessonUnlocked = (lesson: Lesson): boolean => {
-    if (lesson.prerequisites.length === 0) return true;
-    return lesson.prerequisites.every((preId) => completedLessons.has(preId));
   };
 
-  // SHS 3 redirect guard — prevent flash of SHS 1/2 UI
-  if (user?.shs_level === 'SHS 3') {
+  const handleLessonComplete = async (xpEarned: number) => {
+    if (!activeTopicId || !user) return;
+    try {
+      const result = await completeCurriculumLesson(activeTopicId);
+      const updated = {
+        ...user,
+        xp: result.user_xp,
+        rank: result.rank || user.rank,
+      };
+      setUser(updated);
+      storeUser(updated);
+    } catch {
+      const updated = { ...user, xp: (user.xp || 0) + xpEarned };
+      setUser(updated);
+      storeUser(updated);
+    }
+    void refreshLibrary();
+  };
+
+  const subjectMatch = (query: string) => {
+    const q = query.trim().toLowerCase();
+    if (!q) return [];
+    return [...coreSubjects, ...electiveSubjects].filter(
+      (s) =>
+        s.label.toLowerCase().includes(q) || s.id.toLowerCase().includes(q),
+    );
+  };
+
+  if (loading) {
     return (
-      <AppLayout>
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <div className="w-10 h-10 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-            <p className="text-sm text-gray-500">Opening WASSCE Revision Hub...</p>
-          </div>
-        </div>
-      </AppLayout>
+      <div className="min-h-screen bg-[#F8FAFC]">
+        <Sidebar />
+        <main className="w-full max-w-4xl mx-auto px-4 pt-20 lg:pt-10 pb-28 text-[#64748B] flex items-center gap-2">
+          <Loader2 className="w-4 h-4 animate-spin" /> Loading Learning Center…
+        </main>
+        <BottomNav />
+      </div>
     );
   }
 
-  if (loading) return (
-    <AppLayout><div className="flex items-center justify-center min-h-screen">
-      <div className="w-8 h-8 border-2 border-[#4F46E5] border-t-transparent rounded-full animate-spin" /></div></AppLayout>
-  );
-  if (!user) return null;
-
-  // ── Active lesson view ──────────────────────────────────────────────────
-  if (activeLesson) {
+  if (view === 'topic' && activeTopicId) {
     return (
-      <AppLayout>
-        <div className="flex min-h-screen">
-          <Sidebar />
-          <div className="flex-1 lg:pb-0 pb-20">
-            <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-8 pb-8">
-              <AITutorLesson curriculumId={activeLesson.id} onComplete={handleLessonComplete} onBack={handleBackToPath} />
-            </main>
-          </div>
-          <BottomNav />
-        </div>
-      </AppLayout>
+      <div className="min-h-screen bg-[#F8FAFC]">
+        <Sidebar />
+        <AppLayout>
+          <main className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-10 pb-28">
+            <AITutorLesson
+              curriculumId={activeTopicId}
+              onBack={handleBack}
+              onComplete={(xp) => void handleLessonComplete(xp)}
+              initiallyBookmarked={bookmarkIds.has(activeTopicId)}
+              onOpenRelated={(id) => openTopic(id)}
+            />
+          </main>
+        </AppLayout>
+        <BottomNav />
+      </div>
     );
   }
-
-  // ── Stats summary bar ──────────────────────────────────────────────────
-  const totalLessons = ALL_LESSONS.length;
-  const totalCompleted = completedLessons.size;
 
   return (
-    <AppLayout>
-      <div className="flex min-h-screen">
-        <Sidebar />
-        <div className="flex-1 lg:pb-0 pb-20">
-          <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-8 pb-8">
+    <div className="min-h-screen bg-[#F8FAFC]">
+      <Sidebar />
+      <AppLayout>
+        <main className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-10 pb-28">
+          {view !== 'home' ? (
+            <button
+              type="button"
+              onClick={handleBack}
+              className="flex items-center gap-2 text-sm text-gray-500 hover:text-[#1E293B] mb-4"
+            >
+              <ArrowLeft className="w-4 h-4" /> Back
+            </button>
+          ) : null}
 
-            {/* ── Header ── */}
-            <div className="mb-6">
-              <div className="flex items-center gap-3">
-                {view !== 'subjects' && (
-                  <button onClick={handleBack} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors">
-                    <ArrowLeft className="w-5 h-5" />
-                  </button>
-                )}
-                <div>
-                  <h1 className="text-xl font-bold text-[#1E293B]">Learning Center</h1>
-                  <p className="text-xs text-gray-500">{totalCompleted} of {totalLessons} lessons completed</p>
-                </div>
-              </div>
-            </div>
+          <AnimatePresence mode="wait">
+            {view === 'home' ? (
+              <motion.div
+                key="home"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+              >
+                <h1 className="text-2xl font-semibold text-[#0F172A]">Learning Center</h1>
+                <p className="mt-1 text-sm text-[#64748B]">
+                  Search any subject or topic — available for every phase.
+                </p>
 
-            {/* ── Stats bar ── */}
-            <div className="grid grid-cols-4 gap-3 mb-6">
-              <div className="bg-white border border-gray-200 rounded-xl p-3 text-center">
-                <p className="text-xl font-bold text-[#4F46E5]">{totalCompleted}</p>
-                <p className="text-xs text-gray-500">Done</p>
-              </div>
-              <div className="bg-white border border-gray-200 rounded-xl p-3 text-center">
-                <p className="text-xl font-bold text-[#D97706]">{user.streak}</p>
-                <p className="text-xs text-gray-500">Streak</p>
-              </div>
-              <div className="bg-white border border-gray-200 rounded-xl p-3 text-center">
-                <p className="text-xl font-bold text-[#F43F5E]">{Math.round((totalCompleted / Math.max(1, totalLessons)) * 100)}%</p>
-                <p className="text-xs text-gray-500">Progress</p>
-              </div>
-              <div className="bg-white border border-gray-200 rounded-xl p-3 text-center">
-                <p className="text-xl font-bold text-[#1E293B]">{shsLevel || '\u2014'}</p>
-                <p className="text-xs text-gray-500">Level</p>
-              </div>
-            </div>
-
-            {/* ── Curriculum-scoped topic search ── */}
-            {view === 'subjects' && (
-              <div className="relative mb-6">
-                <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 focus-within:border-[#4F46E5] focus-within:ring-2 focus-within:ring-[#4F46E5]/10 transition">
-                  <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                  <input
-                    value={searchQuery}
-                    onChange={(event) => setSearchQuery(event.target.value)}
-                    placeholder={`Search your ${shsLevel || 'SHS'} curriculum by topic or keyword…`}
-                    className="flex-1 bg-transparent text-sm text-[#1E293B] placeholder:text-gray-400 outline-none"
-                  />
-                  {searchLoading && <Loader2 className="w-4 h-4 text-[#4F46E5] animate-spin" />}
-                </div>
-
-                {searchQuery.trim().length >= 2 && (
-                  <div className="absolute z-30 top-full mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden">
-                    {searchError ? (
-                      <p className="p-4 text-sm text-red-600">{searchError}</p>
-                    ) : !searchLoading && searchResults.length === 0 ? (
-                      <p className="p-4 text-sm text-gray-500">No matching topic was found in your {shsLevel} curriculum.</p>
-                    ) : (
-                      <div className="max-h-80 overflow-y-auto divide-y divide-gray-100">
-                        {searchResults.map((topic) => (
-                          <button
-                            key={topic.curriculum_id}
-                            onClick={() => handleSelectSearchResult(topic)}
-                            className="w-full text-left px-4 py-3 hover:bg-[#EEF2FF] transition-colors"
-                          >
-                            <div className="flex items-center justify-between gap-3">
-                              <div className="min-w-0">
-                                <p className="font-semibold text-sm text-[#1E293B] truncate">{topic.title}</p>
-                                <p className="text-xs text-gray-500 mt-0.5">{topic.subject} · {topic.shs_level}</p>
-                              </div>
-                              <span className="text-xs text-gray-400 flex-shrink-0">{topic.estimated_minutes} min</span>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    )}
+                {/* Search */}
+                <div ref={searchRef} className="relative mt-6">
+                  <div className="flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 shadow-sm focus-within:border-[#4F46E5]">
+                    <Search className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                    <input
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onFocus={() => searchQuery.trim().length >= 2 && setSearchOpen(true)}
+                      onKeyDown={(e) => {
+                        const subjects = subjectMatch(searchQuery);
+                        const combined = [
+                          ...subjects.map((s) => ({ type: 'subject' as const, id: s.id, label: s.label })),
+                          ...searchResults.map((t) => ({
+                            type: 'topic' as const,
+                            id: t.curriculum_id,
+                            label: t.title,
+                          })),
+                        ];
+                        if (e.key === 'ArrowDown') {
+                          e.preventDefault();
+                          setHighlight((h) => Math.min(h + 1, Math.max(0, combined.length - 1)));
+                        } else if (e.key === 'ArrowUp') {
+                          e.preventDefault();
+                          setHighlight((h) => Math.max(h - 1, 0));
+                        } else if (e.key === 'Enter' && combined[highlight]) {
+                          e.preventDefault();
+                          const item = combined[highlight];
+                          if (item.type === 'subject') void openSubject(item.id);
+                          else openTopic(item.id);
+                        }
+                      }}
+                      placeholder="Search any subject or topic..."
+                      className="flex-1 bg-transparent text-sm text-[#0F172A] outline-none placeholder:text-gray-400"
+                    />
+                    {searchBusy ? <Loader2 className="w-4 h-4 animate-spin text-[#4F46E5]" /> : null}
                   </div>
-                )}
-              </div>
-            )}
 
-            {/* ── Breadcrumb ── */}
-            {view !== 'subjects' && (
-              <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-4 flex-wrap">
-                {breadcrumb.map((crumb, idx) => (
-                  <span key={idx} className="flex items-center gap-1.5">
-                    {idx > 0 && <span>/</span>}
-                    <button onClick={crumb.action} className="hover:text-[#4F46E5] transition-colors">
-                      {crumb.label}
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
-
-            {/* ── Zone/Stage info (visible on subjects view) ── */}
-            {view === 'subjects' && stage && (
-              <div className="bg-white border border-gray-200 rounded-xl p-5 mb-6">
-                <div className="flex items-center gap-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-[#1E293B]">{stage.title}</h3>
-                      <span className="px-2 py-0.5 text-[10px] font-bold bg-[#EEF2FF] text-[#4F46E5] rounded uppercase">{shsLevel}</span>
-                    </div>
-                    <p className="text-sm text-gray-500">{stage.description}</p>
-                  </div>
-                  {currentZone && (
-                    <div className="text-right">
-                      <p className="text-xs text-gray-500">Zone Progress</p>
-                      <p className="text-xl font-bold text-[#4F46E5]">{zoneProgress}%</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* ── Programme setup (only on subjects view, if missing) ── */}
-            {view === 'subjects' && (!programme || !shsLevel) && (
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 mb-6">
-                <div className="flex items-start gap-4">
-                  <div className="flex-1">
-                    <h2 className="font-semibold text-[#1E293B] mb-1">Set Up Your Learning Path</h2>
-                    <p className="text-sm text-gray-500 mb-4">Tell us your programme and SHS level for the right lessons.</p>
-                    <div className="grid sm:grid-cols-2 gap-3 mb-4">
-                      <div className="relative" ref={progDropdownRef}>
+                  {searchOpen && searchQuery.trim().length >= 2 ? (
+                    <div className="absolute z-30 mt-2 w-full rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden max-h-80 overflow-y-auto">
+                      {subjectMatch(searchQuery).map((s, idx) => (
                         <button
+                          key={`sub-${s.id}`}
                           type="button"
-                          onClick={() => setProgDropdownOpen(!progDropdownOpen)}
-                          className="w-full flex items-center justify-between px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-[#1E293B] transition"
+                          onClick={() => void openSubject(s.id)}
+                          className={`w-full text-left px-4 py-3 text-sm border-b border-gray-50 ${
+                            highlight === idx ? 'bg-[#EEF2FF]' : 'hover:bg-gray-50'
+                          }`}
                         >
-                          <span>{onboardingProg}</span>
-                          <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform ${progDropdownOpen ? 'rotate-180' : ''}`} />
+                          <span className="text-[10px] uppercase tracking-wide text-[#4F46E5] font-semibold">
+                            Subject
+                          </span>
+                          <p className="font-medium text-[#0F172A]">{s.label}</p>
                         </button>
-                        {progDropdownOpen && (
-                          <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
-                            {(['General Science', 'General Arts', 'Business', 'Visual Arts', 'Home Economics', 'Technical'] as const).map((p) => {
-                              const isAvailable = p === 'General Science';
-                              const isSelected = onboardingProg === p;
-                              return (
-                                <button
-                                  key={p}
-                                  type="button"
-                                  disabled={!isAvailable}
-                                  onClick={() => {
-                                    if (isAvailable) {
-                                      setOnboardingProg(p);
-                                      setProgDropdownOpen(false);
-                                    }
-                                  }}
-                                  className={`w-full flex items-center gap-2 px-3 py-2.5 text-left text-sm transition ${
-                                    isSelected ? 'bg-[#EEF2FF] text-[#4F46E5] font-medium' : ''
-                                  } ${
-                                    isAvailable
-                                      ? 'hover:bg-gray-50 cursor-pointer text-[#1E293B]'
-                                      : 'text-gray-400 cursor-not-allowed'
-                                  }`}
-                                >
-                                  <span className="flex-1">{p}</span>
-                                  {!isAvailable && <Lock className="w-3 h-3 text-gray-300" />}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </div>
-                      <select value={onboardingLevel} onChange={(e) => setOnboardingLevel(e.target.value as SHSLevel)}
-                        className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-[#1E293B]">
-                        <option value="SHS 1">SHS 1</option><option value="SHS 2">SHS 2</option><option value="SHS 3">SHS 3</option><option value="Completed SHS">Completed SHS</option>
-                      </select>
-                    </div>
-                    {onboardingError && <p className="text-xs text-red-500 mb-2">{onboardingError}</p>}
-                    <button onClick={async () => {
-                      setOnboardingSaving(true); setOnboardingError(null);
-                      try { const updated = await updateUserProfile({ programme: onboardingProg, shs_level: onboardingLevel }); setUser(updated); }
-                      catch (err) { setOnboardingError(err instanceof Error ? err.message : 'Failed to save'); }
-                      finally { setOnboardingSaving(false); }
-                    }} disabled={onboardingSaving}
-                      className="px-4 py-2 bg-[#4F46E5] text-white text-sm font-medium rounded-lg hover:bg-[#4338CA] transition-colors disabled:opacity-50">
-                      {onboardingSaving ? 'Saving...' : 'Get Started'}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* ── Content area ── */}
-            <AnimatePresence mode="wait">
-              {/* ── Subjects View ── */}
-              {view === 'subjects' && (
-                <motion.div key="subjects" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                  {/* Core Subjects section */}
-                  <div className="mb-2">
-                    <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Core Subjects</h2>
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      {SUBJECTS.map((subject) => {
-                        const levelLessons = shsLevel
-                          ? getLessonsForSubject(subject.id, programme).filter(
-                              (l) => l.suggestedLevel === shsLevel || l.shsLevels?.includes(shsLevel)
-                            )
-                          : [];
-                        const lessons = shsLevel ? levelLessons : getLessonsForSubject(subject.id, programme);
-                        const completed = lessons.filter((l) => completedLessons.has(l.id)).length;
-                        const hasContent = lessons.length > 0;
+                      ))}
+                      {searchResults.map((t, i) => {
+                        const idx = subjectMatch(searchQuery).length + i;
                         return (
                           <button
-                            key={subject.id}
-                            onClick={() => hasContent && handleSelectSubject(subject.id)}
-                            disabled={!hasContent}
-                            className={`text-left bg-white border rounded-xl p-5 transition-all duration-200 ${
-                              hasContent
-                                ? 'border-gray-200 hover:border-gray-300 hover:shadow-sm cursor-pointer'
-                                : 'border-gray-100 opacity-50 cursor-default'
+                            key={t.curriculum_id}
+                            type="button"
+                            onClick={() => openTopic(t.curriculum_id)}
+                            className={`w-full text-left px-4 py-3 text-sm border-b border-gray-50 last:border-0 ${
+                              highlight === idx ? 'bg-[#EEF2FF]' : 'hover:bg-gray-50'
                             }`}
                           >
-                            <div className="flex items-start gap-4">
-                              <div
-                                className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-base flex-shrink-0"
-                                style={{ backgroundColor: subject.color }}
-                              >
-                                {subject.label.charAt(0)}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h3 className="font-semibold text-[#1E293B]">{subject.label}</h3>
-                                {hasContent && <p className="text-xs text-gray-500 mt-0.5">{subject.description}</p>}
-                                {hasContent ? (
-                                  <div className="flex items-center gap-2 mt-2">
-                                    <div className="flex-1 bg-gray-100 rounded-full h-1 overflow-hidden">
-                                      <div className="h-full bg-[#4F46E5] rounded-full transition-all"
-                                        style={{ width: `${(completed / Math.max(1, lessons.length)) * 100}%` }} />
-                                    </div>
-                                    <span className="text-xs text-gray-400 flex-shrink-0">{completed}/{lessons.length}</span>
-                                  </div>
-                                ) : (
-                                  <p className="text-xs text-gray-400 mt-2 italic">Coming soon</p>
-                                )}
-                              </div>
-                            </div>
+                            <span className="text-[10px] uppercase tracking-wide text-gray-400 font-semibold">
+                              Topic · {t.subject}
+                            </span>
+                            <p className="font-medium text-[#0F172A]">{t.title}</p>
                           </button>
                         );
                       })}
+                      {!searchBusy &&
+                      subjectMatch(searchQuery).length === 0 &&
+                      searchResults.length === 0 ? (
+                        <p className="px-4 py-6 text-sm text-gray-500 text-center">
+                          No matches. Try “Photosynthesis” or “Quadratic Equations”.
+                        </p>
+                      ) : null}
                     </div>
-                  </div>
+                  ) : null}
+                </div>
 
-                  {/* Divider */}
-                  <div className="relative my-8">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-gray-200" />
-                    </div>
-                    <div className="relative flex justify-center">
-                      <span className="bg-gray-50 px-3 text-xs text-gray-400 font-medium">Elective Subjects</span>
-                    </div>
-                  </div>
+                {/* Continue */}
+                {library?.continue_learning ? (
+                  <section className="mt-8">
+                    <SectionTitle icon={<BookOpen className="w-4 h-4" />} title="Continue Learning" />
+                    <TopicCard
+                      topic={library.continue_learning}
+                      onClick={() => openTopic(library.continue_learning!.curriculum_id)}
+                    />
+                  </section>
+                ) : null}
 
-                  {/* View Elective Subjects button */}
-                  <button
-                    onClick={() => setView('elective-subjects')}
-                    className="w-full text-left bg-white border-2 border-dashed border-gray-200 rounded-xl p-5 transition-all duration-200 hover:border-[#4F46E5]/40 hover:bg-[#EEF2FF]/30 cursor-pointer group"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-[#EEF2FF] flex items-center justify-center text-[#4F46E5] font-bold text-base flex-shrink-0 group-hover:bg-[#4F46E5] group-hover:text-white transition-colors">
-                        +
+                {/* Recommended */}
+                <section className="mt-8">
+                  <SectionTitle icon={<Sparkles className="w-4 h-4" />} title="Recommended for You" />
+                  {(library?.recommended?.length || 0) > 0 ? (
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      {library!.recommended.map((topic) => (
+                        <TopicCard
+                          key={topic.curriculum_id}
+                          topic={topic}
+                          onClick={() => openTopic(topic.curriculum_id)}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="rounded-xl border border-dashed border-gray-200 bg-white px-4 py-5 text-sm text-gray-500">
+                      <p>
+                        Starter topics will appear here. After you play Challenges, recommendations
+                        become personalised from your weak subjects.
+                      </p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => void openSubject('Core Mathematics')}
+                          className="rounded-lg bg-[#4F46E5] px-3 py-1.5 text-xs font-semibold text-white"
+                        >
+                          Browse Core Mathematics
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => router.push('/challenges')}
+                          className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-[#0F172A]"
+                        >
+                          Play a challenge
+                        </button>
                       </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-[#1E293B] group-hover:text-[#4F46E5] transition-colors">Explore Elective Subjects</h3>
-                        <p className="text-xs text-gray-500 mt-0.5">Biology, Chemistry, Physics, Elective Mathematics and more</p>
+                    </div>
+                  )}
+                </section>
+
+                {/* Recent */}
+                {(library?.recent?.length || 0) > 0 ? (
+                  <section className="mt-8">
+                    <SectionTitle icon={<Clock className="w-4 h-4" />} title="Recent Learning" />
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      {library!.recent.map((topic) => (
+                        <TopicCard
+                          key={topic.curriculum_id}
+                          topic={topic}
+                          onClick={() => openTopic(topic.curriculum_id)}
+                        />
+                      ))}
+                    </div>
+                  </section>
+                ) : null}
+
+                {/* Saved */}
+                {(library?.bookmarks?.length || 0) > 0 ? (
+                  <section className="mt-8">
+                    <SectionTitle icon={<Bookmark className="w-4 h-4" />} title="Saved Topics" />
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      {library!.bookmarks.map((topic) => (
+                        <TopicCard
+                          key={topic.curriculum_id}
+                          topic={topic}
+                          onClick={() => openTopic(topic.curriculum_id)}
+                        />
+                      ))}
+                    </div>
+                  </section>
+                ) : null}
+
+                {/* Browse */}
+                <section className="mt-10">
+                  <h2 className="text-sm font-semibold text-[#0F172A] mb-4">Browse by Subject</h2>
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
+                    Core Subjects
+                  </h3>
+                  <div className="grid sm:grid-cols-2 gap-3 mb-8">
+                    {coreSubjects.map((subject) => (
+                      <SubjectCard
+                        key={subject.id}
+                        label={subject.label}
+                        color={subject.color}
+                        count={SUBJECTS_WITH_CONTENT.get(subject.id) || 0}
+                        onClick={() => void openSubject(subject.id)}
+                      />
+                    ))}
+                  </div>
+
+                  {electiveSubjects.length > 0 ? (
+                    <>
+                      <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
+                        Elective Subjects
+                      </h3>
+                      <div className="grid sm:grid-cols-2 gap-3">
+                        {electiveSubjects.map((subject) => (
+                          <SubjectCard
+                            key={subject.id}
+                            label={subject.label}
+                            color={subject.color}
+                            count={SUBJECTS_WITH_CONTENT.get(subject.id) || 0}
+                            onClick={() => void openSubject(subject.id)}
+                          />
+                        ))}
                       </div>
-                      <svg className="w-5 h-5 text-gray-300 group-hover:text-[#4F46E5] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </button>
-                </motion.div>
-              )}
+                    </>
+                  ) : null}
+                </section>
+              </motion.div>
+            ) : null}
 
-              {/* ── Elective Subjects View ── */}
-              {view === 'elective-subjects' && (
-                <motion.div key="elective-subjects" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                  <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-3">Science Electives</h2>
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    {ELECTIVE_SUBJECTS.map((subject) => {
-                      const levelLessons = shsLevel
-                        ? getLessonsForSubject(subject.id, programme).filter(
-                            (l) => l.suggestedLevel === shsLevel || l.shsLevels?.includes(shsLevel)
-                          )
-                        : [];
-                      const lessons = shsLevel ? levelLessons : getLessonsForSubject(subject.id, programme);
-                      const completed = lessons.filter((l) => completedLessons.has(l.id)).length;
-                      const hasContent = lessons.length > 0;
-                      return (
-                        <button
-                          key={subject.id}
-                          onClick={() => hasContent && handleSelectSubject(subject.id)}
-                          disabled={!hasContent}
-                          className={`text-left bg-white border rounded-xl p-5 transition-all duration-200 ${
-                            hasContent
-                              ? 'border-gray-200 hover:border-gray-300 hover:shadow-sm cursor-pointer'
-                              : 'border-gray-100 opacity-50 cursor-default'
-                          }`}
-                        >
-                          <div className="flex items-start gap-4">
-                            <div
-                              className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-base flex-shrink-0"
-                              style={{ backgroundColor: subject.color }}
-                            >
-                              {subject.icon}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <h3 className="font-semibold text-[#1E293B]">{subject.label}</h3>
-                                {hasContent && <p className="text-xs text-gray-500 mt-0.5">{subject.description}</p>}
-                              {hasContent ? (
-                                <div className="flex items-center gap-2 mt-2">
-                                  <div className="flex-1 bg-gray-100 rounded-full h-1 overflow-hidden">
-                                    <div className="h-full bg-[#4F46E5] rounded-full transition-all"
-                                      style={{ width: `${(completed / Math.max(1, lessons.length)) * 100}%` }} />
-                                  </div>
-                                  <span className="text-xs text-gray-400 flex-shrink-0">{completed}/{lessons.length}</span>
-                                </div>
-                              ) : (
-                                <p className="text-xs text-gray-400 mt-2 italic">Coming soon</p>
-                              )}
-                            </div>
-                          </div>
-                        </button>
-                      );
-                    })}
+            {view === 'subject' && selectedSubject ? (
+              <motion.div
+                key="subject"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+              >
+                <h1 className="text-2xl font-semibold text-[#0F172A]">{selectedSubject}</h1>
+                <p className="mt-1 text-sm text-[#64748B]">
+                  Choose a topic to open lesson notes and Atlas AI.
+                </p>
+
+                {topicsLoading ? (
+                  <div className="mt-8 flex items-center gap-2 text-sm text-gray-500">
+                    <Loader2 className="w-4 h-4 animate-spin" /> Loading topics…
                   </div>
-                </motion.div>
-              )}
-
-              {/* ── Coming Soon View ── */}
-              {view === 'coming-soon' && selectedSubject && (
-                <motion.div key="coming-soon" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                  <div className="bg-white border border-gray-200 rounded-xl p-10 text-center">
-                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-100 flex items-center justify-center">
-                      <svg className="w-8 h-8 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                      </svg>
-                    </div>
-                    <h2 className="text-xl font-bold text-[#1E293B] mb-2">
-                      {selectedSubject} — {shsLevel || 'Content'}
-                    </h2>
-                    <p className="text-gray-500 mb-4 max-w-md mx-auto">
-                      Learning content for <strong>{shsLevel || 'your level'}</strong> in <strong>{selectedSubject}</strong> is not yet available. We are working on adding it soon!
-                    </p>
-                    <button
-                      onClick={() => { setView('subjects'); setSelectedSubject(null); }}
-                      className="px-5 py-2 bg-[#4F46E5] text-white text-sm font-medium rounded-lg hover:bg-[#4338CA] transition-colors"
-                    >
-                      Back to Subjects
-                    </button>
+                ) : subjectTopics.length === 0 ? (
+                  <p className="mt-8 text-sm text-gray-500">No topics available yet for this subject.</p>
+                ) : (
+                  <div className="mt-6 space-y-2">
+                    {subjectTopics.map((topic) => (
+                      <button
+                        key={topic.curriculum_id}
+                        type="button"
+                        onClick={() => openTopic(topic.curriculum_id)}
+                        className="w-full text-left rounded-xl border border-gray-200 bg-white px-4 py-3.5 hover:border-[#4F46E5]/40 hover:shadow-sm transition-all"
+                      >
+                        <p className="font-medium text-[#0F172A]">{topic.title}</p>
+                        <p className="text-xs text-gray-400 mt-0.5">
+                          {topic.estimated_minutes} min · {topic.xp_reward} XP
+                        </p>
+                      </button>
+                    ))}
                   </div>
-                </motion.div>
-              )}
+                )}
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
+        </main>
+      </AppLayout>
+      <BottomNav />
+    </div>
+  );
+}
 
-              {/* ── Modules View ── */}
-              {view === 'modules' && selectedSubject && selectedLevel && (
-                <motion.div key="modules" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    {getModulesForLevel(selectedSubject, selectedLevel, programme).map((mod) => {
-                      const completed = mod.lessons.filter((l) => completedLessons.has(l.id)).length;
-                      const firstUnlocked = mod.lessons.find((l) => isLessonUnlocked(l));
-                      const allLocked = !firstUnlocked;
-                      return (
-                        <button
-                          key={mod.key}
-                          onClick={() => !allLocked && handleSelectModule(mod.key, mod.label)}
-                          disabled={allLocked}
-                          className={`text-left bg-white border rounded-xl p-5 transition-all duration-200 ${
-                            !allLocked
-                              ? 'border-gray-200 hover:border-gray-300 hover:shadow-sm cursor-pointer'
-                              : 'border-gray-100 opacity-40 cursor-default'
-                          }`}
-                        >
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="flex-1 min-w-0">
-                              <h3 className="font-semibold text-[#1E293B]">{mod.label}</h3>
-                              <p className="text-xs text-gray-500 mt-1">{mod.lessons.length} lessons</p>
-                            </div>
-                            <span className="text-xs font-medium text-[#4F46E5] flex-shrink-0">{completed}/{mod.lessons.length}</span>
-                          </div>
-                          <div className="mt-3 w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
-                            <div className="h-full bg-[#4F46E5] rounded-full transition-all"
-                              style={{ width: `${(completed / Math.max(1, mod.lessons.length)) * 100}%` }} />
-                          </div>
-                          {allLocked && <p className="text-xs text-gray-400 mt-2 italic">Complete previous lessons to unlock</p>}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </motion.div>
-              )}
+function SectionTitle({
+  icon,
+  title,
+}: {
+  icon: React.ReactNode;
+  title: string;
+}) {
+  return (
+    <div className="flex items-center gap-2 mb-3">
+      <span className="text-[#4F46E5]">{icon}</span>
+      <h2 className="text-sm font-semibold text-[#0F172A]">{title}</h2>
+    </div>
+  );
+}
 
-              {/* ── Lessons View ── */}
-              {view === 'lessons' && selectedSubject && selectedLevel && selectedModule && (
-                <motion.div key="lessons" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                  <div className="space-y-3">
-                    {currentModuleLessons.map((lesson, idx) => {
-                      const isCompleted = completedLessons.has(lesson.id);
-                      const unlocked = isLessonUnlocked(lesson);
-                      const locked = !unlocked && !isCompleted;
-                      return (
-                        <button
-                          key={lesson.id}
-                          onClick={() => !locked && handleSelectLesson(lesson.id)}
-                          disabled={locked}
-                          className={`w-full text-left p-4 rounded-xl border transition-all duration-200 ${
-                            isCompleted
-                              ? 'bg-[#EEF2FF] border-[#C7D2FE]'
-                              : locked
-                              ? 'bg-gray-50 border-gray-200 opacity-40 cursor-not-allowed'
-                              : 'bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300'
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            {/* Status indicator */}
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                              isCompleted
-                                ? 'bg-[#4F46E5]'
-                                : locked
-                                ? 'bg-gray-200'
-                                : 'bg-gray-100 border border-gray-300'
-                            }`}>
-                              {isCompleted ? (
-                                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-                                </svg>
-                              ) : locked ? (
-                                <span className="text-xs font-bold text-gray-400">!</span>
-                              ) : (
-                                <span className="text-xs font-bold text-gray-500">{idx + 1}</span>
-                              )}
-                            </div>
+function TopicCard({
+  topic,
+  onClick,
+}: {
+  topic: CurriculumTopic;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="text-left rounded-xl border border-gray-200 bg-white p-4 hover:border-[#4F46E5]/40 hover:shadow-sm transition-all"
+    >
+      <p className="text-[10px] uppercase tracking-wide text-gray-400 font-semibold">
+        {topic.subject}
+      </p>
+      <p className="mt-1 font-medium text-[#0F172A] text-sm leading-snug">{topic.title}</p>
+      {topic.reason ? (
+        <p className="mt-2 text-xs text-[#4F46E5]">{topic.reason}</p>
+      ) : null}
+    </button>
+  );
+}
 
-                            {/* Content */}
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-0.5">
-                                <span className={`text-xs font-bold uppercase tracking-wider ${
-                                  isCompleted ? 'text-[#4F46E5]' : 'text-gray-500'
-                                }`}>
-                                  {lesson.subject}
-                                </span>
-                                {isCompleted && <span className="text-xs text-[#4F46E5]">Done</span>}
-                              </div>
-                              <p className={`font-semibold truncate ${isCompleted ? 'text-[#1E293B]' : locked ? 'text-gray-400' : 'text-[#1E293B]'}`}>
-                                {lesson.title}
-                              </p>
-                              {/* Difficulty dots */}
-                              <div className="flex items-center gap-1 mt-1">
-                                {Array.from({ length: 5 }).map((_, d) => (
-                                  <div key={d} className={`w-1.5 h-1.5 rounded-full ${
-                                    d < lesson.difficulty ? 'bg-[#4F46E5]/70' : 'bg-gray-300'
-                                  }`} />
-                                ))}
-                              </div>
-                            </div>
-
-                            {/* XP & Time */}
-                            <div className="text-right flex-shrink-0">
-                              <span className="text-sm font-bold text-gray-500">{lesson.xpReward} XP</span>
-                              <div className="text-xs text-gray-400 mt-0.5">{lesson.estimatedMinutes} min</div>
-                            </div>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-          </main>
+function SubjectCard({
+  label,
+  color,
+  count,
+  onClick,
+}: {
+  label: string;
+  color: string;
+  count: number;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="text-left rounded-xl border border-gray-200 bg-white p-4 hover:border-gray-300 hover:shadow-sm transition-all"
+    >
+      <div className="flex items-center gap-3">
+        <div
+          className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
+          style={{ backgroundColor: color }}
+        >
+          {label.charAt(0)}
         </div>
-        <BottomNav />
+        <div>
+          <p className="font-semibold text-[#0F172A] text-sm">{label}</p>
+          <p className="text-xs text-gray-400 mt-0.5">{count} topics</p>
+        </div>
       </div>
-    </AppLayout>
+    </button>
+  );
+}
+
+export default function LearningPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center text-sm text-gray-500">
+          Loading…
+        </div>
+      }
+    >
+      <LearningInner />
+    </Suspense>
   );
 }
