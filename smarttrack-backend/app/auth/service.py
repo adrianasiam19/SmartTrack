@@ -198,7 +198,104 @@ async def get_or_create_google_user(google_info: dict, db: AsyncSession) -> User
         avatar_url=avatar,
         is_verified=True,       # Google emails are pre-verified
         password_hash=None,     # No password for OAuth users
+        onboarding_completed=False,
+        starter_arena_completed=False,
+        xp=0,
+        rank="Beginner",
+        streak=0,
+        last_login=datetime.now(timezone.utc),
     )
     db.add(new_user)
     await db.flush()
     return new_user
+
+
+# ── Password reset ────────────────────────────────────────────────────────────
+
+PASSWORD_RESET_TOKEN_HOURS = 1
+
+
+def create_password_reset_token(user_id: uuid.UUID, email: str) -> str:
+    """Short-lived JWT used only for password reset links."""
+    expire = datetime.now(timezone.utc) + timedelta(hours=PASSWORD_RESET_TOKEN_HOURS)
+    payload = {
+        "sub": str(user_id),
+        "email": email.lower(),
+        "exp": expire,
+        "type": "password_reset",
+        "jti": secrets.token_urlsafe(8),
+    }
+    return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+
+
+def verify_password_reset_token(token: str) -> tuple[uuid.UUID, str]:
+    """
+    Validate a password-reset JWT.
+    Returns (user_id, email). Raises JWTError on failure.
+    """
+    payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+    if payload.get("type") != "password_reset":
+        raise JWTError("Invalid token type")
+    user_id = uuid.UUID(payload["sub"])
+    email = str(payload.get("email") or "")
+    if not email:
+        raise JWTError("Missing email claim")
+    return user_id, email
+
+
+async def send_password_reset_email(email: str, reset_url: str) -> bool:
+    """
+    Send a password-reset email via SMTP when configured.
+    Returns True if an email provider accepted the message.
+    In development without SMTP, the link is logged so local testing still works.
+    """
+    import logging
+    import smtplib
+    from email.message import EmailMessage
+
+    log = logging.getLogger(__name__)
+    subject = "Reset your Atlas password"
+    body = (
+        "Hi,\n\n"
+        "We received a request to reset your Atlas password.\n\n"
+        f"Open this link to choose a new password (expires in {PASSWORD_RESET_TOKEN_HOURS} hour):\n"
+        f"{reset_url}\n\n"
+        "If you did not request this, you can ignore this email.\n\n"
+        "— Atlas\n"
+    )
+
+    smtp_host = (settings.SMTP_HOST or "").strip()
+    smtp_user = (settings.SMTP_USER or "").strip()
+    smtp_password = (settings.SMTP_PASSWORD or "").strip()
+    mail_from = (settings.MAIL_FROM or smtp_user or "noreply@atlas.app").strip()
+
+    if not smtp_host:
+        log.warning(
+            "SMTP not configured — password reset link for %s: %s",
+            email,
+            reset_url,
+        )
+        return False
+
+    message = EmailMessage()
+    message["Subject"] = subject
+    message["From"] = mail_from
+    message["To"] = email
+    message.set_content(body)
+
+    try:
+        if settings.SMTP_USE_TLS:
+            with smtplib.SMTP(smtp_host, settings.SMTP_PORT, timeout=20) as server:
+                server.starttls()
+                if smtp_user:
+                    server.login(smtp_user, smtp_password)
+                server.send_message(message)
+        else:
+            with smtplib.SMTP_SSL(smtp_host, settings.SMTP_PORT, timeout=20) as server:
+                if smtp_user:
+                    server.login(smtp_user, smtp_password)
+                server.send_message(message)
+        return True
+    except Exception as exc:
+        log.error("Failed to send password reset email to %s: %s", email, exc)
+        raise

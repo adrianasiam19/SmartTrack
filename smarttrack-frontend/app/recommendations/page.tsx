@@ -1,162 +1,346 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Sidebar from '../components/Sidebar';
 import BottomNav from '../components/BottomNav';
 import AppLayout from '../components/AppLayout';
-import { getAccessToken, getStoredUser, getCurrentUser, type UserProfile } from '../lib/authApi';
+import {
+  getAccessToken,
+  getStoredUser,
+  getCurrentUser,
+  fetchWithAuth,
+  type UserProfile,
+} from '../lib/authApi';
 
-interface ReadinessItem { id: string; label: string; completed: boolean; }
-interface ArenaStrength { name: string; level: 'Strong' | 'Moderate' | 'Developing' | 'Not Started'; description: string; }
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+const ACADEMIC_FLAG_KEY = 'atlas_academic_data';
+const ACADEMIC_FILE_KEY = 'atlas_academic_filename';
+const MAX_FILE_BYTES = 10 * 1024 * 1024;
+const ACCEPTED_TYPES = [
+  'application/pdf',
+  'image/png',
+  'image/jpeg',
+  'image/jpg',
+  'image/webp',
+];
 
-function deriveArenaStrengths(user: UserProfile | null): ArenaStrength[] {
-  if (!user) return [];
-  const xp = user.xp || 0;
-  const isScience = user.programme === 'General Science';
-  const lvl = (s: number, m: number, d: number): ArenaStrength['level'] =>
-    xp >= s ? 'Strong' : xp >= m ? 'Moderate' : xp >= d ? 'Developing' : 'Not Started';
-  return [
-    { name: 'Logic & Reasoning', level: lvl(200, 100, 30), description: 'Pattern recognition, deductive reasoning, and analytical problem-solving.' },
-    { name: 'Scientific Thinking', level: isScience && xp >= 100 ? 'Moderate' : xp >= 200 ? 'Moderate' : 'Developing', description: 'Hypothesis formation, experimental design, and evidence-based analysis.' },
-    { name: 'Quantitative Reasoning', level: lvl(200, 100, 30), description: 'Numerical problem-solving, percentages, ratios, and data analysis.' },
-    { name: 'Communication', level: !isScience && xp >= 100 ? 'Moderate' : 'Developing', description: 'Reading comprehension, argument analysis, and clear expression of ideas.' },
-  ];
-}
+type ProgrammeRecommendation = {
+  programme_family: string;
+  fit_score: number;
+  fit_level: string;
+  description: string;
+  why_good_fit: string;
+  foundation?: string;
+};
 
-function strengthColor(level: ArenaStrength['level']): string {
-  const colors: Record<string, string> = {
-    Strong: 'text-[#4F46E5] border-[#C7D2FE] bg-[#EEF2FF]',
-    Moderate: 'text-[#D97706] border-[#FDE68A] bg-[#FFFBEB]',
-    Developing: 'text-[#F43F5E] border-[#FFE4E6] bg-[#FFF1F2]',
-    'Not Started': 'text-gray-400 border-gray-200 bg-gray-50',
-  };
-  return colors[level] || colors['Not Started'];
-}
+type RecommendationPayload = {
+  academic_score?: number;
+  performance_level?: string;
+  summary_message?: string;
+  detailed_message?: string;
+  recommendations?: ProgrammeRecommendation[];
+  grades_used?: number;
+};
 
 export default function RecommendationsPage() {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [academicCompleted, setAcademicCompleted] = useState(false);
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadMessage, setUploadMessage] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generateError, setGenerateError] = useState('');
+  const [result, setResult] = useState<RecommendationPayload | null>(null);
 
   useEffect(() => {
     const load = async () => {
       try {
-        if (!getAccessToken()) { router.push('/login'); return; }
-        const cached = getStoredUser(); if (cached) setUser(cached);
-        const fresh = await getCurrentUser(); setUser(fresh);
-        setAcademicCompleted(localStorage.getItem('atlas_academic_data') === 'true');
-      } catch { router.push('/login'); }
-      finally { setLoading(false); }
+        if (!getAccessToken()) {
+          router.push('/login');
+          return;
+        }
+        const cached = getStoredUser();
+        if (cached) setUser(cached);
+        const fresh = await getCurrentUser();
+        setUser(fresh);
+
+        const profileUpload = (fresh.learner_profile as { academic_upload?: { filename?: string } } | null)
+          ?.academic_upload;
+        if (profileUpload?.filename) {
+          setUploadedFileName(profileUpload.filename);
+        } else if (localStorage.getItem(ACADEMIC_FLAG_KEY) === 'true') {
+          setUploadedFileName(localStorage.getItem(ACADEMIC_FILE_KEY));
+        }
+      } catch {
+        router.push('/login');
+      } finally {
+        setLoading(false);
+      }
     };
     load();
   }, [router]);
 
-  const hasXP = (user?.xp || 0) > 0;
-  const readinessItems: ReadinessItem[] = [
-    { id: 'starter-arena', label: 'Starter Arena', completed: hasXP },
-    { id: 'logic-arena', label: 'Logic Arena', completed: hasXP },
-    { id: 'scientific-thinking', label: 'Scientific Thinking', completed: hasXP },
-    { id: 'quantitative-sprint', label: 'Quantitative Sprint', completed: hasXP },
-    { id: 'psychometric', label: 'Psychometric Profile', completed: false },
-    { id: 'academic', label: 'Academic Results', completed: academicCompleted },
-  ];
-  const arenaStrengths = deriveArenaStrengths(user);
-  const completedCount = readinessItems.filter((i) => i.completed).length;
-  const confidence = Math.min(100, hasXP ? 40 : 10 + (academicCompleted ? 25 : 0));
+  const openFilePicker = () => {
+    setUploadError('');
+    setGenerateError('');
+    fileInputRef.current?.click();
+  };
 
-  if (loading) return (
-    <AppLayout><div className="flex items-center justify-center min-h-screen">
-      <div className="w-8 h-8 border-2 border-[#4F46E5] border-t-transparent rounded-full animate-spin" /></div></AppLayout>
-  );
+  const handleFileSelected = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+
+    setUploadError('');
+    setUploadMessage('');
+    setResult(null);
+
+    const typeOk =
+      ACCEPTED_TYPES.includes(file.type) ||
+      /\.(pdf|png|jpe?g|webp)$/i.test(file.name);
+    if (!typeOk) {
+      setUploadError('Please choose a PDF, PNG, or JPG file.');
+      return;
+    }
+    if (file.size > MAX_FILE_BYTES) {
+      setUploadError('That file is too large. Please choose a file under 10MB.');
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const form = new FormData();
+      form.append('file', file);
+      const res = await fetchWithAuth(`${API_BASE}/challenges/academic/upload`, {
+        method: 'POST',
+        body: form,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data?.detail || 'Upload failed. Please try again.');
+      }
+
+      const filename = data.filename || file.name;
+      localStorage.setItem(ACADEMIC_FLAG_KEY, 'true');
+      localStorage.setItem(ACADEMIC_FILE_KEY, filename);
+      setUploadedFileName(filename);
+      setUploadMessage(
+        data.message ||
+          (data.grades_extracted
+            ? 'Upload saved and grades detected.'
+            : 'Upload saved. Tap Get Recommendations when you are ready.'),
+      );
+      try {
+        const fresh = await getCurrentUser();
+        setUser(fresh);
+      } catch {
+        // Non-fatal
+      }
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Upload failed. Please try again.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleGetRecommendations = async () => {
+    if (!uploadedFileName) {
+      setGenerateError('Upload your academic results first.');
+      return;
+    }
+    setGenerateError('');
+    setIsGenerating(true);
+    try {
+      const res = await fetchWithAuth(`${API_BASE}/challenges/recommendations/generate`, {
+        method: 'GET',
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(
+          data?.detail || 'Could not generate recommendations. Please try again.',
+        );
+      }
+      setResult(data);
+    } catch (err) {
+      setGenerateError(
+        err instanceof Error ? err.message : 'Could not generate recommendations.',
+      );
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <AppLayout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="w-10 h-10 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin" />
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>
       <div className="flex min-h-screen">
         <Sidebar />
         <div className="flex-1 lg:pb-0 pb-20">
-          <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-8 pb-8">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h1 className="text-xl font-bold text-[#1E293B]">Programme Recommendations</h1>
-                <p className="text-sm text-gray-500">{user?.programme || 'SHS Student'} · {user?.shs_level || 'Discover your path'}</p>
-              </div>
-              <div className="text-sm font-semibold text-[#4F46E5]">{user?.xp?.toLocaleString() || 0} XP</div>
-            </div>
-
-            <div className="space-y-6">
-              <div className="bg-white border border-gray-200 rounded-xl p-6">
-                <h2 className="text-lg font-semibold text-[#1E293B] mb-1">Recommendation Readiness</h2>
-                <p className="text-sm text-gray-500 mb-6">Complete challenges and upload academic results to unlock accurate recommendations.</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
-                  {readinessItems.map((item) => (
-                    <div key={item.id} className={`flex items-center justify-between px-4 py-3 rounded-lg border transition-all ${item.completed ? 'bg-[#EEF2FF] border-[#C7D2FE]' : 'bg-white border-gray-200'}`}>
-                      <span className={`text-sm font-medium ${item.completed ? 'text-[#4F46E5]' : 'text-gray-500'}`}>{item.label}</span>
-                      <span className={`text-xs font-bold ${item.completed ? 'text-[#4F46E5]' : 'text-gray-300'}`}>{item.completed ? 'Done' : 'Pending'}</span>
-                    </div>
-                  ))}
+          <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-8 pb-8">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-8"
+            >
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <h1 className="text-2xl font-bold text-[#1E293B]">Programme Recommendations</h1>
+                  <p className="text-sm text-[#64748B] mt-1">
+                    {user?.programme || 'SHS Student'}
+                    {user?.shs_level ? ` · ${user.shs_level}` : ''}
+                  </p>
                 </div>
-                <div className="bg-gray-50 rounded-xl p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-[#1E293B]">Recommendation Confidence</span>
-                    <span className="text-lg font-bold text-[#4F46E5]">{confidence}%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
-                    <div className="h-2 rounded-full bg-[#4F46E5] transition-all duration-1000" style={{ width: `${confidence}%` }} />
-                  </div>
-                  <span className="text-xs text-gray-500">{completedCount} of {readinessItems.length} milestones complete</span>
+                <div className="flex items-center gap-2 bg-[#EEF2FF] border border-[#C7D2FE] rounded-xl px-4 py-2">
+                  <span className="text-sm font-semibold text-[#2563EB]">
+                    {user?.xp?.toLocaleString() || 0} XP
+                  </span>
                 </div>
               </div>
+            </motion.div>
 
-              <div>
-                <h2 className="text-lg font-semibold text-[#1E293B] mb-4">Cognitive Profile</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {arenaStrengths.map((strength) => (
-                    <div key={strength.name} className="bg-white border border-gray-200 rounded-xl p-5">
-                      <div className="flex items-start gap-3">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between mb-1">
-                            <h3 className="font-semibold text-[#1E293B] text-sm">{strength.name}</h3>
-                            <span className={`inline-flex px-2 py-0.5 text-[10px] font-bold rounded-full border ${strengthColor(strength.level)}`}>{strength.level}</span>
-                          </div>
-                          <p className="text-xs text-gray-500">{strength.description}</p>
-                        </div>
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-gradient-to-br from-white to-[#EEF2FF] border border-[#BFDBFE] rounded-2xl p-8 lg:p-10 text-center shadow-sm"
+            >
+              <div className="w-16 h-16 bg-gradient-to-br from-[#2563EB] to-[#7C3AED] rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-[#2563EB]/20">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+
+              <h2 className="text-xl font-bold text-[#1E293B] mb-3">
+                Unlock Your Programme Matches
+              </h2>
+              <p className="text-sm text-[#64748B] max-w-lg mx-auto mb-8 leading-relaxed">
+                Upload your WASSCE or academic results, then press Get Recommendations.
+                Atlas will combine your results with your learning profile to rank programme families.
+              </p>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf,.png,.jpg,.jpeg,.webp,application/pdf,image/png,image/jpeg,image/webp"
+                className="hidden"
+                onChange={(e) => void handleFileSelected(e)}
+              />
+
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={openFilePicker}
+                  disabled={isUploading || isGenerating}
+                  className={`inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold transition-all duration-200 active:scale-[0.98] disabled:opacity-60 ${
+                    uploadedFileName
+                      ? 'bg-[#EEF2FF] border border-[#C7D2FE] text-[#2563EB]'
+                      : 'bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] text-white shadow-lg shadow-[#2563EB]/20 hover:shadow-xl hover:from-[#3B82F6] hover:to-[#2563EB]'
+                  }`}
+                >
+                  {isUploading
+                    ? 'Uploading…'
+                    : uploadedFileName
+                      ? 'Replace Results'
+                      : 'Upload WASSCE or Academic Results'}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => void handleGetRecommendations()}
+                  disabled={!uploadedFileName || isUploading || isGenerating}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-white bg-gradient-to-r from-[#7C3AED] to-[#5B21B6] shadow-lg shadow-[#7C3AED]/20 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.98]"
+                >
+                  {isGenerating ? 'Generating…' : 'Get Recommendations'}
+                </button>
+              </div>
+
+              {uploadedFileName && (
+                <p className="text-sm text-[#2563EB] mt-4">
+                  Uploaded: <span className="font-medium">{uploadedFileName}</span>
+                </p>
+              )}
+              {uploadMessage && (
+                <p className="text-sm text-[#059669] mt-3">{uploadMessage}</p>
+              )}
+              {uploadError && (
+                <p className="text-sm text-[#DC2626] mt-4">{uploadError}</p>
+              )}
+              {generateError && (
+                <p className="text-sm text-[#DC2626] mt-4">{generateError}</p>
+              )}
+            </motion.div>
+
+            {result?.recommendations && result.recommendations.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-8 space-y-4"
+              >
+                <div className="bg-white border border-[#BFDBFE] rounded-2xl p-6">
+                  <h3 className="text-lg font-bold text-[#1E293B] mb-2">Your Matches</h3>
+                  {result.summary_message && (
+                    <p className="text-sm text-[#64748B] mb-4">{result.summary_message}</p>
+                  )}
+                  <div className="flex flex-wrap gap-3 text-sm">
+                    {typeof result.academic_score === 'number' && (
+                      <span className="px-3 py-1.5 rounded-lg bg-[#EEF2FF] text-[#2563EB] font-semibold">
+                        Score {result.academic_score}%
+                      </span>
+                    )}
+                    {result.performance_level && (
+                      <span className="px-3 py-1.5 rounded-lg bg-[#F0FDF4] text-[#059669] font-semibold">
+                        {result.performance_level}
+                      </span>
+                    )}
+                    {typeof result.grades_used === 'number' && (
+                      <span className="px-3 py-1.5 rounded-lg bg-[#FFF7ED] text-[#C2410C] font-semibold">
+                        {result.grades_used} grade{result.grades_used === 1 ? '' : 's'} used
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {result.recommendations.map((rec) => (
+                  <div
+                    key={rec.programme_family}
+                    className="bg-white border border-[#E2E8F0] rounded-2xl p-5"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h4 className="text-base font-bold text-[#1E293B]">
+                          {rec.programme_family}
+                        </h4>
+                        <p className="text-xs font-semibold text-[#7C3AED] mt-1">
+                          {rec.fit_level}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-2xl font-bold text-[#2563EB]">{rec.fit_score}</div>
+                        <div className="text-[11px] text-[#64748B]">fit score</div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              {!academicCompleted && (
-                <div className="bg-amber-50 border border-amber-200 rounded-xl p-8 text-center">
-                  <h2 className="text-xl font-bold text-[#1E293B] mb-2">Your profile is still being built.</h2>
-                  <p className="text-gray-500 max-w-lg mx-auto mb-6 text-sm">Complete more challenges and upload your academic results to unlock accurate programme recommendations.</p>
-                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                    <button onClick={() => router.push('/challenges')}
-                      className="px-5 py-2.5 bg-[#4F46E5] text-white font-medium rounded-lg hover:bg-[#4338CA] transition-colors text-sm">
-                      Complete Challenges
-                    </button>
-                    <button onClick={() => { localStorage.setItem('atlas_academic_data', 'true'); setAcademicCompleted(true); }}
-                      className="px-5 py-2.5 border border-gray-200 text-gray-600 font-medium rounded-lg hover:bg-gray-50 transition-colors text-sm">
-                      Upload WASSCE Results
-                    </button>
+                    <p className="text-sm text-[#475569] mt-3">{rec.description}</p>
+                    <p className="text-sm text-[#64748B] mt-2">{rec.why_good_fit}</p>
+                    {rec.foundation && (
+                      <p className="text-xs text-[#94A3B8] mt-2">Foundation: {rec.foundation}</p>
+                    )}
                   </div>
-                </div>
-              )}
-
-              {academicCompleted && (
-                <div className="bg-white border border-gray-200 rounded-xl p-8 text-center">
-                  <h3 className="text-lg font-semibold text-[#1E293B] mb-2">Recommendations are being generated...</h3>
-                  <p className="text-gray-500 text-sm mb-6">Your cognitive profile and academic data are being processed.</p>
-                  <button onClick={() => router.push('/challenges')}
-                    className="px-5 py-2.5 bg-[#4F46E5] text-white font-medium rounded-lg hover:bg-[#4338CA] transition-colors text-sm">
-                    Continue Building Your Profile
-                  </button>
-                </div>
-              )}
-            </div>
+                ))}
+              </motion.div>
+            )}
           </main>
         </div>
         <BottomNav />

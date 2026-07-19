@@ -1,7 +1,7 @@
 import json
 from typing import Dict, Optional, List
 
-from app.assessment.gemini_service import generate_challenge_question
+from app.assessment.deepseek_service import generate_challenge_question
 
 
 async def generate_adaptive_questions(domain: str, target_difficulty: float, count: int = 3) -> List[Dict]:
@@ -14,7 +14,7 @@ async def generate_adaptive_questions(domain: str, target_difficulty: float, cou
     Falls back to an empty list if generation fails (prefetch_manager
     handles the background pipeline instead).
     """
-    # Map our domain names to the categories Gemini/NVIDIA understand
+    # Map our domain names to the categories DeepSeek/NVIDIA understand
     DOMAIN_TO_CATEGORY = {
         "Math": "Quantitative Thinking",
         "Verbal": "Verbal Reasoning",

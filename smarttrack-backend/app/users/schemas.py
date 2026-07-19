@@ -31,6 +31,8 @@ class UserPublic(UserBase):
     shs_level: str | None = None
     school: str | None = None
     onboarding_completed: bool = False
+    starter_arena_completed: bool = False
+    learner_profile: dict | None = None
 
     # Gamification
     xp: int = 0
@@ -47,3 +49,4 @@ class UserUpdate(BaseModel):
     shs_level: SHSLevel | None = None
     school: str | None = Field(default=None, max_length=255)
     onboarding_completed: bool | None = None
+    starter_arena_completed: bool | None = None

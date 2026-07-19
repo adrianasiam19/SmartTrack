@@ -18,7 +18,7 @@ import time
 from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field
 
-from app.assessment.gemini_service import generate_challenge_question
+from app.assessment.deepseek_service import generate_challenge_question
 
 logger = logging.getLogger(__name__)
 

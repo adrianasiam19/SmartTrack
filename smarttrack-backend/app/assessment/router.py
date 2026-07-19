@@ -1,8 +1,8 @@
 import random
 from typing import List, Optional, Dict, Set
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, desc
+from sqlalchemy import select, desc, delete
 from datetime import datetime, timezone
 import uuid
 
@@ -23,13 +23,24 @@ from app.assessment.engine import (
     update_theta, get_domain_weights, analyze_behavior, get_initial_prior
 )
 from app.assessment.recommendation_engine import RecommendationEngine
+from app.assessment.academic_recommendations import (
+    validate_academic_file,
+    save_academic_file,
+    extract_grades_with_ai,
+    merge_academic_upload_into_profile,
+    has_academic_upload,
+    programme_fallback_skills,
+)
 from app.database import get_db
 from app.auth.dependencies import get_current_user
 from app.users.models import User, AcademicRecord
 import base64
 from app.assessment.ai_agent import get_ai_explanation
-from app.assessment.gemini_service import generate_challenge_question
+from app.assessment.deepseek_service import generate_challenge_question
 from app.assessment.prefetch_manager import prefetch_manager
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Simple obfuscation secret
 OBFUSCATION_SALT = "ST_SEC_2024"
@@ -85,7 +96,7 @@ async def get_questions_by_domain(domain: str, db: AsyncSession = Depends(get_db
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Gemini AI Challenge Generation
+# AI Challenge Generation
 # ──────────────────────────────────────────────────────────────────────────────
 
 @router.post("/generate-challenge", response_model=GenerateChallengeResponse)
@@ -93,7 +104,7 @@ async def generate_challenge(
     request: GenerateChallengeRequest,
 ):
     """
-    Generate a dynamic SHS challenge question using Gemini AI.
+    Generate a dynamic SHS challenge question using AI (DeepSeek / NVIDIA).
     
     This endpoint allows the system to generate challenge questions on-the-fly
     instead of relying solely on hardcoded questions.
@@ -626,28 +637,62 @@ async def generate_recommendations(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Generate programme recommendations based on stealth challenge data (IRT & Behavioral)."""
-    # Fetch all domain thetas
-    skills_res = await db.execute(select(UserSkillEstimate).where(UserSkillEstimate.user_id == current_user.id))
+    """
+    Generate programme recommendations after academic upload unlock.
+
+    Combines stealth challenge thetas (when available), behavioural traits,
+    Starter Arena profile, declared programme, and uploaded academic grades.
+    """
+    if not has_academic_upload(current_user):
+        # Also allow users who already saved AcademicRecord rows.
+        existing = await db.execute(
+            select(AcademicRecord).where(AcademicRecord.user_id == current_user.id).limit(1)
+        )
+        if existing.scalar_one_or_none() is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Upload your WASSCE or academic results first, then tap Get Recommendations.",
+            )
+
+    skills_res = await db.execute(
+        select(UserSkillEstimate).where(UserSkillEstimate.user_id == current_user.id)
+    )
     skills = skills_res.scalars().all()
     skill_estimates = {skill.domain: skill.theta for skill in skills}
-    
-    # Fetch behavioral traits
-    traits_res = await db.execute(select(BehavioralProfile).where(BehavioralProfile.user_id == current_user.id))
+
+    traits_res = await db.execute(
+        select(BehavioralProfile).where(BehavioralProfile.user_id == current_user.id)
+    )
     traits = traits_res.scalars().all()
     behavioral_traits = {trait.trait: trait.value for trait in traits}
 
+    grades_res = await db.execute(
+        select(AcademicRecord).where(AcademicRecord.user_id == current_user.id)
+    )
+    grade_rows = grades_res.scalars().all()
+    academic_grades = [
+        {"subject": row.subject, "grade": row.grade} for row in grade_rows
+    ]
+
+    profile = current_user.learner_profile if isinstance(current_user.learner_profile, dict) else {}
+    upload = profile.get("academic_upload") or {}
+    if not academic_grades and isinstance(upload.get("grades"), list):
+        academic_grades = [
+            {"subject": g.get("subject", ""), "grade": g.get("grade", "")}
+            for g in upload["grades"]
+            if g.get("subject") and g.get("grade")
+        ]
+
     if not skill_estimates:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Not enough challenge data to generate recommendations. Please play a few placement matches first."
-        )
+        skill_estimates = programme_fallback_skills(current_user.programme)
 
     engine = RecommendationEngine(
         skill_estimates=skill_estimates,
-        behavioral_traits=behavioral_traits
+        behavioral_traits=behavioral_traits,
+        academic_grades=academic_grades,
+        programme=current_user.programme,
+        learner_profile=profile,
     )
-    
     recommendations_result = engine.generate_recommendations()
 
     return {
@@ -657,6 +702,73 @@ async def generate_recommendations(
         "summary_message": recommendations_result.get("summary_message"),
         "detailed_message": recommendations_result.get("detailed_message"),
         "recommendations": recommendations_result.get("recommendations"),
+        "grades_used": recommendations_result.get("grades_used", 0),
+        "upload": {
+            "filename": upload.get("filename"),
+            "grades_extracted": bool(upload.get("grades_extracted")),
+        },
+    }
+
+
+@router.post("/academic/upload")
+async def upload_academic_results(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Upload WASSCE / academic results (PDF or image).
+
+    Stores the file server-side, best-effort extracts grades with AI,
+    and unlocks the Get Recommendations action.
+    """
+    data = await file.read()
+    filename = file.filename or "academic_results.pdf"
+    error = validate_academic_file(filename, file.content_type, len(data))
+    if error:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error)
+
+    stored_name, _path = save_academic_file(str(current_user.id), filename, data)
+    grades = await extract_grades_with_ai(
+        filename=filename,
+        content_type=file.content_type,
+        data=data,
+    )
+
+    # Replace academic records when we extracted grades
+    if grades:
+        await db.execute(
+            delete(AcademicRecord).where(AcademicRecord.user_id == current_user.id)
+        )
+        for row in grades:
+            db.add(
+                AcademicRecord(
+                    user_id=current_user.id,
+                    subject=row["subject"],
+                    grade=row["grade"],
+                    exam_type="WASSCE",
+                )
+            )
+
+    current_user.learner_profile = merge_academic_upload_into_profile(
+        current_user.learner_profile if isinstance(current_user.learner_profile, dict) else {},
+        filename=filename,
+        stored_name=stored_name,
+        grades=grades,
+    )
+    await db.commit()
+    await db.refresh(current_user)
+
+    return {
+        "success": True,
+        "filename": filename,
+        "grades_extracted": bool(grades),
+        "records": grades,
+        "message": (
+            f"Uploaded {filename}. Extracted {len(grades)} subject grade(s)."
+            if grades
+            else f"Uploaded {filename}. You can still generate recommendations from your Atlas profile."
+        ),
     }
 
 
@@ -667,24 +779,54 @@ async def save_academic_records(
     db: AsyncSession = Depends(get_db),
 ):
     """Save user's WASSCE/academic grades for improved recommendation accuracy."""
-    # Delete existing records to allow overwriting
-    await db.execute(
-        AcademicRecord.__table__.delete().where(AcademicRecord.user_id == current_user.id)
-    )
-    
-    # Insert new records
-    for record in body.records:
-        new_record = AcademicRecord(
-            user_id=current_user.id,
-            subject=record.subject,
-            grade=record.grade,
-            exam_type=record.exam_type
+    records: list[dict] = []
+    if body.records:
+        records = [
+            {
+                "subject": r.subject,
+                "grade": r.grade,
+                "exam_type": r.exam_type or body.exam_type,
+            }
+            for r in body.records
+        ]
+    elif body.results:
+        records = [
+            {"subject": subject, "grade": grade, "exam_type": body.exam_type}
+            for subject, grade in body.results.items()
+        ]
+
+    if not records:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Provide at least one academic grade.",
         )
-        db.add(new_record)
-        
+
+    await db.execute(
+        delete(AcademicRecord).where(AcademicRecord.user_id == current_user.id)
+    )
+
+    for record in records:
+        db.add(
+            AcademicRecord(
+                user_id=current_user.id,
+                subject=record["subject"],
+                grade=record["grade"],
+                exam_type=record.get("exam_type") or body.exam_type or "WASSCE",
+            )
+        )
+
+    # Mark upload unlocked even for manual grade entry
+    grade_list = [{"subject": r["subject"], "grade": r["grade"]} for r in records]
+    current_user.learner_profile = merge_academic_upload_into_profile(
+        current_user.learner_profile if isinstance(current_user.learner_profile, dict) else {},
+        filename="manual_entry",
+        stored_name="manual_entry",
+        grades=grade_list,
+    )
+
     await db.commit()
-    
-    return {"success": True, "message": f"Saved {len(body.records)} academic records."}
+
+    return {"success": True, "message": f"Saved {len(records)} academic records."}
 
 
 # ──────────────────────────────────────────────────────────────────────────────

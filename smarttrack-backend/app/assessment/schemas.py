@@ -68,9 +68,17 @@ class LeaderboardEntry(BaseModel):
 class LeaderboardResponse(BaseModel):
     entries: List[LeaderboardEntry]
 
+class AcademicGradeRecord(BaseModel):
+    subject: str
+    grade: str
+    exam_type: str = "WASSCE"
+
+
 class SaveAcademicRecordsRequest(BaseModel):
-    exam_type: str # WASSCE, UTME, etc.
-    results: Dict[str, str] # {"Math": "A1", ...}
+    exam_type: str = "WASSCE"  # WASSCE, UTME, etc.
+    # Prefer structured records; `results` kept for older clients {"Math": "A1"}
+    records: Optional[List[AcademicGradeRecord]] = None
+    results: Optional[Dict[str, str]] = None
 
 class LearningModuleResponse(BaseModel):
     id: int
@@ -82,10 +90,10 @@ class RecommendedModulesResponse(BaseModel):
     modules: List[LearningModuleResponse]
 
 
-# ── Gemini Challenge Generation ──────────────────────────────────────────────
+# ── AI Challenge Generation ──────────────────────────────────────────────────
 
 class GenerateChallengeRequest(BaseModel):
-    """Request to generate a challenge using Gemini AI."""
+    """Request to generate a challenge using AI (DeepSeek / NVIDIA)."""
     category: str  # Logic, Quantitative Thinking, Scientific Thinking, etc.
     difficulty: str  # Beginner, Intermediate, Advanced
     programme: str  # General Science, General Arts
@@ -135,7 +143,7 @@ class PsychometricSubmitResponse(BaseModel):
 
 
 class GeneratedChallenge(BaseModel):
-    """A generated challenge question from Gemini."""
+    """A generated challenge question from AI."""
     category: str
     difficulty: str
     concept: str

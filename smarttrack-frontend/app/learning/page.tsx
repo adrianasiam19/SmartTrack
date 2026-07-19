@@ -1,54 +1,252 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Lock, ChevronDown, Loader2, Search } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import BottomNav from '../components/BottomNav';
 import AppLayout from '../components/AppLayout';
-import LessonPlayer from '../components/LessonPlayer';
+import AITutorLesson from '../components/AITutorLesson';
 import {
   getAccessToken, getStoredUser, getCurrentUser, updateUserProfile, storeUser,
   type UserProfile, type Programme, type SHSLevel,
 } from '../lib/authApi';
 import { ALL_LESSONS, getLessonById, type Lesson } from '../lib/learningContent';
+import { searchCurriculumTopics, type CurriculumTopic } from '../lib/learningApi';
 import { getLearningStage, getCurrentZone, calculateZoneProgress } from '../lib/adaptiveEngine';
 
-// ── Subjects ───────────────────────────────────────────────────────────────
+// ── Core Subjects ──────────────────────────────────────────────────────────
 const SUBJECTS = [
-  { id: 'Core Mathematics', label: 'Core Mathematics', description: 'Numbers, algebra, geometry, statistics and more', color: '#4F46E5' },
-  { id: 'English Language', label: 'English Language', description: 'Comprehension, grammar, literature and writing', color: '#D97706' },
+  { id: 'Core Mathematics', label: 'Core Mathematics', description: 'Number sense, algebra, geometry, statistics and problem solving', color: '#4F46E5' },
+  { id: 'English Language', label: 'English Language', description: 'Grammar, comprehension, composition, oral skills and literature', color: '#D97706' },
   { id: 'Integrated Science', label: 'Integrated Science', description: 'Scientific method, materials, force, energy and health', color: '#059669' },
   { id: 'Social Studies', label: 'Social Studies', description: 'Governance, history, economics and civic responsibility', color: '#7C3AED' },
 ] as const;
 
-type SubjectId = (typeof SUBJECTS)[number]['id'];
-type DrillView = 'subjects' | 'levels' | 'modules' | 'lessons';
+// ── Elective Subjects ─────────────────────────────────────────────────────
+const ELECTIVE_SUBJECTS = [
+  { id: 'Biology', label: 'Biology', description: 'Living organisms, cells, genetics and ecology', color: '#16A34A', icon: '🧬' },
+  { id: 'Chemistry', label: 'Chemistry', description: 'Atoms, molecules, reactions and the periodic table', color: '#0EA5E9', icon: '⚗️' },
+  { id: 'Additional Mathematics', label: 'Additional Mathematics', description: 'Algebra, calculus, matrices, vectors and probability', color: '#7C3AED', icon: '🔢' },
+  { id: 'Physics', label: 'Physics', description: 'Motion, energy, light, electricity and nuclear physics', color: '#6366F1', icon: '⚛️' },
+] as const;
+
+type SubjectId = (typeof SUBJECTS)[number]['id'] | (typeof ELECTIVE_SUBJECTS)[number]['id'];
+type DrillView = 'subjects' | 'elective-subjects' | 'modules' | 'lessons' | 'coming-soon';
 
 // ── Module definitions ────────────────────────────────────────────────────
 const MODULE_NAMES: Record<string, Record<string, string>> = {
   'Core Mathematics': {
-    m1: 'Number and Numeration',
-    m2: 'Fractions, Decimals and Percentages',
-    m3: 'Algebraic Processes',
-    m4: 'Equations and Inequalities',
-    m5: 'Geometry and Trigonometry',
-    m6: 'Vectors and Bearings',
-    m7: 'Mensuration',
-    m8: 'Statistics and Probability',
+    m1: 'Number Sets',
+    m2: 'Fractions and Percentages',
+    m3: 'Algebraic Expressions and Factorisation',
+    m4: 'Linear Equations, Relations and Functions',
+    m5: 'Angles and the Pythagorean Theorem',
+    m6: 'Vectors and Trigonometry',
+    m7: 'Perimeter, Area and Volume',
+    m8: 'Data Organisation, Analysis and Presentation',
+    m9: 'Probability of Independent Events',
+    s2m1: 'Number Sets',
+    s2m2: 'Equations and Inequalities',
+    s2m3: 'Rigid Motion',
+    s2m4: 'Data Collection, Organisation and Representation',
+    s2m5: 'Ratios, Rates and Proportions',
+    s2m6: 'Patterns and Relations Involving Sequences and Series',
+    s2m7: 'Surface Areas and Volumes',
+    s2m8: 'Working with Data and Probability Experiments',
+    s2m9: 'Vectors and Trigonometry',
   },
-  'English Language': {},
+  'English Language': {
+    s5: 'Discourse and Conversation',
+    s7: 'Oral Language, Reading and Grammar',
+    s8: 'Forms of Verbs and Writing Strategies',
+    s17: 'Conversation and Communication in Context',
+    s18: 'Reading',
+    s19: 'Subject and Predicate',
+    s20: 'Text Types and Purposes',
+    s21: 'Themes',
+    s22: 'Ideas',
+    s23: 'Analysing Non-Fiction Texts',
+    s24: 'Article Writing',
+    s2e1: 'Diphthongs and Reading Comprehension',
+    s2e2: 'Subordinate Clause, Paragraph Coherence and Poetry',
+    s2e3: 'Triphthongs, Question Types and Clauses',
+    s2e4: 'Noun Clause, Cohesive Devices and Poetry Appreciation',
+    s2e5: 'Affricates and Approximants, Grammatical Structures and Clauses',
+    s2e6: 'Relative/Adjectival Clause, Essay and Poetry',
+    s2e7: 'Consonant Clusters, Reading and Adverbial Clause',
+    s2e8: 'Adverbial Clause, Narrative Writing and Poetry',
+    s2e9: 'Consonant Clusters, Reading Fluently and Subject-Verb Agreement',
+    s2e10: 'Subject-Verb Agreement, Speech Writing and Imagery',
+    s2e11: 'Oral Narrative, Summary Writing and Subject-Verb Agreement',
+    s2e12: 'Active and Passive Voice, Speech Writing and Imagery',
+    s2e13: 'Stress, Intonation and Meaning, Active Voice and Summary Writing',
+    s2e14: 'Cues in Communication, Registers and Speech Writing',
+    s2e15: 'Cultural Perspective in Communication and Vocabulary in Context',
+    s2e16: 'Minutes Writing',
+    s2e17: 'Report Writing',
+    s2e18: 'Synonyms',
+    s2e19: 'Antonyms',
+    s2e20: 'Article Writing',
+    s2e21: 'Research and Presentation',
+    s2e22: 'Word Collocations',
+    s2e23: 'Formal Letter Writing',
+    s2e24: 'Research and Presentation',
+  },
   'Integrated Science': {
+    s1: 'Exploring Materials — Characteristics of Science',
+    s2: 'Science and Materials in Nature',
+    s3: 'Diffusion and Osmosis',
+    s4: 'Reproduction in Plants and Humans',
+    s5: 'Solar Panels',
+    s6: 'Force',
+    s7: 'Basic Electronics',
+    s8: 'Promoting Health and Safety',
+    s9: 'Production in Local Industry',
     gs: 'General Science Foundations',
+    's2-s1': 'Nature of Different Liquids in Life',
+    's2-s2': 'Human Excretory Organs',
+    's2-s3': 'Gaseous Exchange in Humans',
+    's2-s4': 'Concepts of Electricity',
+    's2-s5': 'Buoyancy Force',
+    's2-s6': 'Electronics',
+    's2-s7': 'Pathogenic Diseases',
+    's2-s8': 'Indigenous Beverages',
   },
-  'Social Studies': {},
+  'Social Studies': {
+    s1: 'A Geographical and Historical Sketch of Africa',
+    s2: 'Civic Ideals and Practices',
+    s3: 'Indigenous Knowledge Systems',
+    s4: 'Ethics and Human Values',
+    s5: 'African Civilisations',
+    s6: 'Revolutions That Changed the World',
+    s7: 'Economic Activities in Africa',
+    s8: 'Entrepreneurship, Workplace Culture and Productivity',
+    s9: 'Consumer Rights, Protection and Responsibilities',
+    s10: 'Financial Literacy',
+    's2-s1': 'Identity and National Cohesion',
+    's2-s2': 'Environmental Literacy and Sustainability',
+    's2-s3': 'Law Enforcement Mechanisms in Ghana',
+    's2-s4': 'European Encounter, Colonialism and Neo-colonialism',
+    's2-s5': 'Nationalism, Citizenship and Nation Building',
+    's2-s6': 'Leisure and Tourism',
+    's2-s7': 'Revolutions that Changed the World',
+    's2-s8': 'The Youth and National Development',
+    's2-s9': 'Economic Activities in Ghana',
+    's2-s10': 'Entrepreneurship, Workplace Culture and Productivity',
+    's2-s11': 'Consumer Rights, Protection and Responsibilities',
+    's2-s12': 'Financial Literacy',
+  },
+  'Biology': {
+    s1: 'Introduction to Biology and the Scientific Method',
+    s2: 'Fish Farming, Processing and Conservation',
+    s3: 'Cell Biology',
+    s4: 'Organisms',
+    s5: 'Ecology',
+    's2-s1': 'Biology as the Science of Life',
+    's2-s2': 'Cytology',
+    's2-s3': 'Diversity of Living Things',
+    's2-s4': 'Systems of Life',
+  },
+  'Chemistry': {
+    s1: 'Introduction to Chemistry, Scientific Method and Atoms',
+    s2: 'The Concept of the Moles',
+    s3: 'Mole Ratios, Chemical Formulae and Chemical Equations',
+    s4: 'Kinetic Theory and the States of Matter (Part 1)',
+    s5: 'Kinetic Theory and the States of Matter (Part 2)',
+    s6: 'Periodic Properties',
+    s7: 'Inter Atomic Bonding',
+    s8: 'Intermolecular Bonding',
+    s9: 'Qualitative and Quantitative Analysis of Organic Compounds',
+    s10: 'Classifications of Organic Compounds',
+    's2-s1': 'Energy Changes',
+    's2-s2': 'Chemical Kinetics',
+    's2-s3': 'Dynamic Equilibrium',
+    's2-s4': 'Acids, Bases and Salts',
+    's2-s5': 'Periodic Trends',
+    's2-s6': 'The Halogens',
+    's2-s7': 'Chemical Bonding and Structure',
+    's2-s8': 'Organic Compounds',
+  },
+  'Additional Mathematics': {
+    s1: 'Binary Operations, Sets and Binomial',
+    s2: 'Surds, Indices and Logarithms',
+    s3: 'Sequences and Functions',
+    s4: 'Matrices',
+    s5: 'Straight Lines',
+    s6: 'Vectors',
+    s7: 'Trigonometric Functions and Their Applications',
+    s8: 'Limits and Differentiation',
+    s9: 'Statistics',
+    s10: 'Combinations, Permutations and Probability',
+    's2-s1': 'Sets and Binomial Expansions',
+    's2-s2': 'Sequences and Inequalities',
+    's2-s3': 'Polynomial Functions',
+    's2-s4': 'Circles and Loci',
+    's2-s5': 'Vectors',
+    's2-s6': 'Matrices',
+    's2-s7': 'Correlation',
+    's2-s8': 'Indices and Logarithms',
+    's2-s9': 'Trigonometric Identities',
+    's2-s10': 'Differentiation',
+    's2-s11': 'Integration',
+    's2-s12': 'Applications of Differentiation',
+  },
+  'Physics': {
+    s1: 'Introduction to Physics and Matter',
+    s2: 'Motion and Pressure',
+    s3: 'Thermometers and Temperature',
+    s4: 'Mirrors, Reflection and Refraction',
+    s5: 'Behaviour of Light Through Different Media',
+    s6: 'Electrical Charge and Magnetism',
+    s7: 'Semi Conductors, Transducers and Their Applications',
+    s8: 'Fundamental Concepts in Atomic and Nuclear Physics',
+    's2-s1': 'Dimension, Vectors, Flotation and Deformation',
+    's2-s2': 'Measurement of Heat',
+    's2-s3': 'Electrostatics',
+    's2-s4': 'Photoelectric Effect and Radioactivity',
+    's2-s5': 'Projectiles, Friction, Circular Motion',
+    's2-s6': 'Electromagnetism',
+    's2-s7': 'Waves',
+    's2-s8': 'Electric Fields, Magnetic Fields and Electronics',
+  },
 };
 
 function extractModuleKey(lessonId: string): string | null {
-  // coremath-m1t1 → m1, gen-sci-s1 → gs
+  // coremath-m1t1 → m1, coremath2-s2m1t1 → s2m1, int-sci-s1t1 → s1, etc.
+  const math2Match = lessonId.match(/^coremath2-(s2m\d+)/);
+  if (math2Match) return math2Match[1];
   const mathMatch = lessonId.match(/^coremath-(m\d+)/);
   if (mathMatch) return mathMatch[1];
+  const intSciMatch = lessonId.match(/^int-sci-(s\d+)/);
+  if (intSciMatch) return intSciMatch[1];
+  const intSci2Match = lessonId.match(/^int-sci-2-(s\d+)/);
+  if (intSci2Match) return `s2-${intSci2Match[1]}`;
+  const eng2Match = lessonId.match(/^eng-lang2-(s2e\d+)/);
+  if (eng2Match) return eng2Match[1];
+  const engMatch = lessonId.match(/^eng-lang-(s\d+)/);
+  if (engMatch) return engMatch[1];
+  const socStMatch = lessonId.match(/^soc-st-(s\d+)/);
+  if (socStMatch) return socStMatch[1];
+  const socSt2Match = lessonId.match(/^soc-st-2-(s\d+)/);
+  if (socSt2Match) return `s2-${socSt2Match[1]}`;
+  const phys2Match = lessonId.match(/^phys-2-(s\d+)/);
+  if (phys2Match) return `s2-${phys2Match[1]}`;
+  const physMatch = lessonId.match(/^phys-(s\d+)/);
+  if (physMatch) return physMatch[1];
+  const addMath2Match = lessonId.match(/^add-math-2-(s\d+)/);
+  if (addMath2Match) return `s2-${addMath2Match[1]}`;
+  const addMathMatch = lessonId.match(/^add-math-(s\d+)/);
+  if (addMathMatch) return addMathMatch[1];
+  const chem2Match = lessonId.match(/^chem-2-(s\d+)/);
+  if (chem2Match) return `s2-${chem2Match[1]}`;
+  const chemMatch = lessonId.match(/^chem-(s\d+)/);
+  if (chemMatch) return chemMatch[1];
+  const bio2Match = lessonId.match(/^bio-2-(s\d+)/);
+  if (bio2Match) return `s2-${bio2Match[1]}`;
+  const bioMatch = lessonId.match(/^bio-(s\d+)/);
+  if (bioMatch) return bioMatch[1];
   const sciMatch = lessonId.match(/^gen-sci-(s\d+)/);
   if (sciMatch) return 'gs'; // all general science → one module
   return null;
@@ -57,14 +255,6 @@ function extractModuleKey(lessonId: string): string | null {
 function getModuleLabel(subject: string, moduleKey: string): string {
   return MODULE_NAMES[subject]?.[moduleKey] || `Module ${moduleKey.toUpperCase()}`;
 }
-
-// ── Level labels ──────────────────────────────────────────────────────────
-const LEVEL_LABELS = ['SHS 1', 'SHS 2', 'SHS 3'] as const;
-const LEVEL_DESCRIPTIONS: Record<string, string> = {
-  'SHS 1': 'Foundation · Core concepts and introductory topics',
-  'SHS 2': 'Intermediate · Deeper understanding and application',
-  'SHS 3': 'Advanced · Mastery and exam preparation',
-};
 
 // ── Helpers ───────────────────────────────────────────────────────────────
 function getLessonsForSubject(subject: string, programmeFilter?: string | null): Lesson[] {
@@ -78,12 +268,6 @@ function getLessonsForSubject(subject: string, programmeFilter?: string | null):
     lessons = lessons.filter((l) => l.programme === 'Both' || l.programme === programmeFilter);
   }
   return lessons;
-}
-
-function getLevelsWithLessons(subject: string, programmeFilter?: string | null): string[] {
-  const lessons = getLessonsForSubject(subject, programmeFilter);
-  const levels = new Set(lessons.map((l) => l.suggestedLevel).filter(Boolean));
-  return LEVEL_LABELS.filter((l) => levels.has(l));
 }
 
 function getModulesForLevel(subject: string, shsLevel: string, programmeFilter?: string | null): { key: string; label: string; lessons: Lesson[] }[] {
@@ -123,6 +307,24 @@ export default function Learning() {
   const [onboardingLevel, setOnboardingLevel] = useState<SHSLevel>('SHS 1');
   const [onboardingSaving, setOnboardingSaving] = useState(false);
   const [onboardingError, setOnboardingError] = useState<string | null>(null);
+  const [progDropdownOpen, setProgDropdownOpen] = useState(false);
+  const progDropdownRef = useRef<HTMLDivElement>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<CurriculumTopic[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+
+  // Close programme dropdown on outside click
+  useEffect(() => {
+    if (!progDropdownOpen) return;
+    const handleClick = (e: MouseEvent) => {
+      if (progDropdownRef.current && !progDropdownRef.current.contains(e.target as Node)) {
+        setProgDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [progDropdownOpen]);
 
   const programme: 'Science' | 'Arts' | null = user?.programme === 'General Science' ? 'Science' : user?.programme === 'General Arts' ? 'Arts' : null;
   const shsLevel = user?.shs_level || null;
@@ -136,6 +338,13 @@ export default function Learning() {
         if (!getAccessToken()) { router.push('/login'); return; }
         const cached = getStoredUser(); if (cached) setUser(cached);
         const fresh = await getCurrentUser(); setUser(fresh);
+        
+        // SHS 3 students go to the WASSCE Revision Hub instead
+        if (fresh.shs_level === 'SHS 3') {
+          router.push('/revision');
+          return;
+        }
+        
         setCompletedLessons(loadCompletedLessons());
       } catch { router.push('/login'); }
       finally { setLoading(false); }
@@ -143,18 +352,56 @@ export default function Learning() {
     init();
   }, [router]);
 
+  useEffect(() => {
+    const query = searchQuery.trim();
+    if (query.length < 2 || !user || user.shs_level === 'SHS 3') {
+      setSearchResults([]);
+      setSearchError(null);
+      setSearchLoading(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timer = window.setTimeout(async () => {
+      setSearchLoading(true);
+      setSearchError(null);
+      try {
+        setSearchResults(await searchCurriculumTopics(query, controller.signal));
+      } catch (error) {
+        if (error instanceof Error && error.name !== 'AbortError') {
+          setSearchError(error.message);
+          setSearchResults([]);
+        }
+      } finally {
+        if (!controller.signal.aborted) setSearchLoading(false);
+      }
+    }, 300);
+
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [searchQuery, user]);
+
   // ── Drill-down navigation ────────────────────────────────────────────────
   const handleSelectSubject = (subject: SubjectId) => {
     setSelectedSubject(subject);
-    setSelectedLevel(null);
     setSelectedModule(null);
-    setView('levels');
-  };
-
-  const handleSelectLevel = (level: string) => {
-    setSelectedLevel(level);
-    setSelectedModule(null);
-    setView('modules');
+    // Auto-navigate based on student's registered SHS level
+    if (shsLevel) {
+      const levelLessons = getLessonsForSubject(subject, programme)
+        .filter(l => l.suggestedLevel === shsLevel || l.shsLevels?.includes(shsLevel));
+      if (levelLessons.length > 0) {
+        setSelectedLevel(shsLevel);
+        setView('modules');
+      } else {
+        setSelectedLevel(null);
+        setView('coming-soon');
+      }
+    } else {
+      setSelectedLevel(null);
+      setView('coming-soon');
+    }
   };
 
   const handleSelectModule = (key: string, label: string) => {
@@ -164,13 +411,23 @@ export default function Learning() {
 
   const handleBack = () => {
     if (view === 'lessons') { setView('modules'); setSelectedModule(null); }
-    else if (view === 'modules') { setView('levels'); setSelectedLevel(null); }
-    else if (view === 'levels') { setView('subjects'); setSelectedSubject(null); }
+    else if (view === 'modules') { setView('subjects'); setSelectedSubject(null); setSelectedLevel(null); }
+    else if (view === 'elective-subjects') { setView('subjects'); }
+    else if (view === 'coming-soon') { setView('subjects'); setSelectedSubject(null); }
   };
 
   const handleSelectLesson = useCallback((lessonId: string) => {
     const lesson = getLessonById(lessonId);
     if (lesson) { setActiveLesson(lesson); }
+  }, []);
+
+  const handleSelectSearchResult = useCallback((topic: CurriculumTopic) => {
+    const lesson = getLessonById(topic.curriculum_id);
+    if (lesson) {
+      setActiveLesson(lesson);
+      setSearchQuery('');
+      setSearchResults([]);
+    }
   }, []);
 
   const handleLessonComplete = useCallback((xpEarned: number) => {
@@ -188,11 +445,12 @@ export default function Learning() {
   // ── Breadcrumb ───────────────────────────────────────────────────────────
   const breadcrumb = useMemo(() => {
     const parts: { label: string; action: () => void }[] = [{ label: 'Learning Center', action: () => { setView('subjects'); setSelectedSubject(null); setSelectedLevel(null); setSelectedModule(null); } }];
-    if (selectedSubject) parts.push({ label: selectedSubject, action: () => { setView('levels'); setSelectedLevel(null); setSelectedModule(null); } });
-    if (selectedLevel) parts.push({ label: selectedLevel, action: () => { setView('modules'); setSelectedModule(null); } });
+    if (view === 'elective-subjects') parts.push({ label: 'Elective Subjects', action: () => { setView('subjects'); } });
+    if (selectedSubject && view !== 'elective-subjects') parts.push({ label: selectedSubject, action: () => { setView('subjects'); setSelectedSubject(null); setSelectedLevel(null); setSelectedModule(null); } });
+    if (selectedLevel && view !== 'coming-soon') parts.push({ label: selectedLevel, action: () => { setView('modules'); setSelectedModule(null); } });
     if (selectedModule) parts.push({ label: selectedModule.label, action: () => { setView('lessons'); } });
     return parts;
-  }, [selectedSubject, selectedLevel, selectedModule]);
+  }, [selectedSubject, selectedLevel, selectedModule, view]);
 
   // ── Current level lessons for display ────────────────────────────────────
   const currentModuleLessons = useMemo(() => {
@@ -205,6 +463,20 @@ export default function Learning() {
     if (lesson.prerequisites.length === 0) return true;
     return lesson.prerequisites.every((preId) => completedLessons.has(preId));
   };
+
+  // SHS 3 redirect guard — prevent flash of SHS 1/2 UI
+  if (user?.shs_level === 'SHS 3') {
+    return (
+      <AppLayout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="w-10 h-10 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+            <p className="text-sm text-gray-500">Opening WASSCE Revision Hub...</p>
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
 
   if (loading) return (
     <AppLayout><div className="flex items-center justify-center min-h-screen">
@@ -220,7 +492,7 @@ export default function Learning() {
           <Sidebar />
           <div className="flex-1 lg:pb-0 pb-20">
             <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-8 pb-8">
-              <LessonPlayer lesson={activeLesson} onComplete={handleLessonComplete} onBack={handleBackToPath} />
+              <AITutorLesson curriculumId={activeLesson.id} onComplete={handleLessonComplete} onBack={handleBackToPath} />
             </main>
           </div>
           <BottomNav />
@@ -275,6 +547,50 @@ export default function Learning() {
               </div>
             </div>
 
+            {/* ── Curriculum-scoped topic search ── */}
+            {view === 'subjects' && (
+              <div className="relative mb-6">
+                <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 focus-within:border-[#4F46E5] focus-within:ring-2 focus-within:ring-[#4F46E5]/10 transition">
+                  <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                  <input
+                    value={searchQuery}
+                    onChange={(event) => setSearchQuery(event.target.value)}
+                    placeholder={`Search your ${shsLevel || 'SHS'} curriculum by topic or keyword…`}
+                    className="flex-1 bg-transparent text-sm text-[#1E293B] placeholder:text-gray-400 outline-none"
+                  />
+                  {searchLoading && <Loader2 className="w-4 h-4 text-[#4F46E5] animate-spin" />}
+                </div>
+
+                {searchQuery.trim().length >= 2 && (
+                  <div className="absolute z-30 top-full mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden">
+                    {searchError ? (
+                      <p className="p-4 text-sm text-red-600">{searchError}</p>
+                    ) : !searchLoading && searchResults.length === 0 ? (
+                      <p className="p-4 text-sm text-gray-500">No matching topic was found in your {shsLevel} curriculum.</p>
+                    ) : (
+                      <div className="max-h-80 overflow-y-auto divide-y divide-gray-100">
+                        {searchResults.map((topic) => (
+                          <button
+                            key={topic.curriculum_id}
+                            onClick={() => handleSelectSearchResult(topic)}
+                            className="w-full text-left px-4 py-3 hover:bg-[#EEF2FF] transition-colors"
+                          >
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="min-w-0">
+                                <p className="font-semibold text-sm text-[#1E293B] truncate">{topic.title}</p>
+                                <p className="text-xs text-gray-500 mt-0.5">{topic.subject} · {topic.shs_level}</p>
+                              </div>
+                              <span className="text-xs text-gray-400 flex-shrink-0">{topic.estimated_minutes} min</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* ── Breadcrumb ── */}
             {view !== 'subjects' && (
               <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-4 flex-wrap">
@@ -318,10 +634,47 @@ export default function Learning() {
                     <h2 className="font-semibold text-[#1E293B] mb-1">Set Up Your Learning Path</h2>
                     <p className="text-sm text-gray-500 mb-4">Tell us your programme and SHS level for the right lessons.</p>
                     <div className="grid sm:grid-cols-2 gap-3 mb-4">
-                      <select value={onboardingProg} onChange={(e) => setOnboardingProg(e.target.value as Programme)}
-                        className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-[#1E293B]">
-                        <option value="General Science">General Science</option><option value="General Arts">General Arts</option>
-                      </select>
+                      <div className="relative" ref={progDropdownRef}>
+                        <button
+                          type="button"
+                          onClick={() => setProgDropdownOpen(!progDropdownOpen)}
+                          className="w-full flex items-center justify-between px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-[#1E293B] transition"
+                        >
+                          <span>{onboardingProg}</span>
+                          <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform ${progDropdownOpen ? 'rotate-180' : ''}`} />
+                        </button>
+                        {progDropdownOpen && (
+                          <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+                            {(['General Science', 'General Arts', 'Business', 'Visual Arts', 'Home Economics', 'Technical'] as const).map((p) => {
+                              const isAvailable = p === 'General Science';
+                              const isSelected = onboardingProg === p;
+                              return (
+                                <button
+                                  key={p}
+                                  type="button"
+                                  disabled={!isAvailable}
+                                  onClick={() => {
+                                    if (isAvailable) {
+                                      setOnboardingProg(p);
+                                      setProgDropdownOpen(false);
+                                    }
+                                  }}
+                                  className={`w-full flex items-center gap-2 px-3 py-2.5 text-left text-sm transition ${
+                                    isSelected ? 'bg-[#EEF2FF] text-[#4F46E5] font-medium' : ''
+                                  } ${
+                                    isAvailable
+                                      ? 'hover:bg-gray-50 cursor-pointer text-[#1E293B]'
+                                      : 'text-gray-400 cursor-not-allowed'
+                                  }`}
+                                >
+                                  <span className="flex-1">{p}</span>
+                                  {!isAvailable && <Lock className="w-3 h-3 text-gray-300" />}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
                       <select value={onboardingLevel} onChange={(e) => setOnboardingLevel(e.target.value as SHSLevel)}
                         className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-[#1E293B]">
                         <option value="SHS 1">SHS 1</option><option value="SHS 2">SHS 2</option><option value="SHS 3">SHS 3</option><option value="Completed SHS">Completed SHS</option>
@@ -347,9 +700,102 @@ export default function Learning() {
               {/* ── Subjects View ── */}
               {view === 'subjects' && (
                 <motion.div key="subjects" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                  {/* Core Subjects section */}
+                  <div className="mb-2">
+                    <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Core Subjects</h2>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      {SUBJECTS.map((subject) => {
+                        const levelLessons = shsLevel
+                          ? getLessonsForSubject(subject.id, programme).filter(
+                              (l) => l.suggestedLevel === shsLevel || l.shsLevels?.includes(shsLevel)
+                            )
+                          : [];
+                        const lessons = shsLevel ? levelLessons : getLessonsForSubject(subject.id, programme);
+                        const completed = lessons.filter((l) => completedLessons.has(l.id)).length;
+                        const hasContent = lessons.length > 0;
+                        return (
+                          <button
+                            key={subject.id}
+                            onClick={() => hasContent && handleSelectSubject(subject.id)}
+                            disabled={!hasContent}
+                            className={`text-left bg-white border rounded-xl p-5 transition-all duration-200 ${
+                              hasContent
+                                ? 'border-gray-200 hover:border-gray-300 hover:shadow-sm cursor-pointer'
+                                : 'border-gray-100 opacity-50 cursor-default'
+                            }`}
+                          >
+                            <div className="flex items-start gap-4">
+                              <div
+                                className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-base flex-shrink-0"
+                                style={{ backgroundColor: subject.color }}
+                              >
+                                {subject.label.charAt(0)}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h3 className="font-semibold text-[#1E293B]">{subject.label}</h3>
+                                {hasContent && <p className="text-xs text-gray-500 mt-0.5">{subject.description}</p>}
+                                {hasContent ? (
+                                  <div className="flex items-center gap-2 mt-2">
+                                    <div className="flex-1 bg-gray-100 rounded-full h-1 overflow-hidden">
+                                      <div className="h-full bg-[#4F46E5] rounded-full transition-all"
+                                        style={{ width: `${(completed / Math.max(1, lessons.length)) * 100}%` }} />
+                                    </div>
+                                    <span className="text-xs text-gray-400 flex-shrink-0">{completed}/{lessons.length}</span>
+                                  </div>
+                                ) : (
+                                  <p className="text-xs text-gray-400 mt-2 italic">Coming soon</p>
+                                )}
+                              </div>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Divider */}
+                  <div className="relative my-8">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-200" />
+                    </div>
+                    <div className="relative flex justify-center">
+                      <span className="bg-gray-50 px-3 text-xs text-gray-400 font-medium">Elective Subjects</span>
+                    </div>
+                  </div>
+
+                  {/* View Elective Subjects button */}
+                  <button
+                    onClick={() => setView('elective-subjects')}
+                    className="w-full text-left bg-white border-2 border-dashed border-gray-200 rounded-xl p-5 transition-all duration-200 hover:border-[#4F46E5]/40 hover:bg-[#EEF2FF]/30 cursor-pointer group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-xl bg-[#EEF2FF] flex items-center justify-center text-[#4F46E5] font-bold text-base flex-shrink-0 group-hover:bg-[#4F46E5] group-hover:text-white transition-colors">
+                        +
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-[#1E293B] group-hover:text-[#4F46E5] transition-colors">Explore Elective Subjects</h3>
+                        <p className="text-xs text-gray-500 mt-0.5">Biology, Chemistry, Physics, Elective Mathematics and more</p>
+                      </div>
+                      <svg className="w-5 h-5 text-gray-300 group-hover:text-[#4F46E5] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </button>
+                </motion.div>
+              )}
+
+              {/* ── Elective Subjects View ── */}
+              {view === 'elective-subjects' && (
+                <motion.div key="elective-subjects" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                  <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-3">Science Electives</h2>
                   <div className="grid sm:grid-cols-2 gap-4">
-                    {SUBJECTS.map((subject) => {
-                      const lessons = getLessonsForSubject(subject.id, programme);
+                    {ELECTIVE_SUBJECTS.map((subject) => {
+                      const levelLessons = shsLevel
+                        ? getLessonsForSubject(subject.id, programme).filter(
+                            (l) => l.suggestedLevel === shsLevel || l.shsLevels?.includes(shsLevel)
+                          )
+                        : [];
+                      const lessons = shsLevel ? levelLessons : getLessonsForSubject(subject.id, programme);
                       const completed = lessons.filter((l) => completedLessons.has(l.id)).length;
                       const hasContent = lessons.length > 0;
                       return (
@@ -368,11 +814,11 @@ export default function Learning() {
                               className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-base flex-shrink-0"
                               style={{ backgroundColor: subject.color }}
                             >
-                              {subject.label.charAt(0)}
+                              {subject.icon}
                             </div>
                             <div className="flex-1 min-w-0">
                               <h3 className="font-semibold text-[#1E293B]">{subject.label}</h3>
-                              <p className="text-xs text-gray-500 mt-0.5">{subject.description}</p>
+                                {hasContent && <p className="text-xs text-gray-500 mt-0.5">{subject.description}</p>}
                               {hasContent ? (
                                 <div className="flex items-center gap-2 mt-2">
                                   <div className="flex-1 bg-gray-100 rounded-full h-1 overflow-hidden">
@@ -393,49 +839,27 @@ export default function Learning() {
                 </motion.div>
               )}
 
-              {/* ── Levels View ── */}
-              {view === 'levels' && selectedSubject && (
-                <motion.div key="levels" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                  <div className="grid sm:grid-cols-3 gap-4">
-                    {(() => {
-                      const availableLevels = getLevelsWithLessons(selectedSubject, programme);
-                      return LEVEL_LABELS.map((level) => {
-                        const hasLessons = availableLevels.includes(level);
-                        const lessons = hasLessons ? getLessonsForSubject(selectedSubject, programme).filter((l) =>
-                          l.suggestedLevel === level || l.shsLevels?.includes(level)
-                        ) : [];
-                        const completed = lessons.filter((l) => completedLessons.has(l.id)).length;
-                        return (
-                          <button
-                            key={level}
-                            onClick={() => hasLessons && handleSelectLevel(level)}
-                            disabled={!hasLessons}
-                            className={`text-left bg-white border rounded-xl p-5 transition-all duration-200 ${
-                              hasLessons
-                                ? 'border-gray-200 hover:border-gray-300 hover:shadow-sm cursor-pointer'
-                                : 'border-gray-100 opacity-40 cursor-default'
-                            }`}
-                          >
-                            <h3 className="text-lg font-bold text-[#1E293B]">{level}</h3>
-                            <p className="text-xs text-gray-500 mt-1">{LEVEL_DESCRIPTIONS[level]}</p>
-                            {hasLessons ? (
-                              <div className="mt-3">
-                                <div className="flex items-center gap-2">
-                                  <div className="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden">
-                                    <div className="h-full bg-[#4F46E5] rounded-full transition-all"
-                                      style={{ width: `${(completed / Math.max(1, lessons.length)) * 100}%` }} />
-                                  </div>
-                                  <span className="text-xs font-medium text-[#4F46E5]">{completed}/{lessons.length}</span>
-                                </div>
-                                <p className="text-xs text-gray-400 mt-2">{lessons.length} lessons</p>
-                              </div>
-                            ) : (
-                              <p className="text-xs text-gray-400 mt-3 italic">No content yet</p>
-                            )}
-                          </button>
-                        );
-                      });
-                    })()}
+              {/* ── Coming Soon View ── */}
+              {view === 'coming-soon' && selectedSubject && (
+                <motion.div key="coming-soon" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                  <div className="bg-white border border-gray-200 rounded-xl p-10 text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-100 flex items-center justify-center">
+                      <svg className="w-8 h-8 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      </svg>
+                    </div>
+                    <h2 className="text-xl font-bold text-[#1E293B] mb-2">
+                      {selectedSubject} — {shsLevel || 'Content'}
+                    </h2>
+                    <p className="text-gray-500 mb-4 max-w-md mx-auto">
+                      Learning content for <strong>{shsLevel || 'your level'}</strong> in <strong>{selectedSubject}</strong> is not yet available. We are working on adding it soon!
+                    </p>
+                    <button
+                      onClick={() => { setView('subjects'); setSelectedSubject(null); }}
+                      className="px-5 py-2 bg-[#4F46E5] text-white text-sm font-medium rounded-lg hover:bg-[#4338CA] transition-colors"
+                    >
+                      Back to Subjects
+                    </button>
                   </div>
                 </motion.div>
               )}

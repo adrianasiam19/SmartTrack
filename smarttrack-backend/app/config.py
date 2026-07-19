@@ -22,8 +22,9 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_ID: str
     GOOGLE_CLIENT_SECRET: str
 
-    # ── Gemini AI ────────────────────────────────────────────────────────────
-    GEMINI_API_KEY: str = ""
+    # ── DeepSeek AI ────────────────────────────────────────────────────────────
+    DEEPSEEK_API_KEY: str = ""
+    DEEPSEEK_MODEL: str = "deepseek-chat"
 
     # ── NVIDIA AI ────────────────────────────────────────────────────────────
     NVIDIA_API_KEY: str = ""
@@ -33,6 +34,14 @@ class Settings(BaseSettings):
     CORS_ORIGINS: str = "http://localhost:3000"
     FRONTEND_URL: str = "http://localhost:3000"
     ENVIRONMENT: str = "development"
+
+    # ── Email / password reset (optional — logs reset link in development) ─
+    SMTP_HOST: str = ""
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_USE_TLS: bool = True
+    MAIL_FROM: str = ""
 
     @property
     def cors_origins_list(self) -> List[str]:
