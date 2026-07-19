@@ -2,16 +2,35 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
+import { getStoredUser, type UserProfile } from '../lib/authApi';
 
-const navItems = [
-  { href: '/dashboard', label: 'Dashboard' },
-  { href: '/learning', label: 'Learning' },
-  { href: '/recommendations', label: 'Programs' },
-  { href: '/profile', label: 'Profile' },
-];
+function buildNavItems(shsLevel: string | null | undefined) {
+  const studyItem =
+    shsLevel === 'SHS 3'
+      ? { href: '/revision', label: 'Revision' }
+      : { href: '/learning', label: 'Learning' };
+
+  return [
+    { href: '/dashboard', label: 'Dashboard' },
+    studyItem,
+    { href: '/recommendations', label: 'Programs' },
+    { href: '/profile', label: 'Profile' },
+  ];
+}
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const [user, setUser] = useState<UserProfile | null>(null);
+
+  useEffect(() => {
+    setUser(getStoredUser());
+  }, [pathname]);
+
+  const navItems = useMemo(
+    () => buildNavItems(user?.shs_level),
+    [user?.shs_level],
+  );
 
   const hiddenPaths = ['/', '/login', '/register', '/onboarding'];
   if (hiddenPaths.some((p) => pathname === p || pathname.startsWith('/onboarding'))) {

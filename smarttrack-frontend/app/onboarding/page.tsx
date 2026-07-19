@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
-import { getAccessToken } from '../lib/authApi';
+import { getAccessToken, getCurrentUser, resolvePostAuthDestination } from '../lib/authApi';
 
 import ScreenOnboarding1 from './components/ScreenOnboarding1';
 import ScreenOnboarding2 from './components/ScreenOnboarding2';
@@ -62,6 +62,14 @@ export default function OnboardingPage() {
       try {
         if (!getAccessToken()) {
           router.push('/login');
+          return;
+        }
+        // Always trust the backend for the current token — never route from a
+        // cached profile that may belong to a previous user.
+        const fresh = await getCurrentUser();
+        const destination = resolvePostAuthDestination(fresh);
+        if (destination !== '/onboarding') {
+          router.replace(destination);
           return;
         }
       } catch {

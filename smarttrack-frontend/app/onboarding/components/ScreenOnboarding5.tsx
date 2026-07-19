@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { getAuthEpoch, updateUserProfile } from '../../lib/authApi';
 
 interface Props {
   onComplete: () => void;
@@ -10,21 +11,36 @@ interface Props {
 
 export default function ScreenOnboarding5({ onComplete }: Props) {
   const router = useRouter();
-  const [ready, setReady] = useState(false);
+  const [status, setStatus] = useState('Preparing your experience...');
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setReady(true);
-    }, 1500);
-    return () => clearTimeout(timer);
-  }, []);
+    let cancelled = false;
+    const epoch = getAuthEpoch();
 
-  useEffect(() => {
-    if (ready) {
-      onComplete();
-      router.push('/challenges/arena?mode=placement');
-    }
-  }, [ready, router, onComplete]);
+    const finishWalkthrough = async () => {
+      try {
+        setStatus('Saving your progress...');
+        // Mark the welcome walkthrough complete before entering Starter Arena.
+        // Starter Arena completion is a separate one-time flag.
+        await updateUserProfile({ onboarding_completed: true });
+        if (cancelled || getAuthEpoch() !== epoch) return;
+        onComplete();
+        setStatus('Starting your discovery...');
+        router.replace('/challenges/arena?mode=placement');
+      } catch {
+        if (cancelled || getAuthEpoch() !== epoch) return;
+        // Still continue — Starter Arena completion will also mark both flags.
+        onComplete();
+        router.replace('/challenges/arena?mode=placement');
+      }
+    };
+
+    const timer = setTimeout(finishWalkthrough, 1200);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [onComplete, router]);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6">
@@ -41,16 +57,14 @@ export default function ScreenOnboarding5({ onComplete }: Props) {
           <p className="text-base text-[#475569] mb-4 leading-relaxed">
             Atlas will guide you through the Starter Arena — a short discovery experience to understand your strengths and interests.
           </p>
-          <p className="text-sm text-[#94A3B8]">
-            {ready ? 'Starting your discovery...' : 'Preparing your experience...'}
-          </p>
+          <p className="text-sm text-[#94A3B8]">{status}</p>
 
           <div className="mt-6 max-w-xs mx-auto">
             <div className="h-1.5 bg-[#E2E8F0] rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: '0%' }}
-                animate={{ width: ready ? '100%' : '60%' }}
-                transition={{ duration: 1.5, ease: 'easeInOut' }}
+                animate={{ width: '100%' }}
+                transition={{ duration: 1.2, ease: 'easeInOut' }}
                 className="h-full bg-[#2563EB] rounded-full"
               />
             </div>

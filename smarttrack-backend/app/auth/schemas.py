@@ -51,3 +51,24 @@ class GoogleCallbackRequest(BaseModel):
     """The `code` query param sent back from Google's OAuth consent screen."""
     code: str
     redirect_uri: str
+
+
+# ── Password reset ────────────────────────────────────────────────────────────
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ForgotPasswordResponse(BaseModel):
+    message: str
+    # Only returned in development when SMTP is not configured, for local testing.
+    dev_reset_link: str | None = None
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str = Field(min_length=10)
+    password: str = Field(min_length=8, max_length=128)
+
+
+class MessageResponse(BaseModel):
+    message: str

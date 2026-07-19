@@ -5,13 +5,19 @@ import uuid
 async def test_register_and_login(client):
     unique_id = str(uuid.uuid4())[:8]
     email = f"test_{unique_id}@example.com"
-    password = "password123"
+    password = "Atlas#2026Strong!"
     full_name = "Test User"
 
     # 1. Register
     reg_response = await client.post(
         "/api/v1/auth/register",
-        json={"email": email, "password": password, "full_name": full_name}
+        json={
+            "email": email,
+            "password": password,
+            "full_name": full_name,
+            "programme": "General Science",
+            "shs_level": "SHS 1",
+        },
     )
     assert reg_response.status_code == 201
     data = reg_response.json()

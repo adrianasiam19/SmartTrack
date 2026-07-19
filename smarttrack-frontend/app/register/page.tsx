@@ -2,14 +2,16 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff } from 'lucide-react';
-import { register, Programme, SHSLevel } from '../lib/authApi';
+import { Eye, EyeOff, Lock, ChevronDown } from 'lucide-react';
+import { clearClientSession, register, startGoogleSignIn, Programme, SHSLevel } from '../lib/authApi';
 
 interface PasswordRequirement { label: string; met: boolean; }
 
-const PROGRAMMES: Programme[] = ['General Science', 'General Arts'];
+// All SHS programmes — only General Science is available for now
+const ALL_PROGRAMMES: Programme[] = ['General Science', 'General Arts', 'Business', 'Visual Arts', 'Home Economics', 'Technical'];
+const AVAILABLE_PROGRAMME: Programme = 'General Science';
 const SHS_LEVELS: SHSLevel[] = ['SHS 1', 'SHS 2', 'SHS 3', 'Completed SHS'];
 
 const getPasswordRequirements = (password: string): PasswordRequirement[] => [
@@ -35,6 +37,26 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [progDropdownOpen, setProgDropdownOpen] = useState(false);
+  const progDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Creating an account must never inherit another user's client session.
+  useEffect(() => {
+    clearClientSession();
+  }, []);
+
+  // Close programme dropdown on outside click
+  useEffect(() => {
+    if (!progDropdownOpen) return;
+    const handleClick = (e: MouseEvent) => {
+      if (progDropdownRef.current && !progDropdownRef.current.contains(e.target as Node)) {
+        setProgDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [progDropdownOpen]);
 
   const passwordRequirements = useMemo(() => getPasswordRequirements(password), [password]);
   const passwordsMatch = !!password && password === confirmPassword;
@@ -52,6 +74,17 @@ export default function Register() {
       router.push('/onboarding');
     } catch (err) { setError(err instanceof Error ? err.message : 'Registration failed'); }
     finally { setIsLoading(false); }
+  };
+
+  const handleGoogle = async () => {
+    setError('');
+    setIsGoogleLoading(true);
+    try {
+      await startGoogleSignIn();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Google Sign-In failed');
+      setIsGoogleLoading(false);
+    }
   };
 
   const inputBase = 'w-full px-4 py-3 bg-white border border-[#CBD5E1] rounded-xl text-[#1E293B] placeholder-[#94A3B8] focus:ring-2 focus:ring-[#2563EB] focus:border-transparent outline-none transition text-base';
@@ -90,12 +123,52 @@ export default function Register() {
               <label className="block text-sm font-medium text-[#1E293B] mb-1.5">Email</label>
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputBase} placeholder="your.email@example.com" required disabled={isLoading} />
             </div>
-            <div>
+            <div className="relative" ref={progDropdownRef}>
               <label className="block text-sm font-medium text-[#1E293B] mb-1.5">SHS Programme</label>
-              <select value={programme} onChange={(e) => setProgramme(e.target.value as Programme | '')} className={selectBase} required disabled={isLoading}>
-                <option value="" disabled>Choose your programme</option>
-                {PROGRAMMES.map((p) => <option key={p} value={p}>{p}</option>)}
-              </select>
+              <button
+                type="button"
+                onClick={() => !isLoading && setProgDropdownOpen(!progDropdownOpen)}
+                className={`w-full flex items-center justify-between px-4 py-3 bg-white border rounded-xl text-base transition ${programme ? 'text-[#1E293B]' : 'text-[#94A3B8]'} ${progDropdownOpen ? 'ring-2 ring-[#2563EB] border-transparent' : 'border-[#CBD5E1]'}`}
+              >
+                <span>{programme || 'Choose your programme'}</span>
+                <ChevronDown className={`w-4 h-4 text-[#94A3B8] transition-transform ${progDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {progDropdownOpen && (
+                <div className="absolute z-20 mt-1 w-full bg-white border border-[#E2E8F0] rounded-xl shadow-lg overflow-hidden">
+                  {ALL_PROGRAMMES.map((p) => {
+                    const isAvailable = p === AVAILABLE_PROGRAMME;
+                    const isSelected = programme === p;
+                    return (
+                      <button
+                        key={p}
+                        type="button"
+                        disabled={!isAvailable}
+                        onClick={() => {
+                          if (isAvailable) {
+                            setProgramme(p);
+                            setProgDropdownOpen(false);
+                          }
+                        }}
+                        className={`w-full flex items-center gap-3 px-4 py-3 text-left text-sm transition ${
+                          isSelected ? 'bg-[#EEF2FF] text-[#2563EB] font-medium' : ''
+                        } ${
+                          isAvailable
+                            ? 'hover:bg-[#F8FAFC] cursor-pointer text-[#1E293B]'
+                            : 'text-[#94A3B8] cursor-not-allowed'
+                        }`}
+                      >
+                        <span className="flex-1">{p}</span>
+                        {!isAvailable && <Lock className="w-3.5 h-3.5 text-[#CBD5E1]" />}
+                        {isSelected && isAvailable && (
+                          <svg className="w-4 h-4 text-[#2563EB]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-[#1E293B] mb-1.5">SHS Level</label>
@@ -167,9 +240,11 @@ export default function Register() {
           </div>
 
           {/* Google OAuth */}
-          <a
-            href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/auth/google/login`}
-            className="flex items-center justify-center gap-3 w-full px-6 py-3 border border-[#E2E8F0] rounded-xl text-[#475569] font-medium text-base hover:bg-[#F8FAFC] hover:border-[#CBD5E1] transition-all duration-200"
+          <button
+            type="button"
+            onClick={handleGoogle}
+            disabled={isLoading || isGoogleLoading}
+            className="flex items-center justify-center gap-3 w-full px-6 py-3 border border-[#E2E8F0] rounded-xl text-[#475569] font-medium text-base hover:bg-[#F8FAFC] hover:border-[#CBD5E1] transition-all duration-200 disabled:opacity-50"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
@@ -177,8 +252,8 @@ export default function Register() {
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
             </svg>
-            <span>Continue with Google</span>
-          </a>
+            <span>{isGoogleLoading ? 'Redirecting to Google…' : 'Continue with Google'}</span>
+          </button>
 
           <p className="text-center text-sm text-[#64748B] mt-6">
             Already have an account?{' '}<Link href="/login" className="text-[#2563EB] hover:text-[#1D4ED8] font-semibold">Sign in</Link>

@@ -87,7 +87,13 @@ alembic revision --autogenerate -m "initial"
 
 # Apply to database
 alembic upgrade head
+
+# Load the official SHS 1/2 Learning Center curriculum
+python -m scripts.seed_curriculum_lessons
 ```
+
+When lesson source files change, run `npx tsx scripts/export_curriculum.ts` from
+`smarttrack-frontend` before rerunning the curriculum seed command.
 
 ### 5. Start the dev server
 ```bash

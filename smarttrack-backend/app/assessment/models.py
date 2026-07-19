@@ -1,7 +1,18 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import JSON, DateTime, Integer, String, ForeignKey, Boolean, Text, func
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+    func,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -187,6 +198,47 @@ class LearningModule(Base):
         return f"<LearningModule id={self.id} domain={self.domain} title='{self.title}'>"
 
 
+class CurriculumLesson(Base):
+    """Official SHS 1/2 curriculum source used by the grounded AI tutor."""
+    __tablename__ = "curriculum_lessons"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    curriculum_id: Mapped[str] = mapped_column(
+        String(120), unique=True, nullable=False, index=True
+    )
+    title: Mapped[str] = mapped_column(String(500), nullable=False, index=True)
+    subject: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
+    programme: Mapped[str] = mapped_column(String(20), nullable=False, index=True)
+    shs_levels: Mapped[list] = mapped_column(JSON, nullable=False)
+    unit_id: Mapped[str] = mapped_column(String(100), nullable=False)
+    difficulty: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    estimated_minutes: Mapped[int] = mapped_column(Integer, nullable=False, default=10)
+    xp_reward: Mapped[int] = mapped_column(Integer, nullable=False, default=10)
+    source_content: Mapped[dict] = mapped_column(JSON, nullable=False)
+    search_text: Mapped[str] = mapped_column(Text, nullable=False)
+    ai_content_by_level: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
+    ai_content_version: Mapped[str] = mapped_column(
+        String(30), nullable=False, default="v1"
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    def __repr__(self) -> str:
+        return (
+            f"<CurriculumLesson curriculum_id={self.curriculum_id} "
+            f"subject={self.subject}>"
+        )
+
+
 class PsychometricCard(Base):
     """
     Psychometric Insight Cards injected every 3-5 challenge questions.
@@ -236,6 +288,44 @@ class PsychometricResponse(Base):
         return f"<PsychometricResponse user_id={self.user_id} card_id={self.card_id}>"
 
 
+class StarterArenaResponse(Base):
+    """Durable record of every psychometric and cognitive Starter Arena answer."""
+    __tablename__ = "starter_arena_responses"
+    __table_args__ = (
+        UniqueConstraint(
+            "user_id",
+            "session_id",
+            "question_id",
+            name="uq_starter_response_user_session_question",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    session_id: Mapped[str] = mapped_column(String(120), nullable=False, index=True)
+    question_id: Mapped[str] = mapped_column(String(120), nullable=False)
+    question_text: Mapped[str] = mapped_column(Text, nullable=False)
+    question_type: Mapped[str] = mapped_column(String(30), nullable=False)
+    source: Mapped[str] = mapped_column(String(20), nullable=False)
+    category: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    cognitive_skill: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    question_format: Mapped[str] = mapped_column(String(40), nullable=False)
+    options: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
+    answer: Mapped[str] = mapped_column(Text, nullable=False)
+    correct: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    time_taken_seconds: Mapped[float] = mapped_column(Float, nullable=False, default=0)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
+    )
+
+
 class DailyStreakProgress(Base):
     """
     Tracks each user's progress per daily streak subject and level.
@@ -269,5 +359,81 @@ class DailyStreakProgress(Base):
 
     def __repr__(self) -> str:
         return f"<DailyStreakProgress user_id={self.user_id} subject={self.subject_id} level={self.level_id}>"
+
+
+class ChallengeSession(Base):
+    """
+    Tracks a Challenge Hub session — 4 core subjects, 6 questions each.
+    """
+    __tablename__ = "challenge_sessions"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    challenge_level: Mapped[int] = mapped_column(Integer, nullable=False, default=1)  # 1, 2, or 3
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="in_progress")
+    total_xp: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    correct_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    wrong_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    current_subject_index: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    started_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+    completed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+    user: Mapped["User"] = relationship("User", backref="challenge_sessions")
+
+    def __repr__(self) -> str:
+        return f"<ChallengeSession id={self.id} user_id={self.user_id} level={self.challenge_level}>"
+
+
+class ChallengeResponse(Base):
+    """
+    Individual answer within a Challenge Hub session.
+    Stores the question data, user answer, and result for adaptive learning.
+    """
+    __tablename__ = "challenge_responses"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    session_id: Mapped[int] = mapped_column(
+        ForeignKey("challenge_sessions.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    subject: Mapped[str] = mapped_column(String(50), nullable=False)
+    question_index: Mapped[int] = mapped_column(Integer, nullable=False)
+    question_text: Mapped[str] = mapped_column(Text, nullable=False)
+    question_type: Mapped[str] = mapped_column(String(30), nullable=False, default="mcq")
+    options: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    correct_answer: Mapped[str] = mapped_column(String(500), nullable=False)
+    user_answer: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    is_correct: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    time_taken_seconds: Mapped[float | None] = mapped_column(nullable=True)
+    xp_earned: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    explanation: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    session: Mapped["ChallengeSession"] = relationship("ChallengeSession", backref="responses")
+
+    def __repr__(self) -> str:
+        return f"<ChallengeResponse id={self.id} session_id={self.session_id} subject={self.subject}>"
 
 

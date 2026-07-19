@@ -46,13 +46,12 @@ export default function DailyStreakSubjectPage() {
 
   const handleStartLevel = (level: LevelProgress & { label: string; name: string; xpReward: number }) => {
     setSelectedLevel(level);
+    // Live questions live in Atlas Challenge Hub (daily-streak banks were empty stubs).
     const params = new URLSearchParams({
+      autostart: '1',
       level: String(level.level_id),
-      name: level.name,
-      label: level.label,
-      xp: String(level.xpReward),
     });
-    router.push(`/challenges/daily-streak/${subjectId}/challenge?${params.toString()}`);
+    router.push(`/challenges/atlas?${params.toString()}`);
   };
 
   const getMergedLevels = (): (LevelProgress & { label: string; name: string; xpReward: number })[] => {
