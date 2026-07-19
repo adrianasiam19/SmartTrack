@@ -23,5 +23,8 @@ env/
 htmlcov/
 .coverage
 
+# Uploaded academic results
+uploads/
+
 # Alembic
 alembic/versions/*.pyc

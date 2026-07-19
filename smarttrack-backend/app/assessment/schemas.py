@@ -68,9 +68,17 @@ class LeaderboardEntry(BaseModel):
 class LeaderboardResponse(BaseModel):
     entries: List[LeaderboardEntry]
 
+class AcademicGradeRecord(BaseModel):
+    subject: str
+    grade: str
+    exam_type: str = "WASSCE"
+
+
 class SaveAcademicRecordsRequest(BaseModel):
-    exam_type: str # WASSCE, UTME, etc.
-    results: Dict[str, str] # {"Math": "A1", ...}
+    exam_type: str = "WASSCE"  # WASSCE, UTME, etc.
+    # Prefer structured records; `results` kept for older clients {"Math": "A1"}
+    records: Optional[List[AcademicGradeRecord]] = None
+    results: Optional[Dict[str, str]] = None
 
 class LearningModuleResponse(BaseModel):
     id: int

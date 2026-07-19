@@ -466,13 +466,19 @@ export async function fetchWithAuth(
   options: RequestInit = {},
 ): Promise<Response> {
   const doFetch = (token?: string): Promise<Response> => {
+    const isFormData =
+      typeof FormData !== 'undefined' && options.body instanceof FormData;
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     };
     if (options.headers) {
       const callerHeaders = options.headers as Record<string, string>;
       Object.assign(headers, callerHeaders);
+    }
+    // Let the browser set multipart boundary for FormData uploads.
+    if (isFormData) {
+      delete headers['Content-Type'];
     }
     return fetch(url, { ...options, headers });
   };
@@ -499,11 +505,13 @@ export async function fetchWithAuth(
 /**
  * Fetch the authenticated user from the backend.
  * The backend is the source of truth — also keeps localStorage in sync.
+ *
+ * On 401, tries a refresh-token rotation before clearing the client session.
+ * That prevents mid-session login kicks when only the short-lived access token expired.
  */
 export const getCurrentUser = async (epoch: number = authEpoch): Promise<UserProfile> => {
-  let response: Response;
-  try {
-    [response] = await fetchWithRetry(
+  const requestProfile = async (): Promise<Response> => {
+    const [response] = await fetchWithRetry(
       `${API_BASE_URL}/users/me`,
       {
         method: 'GET',
@@ -512,6 +520,12 @@ export const getCurrentUser = async (epoch: number = authEpoch): Promise<UserPro
       1,
       500,
     );
+    return response;
+  };
+
+  let response: Response;
+  try {
+    response = await requestProfile();
   } catch (err) {
     if (err instanceof TypeError) {
       throw new Error('Unable to connect to the server to load your profile.');
@@ -523,9 +537,32 @@ export const getCurrentUser = async (epoch: number = authEpoch): Promise<UserPro
     throw new Error('Auth session changed');
   }
 
+  if (response.status === 401) {
+    try {
+      await refreshAccessToken();
+      if (epoch !== authEpoch) {
+        throw new Error('Auth session changed');
+      }
+      response = await requestProfile();
+    } catch (refreshErr) {
+      if (refreshErr instanceof Error && refreshErr.message === 'Auth session changed') {
+        throw refreshErr;
+      }
+      // refreshAccessToken clears on hard failure; keep this as a safety net.
+      if (epoch === authEpoch) {
+        clearClientSession();
+      }
+      throw new Error('Unauthorized');
+    }
+  }
+
+  if (epoch !== authEpoch) {
+    throw new Error('Auth session changed');
+  }
+
   if (!response.ok) {
     if (response.status === 401) {
-      clearClientSession();
+      if (epoch === authEpoch) clearClientSession();
       throw new Error('Unauthorized');
     }
     throw new Error('Failed to fetch user profile');
@@ -622,16 +659,11 @@ export const updateUserProfile = async (
 
   let response: Response;
   try {
-    [response] = await fetchWithRetry(
-      `${API_BASE_URL}/users/me`,
-      {
-        method: 'PATCH',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(data),
-      },
-      1,
-      500,
-    );
+    // Use refresh-aware helper so expired access tokens don't fail profile updates.
+    response = await fetchWithAuth(`${API_BASE_URL}/users/me`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
   } catch (err) {
     throw new Error(getFetchErrorMessage(err));
   }

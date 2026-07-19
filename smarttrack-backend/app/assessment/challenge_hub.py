@@ -631,7 +631,10 @@ async def start_challenge_session(
         "current_question_index": 0,
         "questions": all_questions,
         "responses": {},
+        "level_archives": [],
         "total_xp": 0,
+        # How much of total_xp has already been written to user.xp (avoids double-credit).
+        "xp_credited": 0,
         "correct_count": 0,
         "wrong_count": 0,
         "started_at": datetime.now(timezone.utc).isoformat(),
@@ -933,10 +936,23 @@ async def continue_challenge_level(
     await db.commit()
     await db.refresh(db_session)
 
+    # Archive the completed level so Level 2/3 can reuse question indices 0..5
+    # without colliding with Level 1's recorded responses (which caused submit 404s).
+    archives = session.setdefault("level_archives", [])
+    archives.append(
+        {
+            "challenge_level": session["challenge_level"],
+            "questions": session.get("questions", {}),
+            "responses": session.get("responses", {}),
+        }
+    )
+
     session["challenge_level"] = next_level
     session["status"] = "in_progress"
     session["current_subject_index"] = 0
     session["current_question_index"] = 0
+    session["responses"] = {}
+    session["questions"] = {}
 
     async def _gen_one(subject: str) -> tuple:
         try:
@@ -986,6 +1002,91 @@ async def continue_challenge_level(
     }
 
 
+def _iter_level_snapshots(session: dict) -> list[dict]:
+    """Yield archived levels plus the current in-progress level as snapshots."""
+    snapshots = list(session.get("level_archives") or [])
+    snapshots.append(
+        {
+            "challenge_level": session.get("challenge_level"),
+            "questions": session.get("questions", {}),
+            "responses": session.get("responses", {}),
+        }
+    )
+    return snapshots
+
+
+def _aggregate_subject_performance(session: dict) -> list[dict]:
+    """Merge answers across all challenge levels for summary stats."""
+    totals: dict[str, dict] = {
+        subject: {"correct": 0, "total": 0, "xp": 0} for subject in CORE_SUBJECTS
+    }
+    for snapshot in _iter_level_snapshots(session):
+        for subject in CORE_SUBJECTS:
+            responses = (snapshot.get("responses") or {}).get(subject, [])
+            totals[subject]["correct"] += sum(1 for r in responses if r.get("is_correct"))
+            totals[subject]["total"] += len(responses)
+            totals[subject]["xp"] += sum(int(r.get("xp_earned") or 0) for r in responses)
+
+    subject_performance = []
+    for subject in CORE_SUBJECTS:
+        data = totals[subject]
+        total = data["total"]
+        subject_performance.append(
+            {
+                "subject": subject,
+                "correct": data["correct"],
+                "total": total,
+                "accuracy": round((data["correct"] / total * 100)) if total else 0,
+                "xp": data["xp"],
+            }
+        )
+    return subject_performance
+
+
+async def credit_pending_xp(
+    db: AsyncSession, user_id, session_id: str
+) -> dict:
+    """
+    Persist any uncredited session XP onto the user profile.
+
+    Safe to call multiple times: only total_xp - xp_credited is applied.
+    Called when a challenge level completes (L1/L2) and again on /complete
+    so exiting before L3 still keeps earned XP.
+    """
+    session = _challenge_sessions.get(session_id)
+    if not session:
+        return {"error": "Session not found"}
+
+    if session["user_id"] != user_id:
+        return {"error": "Unauthorized"}
+
+    total_xp = int(session.get("total_xp") or 0)
+    already_credited = int(session.get("xp_credited") or 0)
+    delta = total_xp - already_credited
+
+    db_session = await db.get(ChallengeSession, session["db_session_id"])
+    if db_session:
+        db_session.total_xp = total_xp
+        db_session.correct_count = session.get("correct_count", 0)
+        db_session.wrong_count = session.get("wrong_count", 0)
+
+    user = await db.get(User, user_id)
+    user_xp = None
+    if user:
+        if delta != 0:
+            user.xp = max(0, (user.xp or 0) + delta)
+        user_xp = user.xp or 0
+
+    session["xp_credited"] = total_xp
+    await db.commit()
+
+    return {
+        "xp_credited_delta": delta,
+        "total_xp": total_xp,
+        "user_xp": user_xp,
+    }
+
+
 async def complete_session(
     db: AsyncSession, user_id, session_id: str
 ) -> dict:
@@ -999,28 +1100,34 @@ async def complete_session(
         return {"error": "DB session not found"}
 
     saved_count = 0
-    for subject, responses in session["responses"].items():
-        questions = session["questions"].get(subject, [])
-        for resp in responses:
-            qi = resp["question_index"]
-            q_data = questions[qi] if qi < len(questions) else {}
-            db_resp = ChallengeResponse(
-                session_id=db_session.id,
-                user_id=user_id,
-                subject=subject,
-                question_index=qi,
-                question_text=resp["question_text"],
-                question_type=resp["question_type"],
-                options=q_data.get("options"),
-                correct_answer=resp["correct_answer"],
-                user_answer=resp["user_answer"],
-                is_correct=resp["is_correct"],
-                time_taken_seconds=resp["time_taken_seconds"],
-                xp_earned=resp["xp_earned"],
-                explanation=q_data.get("explanation", ""),
-            )
-            db.add(db_resp)
-            saved_count += 1
+    for snapshot in _iter_level_snapshots(session):
+        level = snapshot.get("challenge_level")
+        questions_by_subject = snapshot.get("questions") or {}
+        for subject, responses in (snapshot.get("responses") or {}).items():
+            questions = questions_by_subject.get(subject, [])
+            for resp in responses:
+                qi = resp["question_index"]
+                q_data = questions[qi] if qi < len(questions) else {}
+                # Namespace question_index by level so L1 Q0 and L2 Q0 do not collide
+                # when reviewing saved history for the same session.
+                stored_index = int(qi) + (int(level or 1) - 1) * 100
+                db_resp = ChallengeResponse(
+                    session_id=db_session.id,
+                    user_id=user_id,
+                    subject=subject,
+                    question_index=stored_index,
+                    question_text=resp["question_text"],
+                    question_type=resp["question_type"],
+                    options=q_data.get("options"),
+                    correct_answer=resp["correct_answer"],
+                    user_answer=resp["user_answer"],
+                    is_correct=resp["is_correct"],
+                    time_taken_seconds=resp["time_taken_seconds"],
+                    xp_earned=resp["xp_earned"],
+                    explanation=q_data.get("explanation", ""),
+                )
+                db.add(db_resp)
+                saved_count += 1
 
     db_session.status = "completed"
     db_session.total_xp = session["total_xp"]
@@ -1028,29 +1135,18 @@ async def complete_session(
     db_session.wrong_count = session["wrong_count"]
     db_session.completed_at = datetime.now(timezone.utc)
 
-    user = await db.get(User, user_id)
-    if user:
-        new_xp = max(0, (user.xp or 0) + session["total_xp"])
-        user.xp = new_xp
-
-    await db.commit()
+    # Credit any XP not already persisted at L1/L2 level_complete.
+    credit = await credit_pending_xp(db, user_id, session_id)
+    if "error" in credit:
+        # credit_pending_xp already committed session row updates above via its own path;
+        # fall back to a commit of response rows if credit somehow fails identity checks.
+        await db.commit()
+        return {"error": credit["error"]}
 
     total_answered = session["correct_count"] + session["wrong_count"]
     accuracy = round((session["correct_count"] / total_answered * 100)) if total_answered > 0 else 0
 
-    subject_performance = []
-    for subject in CORE_SUBJECTS:
-        responses = session["responses"].get(subject, [])
-        correct = sum(1 for r in responses if r["is_correct"])
-        total = len(responses)
-        subject_performance.append({
-            "subject": subject,
-            "correct": correct,
-            "total": total,
-            "accuracy": round((correct / total * 100)) if total > 0 else 0,
-            "xp": sum(r["xp_earned"] for r in responses),
-        })
-
+    subject_performance = _aggregate_subject_performance(session)
     sorted_perf = sorted(subject_performance, key=lambda x: x["accuracy"], reverse=True)
     strongest = sorted_perf[0]["subject"] if sorted_perf else ""
     weakest = sorted_perf[-1]["subject"] if sorted_perf else ""
@@ -1060,6 +1156,8 @@ async def complete_session(
         "session_id": session_id,
         "challenge_level": session["challenge_level"],
         "total_xp": session["total_xp"],
+        "xp_credited_delta": credit.get("xp_credited_delta", 0),
+        "user_xp": credit.get("user_xp"),
         "correct_count": session["correct_count"],
         "wrong_count": session["wrong_count"],
         "accuracy": accuracy,
@@ -1068,6 +1166,7 @@ async def complete_session(
         "weak_topics": weak_topics,
         "subject_performance": subject_performance,
         "subjects_completed": len(CORE_SUBJECTS),
+        "responses_saved": saved_count,
     }
 
     return summary
@@ -1082,19 +1181,7 @@ def get_session_summary(session_id: str) -> dict | None:
     total_answered = session["correct_count"] + session["wrong_count"]
     accuracy = round((session["correct_count"] / total_answered * 100)) if total_answered > 0 else 0
 
-    subject_performance = []
-    for subject in CORE_SUBJECTS:
-        responses = session["responses"].get(subject, [])
-        correct = sum(1 for r in responses if r["is_correct"])
-        total = len(responses)
-        subject_performance.append({
-            "subject": subject,
-            "correct": correct,
-            "total": total,
-            "accuracy": round((correct / total * 100)) if total > 0 else 0,
-            "xp": sum(r["xp_earned"] for r in responses),
-        })
-
+    subject_performance = _aggregate_subject_performance(session)
     sorted_perf = sorted(subject_performance, key=lambda x: x["accuracy"], reverse=True)
 
     return {

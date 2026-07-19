@@ -21,6 +21,7 @@ from app.assessment.challenge_hub import (
     get_current_subject_index,
     submit_answer,
     complete_session,
+    credit_pending_xp,
     get_session_summary,
     CORE_SUBJECTS,
 )
@@ -127,6 +128,7 @@ async def get_questions(
 async def submit_challenge_answer(
     body: SubmitAnswerRequest,
     current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Submit an answer for the current question.
@@ -151,6 +153,18 @@ async def submit_challenge_answer(
 
     if result is None:
         raise HTTPException(status_code=404, detail="Session or question not found")
+
+    # Persist XP as soon as a challenge level finishes (L1/L2), so exiting
+    # before Level 3 does not lose earned XP from the user profile.
+    if result.get("level_complete"):
+        credit = await credit_pending_xp(
+            db=db,
+            user_id=current_user.id,
+            session_id=body.session_id,
+        )
+        if "error" not in credit:
+            result["xp_credited_delta"] = credit.get("xp_credited_delta", 0)
+            result["user_xp"] = credit.get("user_xp")
 
     return {
         "success": True,
