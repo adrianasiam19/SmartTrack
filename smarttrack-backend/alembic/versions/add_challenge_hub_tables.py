@@ -59,16 +59,11 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id"),
     )
+    # Indexes for user_id are created via column index=True above.
     op.create_index(
         op.f("ix_challenge_sessions_id"),
         "challenge_sessions",
         ["id"],
-        unique=False,
-    )
-    op.create_index(
-        op.f("ix_challenge_sessions_user_id"),
-        "challenge_sessions",
-        ["user_id"],
         unique=False,
     )
 
@@ -111,22 +106,11 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id"),
     )
+    # Indexes for session_id/user_id are created via column index=True above.
     op.create_index(
         op.f("ix_challenge_responses_id"),
         "challenge_responses",
         ["id"],
-        unique=False,
-    )
-    op.create_index(
-        op.f("ix_challenge_responses_session_id"),
-        "challenge_responses",
-        ["session_id"],
-        unique=False,
-    )
-    op.create_index(
-        op.f("ix_challenge_responses_user_id"),
-        "challenge_responses",
-        ["user_id"],
         unique=False,
     )
 
