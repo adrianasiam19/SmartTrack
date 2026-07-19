@@ -1,6 +1,6 @@
 /**
  * generatedBiologySHS2Lessons.ts
- * Auto-generated Biology SHS 2 lessons from Ministry of Education curriculum materials.
+ * Auto-generated Biology Phase 2 lessons from Ministry of Education curriculum materials.
  * Source: Biology year2.pdf (Ministry of Education, 2025)
  * Contains 4 sections with 24 lessons total.
  */
@@ -27,7 +27,7 @@ export const BIOLOGY_SHS2_LESSONS: Lesson[] = [
       {
         id: "bio-2-s1t1-intro",
         type: "info",
-        content: "**Biology as the Science of Life**\n\nBiology is the scientific study of living organisms and their interactions with each other and the environment. In SHS 2, we deepen our understanding of how biology connects to everyday life, society, and entrepreneurship.\n\n**Exploring Biology in Society**\n- Biology helps us understand our own bodies, how we grow, and how to stay healthy.\n- It informs agriculture — from crop farming to animal husbandry.\n- Environmental biology teaches us how to protect and sustain our natural resources.\n- Medical advances, from vaccines to antibiotics, are rooted in biological research.\n\n**Biology and Entrepreneurship**\n- Entrepreneurial opportunities in biology include: fish farming, mushroom cultivation, beekeeping, greenhouse horticulture, and biotechnology ventures.\n- Understanding biological processes helps entrepreneurs improve production, reduce waste, and innovate in food processing, pharmaceuticals, and cosmetics.",
+        content: "**Biology as the Science of Life**\n\nBiology is the scientific study of living organisms and their interactions with each other and the environment. In Phase 2, we deepen our understanding of how biology connects to everyday life, society, and entrepreneurship.\n\n**Exploring Biology in Society**\n- Biology helps us understand our own bodies, how we grow, and how to stay healthy.\n- It informs agriculture — from crop farming to animal husbandry.\n- Environmental biology teaches us how to protect and sustain our natural resources.\n- Medical advances, from vaccines to antibiotics, are rooted in biological research.\n\n**Biology and Entrepreneurship**\n- Entrepreneurial opportunities in biology include: fish farming, mushroom cultivation, beekeeping, greenhouse horticulture, and biotechnology ventures.\n- Understanding biological processes helps entrepreneurs improve production, reduce waste, and innovate in food processing, pharmaceuticals, and cosmetics.",
       },
       {
         id: "bio-2-s1t1-content-1",

@@ -68,7 +68,7 @@ export default function LeaderboardPage() {
                   No rankings available yet. Complete challenges to become one of the first students on the leaderboard.
                 </p>
                 <button
-                  onClick={() => router.push('/challenges/intro')}
+                  onClick={() => router.push('/challenges')}
                   className="mt-6 px-6 py-3 bg-[#2563EB] text-white font-semibold rounded-xl hover:bg-[#1D4ED8] transition-all"
                 >
                   Start a Challenge

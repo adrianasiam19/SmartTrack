@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Sidebar from '../components/Sidebar';
 import BottomNav from '../components/BottomNav';
 import AppLayout from '../components/AppLayout';
-import { getCurrentUser, getAccessToken, getAuthHeaders, getStoredUser, UserProfile } from '../lib/authApi';
+import { getCurrentUser, getAccessToken, getAuthHeaders, getStoredUser, phaseLabelFromLevel, UserProfile } from '../lib/authApi';
 import { motion } from 'framer-motion';
 
 interface ChallengeScore { score_percentage: number; performance_level: string; total_questions: number; correct_answers: number; }
@@ -62,7 +62,7 @@ export default function Profile() {
       <div className="flex min-h-screen">
         <Sidebar />
         <div className="flex-1 lg:pb-0 pb-20">
-          <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-8 pb-8">
+          <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-8 pb-28">
             <div className="mb-6">
               <h1 className="text-xl font-bold text-[#1E293B]">Profile</h1>
               <p className="text-sm text-gray-500">Your account and challenge information</p>
@@ -107,15 +107,15 @@ export default function Profile() {
                     <input type="email" value={user.email || ''} readOnly className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-[#1E293B] text-sm" />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-500 mb-1">SHS Programme</label>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Programme</label>
                     <div className="px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-sm text-[#1E293B]">
                       <span>{user.programme || 'Not set'}</span>
                     </div>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-500 mb-1">SHS Level</label>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Phase</label>
                     <div className="px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-sm text-[#1E293B]">
-                      <span>{user.shs_level || 'Not set'}</span>
+                      <span>{phaseLabelFromLevel(user.shs_level)}</span>
                     </div>
                   </div>
                 </div>

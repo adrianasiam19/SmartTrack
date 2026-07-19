@@ -11,6 +11,9 @@ from app.config import settings
 # Import ALL models so Alembic can detect them
 from app.users.models import User, RefreshToken  # noqa: F401
 from app.assessment.models import Question, LearningModule, CurriculumLesson, PsychometricCard, PsychometricResponse, StarterArenaResponse, ChallengeSession, ChallengeResponse  # noqa: F401
+from app.phases.models import Phase, Level, UserPhaseProgress, UserLevelProgress, UserSubjectPerformance  # noqa: F401
+from app.psychometrics.models import PsychometricQuestion, PsychometricOption, UserPsychometricBankResponse  # noqa: F401
+from app.recommendations.models import Recommendation  # noqa: F401
 
 from app.database import Base
 

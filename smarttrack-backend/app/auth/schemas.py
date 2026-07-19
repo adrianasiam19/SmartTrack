@@ -15,7 +15,7 @@ class RegisterRequest(BaseModel):
     full_name: str = Field(min_length=2, max_length=255)
     password: str = Field(min_length=8, max_length=128)
     programme: Programme
-    shs_level: SHSLevel
+    shs_level: SHSLevel | None = None
     school: str | None = Field(default=None, max_length=255)
 
 

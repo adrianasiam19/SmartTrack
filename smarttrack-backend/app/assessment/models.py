@@ -363,7 +363,7 @@ class DailyStreakProgress(Base):
 
 class ChallengeSession(Base):
     """
-    Tracks a Challenge Hub session — 4 core subjects, 6 questions each.
+    Mixed-subject challenge session for a Phase Level (legacy hub fields retained).
     """
     __tablename__ = "challenge_sessions"
 
@@ -374,7 +374,14 @@ class ChallengeSession(Base):
         nullable=False,
         index=True,
     )
-    challenge_level: Mapped[int] = mapped_column(Integer, nullable=False, default=1)  # 1, 2, or 3
+    # Legacy hub level 1–3; prefer level_id for Phase/Level progression
+    challenge_level: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    level_id: Mapped[int | None] = mapped_column(
+        ForeignKey("levels.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+    is_replay: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="in_progress")
     total_xp: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     correct_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
@@ -397,8 +404,7 @@ class ChallengeSession(Base):
 
 class ChallengeResponse(Base):
     """
-    Individual answer within a Challenge Hub session.
-    Stores the question data, user answer, and result for adaptive learning.
+    Individual answer within a challenge session (ChallengeQuestion shape).
     """
     __tablename__ = "challenge_responses"
 
@@ -422,9 +428,12 @@ class ChallengeResponse(Base):
     correct_answer: Mapped[str] = mapped_column(String(500), nullable=False)
     user_answer: Mapped[str | None] = mapped_column(String(500), nullable=True)
     is_correct: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    # Effective difficulty after per-subject adaptive adjustment
+    difficulty: Mapped[int | None] = mapped_column(Integer, nullable=True)
     time_taken_seconds: Mapped[float | None] = mapped_column(nullable=True)
     xp_earned: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     explanation: Mapped[str | None] = mapped_column(Text, nullable=True)
+    answered_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),

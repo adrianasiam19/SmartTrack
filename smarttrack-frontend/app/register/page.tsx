@@ -5,14 +5,13 @@ import { useRouter } from 'next/navigation';
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Lock, ChevronDown } from 'lucide-react';
-import { clearClientSession, register, startGoogleSignIn, Programme, SHSLevel } from '../lib/authApi';
+import { clearClientSession, register, startGoogleSignIn, Programme } from '../lib/authApi';
 
 interface PasswordRequirement { label: string; met: boolean; }
 
-// All SHS programmes — only General Science is available for now
+// All programmes — only General Science is available for now
 const ALL_PROGRAMMES: Programme[] = ['General Science', 'General Arts', 'Business', 'Visual Arts', 'Home Economics', 'Technical'];
 const AVAILABLE_PROGRAMME: Programme = 'General Science';
-const SHS_LEVELS: SHSLevel[] = ['SHS 1', 'SHS 2', 'SHS 3', 'Completed SHS'];
 
 const getPasswordRequirements = (password: string): PasswordRequirement[] => [
   { label: 'At least 8 characters', met: password.length >= 8 },
@@ -31,7 +30,6 @@ export default function Register() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [programme, setProgramme] = useState<Programme | ''>('');
-  const [shsLevel, setShsLevel] = useState<SHSLevel | ''>('');
   const [school, setSchool] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -60,17 +58,17 @@ export default function Register() {
 
   const passwordRequirements = useMemo(() => getPasswordRequirements(password), [password]);
   const passwordsMatch = !!password && password === confirmPassword;
-  const formReady = fullName.trim().length >= 2 && !!email && !!programme && !!shsLevel && isPasswordStrong(password) && passwordsMatch;
+  const formReady = fullName.trim().length >= 2 && !!email && !!programme && isPasswordStrong(password) && passwordsMatch;
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     if (!isPasswordStrong(password)) { setError('Please satisfy every password requirement before continuing.'); return; }
     if (!passwordsMatch) { setError('Passwords do not match.'); return; }
-    if (!programme || !shsLevel) { setError('Please choose your SHS programme and level.'); return; }
+    if (!programme) { setError('Please choose your programme.'); return; }
     setIsLoading(true);
     try {
-      await register({ email: email.trim(), password, full_name: fullName.trim(), programme, shs_level: shsLevel, school: school.trim() || null });
+      await register({ email: email.trim(), password, full_name: fullName.trim(), programme, school: school.trim() || null });
       router.push('/onboarding');
     } catch (err) { setError(err instanceof Error ? err.message : 'Registration failed'); }
     finally { setIsLoading(false); }
@@ -88,7 +86,6 @@ export default function Register() {
   };
 
   const inputBase = 'w-full px-4 py-3 bg-white border border-[#CBD5E1] rounded-xl text-[#1E293B] placeholder-[#94A3B8] focus:ring-2 focus:ring-[#2563EB] focus:border-transparent outline-none transition text-base';
-  const selectBase = 'w-full px-4 py-3 bg-white border border-[#CBD5E1] rounded-xl text-[#1E293B] focus:ring-2 focus:ring-[#2563EB] focus:border-transparent outline-none transition text-base appearance-none';
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-4 py-10">
@@ -124,7 +121,7 @@ export default function Register() {
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputBase} placeholder="your.email@example.com" required disabled={isLoading} />
             </div>
             <div className="relative" ref={progDropdownRef}>
-              <label className="block text-sm font-medium text-[#1E293B] mb-1.5">SHS Programme</label>
+              <label className="block text-sm font-medium text-[#1E293B] mb-1.5">Programme</label>
               <button
                 type="button"
                 onClick={() => !isLoading && setProgDropdownOpen(!progDropdownOpen)}
@@ -169,13 +166,6 @@ export default function Register() {
                   })}
                 </div>
               )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-[#1E293B] mb-1.5">SHS Level</label>
-              <select value={shsLevel} onChange={(e) => setShsLevel(e.target.value as SHSLevel | '')} className={selectBase} required disabled={isLoading}>
-                <option value="" disabled>Choose your level</option>
-                {SHS_LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
-              </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-[#1E293B] mb-1.5">School Name <span className="text-[#94A3B8] font-normal">(optional)</span></label>

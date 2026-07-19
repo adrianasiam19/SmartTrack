@@ -1,7 +1,8 @@
-"""Authenticated, level-scoped Learning Center API."""
+"""Authenticated Learning Center API — phase-independent digital library."""
 from __future__ import annotations
 
 import re
+from datetime import datetime, timezone
 from difflib import SequenceMatcher
 from typing import Any, Literal
 
@@ -9,32 +10,44 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm.attributes import flag_modified
 
 from app.assessment.models import CurriculumLesson
 from app.auth.dependencies import get_current_user
 from app.database import get_db
 from app.learning.service import (
     AI_CONTENT_VERSION,
+    CHALLENGE_SUBJECT_TO_CURRICULUM,
     TutorUnavailable,
     answer_lesson_question,
     generate_ai_lesson,
 )
+from app.phases.models import UserSubjectPerformance
+from app.users.gamification import apply_xp
 from app.users.models import User
 
 router = APIRouter(prefix="/learning", tags=["Learning Center"])
 
-SUPPORTED_LEVELS = {"SHS 1", "SHS 2"}
-PROGRAMME_MAP = {"General Science": "Science", "General Arts": "Arts"}
+# Soft AI depth preference only — never used to hide catalogue content
+LEVEL_PREFERENCE = {"SHS 1", "SHS 2", "SHS 3"}
+
+POPULAR_FALLBACK_IDS = [
+    "cm-s1-m1-l1",
+    "eng-s1-s5-l1",
+    "is-s1-m1-l1",
+    "ss-s1-m1-l1",
+]
 
 
 class TopicResponse(BaseModel):
     curriculum_id: str
     title: str
     subject: str
-    shs_level: str
+    shs_level: str = ""
     estimated_minutes: int
     difficulty: int
     xp_reward: int
+    reason: str | None = None
 
 
 class WorkedExample(BaseModel):
@@ -77,32 +90,36 @@ class TutorResponse(BaseModel):
     response: str
 
 
+class LibraryHomeResponse(BaseModel):
+    continue_learning: TopicResponse | None = None
+    recommended: list[TopicResponse] = Field(default_factory=list)
+    recent: list[TopicResponse] = Field(default_factory=list)
+    bookmarks: list[TopicResponse] = Field(default_factory=list)
+
+
+class BookmarkToggleResponse(BaseModel):
+    curriculum_id: str
+    bookmarked: bool
+    bookmarks: list[TopicResponse]
+
+
+class RelatedTopicsResponse(BaseModel):
+    topics: list[TopicResponse]
+
+
 def _normalise(value: str) -> str:
     return re.sub(r"[^a-z0-9]+", " ", value.lower()).strip()
 
 
-def _scope_for(user: User) -> tuple[str, str]:
-    if user.shs_level not in SUPPORTED_LEVELS:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="The AI Learning Center is available only for SHS 1 and SHS 2.",
-        )
-    programme = PROGRAMME_MAP.get(user.programme or "")
-    if not programme:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Complete your SHS programme setup before opening the Learning Center.",
-        )
-    return user.shs_level, programme
-
-
-def _is_in_scope(
-    lesson: CurriculumLesson, shs_level: str, programme: str
-) -> bool:
-    return (
-        shs_level in (lesson.shs_levels or [])
-        and lesson.programme in {"Both", programme}
-    )
+def _soft_level(user: User, lesson: CurriculumLesson | None = None) -> str:
+    """Prefer profile level for AI tone; fall back to lesson levels or SHS 2."""
+    if user.shs_level in LEVEL_PREFERENCE:
+        if lesson and lesson.shs_levels and user.shs_level not in lesson.shs_levels:
+            return lesson.shs_levels[0]
+        return user.shs_level
+    if lesson and lesson.shs_levels:
+        return lesson.shs_levels[0]
+    return "SHS 2"
 
 
 def _search_score(query: str, lesson: CurriculumLesson) -> float:
@@ -135,65 +152,357 @@ def _search_score(query: str, lesson: CurriculumLesson) -> float:
     return max(title_ratio, word_score * 0.9, keyword_coverage * 0.8)
 
 
-async def _get_scoped_lesson(
+def _topic_from_lesson(
+    lesson: CurriculumLesson, *, reason: str | None = None, shs_level: str = ""
+) -> TopicResponse:
+    return TopicResponse(
+        curriculum_id=lesson.curriculum_id,
+        title=lesson.title,
+        subject=lesson.subject,
+        shs_level=shs_level,
+        estimated_minutes=lesson.estimated_minutes,
+        difficulty=lesson.difficulty,
+        xp_reward=lesson.xp_reward,
+        reason=reason,
+    )
+
+
+def _profile_dict(user: User) -> dict[str, Any]:
+    return dict(user.learner_profile or {})
+
+
+def _entries_to_topics(
+    entries: list[dict[str, Any]],
+    by_id: dict[str, CurriculumLesson],
+) -> list[TopicResponse]:
+    """Only return topics that still exist in the curriculum catalogue."""
+    out: list[TopicResponse] = []
+    for entry in entries:
+        cid = str(entry.get("curriculum_id") or "")
+        lesson = by_id.get(cid)
+        if lesson:
+            out.append(_topic_from_lesson(lesson))
+    return out
+
+
+async def _get_lesson(
     curriculum_id: str,
-    user: User,
     db: AsyncSession,
-) -> tuple[CurriculumLesson, str]:
-    shs_level, programme = _scope_for(user)
+) -> CurriculumLesson:
     result = await db.execute(
-        select(CurriculumLesson).where(
-            CurriculumLesson.curriculum_id == curriculum_id
-        )
+        select(CurriculumLesson).where(CurriculumLesson.curriculum_id == curriculum_id)
     )
     lesson = result.scalar_one_or_none()
-    if lesson is None or not _is_in_scope(lesson, shs_level, programme):
-        # A generic 404 prevents leaking the existence of another level's lesson.
+    if lesson is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Lesson not found in your curriculum.",
+            detail="Lesson not found.",
         )
-    return lesson, shs_level
+    return lesson
 
 
-@router.get("/topics", response_model=list[TopicResponse])
-async def search_topics(
-    query: str = Query(default="", max_length=150),
+async def _lessons_by_id(db: AsyncSession) -> dict[str, CurriculumLesson]:
+    result = await db.execute(select(CurriculumLesson))
+    return {L.curriculum_id: L for L in result.scalars().all()}
+
+
+def _touch_recent(profile: dict[str, Any], lesson: CurriculumLesson) -> None:
+    now = datetime.now(timezone.utc).isoformat()
+    entry = {
+        "curriculum_id": lesson.curriculum_id,
+        "title": lesson.title,
+        "subject": lesson.subject,
+        "visited_at": now,
+        "estimated_minutes": lesson.estimated_minutes,
+        "difficulty": lesson.difficulty,
+        "xp_reward": lesson.xp_reward,
+    }
+    recent = [
+        e
+        for e in list(profile.get("learning_recent") or [])
+        if e.get("curriculum_id") != lesson.curriculum_id
+    ]
+    recent.insert(0, entry)
+    profile["learning_recent"] = recent[:20]
+    profile["last_opened_topic"] = entry
+
+
+def profile_completed(user: User) -> list[str]:
+    profile = _profile_dict(user)
+    return list(profile.get("completed_lessons") or [])
+
+
+async def _build_recommended(
+    user: User,
+    db: AsyncSession,
+    by_id: dict[str, CurriculumLesson],
+    *,
+    exclude: set[str],
+) -> list[TopicResponse]:
+    """Rank topics from challenge subject performance, then fill with catalogue."""
+    picks: list[TopicResponse] = []
+    seen: set[str] = set(exclude)
+    completed = set(profile_completed(user))
+
+    perf_rows = (
+        await db.execute(
+            select(UserSubjectPerformance).where(UserSubjectPerformance.user_id == user.id)
+        )
+    ).scalars().all()
+
+    # Weaker subjects first; still include any subject the learner has attempted
+    ordered = sorted(
+        perf_rows,
+        key=lambda p: (
+            p.weak_level_streak or 0,
+            1.0 - float(p.rolling_accuracy if p.rolling_accuracy is not None else 0.5),
+        ),
+        reverse=True,
+    )
+
+    for perf in ordered:
+        curriculum_subject = CHALLENGE_SUBJECT_TO_CURRICULUM.get(perf.subject)
+        if not curriculum_subject:
+            continue
+        accuracy = float(
+            perf.rolling_accuracy if perf.rolling_accuracy is not None else 0.5
+        )
+        candidates = [
+            L
+            for L in by_id.values()
+            if L.subject == curriculum_subject
+            and L.curriculum_id not in seen
+            and L.curriculum_id not in completed
+        ]
+        candidates.sort(key=lambda L: (L.difficulty, L.title))
+        for lesson in candidates[:2]:
+            if (perf.weak_level_streak or 0) >= 1 or accuracy < 0.7:
+                reason = f"From Challenges — strengthen {curriculum_subject}"
+            else:
+                reason = f"From Challenges — keep practising {curriculum_subject}"
+            picks.append(_topic_from_lesson(lesson, reason=reason))
+            seen.add(lesson.curriculum_id)
+            if len(picks) >= 6:
+                return picks
+
+    # One topic per subject as cold-start / fill (works even with no challenge history)
+    for subject in (
+        "Core Mathematics",
+        "English Language",
+        "Integrated Science",
+        "Social Studies",
+        "Biology",
+        "Chemistry",
+        "Physics",
+        "Additional Mathematics",
+    ):
+        if len(picks) >= 6:
+            break
+        candidates = [
+            L
+            for L in by_id.values()
+            if L.subject == subject
+            and L.curriculum_id not in seen
+            and L.curriculum_id not in completed
+        ]
+        if not candidates:
+            continue
+        candidates.sort(key=lambda L: (L.difficulty, L.title))
+        lesson = candidates[0]
+        picks.append(_topic_from_lesson(lesson, reason="Great place to start"))
+        seen.add(lesson.curriculum_id)
+
+    for cid in POPULAR_FALLBACK_IDS:
+        if len(picks) >= 6:
+            break
+        if cid in seen or cid in completed:
+            continue
+        lesson = by_id.get(cid)
+        if lesson:
+            picks.append(_topic_from_lesson(lesson, reason="Popular starting topic"))
+            seen.add(cid)
+
+    if len(picks) < 6:
+        for lesson in sorted(by_id.values(), key=lambda L: (L.difficulty, L.title)):
+            if lesson.curriculum_id in seen or lesson.curriculum_id in completed:
+                continue
+            picks.append(_topic_from_lesson(lesson, reason="Explore this topic"))
+            seen.add(lesson.curriculum_id)
+            if len(picks) >= 6:
+                break
+
+    return picks
+
+
+@router.get("/search", response_model=list[TopicResponse])
+async def unified_search(
+    q: str | None = Query(default=None, max_length=150),
+    query: str | None = Query(default=None, max_length=150),
     subject: str | None = Query(default=None, max_length=100),
     limit: int = Query(default=20, ge=1, le=50),
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Search only the authenticated student's official curriculum."""
-    shs_level, programme = _scope_for(user)
+    """Search the full curriculum — not filtered by phase or SHS level."""
+    _ = user
+    search_text = (q or query or "").strip()
     result = await db.execute(select(CurriculumLesson))
-    lessons = [
-        lesson
-        for lesson in result.scalars().all()
-        if _is_in_scope(lesson, shs_level, programme)
-        and (not subject or lesson.subject.lower() == subject.lower())
-    ]
+    lessons = list(result.scalars().all())
+    if subject:
+        lessons = [L for L in lessons if L.subject.lower() == subject.lower()]
 
-    normalised_query = _normalise(query)
-    ranked = [
-        (_search_score(normalised_query, lesson), lesson) for lesson in lessons
-    ]
+    normalised_query = _normalise(search_text)
+    ranked = [(_search_score(normalised_query, lesson), lesson) for lesson in lessons]
     if normalised_query:
-        ranked = [item for item in ranked if item[0] >= 0.48]
+        ranked = [item for item in ranked if item[0] >= 0.40]
     ranked.sort(key=lambda item: (-item[0], item[1].subject, item[1].title))
 
-    return [
-        TopicResponse(
-            curriculum_id=lesson.curriculum_id,
-            title=lesson.title,
-            subject=lesson.subject,
-            shs_level=shs_level,
-            estimated_minutes=lesson.estimated_minutes,
-            difficulty=lesson.difficulty,
-            xp_reward=lesson.xp_reward,
+    return [_topic_from_lesson(lesson) for _, lesson in ranked[:limit]]
+
+
+@router.get("/topics", response_model=list[TopicResponse])
+async def list_or_search_topics(
+    query: str = Query(default="", max_length=150),
+    subject: str | None = Query(default=None, max_length=100),
+    limit: int = Query(default=50, ge=1, le=100),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """List topics (optionally by subject) across the full library."""
+    return await unified_search(
+        q=query or None,
+        query=None,
+        subject=subject,
+        limit=limit,
+        user=user,
+        db=db,
+    )
+
+
+@router.get("/library", response_model=LibraryHomeResponse)
+async def library_home(
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    by_id = await _lessons_by_id(db)
+    profile = _profile_dict(user)
+
+    continue_learning = None
+    last = profile.get("last_opened_topic")
+    if isinstance(last, dict) and last.get("curriculum_id"):
+        lesson = by_id.get(str(last["curriculum_id"]))
+        if lesson:
+            continue_learning = _topic_from_lesson(
+                lesson, reason="Continue where you left off"
+            )
+
+    recent = _entries_to_topics(list(profile.get("learning_recent") or [])[:8], by_id)
+    bookmarks = _entries_to_topics(
+        list(profile.get("learning_bookmarks") or [])[:12], by_id
+    )
+
+    recommended = await _build_recommended(
+        user,
+        db,
+        by_id,
+        exclude={
+            *(t.curriculum_id for t in recent),
+            *((continue_learning.curriculum_id,) if continue_learning else ()),
+        },
+    )
+
+    return LibraryHomeResponse(
+        continue_learning=continue_learning,
+        recommended=recommended,
+        recent=recent,
+        bookmarks=bookmarks,
+    )
+
+
+@router.post("/lessons/{curriculum_id}/opened", response_model=TopicResponse)
+async def mark_opened(
+    curriculum_id: str,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    lesson = await _get_lesson(curriculum_id, db)
+    profile = _profile_dict(user)
+    _touch_recent(profile, lesson)
+    user.learner_profile = profile
+    flag_modified(user, "learner_profile")
+    await db.commit()
+    return _topic_from_lesson(lesson)
+
+
+@router.post("/bookmarks/{curriculum_id}/toggle", response_model=BookmarkToggleResponse)
+async def toggle_bookmark(
+    curriculum_id: str,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    lesson = await _get_lesson(curriculum_id, db)
+    profile = _profile_dict(user)
+    bookmarks = list(profile.get("learning_bookmarks") or [])
+    existing = next(
+        (i for i, b in enumerate(bookmarks) if b.get("curriculum_id") == curriculum_id),
+        None,
+    )
+    bookmarked = False
+    if existing is None:
+        bookmarks.insert(
+            0,
+            {
+                "curriculum_id": lesson.curriculum_id,
+                "title": lesson.title,
+                "subject": lesson.subject,
+                "saved_at": datetime.now(timezone.utc).isoformat(),
+                "estimated_minutes": lesson.estimated_minutes,
+                "difficulty": lesson.difficulty,
+                "xp_reward": lesson.xp_reward,
+            },
         )
-        for _, lesson in ranked[:limit]
+        bookmarked = True
+    else:
+        bookmarks.pop(existing)
+    profile["learning_bookmarks"] = bookmarks[:50]
+    user.learner_profile = profile
+    flag_modified(user, "learner_profile")
+    await db.commit()
+
+    all_by_id = await _lessons_by_id(db)
+    return BookmarkToggleResponse(
+        curriculum_id=curriculum_id,
+        bookmarked=bookmarked,
+        bookmarks=_entries_to_topics(profile["learning_bookmarks"], all_by_id),
+    )
+
+
+@router.get("/lessons/{curriculum_id}/related", response_model=RelatedTopicsResponse)
+async def related_topics(
+    curriculum_id: str,
+    limit: int = Query(default=6, ge=1, le=12),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    _ = user
+    lesson = await _get_lesson(curriculum_id, db)
+    result = await db.execute(select(CurriculumLesson))
+    siblings = [
+        L
+        for L in result.scalars().all()
+        if L.subject == lesson.subject and L.curriculum_id != curriculum_id
     ]
+    stem = "-".join(curriculum_id.split("-")[:3])
+    siblings.sort(
+        key=lambda L: (
+            0 if L.curriculum_id.startswith(stem) else 1,
+            L.difficulty,
+            L.title,
+        )
+    )
+    return RelatedTopicsResponse(
+        topics=[_topic_from_lesson(L) for L in siblings[:limit]]
+    )
 
 
 @router.post("/lessons/{curriculum_id}/teach", response_model=LessonResponse)
@@ -202,8 +511,15 @@ async def teach_lesson(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Retrieve a DB lesson first, then return its cached or newly AI-taught form."""
-    curriculum, shs_level = await _get_scoped_lesson(curriculum_id, user, db)
+    """Retrieve a DB lesson, then return cached or newly AI-taught content."""
+    curriculum = await _get_lesson(curriculum_id, db)
+    shs_level = _soft_level(user, curriculum)
+
+    profile = _profile_dict(user)
+    _touch_recent(profile, curriculum)
+    user.learner_profile = profile
+    flag_modified(user, "learner_profile")
+
     cache: dict[str, Any] = curriculum.ai_content_by_level or {}
     taught_lesson = (
         cache.get(shs_level)
@@ -226,7 +542,8 @@ async def teach_lesson(
             ) from exc
         curriculum.ai_content_by_level = {**cache, shs_level: taught_lesson}
         curriculum.ai_content_version = AI_CONTENT_VERSION
-        await db.flush()
+
+    await db.commit()
 
     return LessonResponse(
         curriculum_id=curriculum.curriculum_id,
@@ -235,6 +552,48 @@ async def teach_lesson(
         estimated_minutes=curriculum.estimated_minutes,
         xp_reward=curriculum.xp_reward,
         lesson=taught_lesson,
+    )
+
+
+class LessonCompleteResponse(BaseModel):
+    curriculum_id: str
+    xp_earned: int
+    user_xp: int
+    rank: str
+    already_completed: bool = False
+
+
+@router.post("/lessons/{curriculum_id}/complete", response_model=LessonCompleteResponse)
+async def complete_lesson(
+    curriculum_id: str,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Award lesson XP once per curriculum id (tracked on learner_profile)."""
+    curriculum = await _get_lesson(curriculum_id, db)
+    profile = _profile_dict(user)
+    completed = list(profile.get("completed_lessons") or [])
+    if curriculum_id in completed:
+        return LessonCompleteResponse(
+            curriculum_id=curriculum_id,
+            xp_earned=0,
+            user_xp=user.xp or 0,
+            rank=user.rank or "Beginner",
+            already_completed=True,
+        )
+
+    xp_earned, rank, user_xp = apply_xp(user, curriculum.xp_reward or 10)
+    completed.append(curriculum_id)
+    profile["completed_lessons"] = completed[-200:]
+    user.learner_profile = profile
+    flag_modified(user, "learner_profile")
+    await db.commit()
+    return LessonCompleteResponse(
+        curriculum_id=curriculum_id,
+        xp_earned=xp_earned,
+        user_xp=user_xp,
+        rank=rank,
+        already_completed=False,
     )
 
 
@@ -248,8 +607,9 @@ async def ask_atlas(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Answer a follow-up using the server-retrieved curriculum lesson."""
-    curriculum, shs_level = await _get_scoped_lesson(curriculum_id, user, db)
+    """Answer a follow-up using the curriculum lesson (any phase)."""
+    curriculum = await _get_lesson(curriculum_id, db)
+    shs_level = _soft_level(user, curriculum)
     try:
         response = await answer_lesson_question(
             question=body.message.strip(),

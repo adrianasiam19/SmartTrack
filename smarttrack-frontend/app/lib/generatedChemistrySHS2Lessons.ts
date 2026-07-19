@@ -1,6 +1,6 @@
 /**
  * generatedChemistrySHS2Lessons.ts
- * Auto-generated Chemistry SHS 2 lessons from Ministry of Education curriculum materials.
+ * Auto-generated Chemistry Phase 2 lessons from Ministry of Education curriculum materials.
  * Source: LM-Chemistry Year 2.pdf (Ministry of Education, Ghana, 2025)
  * Contains 8 sections with 16 lessons total.
  */

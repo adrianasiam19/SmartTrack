@@ -1,7 +1,7 @@
 /**
  * generatedEnglishLessons.ts
  * ────────────────────────────
- * Auto-generated English Language SHS 1 lessons from
+ * Auto-generated English Language Phase 1 lessons from
  * Ministry of Education curriculum materials.
  *
  * DO NOT EDIT DIRECTLY — re-run scripts/generate_english_lessons.py instead.

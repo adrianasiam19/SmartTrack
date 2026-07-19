@@ -1,527 +1,529 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Sidebar from '../../components/Sidebar';
 import BottomNav from '../../components/BottomNav';
-import AppLayout from '../../components/AppLayout';
-import { getAccessToken } from '../../lib/authApi';
+import {
+  completePhaseSession,
+  startLevel,
+  submitPhaseAnswer,
+} from '../../lib/phasesApi';
+import { getCurrentUser, getStoredUser, storeUser } from '../../lib/authApi';
 
-// ── Types ──────────────────────────────────────────────────────────────────
+const QUESTION_TIMEOUT = 60;
 
-interface Question {
+type Q = {
   id: number;
-  text: string;
   subject: string;
-  options: string[];
-  correctIndex: number;
-}
-
-interface LevelConfig {
-  id: number;
-  name: string;
-  label: string;
-  xpReward: number;
-  color: string;
-  bgColor: string;
-}
-
-// ── Level Definitions ──────────────────────────────────────────────────────
-
-const LEVELS: LevelConfig[] = [
-  { id: 1, name: 'Level 1', label: 'Core Skills', xpReward: 100, color: '#2563EB', bgColor: '#EFF6FF' },
-  { id: 2, name: 'Level 2', label: 'Language & Society', xpReward: 150, color: '#7C3AED', bgColor: '#F5F3FF' },
-  { id: 3, name: 'Level 3', label: 'Mastery', xpReward: 200, color: '#D97706', bgColor: '#FFFBEB' },
-];
-
-// ── Question Banks ─────────────────────────────────────────────────────────
-
-const LEVEL_QUESTIONS: Record<number, Question[]> = {
-  1: [],
-  2: [],
-  3: [],
+  question_text: string;
+  options: Record<string, string> | null;
+  difficulty?: number;
 };
 
-// ── Level Transition Screen ────────────────────────────────────────────────
+type SessionPayload = {
+  session_id: number;
+  level_id: number;
+  phase_number: number;
+  level_number: number;
+  questions: Q[];
+};
 
-function LevelCompleteScreen({
-  level,
-  xpEarned,
-  onNext,
-  isLast,
-  onSeeResults,
-}: {
-  level: LevelConfig;
-  xpEarned: number;
-  onNext: () => void;
-  isLast: boolean;
-  onSeeResults?: () => void;
+async function syncUserFromServer(partial?: {
+  xp?: number | null;
+  rank?: string | null;
 }) {
-  const router = useRouter();
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      className="flex flex-col items-center justify-center py-16 px-6"
-    >
-      <div className="w-20 h-20 bg-gradient-to-br from-[#059669] to-[#34D399] rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-        <span className="text-4xl font-bold text-white">✓</span>
-      </div>
-
-      <h2 className="text-2xl font-bold text-[#1E293B] mb-2">{level.name} Complete!</h2>
-      <p className="text-base text-[#475569] mb-6">You earned <span className="font-bold text-[#059669]">{xpEarned} XP</span></p>
-
-      <div className="flex gap-3">
-        <button
-          onClick={() => router.push('/challenges/intro')}
-          className="px-6 py-3 border-2 border-[#E2E8F0] text-[#475569] font-semibold rounded-xl hover:bg-[#F8FAFC] transition-all"
-        >
-          Exit
-        </button>
-        {!isLast && (
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={onNext}
-            className="inline-flex items-center gap-2 px-8 py-3.5 text-white font-bold rounded-xl hover:shadow-md transition-all"
-            style={{ backgroundColor: level.color }}
-          >
-            Continue to Next Level
-          </motion.button>
-        )}
-        {isLast && onSeeResults && (
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={onSeeResults}
-            className="inline-flex items-center gap-2 px-8 py-3.5 text-white font-bold rounded-xl hover:shadow-md transition-all"
-            style={{ backgroundColor: '#059669' }}
-          >
-            See Results
-          </motion.button>
-        )}
-      </div>
-    </motion.div>
-  );
-}
-
-// ── All Levels Complete ────────────────────────────────────────────────────
-
-function AllCompleteScreen({ totalXp }: { totalXp: number }) {
-  const router = useRouter();
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="flex flex-col items-center justify-center py-16 px-6"
-    >
-      <div className="w-24 h-24 bg-gradient-to-br from-[#F59E0B] to-[#D97706] rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-        <span className="text-4xl font-bold text-white">🏆</span>
-      </div>
-
-      <h2 className="text-3xl font-bold text-[#1E293B] mb-2">Today&apos;s Challenge Complete!</h2>
-      <p className="text-base text-[#475569] mb-2">Amazing work! You have completed all three levels.</p>
-      <p className="text-lg font-bold text-[#059669] mb-8">Total XP Earned: {totalXp}</p>
-
-      <div className="flex gap-4">
-        <button
-          onClick={() => router.push('/dashboard')}
-          className="px-6 py-3 bg-[#2563EB] text-white font-bold rounded-xl hover:bg-[#1D4ED8] transition-all shadow-md hover:shadow-lg"
-        >
-          Go to Dashboard
-        </button>
-        <button
-          onClick={() => router.push('/challenges/leaderboard')}
-          className="px-6 py-3 border-2 border-[#E2E8F0] text-[#475569] font-semibold rounded-xl hover:bg-[#F8FAFC] transition-all"
-        >
-          View Leaderboard
-        </button>
-      </div>
-    </motion.div>
-  );
-}
-
-// ── Main Challenge Play Component ──────────────────────────────────────────
-
-function ChallengePlayContent() {
-  const router = useRouter();
-
-  // Challenge state
-  const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number | null>>({});
-  const [levelComplete, setLevelComplete] = useState(false);
-  const [allComplete, setAllComplete] = useState(false);
-  const [totalXp, setTotalXp] = useState(0);
-  const [currentLevelXp, setCurrentLevelXp] = useState(0);
-
-  const currentLevel = LEVELS[currentLevelIndex];
-  const questions = LEVEL_QUESTIONS[currentLevel.id];
-  const currentQuestion = questions[currentQuestionIndex];
-
-  const answerKey = `${currentLevel.id}-${currentQuestionIndex}`;
-  const selectedAnswer = selectedAnswers[answerKey] ?? null;
-
-  const allQuestionsAnswered = questions.every((_, idx) => {
-    const key = `${currentLevel.id}-${idx}`;
-    return selectedAnswers[key] !== undefined && selectedAnswers[key] !== null;
-  });
-
-  const handleSelect = (optionIndex: number) => {
-    if (levelComplete || allComplete) return;
-    setSelectedAnswers((prev) => ({ ...prev, [answerKey]: optionIndex }));
-  };
-
-  const handleNextQuestion = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex((prev) => prev + 1);
-    }
-  };
-
-  const handlePrevQuestion = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex((prev) => prev - 1);
-    }
-  };
-
-  const handleSubmitLevel = useCallback(() => {
-    // Calculate XP for this level based on correct answers
-    let correctCount = 0;
-    questions.forEach((q, idx) => {
-      const key = `${currentLevel.id}-${idx}`;
-      if (selectedAnswers[key] === q.correctIndex) {
-        correctCount++;
+  try {
+    if (partial?.xp != null || partial?.rank) {
+      const cached = getStoredUser();
+      if (cached) {
+        storeUser({
+          ...cached,
+          xp: partial.xp ?? cached.xp,
+          rank: partial.rank ?? cached.rank,
+        });
       }
-    });
-    const xpForLevel = Math.round((currentLevel.xpReward * correctCount) / questions.length);
-    setCurrentLevelXp(xpForLevel);
-    setTotalXp((prev) => prev + xpForLevel);
-    setLevelComplete(true);
-  }, [currentLevel, questions, selectedAnswers]);
+    }
+    const fresh = await getCurrentUser();
+    storeUser(fresh);
+    return fresh;
+  } catch {
+    return null;
+  }
+}
 
-  // If it's the last level, mark all complete after level complete
+function PhasePlayInner() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [session, setSession] = useState<SessionPayload | null>(null);
+  const [index, setIndex] = useState(0);
+  const [selected, setSelected] = useState('');
+  const [feedback, setFeedback] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(QUESTION_TIMEOUT);
+  const [userXp, setUserXp] = useState<number | null>(null);
+  const [startingNext, setStartingNext] = useState(false);
+  const [redoing, setRedoing] = useState(false);
+  const [actionError, setActionError] = useState('');
+  const [result, setResult] = useState<{
+    passed: boolean;
+    score: number;
+    next?: string | null;
+    phase_number?: number | null;
+    level_id?: number | null;
+    next_level_id?: number | null;
+    next_level_number?: number | null;
+    learning_nudge?: {
+      subject: string;
+      message?: string;
+      curriculum_id?: string | null;
+      topic_title?: string | null;
+    } | null;
+    session_xp?: number;
+    user_xp?: number | null;
+    rank?: string | null;
+  } | null>(null);
+
+  const selectedRef = useRef('');
+  const indexRef = useRef(0);
+  const sessionRef = useRef<SessionPayload | null>(null);
+  const questionStartRef = useRef(Date.now());
+  /** Prevents double submit (manual + timeout) for the same question */
+  const lockRef = useRef(false);
+  const advanceTimerRef = useRef<number | null>(null);
+
   useEffect(() => {
-    if (levelComplete && currentLevelIndex >= LEVELS.length - 1) {
-      const timer = setTimeout(() => {
-        setAllComplete(true);
-      }, 1500);
-      return () => clearTimeout(timer);
+    const raw = sessionStorage.getItem('atlasPhaseSession');
+    if (!raw) {
+      router.replace('/challenges');
+      return;
     }
-  }, [levelComplete, currentLevelIndex]);
-
-  const handleNextLevel = () => {
-    if (currentLevelIndex < LEVELS.length - 1) {
-      setCurrentLevelIndex((prev) => prev + 1);
-      setCurrentQuestionIndex(0);
-      setLevelComplete(false);
+    try {
+      setSession(JSON.parse(raw) as SessionPayload);
+    } catch {
+      router.replace('/challenges');
     }
-  };
+    const cached = getStoredUser();
+    if (cached) setUserXp(cached.xp ?? 0);
+  }, [router, searchParams]);
 
-  const progressPercent = currentLevelIndex * (100 / LEVELS.length) +
-    (currentQuestionIndex / questions.length) * (100 / LEVELS.length);
+  useEffect(() => {
+    selectedRef.current = selected;
+  }, [selected]);
 
-  // Show redirect guidance if no questions are available in this legacy page
-  if (questions.length === 0) {
-    return (
-      <AppLayout>
-        <div className="flex min-h-screen">
-          <Sidebar />
-          <div className="flex-1 lg:pb-0 pb-24">
-            <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-10">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-center py-20"
-              >
-                <div className="w-16 h-16 bg-[#EFF6FF] rounded-2xl flex items-center justify-center mx-auto mb-4 border border-[#C7D2FE]">
-                  <span className="text-2xl font-bold text-[#4F46E5]">i</span>
-                </div>
-                <h2 className="text-xl font-bold text-[#1E293B] mb-2">Challenge session not available here</h2>
-                <p className="text-sm text-[#64748B] mb-6 max-w-sm mx-auto">
-                  The active Atlas challenge is generated on demand and is available through the Atlas Hub.
-                  Click below to start today's fresh challenge with AI-generated questions.
-                </p>
-                <div className="flex gap-3 justify-center">
-                  <button
-                    onClick={() => router.push('/challenges/atlas')}
-                    className="px-6 py-3 bg-[#2563EB] text-white font-semibold rounded-xl hover:bg-[#1D4ED8] transition-all"
-                  >
-                    Open Atlas Hub
-                  </button>
-                  <button
-                    onClick={() => router.push('/challenges/intro')}
-                    className="px-6 py-3 border-2 border-[#E2E8F0] text-[#475569] font-semibold rounded-xl hover:bg-[#F8FAFC] transition-all"
-                  >
-                    Back to Challenge Intro
-                  </button>
-                </div>
-              </motion.div>
-            </main>
-          </div>
-          <BottomNav />
-        </div>
-      </AppLayout>
+  useEffect(() => {
+    indexRef.current = index;
+  }, [index]);
+
+  useEffect(() => {
+    sessionRef.current = session;
+  }, [session]);
+
+  const question = useMemo(() => session?.questions[index] ?? null, [session, index]);
+
+  const options = useMemo(() => {
+    if (!question?.options) return [] as { key: string; text: string }[];
+    return Object.entries(question.options).map(([key, text]) => ({
+      key,
+      text: String(text),
+    }));
+  }, [question]);
+
+  // Reset UI + start a clean 60s countdown for each question
+  useEffect(() => {
+    if (!question || done) return;
+
+    lockRef.current = false;
+    questionStartRef.current = Date.now();
+    setSelected('');
+    setFeedback('');
+    setBusy(false);
+    setTimeLeft(QUESTION_TIMEOUT);
+
+    if (advanceTimerRef.current != null) {
+      window.clearTimeout(advanceTimerRef.current);
+      advanceTimerRef.current = null;
+    }
+
+    const id = window.setInterval(() => {
+      setTimeLeft((t) => {
+        if (t <= 1) {
+          window.clearInterval(id);
+          return 0;
+        }
+        return t - 1;
+      });
+    }, 1000);
+
+    return () => window.clearInterval(id);
+  }, [question?.id, done]);
+
+  async function goNextOrFinish(
+    sessionData: SessionPayload,
+    currentIndex: number,
+    res: {
+      user_xp?: number;
+      rank?: string;
+      xp_earned: number;
+      is_correct: boolean;
+    },
+    timedOut: boolean,
+  ) {
+    if (typeof res.user_xp === 'number') {
+      setUserXp(res.user_xp);
+      void syncUserFromServer({ xp: res.user_xp, rank: res.rank });
+    }
+
+    const xpBit = res.xp_earned > 0 ? ` · +${res.xp_earned} XP` : '';
+    setFeedback(
+      timedOut
+        ? `Time's up${xpBit}`
+        : res.is_correct
+          ? `Correct${xpBit}`
+          : `Not quite — keep going${xpBit}`,
     );
+
+    if (currentIndex + 1 < sessionData.questions.length) {
+      advanceTimerRef.current = window.setTimeout(() => {
+        advanceTimerRef.current = null;
+        setIndex(currentIndex + 1);
+      }, 500);
+      return;
+    }
+
+    const complete = await completePhaseSession(sessionData.session_id);
+    setFeedback('');
+    setResult({
+      ...complete,
+      level_id: complete.level_id ?? sessionData.level_id,
+    });
+    setDone(true);
+    if (typeof complete.user_xp === 'number') {
+      setUserXp(complete.user_xp);
+      void syncUserFromServer({
+        xp: complete.user_xp,
+        rank: complete.rank,
+      });
+    }
+    sessionStorage.removeItem('atlasPhaseSession');
   }
 
-  const answeredCount = questions.filter((_, idx) => {
-    const key = `${currentLevel.id}-${idx}`;
-    return selectedAnswers[key] !== undefined && selectedAnswers[key] !== null;
-  }).length;
+  async function submitCurrent(timedOut: boolean) {
+    const sessionData = sessionRef.current;
+    const currentIndex = indexRef.current;
+    const currentQuestion = sessionData?.questions[currentIndex];
+    if (!sessionData || !currentQuestion) return;
 
-  if (allComplete) {
-    return (
-      <AppLayout>
-        <div className="flex min-h-screen">
-          <Sidebar />
-          <div className="flex-1 lg:pb-0 pb-24">
-            <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-10">
-              <AllCompleteScreen totalXp={totalXp} />
-            </main>
-          </div>
-          <BottomNav />
-        </div>
-      </AppLayout>
+    // Only one submit path may run per question
+    if (lockRef.current) return;
+    lockRef.current = true;
+
+    const answer = selectedRef.current.trim();
+    if (!timedOut && !answer) {
+      lockRef.current = false;
+      return;
+    }
+
+    setBusy(true);
+    setFeedback('');
+    const elapsed = Math.min(
+      QUESTION_TIMEOUT,
+      (Date.now() - questionStartRef.current) / 1000,
     );
+
+    try {
+      const res = await submitPhaseAnswer(
+        sessionData.session_id,
+        currentQuestion.id,
+        answer || 'timeout',
+        elapsed,
+      );
+      await goNextOrFinish(sessionData, currentIndex, res, timedOut);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : 'Submit failed';
+      // Already saved on server (e.g. timeout raced with click) → still advance
+      if (/already answered/i.test(message)) {
+        await goNextOrFinish(
+          sessionData,
+          currentIndex,
+          {
+            is_correct: false,
+            xp_earned: 0,
+          },
+          timedOut,
+        );
+      } else {
+        lockRef.current = false;
+        setFeedback(message);
+      }
+    } finally {
+      setBusy(false);
+    }
   }
 
-  return (
-    <AppLayout>
-      <div className="flex min-h-screen">
+  // Timer expiry: move on if the user hasn't submitted yet
+  useEffect(() => {
+    if (done || !question) return;
+    if (timeLeft !== 0) return;
+    if (lockRef.current) return;
+    void submitCurrent(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only react to timer hitting 0
+  }, [timeLeft, question?.id, done]);
+
+  if (!session || !question) {
+    return (
+      <div className="min-h-screen bg-[#F8FAFC]">
         <Sidebar />
-        <div className="flex-1 lg:pb-0 pb-24">
-          <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-8 pb-8">
-            {/* Global progress */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="mb-8"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  {LEVELS.map((lvl, idx) => (
-                    <div key={lvl.id} className="flex items-center gap-1">
-                      <div
-                        className={`w-2.5 h-2.5 rounded-full ${
-                          idx < currentLevelIndex
-                            ? 'bg-[#059669]'
-                            : idx === currentLevelIndex
-                              ? 'shadow-[0_0_6px_rgba(37,99,235,0.5)]'
-                              : 'bg-[#E2E8F0]'
-                        }`}
-                        style={idx === currentLevelIndex ? { backgroundColor: currentLevel.color } : {}}
-                      />
-                      <span
-                        className={`text-[10px] font-medium ${
-                          idx <= currentLevelIndex ? 'text-[#1E293B]' : 'text-[#94A3B8]'
-                        }`}
-                      >
-                        {lvl.name}
-                      </span>
-                      {idx < LEVELS.length - 1 && (
-                        <div className={`w-4 h-px ${idx < currentLevelIndex ? 'bg-[#059669]' : 'bg-[#E2E8F0]'}`} />
-                      )}
-                    </div>
-                  ))}
-                </div>
-                <span className="text-xs font-medium text-[#64748B]">
-                  {answeredCount}/{questions.length} answered
-                </span>
-              </div>
-              <div className="w-full h-2 bg-[#F1F5F9] rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-500"
-                  style={{
-                    width: `${progressPercent}%`,
-                    backgroundColor: currentLevel.color,
-                  }}
-                />
-              </div>
-            </motion.div>
-
-            <AnimatePresence mode="wait">
-              {levelComplete ? (
-                <LevelCompleteScreen
-                  key={`complete-${currentLevel.id}`}
-                  level={currentLevel}
-                  xpEarned={currentLevelXp}
-                  onNext={handleNextLevel}
-                  isLast={currentLevelIndex >= LEVELS.length - 1}
-                  onSeeResults={() => setAllComplete(true)}
-                />
-              ) : (
-                <motion.div
-                  key={`level-${currentLevel.id}-q-${currentQuestionIndex}`}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  {/* Level header */}
-                  <div className="mb-6">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span
-                        className="text-xs font-bold uppercase tracking-wider"
-                        style={{ color: currentLevel.color }}
-                      >
-                        {currentLevel.name} — {currentLevel.label}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <h2 className="text-lg font-bold text-[#1E293B]">
-                        {currentQuestion.subject}
-                      </h2>
-                      <div>
-                        <span className="text-sm font-semibold text-[#1E293B]">
-                          +{currentLevel.xpReward} XP
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Question card */}
-                  <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 sm:p-8 mb-6">
-                    {/* Subject tag */}
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold mb-4"
-                      style={{
-                        backgroundColor: currentLevel.bgColor,
-                        color: currentLevel.color,
-                      }}
-                    >
-                      <span>{currentQuestion.subject}</span>
-                    </div>
-
-                    <p className="text-base sm:text-lg text-[#1E293B] leading-relaxed mb-6">
-                      {currentQuestion.text}
-                    </p>
-
-                    <div className="space-y-3">
-                      {currentQuestion.options.map((option, optIdx) => (
-                        <button
-                          key={optIdx}
-                          onClick={() => handleSelect(optIdx)}
-                          className={`w-full text-left px-5 py-4 rounded-xl border transition-all ${
-                            selectedAnswer === optIdx
-                              ? 'text-white'
-                              : 'border-[#E2E8F0] hover:border-[#CBD5E1] hover:bg-[#F8FAFC] text-[#1E293B]'
-                          }`}
-                          style={
-                            selectedAnswer === optIdx
-                              ? { borderColor: currentLevel.color, backgroundColor: currentLevel.color }
-                              : {}
-                          }
-                        >
-                          <div className="flex items-center gap-3">
-                            <span
-                              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${
-                                selectedAnswer === optIdx
-                                  ? 'bg-white/20 text-white'
-                                  : 'bg-[#F1F5F9] text-[#64748B]'
-                              }`}
-                            >
-                              {String.fromCharCode(65 + optIdx)}
-                            </span>
-                            <span className="text-sm sm:text-base">{option}</span>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Exit button */}
-                  <div className="flex justify-center mb-6">
-                    <button
-                      onClick={() => router.push('/challenges/intro')}
-                      className="text-xs font-medium text-[#94A3B8] hover:text-[#64748B] transition-colors underline underline-offset-2"
-                    >
-                      Exit challenge (progress will not be saved)
-                    </button>
-                  </div>
-
-                  {/* Navigation */}
-                  <div className="flex items-center justify-between">
-                    <button
-                      onClick={handlePrevQuestion}
-                      disabled={currentQuestionIndex === 0}
-                      className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium text-[#64748B] hover:text-[#1E293B] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                    >
-                      Previous
-                    </button>
-
-                    <div className="flex items-center gap-2">
-                      {/* Question dots */}
-                      {questions.map((_, idx) => {
-                        const key = `${currentLevel.id}-${idx}`;
-                        const answered = selectedAnswers[key] !== undefined && selectedAnswers[key] !== null;
-                        return (
-                          <button
-                            key={idx}
-                            onClick={() => setCurrentQuestionIndex(idx)}
-                            className={`w-7 h-7 rounded-lg text-[10px] font-bold transition-all ${
-                              idx === currentQuestionIndex
-                                ? 'text-white shadow-sm'
-                                : answered
-                                  ? 'text-white'
-                                  : 'bg-[#F1F5F9] text-[#94A3B8] hover:bg-[#E2E8F0]'
-                            }`}
-                            style={
-                              idx === currentQuestionIndex
-                                ? { backgroundColor: currentLevel.color }
-                                : answered
-                                  ? { backgroundColor: currentLevel.color, opacity: 0.6 }
-                                  : {}
-                            }
-                          >
-                            {idx + 1}
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    {currentQuestionIndex < questions.length - 1 ? (
-                      <button
-                        onClick={handleNextQuestion}
-                        className="inline-flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold text-white rounded-xl hover:shadow-md transition-all"
-                        style={{ backgroundColor: currentLevel.color }}
-                      >
-                        Next
-                      </button>
-                    ) : (
-                      <button
-                        onClick={handleSubmitLevel}
-                        disabled={!allQuestionsAnswered}
-                        className="inline-flex items-center gap-1.5 px-6 py-2.5 text-sm font-semibold text-white rounded-xl hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                        style={{ backgroundColor: currentLevel.color }}
-                      >
-                        Submit Level
-                      </button>
-                    )}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </main>
-        </div>
+        <main className="w-full max-w-2xl mx-auto px-4 sm:px-6 pt-20 lg:pt-10 pb-28 text-[#64748B]">
+          Loading session…
+        </main>
         <BottomNav />
       </div>
-    </AppLayout>
+    );
+  }
+
+  if (done && result) {
+    const busyAction = startingNext || redoing;
+    const currentLevelId = result.level_id ?? session.level_id;
+
+    const onContinueNextLevel = async () => {
+      if (!result.next_level_id || busyAction) return;
+      setStartingNext(true);
+      setActionError('');
+      try {
+        const sessionPayload = await startLevel(result.next_level_id);
+        sessionStorage.setItem('atlasPhaseSession', JSON.stringify(sessionPayload));
+        window.location.href = `/challenges/play?session=${sessionPayload.session_id}`;
+      } catch (e) {
+        setActionError(
+          e instanceof Error ? e.message : 'Could not start next level',
+        );
+        setStartingNext(false);
+      }
+    };
+
+    const onRedoLevel = async () => {
+      if (!currentLevelId || busyAction) return;
+      setRedoing(true);
+      setActionError('');
+      try {
+        const sessionPayload = await startLevel(currentLevelId);
+        sessionStorage.setItem('atlasPhaseSession', JSON.stringify(sessionPayload));
+        window.location.href = `/challenges/play?session=${sessionPayload.session_id}`;
+      } catch (e) {
+        setActionError(e instanceof Error ? e.message : 'Could not redo level');
+        setRedoing(false);
+      }
+    };
+
+    const hasPrimary =
+      result.next === 'psychometric_checkpoint' ||
+      (result.passed && !!result.next_level_id) ||
+      !result.passed;
+
+    return (
+      <div className="min-h-screen bg-[#F8FAFC]">
+        <Sidebar />
+        <main className="w-full max-w-xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-10 pb-28">
+          <h1 className="text-2xl font-semibold text-[#0F172A]">
+            Level complete
+          </h1>
+          <p className="mt-3 text-[#64748B]">
+            Score {(result.score * 100).toFixed(0)}% —{' '}
+            {result.passed ? 'passed' : 'below the pass threshold (70%).'}
+          </p>
+          {typeof result.session_xp === 'number' ? (
+            <p className="mt-2 text-sm font-medium text-[#2563EB]">
+              Session XP: +{result.session_xp}
+              {typeof result.user_xp === 'number'
+                ? ` · Total ${result.user_xp.toLocaleString()} XP`
+                : ''}
+            </p>
+          ) : null}
+          {result.learning_nudge?.subject ? (
+            <p className="mt-3 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+              Tip: review{' '}
+              {result.learning_nudge.topic_title ||
+                result.learning_nudge.subject.replace(/_/g, ' ')}{' '}
+              in the Learning Center.
+              {result.learning_nudge.curriculum_id ? (
+                <>
+                  {' '}
+                  <button
+                    type="button"
+                    className="font-semibold text-[#2563EB] underline"
+                    onClick={() =>
+                      router.push(
+                        `/learning?topic=${encodeURIComponent(
+                          result.learning_nudge!.curriculum_id!,
+                        )}`,
+                      )
+                    }
+                  >
+                    Open topic
+                  </button>
+                </>
+              ) : (
+                <>
+                  {' '}
+                  <button
+                    type="button"
+                    className="font-semibold text-[#2563EB] underline"
+                    onClick={() => router.push('/learning')}
+                  >
+                    Open Learning Center
+                  </button>
+                </>
+              )}
+            </p>
+          ) : null}
+          {actionError ? (
+            <p className="mt-3 text-sm text-red-600">{actionError}</p>
+          ) : null}
+          <div className="mt-6 flex flex-col sm:flex-row gap-3">
+            {result.next === 'psychometric_checkpoint' ? (
+              <button
+                type="button"
+                className="rounded-lg bg-[#2563EB] text-white px-4 py-2.5 font-medium"
+                onClick={() =>
+                  router.push(
+                    `/challenges/checkpoint?phase=${result.phase_number}`,
+                  )
+                }
+              >
+                Continue to psychometric checkpoint
+              </button>
+            ) : null}
+            {result.passed && result.next_level_id ? (
+              <button
+                type="button"
+                disabled={busyAction}
+                className="rounded-lg bg-[#2563EB] text-white px-4 py-2.5 font-medium disabled:opacity-50"
+                onClick={() => void onContinueNextLevel()}
+              >
+                {startingNext ? 'Starting…' : 'Continue to next level'}
+              </button>
+            ) : null}
+            {!result.passed && currentLevelId ? (
+              <button
+                type="button"
+                disabled={busyAction}
+                className="rounded-lg bg-[#2563EB] text-white px-4 py-2.5 font-medium disabled:opacity-50"
+                onClick={() => void onRedoLevel()}
+              >
+                {redoing ? 'Starting…' : 'Redo level'}
+              </button>
+            ) : null}
+            <button
+              type="button"
+              className={`rounded-lg px-4 py-2.5 font-medium ${
+                hasPrimary
+                  ? 'border border-slate-200 bg-white text-[#0F172A] hover:bg-slate-50'
+                  : 'bg-[#2563EB] text-white'
+              }`}
+              onClick={() => router.push('/challenges')}
+            >
+              Back to Phase map
+            </button>
+          </div>
+        </main>
+        <BottomNav />
+      </div>
+    );
+  }
+
+  const timerPercent = (timeLeft / QUESTION_TIMEOUT) * 100;
+  const timerColour =
+    timeLeft <= 10 ? 'bg-red-500' : timeLeft <= 20 ? 'bg-[#D97706]' : 'bg-[#4F46E5]';
+
+  return (
+    <div className="min-h-screen bg-[#F8FAFC]">
+      <Sidebar />
+      <main className="w-full max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-10 pb-28">
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-sm text-[#64748B]">
+            Phase {session.phase_number} · Level {session.level_number} ·{' '}
+            {index + 1}/{session.questions.length} · {QUESTION_TIMEOUT}s each
+          </p>
+          {userXp != null ? (
+            <p className="text-sm font-semibold text-[#2563EB]">
+              {userXp.toLocaleString()} XP
+            </p>
+          ) : null}
+        </div>
+
+        <div className="mt-3 flex items-center justify-between gap-2">
+          <p className="text-xs uppercase tracking-wide text-[#94A3B8]">
+            {question.subject.replace(/_/g, ' ')}
+          </p>
+          <span
+            className={`text-xs font-mono font-semibold ${
+              timeLeft <= 10 ? 'text-red-500' : 'text-[#64748B]'
+            }`}
+          >
+            {timeLeft}s
+          </span>
+        </div>
+        <div
+          className={`mt-1.5 w-full bg-gray-100 rounded-full h-1.5 ${
+            timeLeft <= 10 && !busy ? 'animate-pulse' : ''
+          }`}
+        >
+          <div
+            className={`h-1.5 rounded-full transition-[width] duration-1000 linear ${timerColour}`}
+            style={{ width: `${Math.max(0, timerPercent)}%` }}
+          />
+        </div>
+
+        <h1 className="mt-4 text-xl font-semibold text-[#0F172A]">
+          {question.question_text}
+        </h1>
+        <div className="mt-6 space-y-3">
+          {options.map((opt) => (
+            <button
+              key={opt.key}
+              type="button"
+              disabled={busy}
+              onClick={() => setSelected(opt.key)}
+              className={`w-full text-left rounded-xl border px-4 py-3 transition ${
+                selected === opt.key
+                  ? 'border-[#2563EB] bg-[#EFF6FF]'
+                  : 'border-slate-200 bg-white hover:border-slate-300'
+              }`}
+            >
+              <span className="font-medium mr-2">{opt.key}.</span>
+              {opt.text}
+            </button>
+          ))}
+        </div>
+        {feedback ? (
+          <p className="mt-4 text-sm text-[#475569]">{feedback}</p>
+        ) : null}
+        <button
+          type="button"
+          disabled={!selected || busy}
+          onClick={() => void submitCurrent(false)}
+          className="mt-6 rounded-lg bg-[#2563EB] text-white px-5 py-2.5 disabled:opacity-50"
+        >
+          {busy ? 'Saving…' : 'Submit answer'}
+        </button>
+      </main>
+      <BottomNav />
+    </div>
   );
 }
 
-// ── Page Export ────────────────────────────────────────────────────────────
-
-export default function ChallengePlayPage() {
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!getAccessToken()) {
-      router.push('/login');
-    }
-  }, [router]);
-
-  return <ChallengePlayContent />;
+export default function PhasePlayPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center text-[#64748B]">
+          Loading…
+        </div>
+      }
+    >
+      <PhasePlayInner />
+    </Suspense>
+  );
 }

@@ -1,7 +1,7 @@
 /**
  * generatedPhysicsLessons.ts
  * ──────────────────────────
- * Auto-generated Physics SHS 1 lessons from
+ * Auto-generated Physics Phase 1 lessons from
  * Ministry of Education curriculum materials.
  *
  * DO NOT EDIT DIRECTLY — re-run scripts/generate_physics_lessons.py instead.

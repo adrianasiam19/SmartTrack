@@ -25,7 +25,7 @@ export default function ScreenOnboarding1({ onNext }: Props) {
             Welcome to Atlas
           </h1>
           <p className="text-base text-[#475569] mb-8 leading-relaxed max-w-sm mx-auto">
-            Your intelligent learning companion for SHS students in Ghana. Discover your strengths, improve your skills, and find the perfect university program.
+            Your intelligent learning companion for students in Ghana. Discover your strengths, improve your skills, and find the perfect university program.
           </p>
 
           <div className="flex items-center justify-center gap-6 mb-8">

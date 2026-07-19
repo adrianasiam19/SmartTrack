@@ -1215,8 +1215,8 @@ function ChallengeArena() {
           </h3>
           <p className="text-gray-400 text-sm max-w-xs mx-auto">
             {isPlacement
-              ? 'Atlas is picking something interesting for you!'
-              : 'AI is crafting adaptive questions tailored to your skill level...'}
+              ? 'Atlas AI is picking something interesting for you!'
+              : 'Atlas AI is crafting questions for your level…'}
           </p>
         </div>
       </div>
@@ -1394,7 +1394,7 @@ function ChallengeArena() {
             </button>
             <button onClick={() => router.push('/challenges')}
               className="w-full py-3 border border-gray-200 text-gray-500 rounded-xl hover:bg-gray-50 transition-all">
-              Back to Challenge Hub
+              Back to Challenges
             </button>
             <button onClick={() => router.push('/challenges/leaderboard')}
               className="w-full py-3 border border-gray-200 text-gray-400 rounded-xl hover:bg-gray-50 transition-all text-sm">
@@ -1421,7 +1421,7 @@ function ChallengeArena() {
         </button>
         <button onClick={() => router.push('/challenges')}
           className="px-6 py-3 border border-gray-200 text-gray-500 rounded-xl hover:bg-gray-50 transition-all">
-          Back to Hub
+          Back to Challenges
         </button>
       </div>
     </motion.div>

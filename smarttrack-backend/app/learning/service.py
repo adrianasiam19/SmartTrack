@@ -12,8 +12,9 @@ from app.config import settings
 
 logger = logging.getLogger(__name__)
 
+DEEPSEEK_CHAT_URL = "https://api.deepseek.com/v1/chat/completions"
 NVIDIA_CHAT_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
-AI_CONTENT_VERSION = "v1"
+AI_CONTENT_VERSION = "v2-deepseek"
 MAX_SOURCE_CHARS = 28_000
 
 REQUIRED_LESSON_KEYS = {
@@ -64,39 +65,77 @@ def build_grounding_text(source_content: dict[str, Any]) -> str:
     return "\n".join(deduplicated)[:MAX_SOURCE_CHARS]
 
 
+def _ai_providers() -> list[dict[str, str]]:
+    """DeepSeek first (primary lesson tutor), NVIDIA as optional fallback."""
+    providers: list[dict[str, str]] = []
+    if settings.DEEPSEEK_API_KEY:
+        providers.append(
+            {
+                "name": "DeepSeek",
+                "url": DEEPSEEK_CHAT_URL,
+                "model": settings.DEEPSEEK_MODEL,
+                "api_key": settings.DEEPSEEK_API_KEY,
+            }
+        )
+    if settings.NVIDIA_API_KEY:
+        providers.append(
+            {
+                "name": "NVIDIA",
+                "url": NVIDIA_CHAT_URL,
+                "model": settings.NVIDIA_MODEL,
+                "api_key": settings.NVIDIA_API_KEY,
+            }
+        )
+    return providers
+
+
 async def _call_model(
     messages: list[dict[str, str]], *, max_tokens: int, temperature: float
 ) -> str:
-    if not settings.NVIDIA_API_KEY:
-        raise TutorUnavailable("NVIDIA_API_KEY is not configured")
+    providers = _ai_providers()
+    if not providers:
+        raise TutorUnavailable(
+            "Atlas AI is not available right now."
+        )
 
-    payload = {
-        "model": settings.NVIDIA_MODEL,
-        "messages": messages,
-        "temperature": temperature,
-        "top_p": 0.9,
-        "max_tokens": max_tokens,
-    }
-    headers = {
-        "Authorization": f"Bearer {settings.NVIDIA_API_KEY}",
-        "Content-Type": "application/json",
-    }
-
-    try:
-        async with httpx.AsyncClient(timeout=90.0) as client:
-            response = await client.post(
-                NVIDIA_CHAT_URL, headers=headers, json=payload
+    last_error: Exception | None = None
+    for provider in providers:
+        payload = {
+            "model": provider["model"],
+            "messages": messages,
+            "temperature": temperature,
+            "top_p": 0.9,
+            "max_tokens": max_tokens,
+        }
+        headers = {
+            "Authorization": f"Bearer {provider['api_key']}",
+            "Content-Type": "application/json",
+        }
+        try:
+            async with httpx.AsyncClient(timeout=90.0) as client:
+                response = await client.post(
+                    provider["url"], headers=headers, json=payload
+                )
+                response.raise_for_status()
+            content = response.json()["choices"][0]["message"]["content"]
+            if not isinstance(content, str) or not content.strip():
+                raise TutorUnavailable("The tutor returned an empty response")
+            logger.info("Curriculum tutor response via %s", provider["name"])
+            return content.strip()
+        except TutorUnavailable:
+            raise
+        except (httpx.HTTPError, KeyError, IndexError, TypeError) as exc:
+            last_error = exc
+            logger.warning(
+                "Curriculum tutor via %s failed: %s", provider["name"], exc
             )
-            response.raise_for_status()
-        content = response.json()["choices"][0]["message"]["content"]
-        if not isinstance(content, str) or not content.strip():
-            raise TutorUnavailable("The tutor returned an empty response")
-        return content.strip()
-    except TutorUnavailable:
-        raise
-    except (httpx.HTTPError, KeyError, IndexError, TypeError) as exc:
-        logger.exception("Curriculum tutor model request failed")
-        raise TutorUnavailable("The AI tutor is temporarily unavailable") from exc
+            continue
+
+    logger.exception(
+        "Curriculum tutor model request failed after all providers",
+        exc_info=last_error,
+    )
+    raise TutorUnavailable("Atlas AI could not prepare this lesson right now") from last_error
 
 
 def _parse_lesson_json(raw: str) -> dict[str, Any]:
@@ -112,19 +151,19 @@ def _parse_lesson_json(raw: str) -> dict[str, Any]:
     try:
         lesson = json.loads(candidate)
     except json.JSONDecodeError as exc:
-        raise TutorUnavailable("The AI tutor returned an invalid lesson") from exc
+        raise TutorUnavailable("Could not prepare this lesson") from exc
 
     if not isinstance(lesson, dict) or not REQUIRED_LESSON_KEYS.issubset(lesson):
-        raise TutorUnavailable("The AI tutor returned an incomplete lesson")
+        raise TutorUnavailable("Could not prepare this lesson")
     if not isinstance(lesson["step_by_step_examples"], list):
-        raise TutorUnavailable("The AI tutor returned invalid examples")
+        raise TutorUnavailable("Could not prepare this lesson")
     for key in (
         "real_life_applications",
         "important_points",
         "common_mistakes",
     ):
         if not isinstance(lesson[key], list):
-            raise TutorUnavailable(f"The AI tutor returned an invalid {key} section")
+            raise TutorUnavailable("Could not prepare this lesson")
     return lesson
 
 
@@ -137,7 +176,7 @@ async def generate_ai_lesson(
 ) -> dict[str, Any]:
     grounding = build_grounding_text(source_content)
     system_prompt = f"""
-You are Atlas, an experienced Ghanaian SHS teacher teaching a {shs_level} student.
+You are Atlas AI, an experienced Ghanaian SHS teacher teaching a {shs_level} student.
 The official database lesson below is your only factual and curricular source.
 Do not add topics, formulas, claims, or skills that are absent from that source.
 Do not quote or reproduce textbook prose. Teach naturally in clear, age-appropriate
@@ -175,6 +214,31 @@ real-life applications only when none can be responsibly inferred from the sourc
     return _parse_lesson_json(raw)
 
 
+CHALLENGE_SUBJECT_TO_CURRICULUM = {
+    "english": "English Language",
+    "core_maths": "Core Mathematics",
+    "integrated_science": "Integrated Science",
+    "social_studies": "Social Studies",
+}
+
+
+async def suggest_topic_for_subject(db: Any, challenge_subject: str) -> Any | None:
+    """Map a challenge subject key to a curriculum topic for deep-links."""
+    from sqlalchemy import select
+
+    from app.assessment.models import CurriculumLesson
+
+    curriculum_subject = CHALLENGE_SUBJECT_TO_CURRICULUM.get(challenge_subject)
+    if not curriculum_subject:
+        return None
+    result = await db.execute(select(CurriculumLesson))
+    lessons = [L for L in result.scalars().all() if L.subject == curriculum_subject]
+    if not lessons:
+        return None
+    lessons.sort(key=lambda L: (L.difficulty, L.title))
+    return lessons[0]
+
+
 async def answer_lesson_question(
     *,
     question: str,
@@ -186,7 +250,7 @@ async def answer_lesson_question(
 ) -> str:
     grounding = build_grounding_text(source_content)
     system_prompt = f"""
-You are Atlas, a friendly Ghanaian curriculum tutor for a {shs_level} student.
+You are Atlas AI, a friendly Ghanaian curriculum tutor for a {shs_level} student.
 Answer follow-up questions using only the official database source for "{title}"
 in {subject}, included below. Stay at {shs_level} difficulty. Never introduce a
 topic outside this lesson or claim it belongs to the student's curriculum.

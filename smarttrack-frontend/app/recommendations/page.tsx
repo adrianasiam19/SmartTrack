@@ -13,6 +13,7 @@ import {
   fetchWithAuth,
   type UserProfile,
 } from '../lib/authApi';
+import { getRecommendationHistory } from '../lib/phasesApi';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 const ACADEMIC_FLAG_KEY = 'atlas_academic_data';
@@ -44,6 +45,15 @@ type RecommendationPayload = {
   grades_used?: number;
 };
 
+type PhaseRecommendation = {
+  phase: number;
+  phase_label: string;
+  generated_at: string;
+  programme_suggestions: { programme: string; score: number }[];
+  rationale_summary: string;
+  is_final: boolean;
+};
+
 export default function RecommendationsPage() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -56,6 +66,7 @@ export default function RecommendationsPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generateError, setGenerateError] = useState('');
   const [result, setResult] = useState<RecommendationPayload | null>(null);
+  const [phaseHistory, setPhaseHistory] = useState<PhaseRecommendation[]>([]);
 
   useEffect(() => {
     const load = async () => {
@@ -75,6 +86,13 @@ export default function RecommendationsPage() {
           setUploadedFileName(profileUpload.filename);
         } else if (localStorage.getItem(ACADEMIC_FLAG_KEY) === 'true') {
           setUploadedFileName(localStorage.getItem(ACADEMIC_FILE_KEY));
+        }
+
+        try {
+          const history = await getRecommendationHistory();
+          setPhaseHistory(Array.isArray(history) ? history : history?.items || []);
+        } catch {
+          // Phase history optional until checkpoints completed
         }
       } catch {
         router.push('/login');
@@ -190,7 +208,7 @@ export default function RecommendationsPage() {
       <div className="flex min-h-screen">
         <Sidebar />
         <div className="flex-1 lg:pb-0 pb-20">
-          <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-8 pb-8">
+          <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-8 pb-28">
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -200,8 +218,7 @@ export default function RecommendationsPage() {
                 <div>
                   <h1 className="text-2xl font-bold text-[#1E293B]">Programme Recommendations</h1>
                   <p className="text-sm text-[#64748B] mt-1">
-                    {user?.programme || 'SHS Student'}
-                    {user?.shs_level ? ` · ${user.shs_level}` : ''}
+                    {user?.programme || 'Student'}
                   </p>
                 </div>
                 <div className="flex items-center gap-2 bg-[#EEF2FF] border border-[#C7D2FE] rounded-xl px-4 py-2">
@@ -211,6 +228,38 @@ export default function RecommendationsPage() {
                 </div>
               </div>
             </motion.div>
+
+            {phaseHistory.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-8 space-y-4"
+              >
+                <h2 className="text-lg font-bold text-[#1E293B]">Phase guidance history</h2>
+                {phaseHistory.map((item) => (
+                  <div
+                    key={`${item.phase}-${item.generated_at}`}
+                    className="bg-white border border-[#E2E8F0] rounded-2xl p-5"
+                  >
+                    <div className="flex items-center justify-between gap-3 mb-2">
+                      <p className="font-semibold text-[#1E293B]">{item.phase_label}</p>
+                      <span className="text-xs font-medium text-[#64748B]">
+                        {item.is_final ? 'Final' : 'Interim'}
+                      </span>
+                    </div>
+                    <p className="text-sm text-[#475569] mb-3">{item.rationale_summary}</p>
+                    <ul className="space-y-1">
+                      {(item.programme_suggestions || []).slice(0, 5).map((s) => (
+                        <li key={s.programme} className="text-sm text-[#1E293B]">
+                          {s.programme}
+                          <span className="text-[#64748B]"> · score {Math.round(s.score * 100) / 100}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </motion.div>
+            )}
 
             <motion.div
               initial={{ opacity: 0, y: 12 }}

@@ -1,7 +1,7 @@
 /**
  * generatedInterScienceSHS2Lessons.ts
  * ──────────────────────────────────────
- * Auto-generated Integrated Science SHS 2 lessons from
+ * Auto-generated Integrated Science Phase 2 lessons from
  * General Science Year 2 curriculum materials.
  *
  * Source: General Science Year 2.pdf (Ministry of Education, 2025)
@@ -44,7 +44,7 @@ export const INTER_SCIENCE_SHS2_LESSONS: Lesson[] = [
       {
         id: "int-sci-2-s1t1-intro",
         type: "info",
-        content: "**Nature of Different Liquids in Life — Introduction to Acids**\\n\\nWelcome to Section 1 of your Integrated Science journey for SHS 2! In this section, we will explore the nature of different liquids in life, focusing on acids, bases, and pH measurement. Understanding these concepts is essential for many aspects of science, from chemistry to biology and even everyday life.\\n\\nHave you ever tasted a lemon and wondered why it is so sour? Or used vinegar in cooking and noticed its sharp taste? These are examples of acids in action. Let us begin our exploration of acids and their properties.",
+        content: "**Nature of Different Liquids in Life — Introduction to Acids**\\n\\nWelcome to Section 1 of your Integrated Science journey for Phase 2! In this section, we will explore the nature of different liquids in life, focusing on acids, bases, and pH measurement. Understanding these concepts is essential for many aspects of science, from chemistry to biology and even everyday life.\\n\\nHave you ever tasted a lemon and wondered why it is so sour? Or used vinegar in cooking and noticed its sharp taste? These are examples of acids in action. Let us begin our exploration of acids and their properties.",
       },
       {
         id: "int-sci-2-s1t1-content-1",
@@ -2282,7 +2282,7 @@ export const INTER_SCIENCE_SHS2_LESSONS: Lesson[] = [
       {
         id: "int-sci-2-s8t3-summary",
         type: "info",
-        content: "✅ **Key Takeaways: Production of Asaana and Sobolo**\\n\\nIn this lesson, you learned about:\\n• The step-by-step production process for Asaana (caramelised corn drink)\\n• The step-by-step production process for Sobolo (hibiscus tea)\\n• Quality control and preservation methods\\n• How traditional knowledge combines with scientific principles\\n\\nCongratulations on completing all 8 sections of the SHS 2 Integrated Science curriculum! The knowledge you have gained connects science to everyday life, from the foods and drinks we consume to the technology we use and our understanding of health and disease.",
+        content: "✅ **Key Takeaways: Production of Asaana and Sobolo**\\n\\nIn this lesson, you learned about:\\n• The step-by-step production process for Asaana (caramelised corn drink)\\n• The step-by-step production process for Sobolo (hibiscus tea)\\n• Quality control and preservation methods\\n• How traditional knowledge combines with scientific principles\\n\\nCongratulations on completing all 8 sections of the Phase 2 Integrated Science curriculum! The knowledge you have gained connects science to everyday life, from the foods and drinks we consume to the technology we use and our understanding of health and disease.",
       },
       {
         id: "int-sci-2-s8t3-checkpoint",

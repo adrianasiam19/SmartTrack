@@ -11,16 +11,11 @@ import {
   UserProfile,
 } from '../lib/authApi';
 
-function buildNavItems(shsLevel: string | null | undefined) {
-  // SHS 3 prepares for WASSCE via Revision Hub; SHS 1/2 use Learning Center.
-  const studyItem =
-    shsLevel === 'SHS 3'
-      ? { href: '/revision', label: 'Revision Hub' }
-      : { href: '/learning', label: 'Learning Center' };
-
+function buildNavItems() {
   return [
     { href: '/dashboard', label: 'Dashboard' },
-    studyItem,
+    { href: '/challenges', label: 'Challenges' },
+    { href: '/learning', label: 'Learning' },
     { href: '/recommendations', label: 'Recommendations' },
     { href: '/profile', label: 'Profile' },
   ];
@@ -34,10 +29,7 @@ export default function Sidebar() {
   const [loading, setLoading] = useState(true);
   const sidebarRef = useRef<HTMLElement>(null);
 
-  const navItems = useMemo(
-    () => buildNavItems(user?.shs_level),
-    [user?.shs_level],
-  );
+  const navItems = useMemo(() => buildNavItems(), []);
 
   const hiddenPaths = ['/', '/login', '/register', '/onboarding'];
   if (hiddenPaths.some((p) => pathname === p || pathname.startsWith('/onboarding'))) {
@@ -189,11 +181,14 @@ export default function Sidebar() {
                     {item.href === '/dashboard' && (
                       <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
                     )}
-                    {(item.href === '/learning' || item.href === '/revision') && (
+                    {item.href === '/challenges' && (
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                    )}
+                    {(item.href === '/learning') && (
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
                     )}
                     {item.href === '/recommendations' && (
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     )}
                     {item.href === '/profile' && (
                       <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
@@ -220,7 +215,7 @@ export default function Sidebar() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-base font-bold text-[#1E293B] truncate">{user.full_name}</p>
-                    <p className="text-sm text-[#475569] truncate">{user.programme || 'SHS Student'}</p>
+                    <p className="text-sm text-[#475569] truncate">{user.programme || 'Student'}</p>
                   </div>
                 </div>
                 <button

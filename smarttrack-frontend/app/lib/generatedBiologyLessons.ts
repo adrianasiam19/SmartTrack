@@ -1,7 +1,7 @@
 /**
  * generatedBiologyLessons.ts
  * ──────────────────────────
- * Auto-generated Biology SHS 1 lessons from
+ * Auto-generated Biology Phase 1 lessons from
  * Ministry of Education curriculum materials.
  *
  * DO NOT EDIT DIRECTLY — re-run scripts/generate_biology_lessons.py instead.

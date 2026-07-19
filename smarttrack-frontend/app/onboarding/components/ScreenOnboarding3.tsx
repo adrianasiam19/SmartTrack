@@ -24,14 +24,15 @@ export default function ScreenOnboarding3({ onNext }: Props) {
             Earn Your Way
           </h1>
           <p className="text-base text-[#475569] mb-6 leading-relaxed">
-            Complete challenges to earn XP, build your streak, and climb the leaderboard. The more you learn, the more you grow!
+            Complete Phase Challenges to earn XP, unlock levels, and climb your
+            rank. The more you practice, the clearer your programme path becomes.
           </p>
 
           <div className="grid grid-cols-3 gap-4 mb-8">
             {[
-              { value: 'XP', label: 'Experience Points', color: 'text-[#2563EB]', bg: 'bg-[#EFF6FF]' },
-              { value: 'Days', label: 'Daily Streak', color: 'text-[#D97706]', bg: 'bg-[#FFFBEB]' },
-              { value: 'Rank', label: 'Leaderboard', color: 'text-[#7C3AED]', bg: 'bg-[#F5F3FF]' },
+              { value: 'XP', label: 'Experience', color: 'text-[#2563EB]', bg: 'bg-[#EFF6FF]' },
+              { value: '1–10', label: 'Levels / Phase', color: 'text-[#D97706]', bg: 'bg-[#FFFBEB]' },
+              { value: 'Rank', label: 'Your progress', color: 'text-[#7C3AED]', bg: 'bg-[#F5F3FF]' },
             ].map((item, i) => (
               <motion.div
                 key={i}

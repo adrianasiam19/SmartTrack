@@ -91,7 +91,7 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.35 }}
                 className="text-base sm:text-lg text-[#BFDBFE] leading-relaxed max-w-lg font-light"
               >
-                An intelligent platform for Ghanaian SHS students to discover their strengths,
+                An intelligent platform for Ghanaian students to discover their strengths,
                 improve their skills, and explore academic paths that match their potential.
               </motion.p>
             </div>
@@ -164,7 +164,7 @@ export default function Home() {
 
             {/* Trust indicator */}
             <p className="text-center text-sm text-[#94A3B8] mt-6">
-              Free for SHS students in Ghana
+              Free for students in Ghana
             </p>
           </motion.div>
         </div>
