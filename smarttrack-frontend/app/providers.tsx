@@ -1,14 +1,13 @@
 'use client';
 
 import { ReactNode } from 'react';
-import GlobalWatermark from './components/GlobalWatermark';
+import AppAuroraBackground from './components/AppAuroraBackground';
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <>
-      {/* Page content first; watermark is fixed and paints above backgrounds. */}
-      <div className="relative min-h-screen">{children}</div>
-      <GlobalWatermark />
+      <AppAuroraBackground />
+      <div className="relative z-10 min-h-screen bg-transparent">{children}</div>
     </>
   );
 }

@@ -48,7 +48,7 @@ function GoogleCallbackInner() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-transparent flex items-center justify-center p-4">
         <div className="w-full max-w-md bg-white border border-[#FECACA] rounded-2xl p-8 text-center shadow-sm">
           <h1 className="text-xl font-bold text-[#1E293B] mb-2">Google Sign-In failed</h1>
           <p className="text-sm text-[#DC2626] mb-6">{error}</p>
@@ -69,7 +69,7 @@ function GoogleCallbackInner() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-transparent flex items-center justify-center p-4">
       <div className="text-center">
         <div className="w-12 h-12 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
         <p className="text-sm text-[#64748B]">Completing Google Sign-In…</p>
@@ -82,7 +82,7 @@ export default function GoogleCallbackPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
+        <div className="min-h-screen bg-transparent flex items-center justify-center">
           <div className="w-12 h-12 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin" />
         </div>
       }

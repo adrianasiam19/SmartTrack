@@ -11,7 +11,7 @@ export default function RevisionRedirect() {
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center text-sm text-[#64748B]">
+    <div className="min-h-screen bg-transparent flex items-center justify-center text-sm text-[#64748B]">
       Opening Learning Center…
     </div>
   );

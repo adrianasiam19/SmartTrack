@@ -60,6 +60,11 @@ class Settings(BaseSettings):
     CHALLENGE_EXCLUDE_HISTORY: int = 80
     PSYCHO_CHECKPOINT_COUNT: int = 8  # one question from each of 8 varied categories
 
+    # ── ML alternate recommendations (never primary / startup) ─────────────
+    # When true, generate endpoint may attach ml_alternate after KNUST cut-offs.
+    ML_ALTERNATE_ENABLED: bool = True
+    ML_ALTERNATE_TOP_N: int = 5
+
     @property
     def cors_origins_list(self) -> List[str]:
         return [o.strip() for o in self.CORS_ORIGINS.split(",")]
