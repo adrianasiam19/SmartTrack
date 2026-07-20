@@ -16,12 +16,14 @@ from app.assessment.models import ChallengeResponse, ChallengeSession
 from app.config import settings
 from app.phases.adaptive import (
     AdaptiveConfig,
-    adaptive_subject_mix,
+    bump_adjustment_if_strong,
     effective_difficulty,
     expand_subject_queue,
+    level_question_count,
     next_adjustment,
     normalize_question_text,
     should_nudge_learning,
+    subject_mix_for_level,
     update_rolling_accuracy,
     update_weak_streak,
 )
@@ -214,19 +216,14 @@ async def start_level(
     phase = level.phase
     phase_floor = 1  # Level 1 baseline within phase
     cfg = _adaptive_cfg()
-    base_mix = settings.subject_mix_map or {
-        "english": 3,
-        "core_maths": 3,
-        "integrated_science": 2,
-        "social_studies": 2,
-    }
 
-    # Boost subjects the learner has been getting wrong (lower rolling accuracy)
+    # Per-level question budget: L1–5 → 5, L6–7 → 6, L8–10 → 10
+    question_budget = level_question_count(level.number)
     accuracies: dict[str, float] = {}
-    for subject in base_mix:
+    for subject in SUBJECTS:
         perf = await _get_or_create_subject_perf(db, user_id, subject)
         accuracies[subject] = float(perf.rolling_accuracy)
-    mix = adaptive_subject_mix(base_mix, accuracies)
+    mix = subject_mix_for_level(level.number, accuracies, list(SUBJECTS))
 
     session = ChallengeSession(
         user_id=user_id,
@@ -242,6 +239,20 @@ async def start_level(
     q_index = 0
     used_bank_ids: set[str] = set()
     used_texts: set[str] = set()
+
+    # Avoid repeating questions the learner already saw in recent sessions.
+    history_limit = max(20, int(getattr(settings, "CHALLENGE_EXCLUDE_HISTORY", 80)))
+    prior = (
+        await db.execute(
+            select(ChallengeResponse.question_text)
+            .where(ChallengeResponse.user_id == user_id)
+            .order_by(ChallengeResponse.id.desc())
+            .limit(history_limit)
+        )
+    ).scalars().all()
+    for text in prior:
+        used_texts.add(normalize_question_text(str(text or "")))
+
     rng = random.Random()
     subject_queue = expand_subject_queue(mix, rng)
 
@@ -249,6 +260,8 @@ async def start_level(
     eff_by_subject: dict[str, int] = {}
     perf_summary_parts: list[str] = []
     for subject in mix:
+        if mix[subject] <= 0:
+            continue
         perf = await _get_or_create_subject_perf(db, user_id, subject)
         eff = effective_difficulty(
             level.difficulty_baseline,
@@ -258,9 +271,13 @@ async def start_level(
         )
         eff_by_subject[subject] = eff
         perf_summary_parts.append(
-            f"{subject}: accuracy={perf.rolling_accuracy:.2f}, count={mix[subject]}, eff={eff}"
+            f"{subject}: accuracy={perf.rolling_accuracy:.2f}, count={mix[subject]}, "
+            f"eff_difficulty={eff}"
         )
-    performance_summary = "; ".join(perf_summary_parts)
+    performance_summary = (
+        f"Level {level.number} asks {question_budget} questions total. "
+        + "; ".join(perf_summary_parts)
+    )
 
     for subject in subject_queue:
         eff = eff_by_subject[subject]
@@ -270,6 +287,7 @@ async def start_level(
             subject=subject,
             effective_difficulty=eff,
             performance_summary=performance_summary,
+            question_budget=question_budget,
             exclude_bank_ids=used_bank_ids,
             exclude_texts=used_texts,
             rng=rng,
@@ -315,6 +333,7 @@ async def start_level(
         "phase_number": phase.number,
         "level_number": level.number,
         "is_replay": replay,
+        "question_count": len(questions_out),
         "subject_mix": mix,
         "questions": questions_out,
     }
@@ -434,8 +453,9 @@ async def complete_session(db: AsyncSession, user_id: uuid.UUID, session_id: int
 
     total = session.correct_count + session.wrong_count
     score = (session.correct_count / total) if total else 0.0
-    threshold = settings.LEVEL_PASS_THRESHOLD
-    passed = score >= threshold
+    # No pass/fail gate — learners always progress; difficulty adapts per subject.
+    passed = True
+    threshold = 0.0
 
     session.status = "completed"
     session.completed_at = datetime.now(timezone.utc)
@@ -462,7 +482,9 @@ async def complete_session(db: AsyncSession, user_id: uuid.UUID, session_id: int
         ).scalar_one_or_none()
 
         cfg = _adaptive_cfg()
-        # Update weak streaks per subject based on session subject accuracy
+        phase_floor = 1
+        baseline = level.difficulty_baseline if level else 1
+        # Update weak streaks + raise difficulty only for subjects done well this level.
         responses = (
             await db.execute(
                 select(ChallengeResponse).where(ChallengeResponse.session_id == session_id)
@@ -477,8 +499,17 @@ async def complete_session(db: AsyncSession, user_id: uuid.UUID, session_id: int
             acc = sum(1 for x in results if x) / len(results)
             perf = await _get_or_create_subject_perf(db, user_id, subject)
             perf.weak_level_streak = update_weak_streak(perf.weak_level_streak, acc, cfg)
+            # Strong in this subject → harder next level; weak → difficulty stays.
+            perf.current_difficulty_adjustment = bump_adjustment_if_strong(
+                perf.current_difficulty_adjustment,
+                acc,
+                phase_floor=phase_floor,
+                baseline=baseline,
+                cfg=cfg,
+            )
+            perf.updated_at = datetime.now(timezone.utc)
 
-        if ulp and level and passed:
+        if ulp and level:
             was_incomplete = ulp.status != "completed"
             ulp.status = "completed"
             ulp.score = score
@@ -522,10 +553,6 @@ async def complete_session(db: AsyncSession, user_id: uuid.UUID, session_id: int
                 if upp and upp.status != "completed":
                     # Mark pending psycho — stay in_progress until checkpoint+rec
                     upp.status = "in_progress"
-
-        elif ulp and level:
-            ulp.score = score
-            phase_number = level.phase.number
 
     await db.commit()
 

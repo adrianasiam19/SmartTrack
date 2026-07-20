@@ -1,6 +1,6 @@
 /**
- * Tracks whether a user has visited the dashboard before (persists across logout).
- * Key intentionally avoids atlas_/smarttrack_ prefixes so clearClientSession keeps it.
+ * Tracks returning users after they log out once (persists across sessions).
+ * Key avoids atlas_/smarttrack_ prefixes so clearClientSession keeps it.
  */
 const RETURNING_DASHBOARD_KEY = 'returningDashboardUsers';
 
@@ -16,13 +16,16 @@ function readReturningMap(): Record<string, true> {
   }
 }
 
-/** True if this account has opened the dashboard on a prior session. */
+/** True after this account has logged out at least once (then signed in again). */
 export function hasPriorDashboardVisit(userId: string): boolean {
   if (!userId) return false;
   return Boolean(readReturningMap()[userId]);
 }
 
-/** Remember that this account has seen the dashboard (call after first welcome). */
+/**
+ * Call on logout so the next sign-in shows "Welcome back".
+ * Do NOT call on first dashboard paint — that would flip the greeting mid-session.
+ */
 export function markDashboardVisited(userId: string): void {
   if (typeof window === 'undefined' || !userId) return;
   const map = readReturningMap();

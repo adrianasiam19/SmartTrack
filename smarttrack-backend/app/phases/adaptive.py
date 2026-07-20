@@ -53,19 +53,74 @@ def next_adjustment(
     cfg: AdaptiveConfig,
 ) -> int:
     """
-    Adjust difficulty offset from rolling accuracy.
-    Floor: effective difficulty must stay >= phase Level-1 baseline.
+    Raise difficulty only when the learner is strong in this subject.
+    Weak subjects keep the same difficulty (never eased downward) so ML still
+    sees a stable signal and the next level does not get easier by default.
     """
     adj = current_adj
-    if rolling_accuracy < cfg.low_accuracy:
-        adj -= cfg.adj_step
-    elif rolling_accuracy > cfg.high_accuracy:
+    if rolling_accuracy > cfg.high_accuracy:
         adj += cfg.adj_step
 
-    # Ensure baseline+adj cannot go below phase_floor
     min_adj = phase_floor - baseline
     max_adj = cfg.difficulty_max - baseline
     return max(min_adj, min(max_adj, adj))
+
+
+def bump_adjustment_if_strong(
+    current_adj: int,
+    session_accuracy: float,
+    phase_floor: int,
+    baseline: int,
+    cfg: AdaptiveConfig,
+    *,
+    strong_threshold: float = 0.5,
+) -> int:
+    """After a level: subjects answered mostly correctly step up once."""
+    adj = current_adj
+    if session_accuracy >= strong_threshold:
+        adj += cfg.adj_step
+    min_adj = phase_floor - baseline
+    max_adj = cfg.difficulty_max - baseline
+    return max(min_adj, min(max_adj, adj))
+
+
+def level_question_count(level_number: int) -> int:
+    """
+    How many challenge questions appear at this phase level.
+    L1–5 → 5, L6–7 → 6, L8–10 → 10.
+    """
+    n = int(level_number or 1)
+    if n <= 5:
+        return 5
+    if n <= 7:
+        return 6
+    return 10
+
+
+def subject_mix_for_level(
+    level_number: int,
+    accuracies: dict[str, float],
+    subject_keys: list[str] | None = None,
+) -> dict[str, int]:
+    """
+    Build a per-level subject mix totaling level_question_count(...).
+    Still tilts slightly toward weaker subjects without dropping the total.
+    """
+    keys = subject_keys or [
+        "english",
+        "core_maths",
+        "integrated_science",
+        "social_studies",
+    ]
+    total = level_question_count(level_number)
+    if total <= 0:
+        return {s: 0 for s in keys}
+
+    # Even base distribution, then adapt toward weaknesses.
+    base = {s: 0 for s in keys}
+    for i, s in enumerate(keys):
+        base[s] = total // len(keys) + (1 if i < total % len(keys) else 0)
+    return adaptive_subject_mix(base, accuracies)
 
 
 def update_weak_streak(previous_streak: int, rolling_accuracy: float, cfg: AdaptiveConfig) -> int:

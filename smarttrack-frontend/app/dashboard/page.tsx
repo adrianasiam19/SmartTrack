@@ -13,10 +13,7 @@ import {
   resolvePostAuthDestination,
   UserProfile,
 } from '../lib/authApi';
-import {
-  hasPriorDashboardVisit,
-  markDashboardVisited,
-} from '../lib/dashboardWelcome';
+import { hasPriorDashboardVisit } from '../lib/dashboardWelcome';
 import {
   getProgression,
   type PhasePublic,
@@ -297,11 +294,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!user?.id) return;
-    const returning = hasPriorDashboardVisit(user.id);
-    setIsReturningUser(returning);
-    if (!returning) {
-      markDashboardVisited(user.id);
-    }
+    setIsReturningUser(hasPriorDashboardVisit(user.id));
   }, [user?.id]);
 
   const nextAction = useMemo(
