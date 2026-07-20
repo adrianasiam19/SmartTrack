@@ -280,9 +280,9 @@ function ChallengeArena() {
     }
   }, [isPlacement, phase, starterSessionId, psychResponses, academicResponses, markStarterArenaComplete]);
 
-  // For placement: use actual count from API (defaults to 12 if not available yet)
-  const MAX_QUESTIONS = isPlacement ? (session.totalQuestions || 12) : 10;
-  const QUESTION_TIMEOUT = isPlacement ? 45 : 30;
+  // For placement: use actual count from API (defaults to 8: 4 LLM + 4 psychometric)
+  const MAX_QUESTIONS = isPlacement ? (session.totalQuestions || 8) : 10;
+  const QUESTION_TIMEOUT = isPlacement ? 0 : 30;
 
   const decryptAnswer = (hash: string): string => {
     try {
@@ -337,9 +337,9 @@ function ChallengeArena() {
       let initialQuestions: Question[] = [];
 
       if (isPlacement) {
-        // Adaptive Starter Arena already alternates psych + cognitive questions.
+        // Adaptive Starter Arena: 2 LLM thinking → 2 psychometric → repeat (8 total).
         try {
-          const session = await startStarterArena(6, 6);
+          const session = await startStarterArena(4, 4);
           setStarterSessionId(session.session_id);
           setSession((prev) => ({ ...prev, totalQuestions: session.total_count }));
           initialQuestions = session.questions.map((sq: StarterArenaQuestion, idx: number) => {
@@ -408,6 +408,11 @@ function ChallengeArena() {
 
   const handleSubmitAnswer = async (answerKey: string) => {
     if (!currentQuestion || loading) return;
+    // Starter Arena must learn from the user — never advance on empty/timeout.
+    if (isPlacement) {
+      const trimmed = (answerKey || '').trim();
+      if (!trimmed || trimmed === 'timeout') return;
+    }
     setSelectedAnswer(answerKey);
     setLoading(true);
 
@@ -673,6 +678,8 @@ function ChallengeArena() {
   };
 
   useEffect(() => {
+    // Placement / Starter Arena has no timer — wait for a real answer.
+    if (isPlacement) return;
     let timer: NodeJS.Timeout;
     if (phase === 'gameplay' && timeLeft > 0) {
       timer = setInterval(() => setTimeLeft((p) => p - 1), 1000);
@@ -680,7 +687,7 @@ function ChallengeArena() {
       handleSubmitAnswer(selectedAnswer || 'timeout');
     }
     return () => clearInterval(timer);
-  }, [phase, timeLeft]);
+  }, [phase, timeLeft, isPlacement]);
 
   useEffect(() => {
     if (isPlacement) return;

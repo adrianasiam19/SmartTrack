@@ -43,6 +43,7 @@ STARTER_SYSTEM_PROMPT = (
     "- Short, engaging, and non-exam-like\n"
     "- Conversational and friendly in tone\n"
     "- Age-appropriate for the student's SHS level\n"
+    "- Focused on general logical reasoning and communication reasoning\n"
     "- Focused on thinking patterns, preferences, and judgement — never memorised facts\n"
     "- Varied in format and complementary to previously asked questions"
 )
@@ -64,15 +65,17 @@ PSYCHOMETRIC_CATEGORY_PLAN = [
     "Motivation",
 ]
 
+# Default Starter Arena mix: 4 LLM cognitive + 4 bank psychometric = 8 total.
+DEFAULT_PSYCHOMETRIC_COUNT = 4
+DEFAULT_ACADEMIC_COUNT = 4
+STARTER_BLOCK_SIZE = 2  # 2 cognitive, then 2 psychometric, repeat
+
+# LLM half focuses on logic + communication reasoning (not curriculum recall).
 COGNITIVE_SKILL_PLAN = [
     "logical reasoning",
-    "creativity",
-    "critical thinking",
-    "problem solving",
-    "decision making",
-    "analytical thinking",
-    "observation",
-    "pattern recognition",
+    "communication reasoning",
+    "logical reasoning",
+    "communication reasoning",
 ]
 
 COGNITIVE_FORMAT_PLAN = [
@@ -544,7 +547,12 @@ def _balanced_psychometric_questions(
     selected_texts: list[str] = []
     covered_categories: set[str] = set()
 
-    for target_category in PSYCHOMETRIC_CATEGORY_PLAN:
+    # Shuffle categories so sessions stay balanced across topics, not locked
+    # to the first few entries (e.g. always Learning Preferences first).
+    category_order = list(PSYCHOMETRIC_CATEGORY_PLAN)
+    random.shuffle(category_order)
+
+    for target_category in category_order:
         if len(selected) >= count:
             break
         match = next(
@@ -563,14 +571,78 @@ def _balanced_psychometric_questions(
             covered_categories.add(match["category"])
             candidates.remove(match)
 
+    # Prefer unused categories when filling remaining slots.
     for question in candidates:
         if len(selected) >= count:
             break
+        if question["category"] in covered_categories:
+            continue
+        if _is_unique_question(question["question"], selected_texts):
+            selected.append(question)
+            selected_texts.append(question["question"])
+            covered_categories.add(question["category"])
+
+    # Last resort: allow any unique remaining question.
+    for question in candidates:
+        if len(selected) >= count:
+            break
+        if question in selected:
+            continue
         if _is_unique_question(question["question"], selected_texts):
             selected.append(question)
             selected_texts.append(question["question"])
             covered_categories.add(question["category"])
     return selected
+
+
+def _interleave_starter_blocks(
+    psych_questions: list[dict],
+    cognitive_questions: list[dict],
+    *,
+    block_size: int = STARTER_BLOCK_SIZE,
+) -> list[dict]:
+    """
+    Build the Starter Arena order: N cognitive, then N psychometric, repeat.
+
+    Default block_size=2 → [cog, cog, psych, psych, cog, cog, psych, psych].
+    """
+    questions: list[dict] = []
+    ci = 0
+    pi = 0
+    while ci < len(cognitive_questions) or pi < len(psych_questions):
+        for _ in range(block_size):
+            if ci < len(cognitive_questions):
+                questions.append(cognitive_questions[ci])
+                ci += 1
+        for _ in range(block_size):
+            if pi < len(psych_questions):
+                questions.append(psych_questions[pi])
+                pi += 1
+    return questions
+
+
+def _cognitive_slot_positions(
+    psychometric_count: int,
+    academic_count: int,
+    *,
+    block_size: int = STARTER_BLOCK_SIZE,
+) -> list[int]:
+    """1-based positions where LLM cognitive items appear in the session."""
+    positions: list[int] = []
+    ci = 0
+    pi = 0
+    slot = 1
+    while ci < academic_count or pi < psychometric_count:
+        for _ in range(block_size):
+            if ci < academic_count:
+                positions.append(slot)
+                ci += 1
+                slot += 1
+        for _ in range(block_size):
+            if pi < psychometric_count:
+                pi += 1
+                slot += 1
+    return positions
 
 
 def build_adaptive_cognitive_prompt(
@@ -592,18 +664,28 @@ def build_adaptive_cognitive_prompt(
     previous = "\n".join(
         f"{index + 1}. {question}" for index, question in enumerate(existing_questions)
     ) or "None yet"
-    positions = ", ".join(str(index * 2 + 2) for index in range(count))
+    psych_count = len(covered_categories) or max(0, total_assessment_questions - count)
+    positions = ", ".join(
+        str(pos)
+        for pos in _cognitive_slot_positions(psych_count, count)
+    ) or "1, 2, 5, 6"
 
     return f"""
 Create {count} fresh cognitive-discovery questions for the Atlas Starter Arena.
 This is a friendly adaptive learner discovery, NOT an examination and NOT a test
 of memorised curriculum facts.
 
+Focus especially on general logical reasoning and communication reasoning —
+how the learner follows arguments, weighs evidence, and expresses or interprets ideas.
+Generate original scenarios (as if drawing from everyday online / real-world contexts),
+never recycled exam bank items.
+
 STUDENT AND SESSION CONTEXT
 - Student SHS level: {shs_level}
 - Current progress: {len(existing_questions)} questions have already been selected
   for a {total_assessment_questions}-question Starter Arena.
-- Your questions will appear at alternating positions: {positions}.
+- Your questions will appear at positions: {positions}
+  (pattern: two thinking questions, then two Get-to-Know-You questions, repeat).
 - Psychometric categories already covered: {", ".join(covered_categories) or "none"}.
 - Cognitive skills to assess next, in order: {", ".join(skill_plan)}.
 - Formats to use, in order: {", ".join(format_plan)}.
@@ -616,7 +698,7 @@ STRICT REQUIREMENTS
 1. Each question must complement the existing assessment and reveal a new perspective.
 2. Do not generate anything identical or substantially similar to any listed question.
 3. Do not repeat the same scenario, opening phrase, skill, or option pattern.
-4. Focus on how the learner reasons, creates, observes, decides, communicates, or solves.
+4. Focus on logical reasoning and communication reasoning (clarity, persuasion, listening).
 5. Keep the tone warm and conversational; never call it a test or exam.
 6. Use Ghanaian SHS-relevant everyday contexts without relying on specialist knowledge.
 7. A short-response item has no options and no single correct answer.
@@ -810,16 +892,19 @@ async def generate_starter_session(
     user_id: str,
     shs_level: str = "SHS 1",
     programme: str = "General Science",
-    psychometric_count: int = 6,
-    academic_count: int = 6,
+    psychometric_count: int = DEFAULT_PSYCHOMETRIC_COUNT,
+    academic_count: int = DEFAULT_ACADEMIC_COUNT,
 ) -> dict:
     """
     Generate a balanced, level-aware Starter Arena session.
 
+    Default mix is 8 questions: 4 LLM (logic/communication) + 4 psychometric
+    from distinct bank categories, ordered as 2 cognitive → 2 psych → repeat.
+
     Returns:
         dict with:
           - session_id: str
-          - questions: strict psychometric/cognitive alternation
+          - questions: block-interleaved cognitive/psychometric list
           - total_count: int
     """
     session_id = f"sa_{user_id}_{random.randint(10000, 99999)}"
@@ -876,14 +961,8 @@ async def generate_starter_session(
                 cognitive_questions.append(fallback)
                 comparison.append(fallback["question"])
 
-    # ── 3. Alternate naturally: DB insight → LLM cognition → repeat ───────
-    questions = []
-    total = max(len(psych_questions), len(cognitive_questions))
-    for i in range(total):
-        if i < len(psych_questions):
-            questions.append(psych_questions[i])
-        if i < len(cognitive_questions):
-            questions.append(cognitive_questions[i])
+    # ── 3. Two thinking → two Get-to-Know-You → repeat ─────────────────────
+    questions = _interleave_starter_blocks(psych_questions, cognitive_questions)
 
     return {
         "session_id": session_id,

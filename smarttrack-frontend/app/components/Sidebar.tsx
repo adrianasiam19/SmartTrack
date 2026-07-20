@@ -73,7 +73,7 @@ export default function Sidebar() {
     try { await logout(); } catch {}
     setUser(null);
     setIsOpen(false);
-    router.push('/');
+    router.replace('/login');
   };
 
   const handleToggle = useCallback(() => {

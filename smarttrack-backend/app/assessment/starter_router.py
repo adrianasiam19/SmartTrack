@@ -23,8 +23,8 @@ router = APIRouter(prefix="/starter-arena", tags=["Starter Arena"])
 
 
 class StartSessionRequest(BaseModel):
-    psychometric_count: int = Field(default=6, ge=4, le=8)
-    academic_count: int = Field(default=6, ge=4, le=8)
+    psychometric_count: int = Field(default=4, ge=2, le=8)
+    academic_count: int = Field(default=4, ge=2, le=8)
 
 
 class QuestionModel(BaseModel):

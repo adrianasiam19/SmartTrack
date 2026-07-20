@@ -14,6 +14,10 @@ import {
   UserProfile,
 } from '../lib/authApi';
 import {
+  hasPriorDashboardVisit,
+  markDashboardVisited,
+} from '../lib/dashboardWelcome';
+import {
   getProgression,
   type PhasePublic,
   type ProgressionMe,
@@ -185,6 +189,9 @@ function findNextAction(data: ProgressionMe): NextAction | null {
     const completedLevels = levels.filter((l) => l.status === 'completed').length;
     const totalLevels = levels.length || 10;
     const progressPct = Math.round((completedLevels / totalLevels) * 100);
+    const hasStarted =
+      completedLevels > 0 ||
+      levels.some((l) => l.status === 'in_progress');
 
     const playable = levels.find(
       (l) =>
@@ -206,7 +213,9 @@ function findNextAction(data: ProgressionMe): NextAction | null {
         levelId: next.id,
         label: allDone
           ? `${phase.name} complete — open checkpoint or replay`
-          : `Continue ${phase.name} · Level ${next.number}`,
+          : hasStarted
+            ? `Continue ${phase.name} · Level ${next.number}`
+            : `Start ${phase.name} · Level ${next.number}`,
         progressPct,
         completedLevels,
         totalLevels,
@@ -214,6 +223,16 @@ function findNextAction(data: ProgressionMe): NextAction | null {
     }
   }
   return null;
+}
+
+function hasChallengeProgress(data: ProgressionMe | null): boolean {
+  if (!data?.phases?.length) return false;
+  return data.phases.some((phase) =>
+    phase.levels.some(
+      (level) =>
+        level.status === 'completed' || level.status === 'in_progress',
+    ),
+  );
 }
 
 function statusTone(status: string) {
@@ -232,6 +251,7 @@ export default function Dashboard() {
   const [progression, setProgression] = useState<ProgressionMe | null>(null);
   const [learningRecs, setLearningRecs] = useState<CurriculumTopic[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isReturningUser, setIsReturningUser] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -275,8 +295,21 @@ export default function Dashboard() {
     loadData();
   }, [router]);
 
+  useEffect(() => {
+    if (!user?.id) return;
+    const returning = hasPriorDashboardVisit(user.id);
+    setIsReturningUser(returning);
+    if (!returning) {
+      markDashboardVisited(user.id);
+    }
+  }, [user?.id]);
+
   const nextAction = useMemo(
     () => (progression ? findNextAction(progression) : null),
+    [progression],
+  );
+  const hasStartedChallenges = useMemo(
+    () => hasChallengeProgress(progression),
     [progression],
   );
   const tip = useRotatingTip(10000);
@@ -312,7 +345,7 @@ export default function Dashboard() {
             >
               <p className="text-sm font-medium text-[#64748B]">Dashboard</p>
               <h1 className="mt-1 text-3xl font-bold tracking-tight text-[#0F172A] sm:text-4xl">
-                Welcome back,{' '}
+                {isReturningUser ? 'Welcome back,' : 'Welcome to ATLAS,'}{' '}
                 <span className="text-[#2563EB]">{firstName}</span>
               </h1>
               <p className="mt-2 text-[#64748B]">{userProgramme}</p>
@@ -430,7 +463,7 @@ export default function Dashboard() {
                   onClick={() => router.push('/challenges')}
                   className="w-full rounded-2xl bg-[#2563EB] py-3.5 text-center text-base font-bold text-white shadow-md shadow-[#2563EB]/25 transition hover:bg-[#1D4ED8] active:scale-[0.99]"
                 >
-                  {nextAction ? 'Continue challenges' : 'Open challenges'}
+                  {hasStartedChallenges ? 'Continue challenges' : 'Start challenges'}
                 </button>
               </div>
             </motion.section>
