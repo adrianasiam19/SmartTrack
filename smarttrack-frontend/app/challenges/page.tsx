@@ -79,7 +79,7 @@ export default function ChallengesHomePage() {
   const phaseLocked = (phase: PhasePublic) => phase.status === 'locked';
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-transparent">
       <Sidebar />
       <main className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-10 pb-28">
         {!selectedPhase ? (

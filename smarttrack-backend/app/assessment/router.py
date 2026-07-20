@@ -31,6 +31,7 @@ from app.assessment.academic_recommendations import (
     has_academic_upload,
     programme_fallback_skills,
 )
+from app.recommendations.ml_career import generate_ml_knust_alternate
 from app.database import get_db
 from app.auth.dependencies import get_current_user
 from app.users.models import User, AcademicRecord
@@ -683,6 +684,16 @@ async def generate_recommendations(
             if g.get("subject") and g.get("grade")
         ]
 
+    if not academic_grades:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=(
+                "No grades were extracted from your upload. "
+                "Re-upload a clearer WASSCE results PDF/image — recommendations only come "
+                "from the KNUST Science/Engineering/Health cut-off list matched to your grades."
+            ),
+        )
+
     if not skill_estimates:
         skill_estimates = programme_fallback_skills(current_user.programme)
 
@@ -695,6 +706,23 @@ async def generate_recommendations(
     )
     recommendations_result = engine.generate_recommendations()
 
+    if recommendations_result.get("error") == "aggregate_unavailable":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=recommendations_result.get("summary_message")
+            or "Could not compute aggregate from uploaded grades.",
+        )
+
+    # Alternate ML track only — never replaces KNUST cut-off primary list.
+    ml_alternate = generate_ml_knust_alternate(
+        academic_grades=academic_grades,
+        behavioral_traits=behavioral_traits,
+        skill_estimates=skill_estimates,
+        xp=int(getattr(current_user, "xp", 0) or 0),
+        streak_days=int(getattr(current_user, "streak", 0) or 0),
+        knust_payload=recommendations_result.get("knust"),
+    )
+
     return {
         "success": True,
         "academic_score": recommendations_result.get("academic_score"),
@@ -703,6 +731,10 @@ async def generate_recommendations(
         "detailed_message": recommendations_result.get("detailed_message"),
         "recommendations": recommendations_result.get("recommendations"),
         "grades_used": recommendations_result.get("grades_used", 0),
+        "knust": recommendations_result.get("knust"),
+        "source": "knust_cutoffs",
+        "primary_source": "knust_cutoffs",
+        "ml_alternate": ml_alternate,
         "upload": {
             "filename": upload.get("filename"),
             "grades_extracted": bool(upload.get("grades_extracted")),
@@ -719,8 +751,8 @@ async def upload_academic_results(
     """
     Upload WASSCE / academic results (PDF or image).
 
-    Stores the file server-side, best-effort extracts grades with AI,
-    and unlocks the Get Recommendations action.
+    Stores the file server-side, extracts grades from PDFs with pypdf
+    (text + WASSCE parsing), and unlocks Get Recommendations.
     """
     data = await file.read()
     filename = file.filename or "academic_results.pdf"
@@ -767,7 +799,10 @@ async def upload_academic_results(
         "message": (
             f"Uploaded {filename}. Extracted {len(grades)} subject grade(s)."
             if grades
-            else f"Uploaded {filename}. You can still generate recommendations from your Atlas profile."
+            else (
+                f"Uploaded {filename}, but no subject grades could be read. "
+                "If this is a scanned/image-only PDF, export a text PDF or enter grades manually."
+            )
         ),
     }
 

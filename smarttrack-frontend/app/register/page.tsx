@@ -88,7 +88,7 @@ export default function Register() {
   const inputBase = 'w-full px-4 py-3 bg-white border border-[#CBD5E1] rounded-xl text-[#1E293B] placeholder-[#94A3B8] focus:ring-2 focus:ring-[#2563EB] focus:border-transparent outline-none transition text-base';
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-4 py-10">
+    <div className="min-h-screen bg-transparent flex items-center justify-center p-4 py-10">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

@@ -272,7 +272,7 @@ function PhasePlayInner() {
 
   if (!session || !question) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC]">
+      <div className="min-h-screen bg-transparent">
         <Sidebar />
         <main className="w-full max-w-2xl mx-auto px-4 sm:px-6 pt-20 lg:pt-10 pb-28 text-[#64748B]">
           Loading session…
@@ -305,7 +305,7 @@ function PhasePlayInner() {
       result.next === 'psychometric_checkpoint' || !!result.next_level_id;
 
     return (
-      <div className="min-h-screen bg-[#F8FAFC]">
+      <div className="min-h-screen bg-transparent">
         <Sidebar />
         <main className="w-full max-w-xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-10 pb-28">
           <h1 className="text-2xl font-semibold text-[#0F172A]">
@@ -410,7 +410,7 @@ function PhasePlayInner() {
     timeLeft <= 10 ? 'bg-red-500' : timeLeft <= 20 ? 'bg-[#D97706]' : 'bg-[#4F46E5]';
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-transparent">
       <Sidebar />
       <main className="w-full max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-10 pb-28">
         <div className="flex items-center justify-between gap-3">

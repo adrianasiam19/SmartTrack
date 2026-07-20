@@ -70,7 +70,7 @@ function ResetPasswordInner() {
 
   if (!token) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-transparent flex items-center justify-center p-4">
         <div className="w-full max-w-md bg-white border border-[#FECACA] rounded-2xl p-8 text-center">
           <h1 className="text-xl font-bold text-[#1E293B] mb-2">Invalid reset link</h1>
           <p className="text-sm text-[#DC2626] mb-6">
@@ -85,7 +85,7 @@ function ResetPasswordInner() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-transparent flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="flex justify-center mb-8">
           <Link href="/" className="flex items-center gap-3">
@@ -187,7 +187,7 @@ export default function ResetPasswordPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
+        <div className="min-h-screen bg-transparent flex items-center justify-center">
           <div className="w-12 h-12 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin" />
         </div>
       }

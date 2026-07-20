@@ -355,7 +355,7 @@ function LearningInner() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC]">
+      <div className="min-h-screen bg-transparent">
         <Sidebar />
         <main className="w-full max-w-4xl mx-auto px-4 pt-20 lg:pt-10 pb-28 text-[#64748B] flex items-center gap-2">
           <Loader2 className="w-4 h-4 animate-spin" /> Loading Learning Center…
@@ -367,7 +367,7 @@ function LearningInner() {
 
   if (view === 'topic' && activeTopicId) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC]">
+      <div className="min-h-screen bg-transparent">
         <Sidebar />
         <AppLayout>
           <main className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-10 pb-28">
@@ -386,7 +386,7 @@ function LearningInner() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-transparent">
       <Sidebar />
       <AppLayout>
         <main className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-10 pb-28">
@@ -739,7 +739,7 @@ export default function LearningPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center text-sm text-gray-500">
+        <div className="min-h-screen bg-transparent flex items-center justify-center text-sm text-gray-500">
           Loading…
         </div>
       }

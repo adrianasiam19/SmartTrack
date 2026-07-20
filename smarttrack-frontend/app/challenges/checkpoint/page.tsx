@@ -76,7 +76,7 @@ function CheckpointInner() {
 
   if (recommendation) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC]">
+      <div className="min-h-screen bg-transparent">
         <Sidebar />
         <main className="w-full max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-10 pb-28">
           <p className="text-sm text-[#2563EB] font-medium">
@@ -92,15 +92,22 @@ function CheckpointInner() {
             {recommendation.rationale_summary}
           </p>
           <ul className="mt-6 space-y-2">
-            {recommendation.programme_suggestions.map((s) => (
-              <li
-                key={s.programme}
-                className="rounded-lg border border-slate-200 bg-white px-4 py-3"
-              >
-                {s.programme}
-                <span className="text-[#64748B]"> · {s.score}</span>
+            {recommendation.programme_suggestions.length === 0 ? (
+              <li className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-[#92400E]">
+                No KNUST programmes yet — upload your WASSCE results on the Recommendations
+                page so Atlas can match your aggregate to the official cut-off list.
               </li>
-            ))}
+            ) : (
+              recommendation.programme_suggestions.map((s) => (
+                <li
+                  key={s.programme}
+                  className="rounded-lg border border-slate-200 bg-white px-4 py-3"
+                >
+                  {s.programme}
+                  <span className="text-[#64748B]"> · KNUST cut-off match</span>
+                </li>
+              ))
+            )}
           </ul>
           <button
             type="button"
@@ -116,7 +123,7 @@ function CheckpointInner() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-transparent">
       <Sidebar />
       <main className="w-full max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-10 pb-28">
         <h1 className="text-2xl font-semibold text-[#0F172A]">
