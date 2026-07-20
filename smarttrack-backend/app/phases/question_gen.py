@@ -88,6 +88,7 @@ async def _llm_question(
     subject: str,
     effective_difficulty: int,
     performance_summary: str,
+    question_budget: int,
     exclude_texts: set[str],
     rng: random.Random,
 ) -> dict[str, Any] | None:
@@ -104,20 +105,35 @@ async def _llm_question(
     )
     avoid = ""
     if exclude_texts:
-        samples = list(exclude_texts)[-8:]
+        samples = list(exclude_texts)[-24:]
         avoid = (
             "Do NOT repeat or paraphrase any of these already-used questions:\n- "
             + "\n- ".join(samples)
             + "\n"
         )
 
+    # Map difficulty bands so the model can feel the step-ups clearly.
+    if effective_difficulty <= 4:
+        band = "introductory / scaffolded"
+    elif effective_difficulty <= 8:
+        band = "standard classroom challenge"
+    elif effective_difficulty <= 11:
+        band = "advanced multi-step"
+    else:
+        band = "exam-hard / stretch"
+
     prompt = (
         f"Generate ONE ORIGINAL random multiple-choice question for Ghana secondary {label}.\n"
-        f"Phase {phase_number}, Level {level_number}. Novelty seed: {rng.randint(1, 10_000_000)}.\n"
+        f"Phase {phase_number}, Level {level_number} of 10 "
+        f"(this level has {question_budget} questions total — keep each item focused).\n"
+        f"Novelty seed: {rng.randint(1, 10_000_000)}.\n"
         f"Hard constraint — curriculum scope: {scope}\n"
         f"This item target: {target}. {style_line}\n"
-        f"Difficulty must be {effective_difficulty} on a 1–15 scale "
-        f"(1=easiest, 15=hardest). Do not choose a different difficulty.\n"
+        f"Difficulty MUST match {effective_difficulty} on a 1–15 scale "
+        f"({band}). Do not make it easier than requested.\n"
+        f"Adaptive rule: subjects the learner answers correctly should get HARDER "
+        f"over levels; subjects they miss keep the SAME difficulty — honour the "
+        f"effective difficulty given above.\n"
         f"Learner recent performance: {performance_summary}\n"
         f"{avoid}"
         "Never reproduce copyrighted WAEC/WASSCE past-paper wording.\n"
@@ -139,7 +155,9 @@ async def _llm_question(
                             "content": (
                                 "You generate original, varied Ghana secondary-school MCQs. "
                                 "Never repeat a question already listed. "
-                                "Obey curriculum scope strictly. Reply with JSON only."
+                                "Match the requested difficulty exactly. "
+                                "Obey curriculum scope and the level question budget. "
+                                "Reply with JSON only."
                             ),
                         },
                         {"role": "user", "content": prompt},
@@ -182,21 +200,24 @@ async def generate_subject_question(
     performance_summary: str,
     exclude_bank_ids: set[str] | None = None,
     exclude_texts: set[str] | None = None,
+    question_budget: int | None = None,
     rng: random.Random | None = None,
     max_attempts: int = 3,
 ) -> dict[str, Any]:
-    """LLM-first with retries to avoid within-level duplicates; bank then fallback."""
+    """LLM-first with retries to avoid duplicates; bank then fallback."""
     rng = rng or random.Random()
     used_ids = exclude_bank_ids or set()
     used_texts = set(exclude_texts or set())
+    budget = question_budget if question_budget is not None else 10
 
-    for attempt in range(max_attempts):
+    for _attempt in range(max_attempts):
         llm = await _llm_question(
             phase_number=phase_number,
             level_number=level_number,
             subject=subject,
             effective_difficulty=effective_difficulty,
             performance_summary=performance_summary,
+            question_budget=budget,
             exclude_texts=used_texts,
             rng=rng,
         )

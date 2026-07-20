@@ -64,7 +64,6 @@ function PhasePlayInner() {
   const [timeLeft, setTimeLeft] = useState(QUESTION_TIMEOUT);
   const [userXp, setUserXp] = useState<number | null>(null);
   const [startingNext, setStartingNext] = useState(false);
-  const [redoing, setRedoing] = useState(false);
   const [actionError, setActionError] = useState('');
   const [result, setResult] = useState<{
     passed: boolean;
@@ -284,8 +283,7 @@ function PhasePlayInner() {
   }
 
   if (done && result) {
-    const busyAction = startingNext || redoing;
-    const currentLevelId = result.level_id ?? session.level_id;
+    const busyAction = startingNext;
 
     const onContinueNextLevel = async () => {
       if (!result.next_level_id || busyAction) return;
@@ -303,24 +301,8 @@ function PhasePlayInner() {
       }
     };
 
-    const onRedoLevel = async () => {
-      if (!currentLevelId || busyAction) return;
-      setRedoing(true);
-      setActionError('');
-      try {
-        const sessionPayload = await startLevel(currentLevelId);
-        sessionStorage.setItem('atlasPhaseSession', JSON.stringify(sessionPayload));
-        window.location.href = `/challenges/play?session=${sessionPayload.session_id}`;
-      } catch (e) {
-        setActionError(e instanceof Error ? e.message : 'Could not redo level');
-        setRedoing(false);
-      }
-    };
-
     const hasPrimary =
-      result.next === 'psychometric_checkpoint' ||
-      (result.passed && !!result.next_level_id) ||
-      !result.passed;
+      result.next === 'psychometric_checkpoint' || !!result.next_level_id;
 
     return (
       <div className="min-h-screen bg-[#F8FAFC]">
@@ -330,8 +312,8 @@ function PhasePlayInner() {
             Level complete
           </h1>
           <p className="mt-3 text-[#64748B]">
-            Score {(result.score * 100).toFixed(0)}% —{' '}
-            {result.passed ? 'passed' : 'below the pass threshold (70%).'}
+            Score {(result.score * 100).toFixed(0)}% — keep going. Difficulty
+            adapts by subject for your next level.
           </p>
           {typeof result.session_xp === 'number' ? (
             <p className="mt-2 text-sm font-medium text-[#2563EB]">
@@ -395,7 +377,7 @@ function PhasePlayInner() {
                 Continue to psychometric checkpoint
               </button>
             ) : null}
-            {result.passed && result.next_level_id ? (
+            {result.next_level_id ? (
               <button
                 type="button"
                 disabled={busyAction}
@@ -403,16 +385,6 @@ function PhasePlayInner() {
                 onClick={() => void onContinueNextLevel()}
               >
                 {startingNext ? 'Starting…' : 'Continue to next level'}
-              </button>
-            ) : null}
-            {!result.passed && currentLevelId ? (
-              <button
-                type="button"
-                disabled={busyAction}
-                className="rounded-lg bg-[#2563EB] text-white px-4 py-2.5 font-medium disabled:opacity-50"
-                onClick={() => void onRedoLevel()}
-              >
-                {redoing ? 'Starting…' : 'Redo level'}
               </button>
             ) : null}
             <button

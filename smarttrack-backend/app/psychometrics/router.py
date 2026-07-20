@@ -59,6 +59,11 @@ async def start_checkpoint(
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Phase not found")
 
     questions = await select_checkpoint_questions(db, current_user.id, phase.id)
+    if not questions:
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            "Psychometric bank not seeded. Run scripts/seed_psychometric_bank.py",
+        )
     out = []
     for q in questions:
         out.append(

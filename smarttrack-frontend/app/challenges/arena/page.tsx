@@ -34,10 +34,6 @@ import { getRandomLogicQuestions } from '../../lib/logicArenaData';
 import { getRandomQuantQuestions } from '../../lib/quantArenaData';
 import { getRandomScientificQuestions } from '../../lib/scientificArenaData';
 import {
-  getRandomStarterQuestions,
-  type StarterQuestion,
-} from '../../lib/starterArenaData';
-import {
   startStarterArena,
   completeStarterArena,
   normalizeStarterOptions,
@@ -92,29 +88,6 @@ interface GameSession {
   totalTime: number;
   startTime: number;
   totalQuestions?: number;
-}
-
-function starterToQuestion(sq: StarterQuestion): Question {
-  const idNum = parseInt(sq.id.replace('SA-', ''), 10);
-  return {
-    id: 1000 + idNum,
-    domain: sq.domain,
-    question: sq.question,
-    question_type: sq.interaction,
-    options: sq.options || {},
-    answer_hash: btoa(`ST_SEC_2024:${sq.correctKey || 'A'}`),
-    _category: sq.domain,
-    _explanation: sq.explanation,
-    _answers: sq.answers,
-    _hints: sq.hints,
-    _pattern: sq.pattern,
-    _leftItems: sq.leftItems,
-    _rightItems: sq.rightItems,
-    _correctMatches: sq.correctMatches,
-    _rankedOrder: sq.rankedOrder,
-    _allowMultiple: sq.allowMultiple,
-    _xp: 0,
-  };
 }
 
 function shuffleArray<T>(arr: T[]): T[] {
@@ -369,9 +342,12 @@ function ChallengeArena() {
           setShortResponseDraft('');
           setRankingOrder([]);
         } catch (e: any) {
-          console.warn('Adaptive Starter Arena failed, falling back:', e);
-          const raw = getRandomStarterQuestions(MAX_QUESTIONS);
-          initialQuestions = raw.map(starterToQuestion);
+          console.warn('Adaptive Starter Arena failed:', e);
+          setError(
+            e?.message ||
+              'Could not start Starter Arena. Check that the backend is running, then try again.',
+          );
+          return;
         }
       } else if (isLogicArena) {
         initialQuestions = getRandomLogicQuestions(MAX_QUESTIONS);
