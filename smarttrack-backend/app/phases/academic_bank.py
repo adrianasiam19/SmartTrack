@@ -13,9 +13,10 @@ logger = logging.getLogger(__name__)
 _BANK_PATH = Path(__file__).resolve().parent.parent.parent / "data" / "phase_academic_bank.json"
 
 # Internal SHS tags (never shown in UI as SHS labels)
+# Phase 1 → SHS 1 only; Phase 2 → SHS 2 only; Phase 3 → SHS 3 + reinforcement from 1–2
 PHASE_SHS_LEVELS: dict[int, set[str]] = {
     1: {"SHS 1"},
-    2: {"SHS 1", "SHS 2"},
+    2: {"SHS 2"},
     3: {"SHS 1", "SHS 2", "SHS 3"},
 }
 

@@ -33,7 +33,7 @@ def test_recommendation_engine_requires_grades():
     assert result["knust"] is None
 
 
-def test_recommendation_engine_returns_only_knust_programmes():
+def test_recommendation_engine_returns_nearby_profile_programmes():
     grades = [
         {"subject": "English Language", "grade": "B3"},
         {"subject": "Core Mathematics", "grade": "A1"},
@@ -55,20 +55,16 @@ def test_recommendation_engine_returns_only_knust_programmes():
     assert result["grades_used"] == 8
     assert result["knust"] is not None
     assert result["knust"]["aggregate"]["aggregate"] == 14
-    assert result["recommendations"]
-    for rec in result["recommendations"]:
-        assert rec["source"] == "knust_cutoffs"
-        assert rec["university"] == "KNUST"
-        assert rec["eligibility_band"] in {"eligible", "stretch"}
+    assert "suitable_programmes" in result
+    for rec in result["suitable_programmes"]:
+        assert "why_recommended" in rec
+        assert "score" not in rec
+        assert 14 <= int(rec["cutoff"]) <= 16
         assert "Business" not in (rec.get("programme") or "")
-        assert rec.get("programme_family") not in {
-            "Business & Economics",
-            "Law & Humanities",
-            "Education & Social Sciences",
-        }
-    # Medicine (cutoff 6) must not appear as eligible for aggregate 14
-    names = {r["programme"] for r in result["recommendations"]}
+    names = {r["programme"] for r in result["suitable_programmes"]}
     assert "MBChB Medicine" not in names
+    for rec in result.get("competitive_programmes") or []:
+        assert 11 <= int(rec["cutoff"]) < 14
 
 
 def test_merge_academic_upload_preserves_existing_profile_fields():

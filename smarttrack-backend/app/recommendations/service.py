@@ -1,21 +1,24 @@
-"""Phase-attributed programme recommendations — KNUST cut-offs + grades only."""
+"""Phase-attributed programme recommendations — learner-facing, university-neutral."""
 from __future__ import annotations
 
 import uuid
 from collections import defaultdict
 from datetime import datetime, timezone
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.phases.models import Phase, UserSubjectPerformance
 from app.phases.service import unlock_next_phase_after_recommendation
 from app.psychometrics.models import PsychometricOption, UserPsychometricBankResponse
-from app.recommendations.cutoffs import apply_cutoff_boundaries
 from app.recommendations.models import Recommendation
+from app.recommendations.presentation import (
+    build_psychometric_prose,
+    sanitize_phase_suggestions,
+    select_suitable_and_competitive,
+)
 from app.users.models import AcademicRecord
 
-# Psych affinity keys → KNUST document families (soft ranking only)
 AFFINITY_TO_FAMILY = {
     "engineering": "Engineering",
     "medicine_health": "Health Sciences",
@@ -62,10 +65,11 @@ async def generate_phase_recommendation(
             select(UserSubjectPerformance).where(UserSubjectPerformance.user_id == user_id)
         )
     ).scalars().all()
-    academic_bits = [
-        f"{p.subject.replace('_', ' ')} accuracy {p.rolling_accuracy:.0%}"
+    strong_subjects = [
+        p.subject.replace("_", " ")
         for p in perfs
-    ]
+        if float(p.rolling_accuracy or 0) >= 0.6
+    ][:3]
 
     responses = (
         await db.execute(
@@ -93,51 +97,47 @@ async def generate_phase_recommendation(
 
     grades = await _load_user_grades(db, user_id)
     family_fit = _family_fit_from_psych(programme_scores)
-    top_traits = sorted(trait_scores.items(), key=lambda x: x[1], reverse=True)[:5]
+    psych_prose = build_psychometric_prose(trait_scores)
 
     suggestions: list[dict] = []
     if grades:
-        knust = apply_cutoff_boundaries(
+        selected = select_suitable_and_competitive(
             grades=grades,
             family_fit_scores=family_fit,
-            limit_per_band=8,
+            limit=6,
         )
-        agg = knust.get("aggregate") or {}
-        for band_key in ("eligible", "stretch"):
-            for item in (knust.get("bands") or {}).get(band_key) or []:
-                suggestions.append(
-                    {
-                        "programme": item["programme"],
-                        "score": round(float(item.get("family_fit_score") or 0) / 100.0, 3),
-                        "key": item["programme"],
-                        "family": item.get("family"),
-                        "cutoff": item.get("cutoff"),
-                        "eligibility_band": band_key,
-                        "university": "KNUST",
-                        "source": "knust_cutoffs",
-                    }
-                )
-        if agg.get("aggregate") is not None:
+        agg = (selected.get("aggregate") or {}).get("aggregate")
+        suggestions = selected.get("suitable") or []
+        if agg is not None:
+            challenge_bit = (
+                f" Your challenge work has been especially strong in {', '.join(strong_subjects)}."
+                if strong_subjects
+                else ""
+            )
             rationale = (
-                f"After {phase.name}, your WASSCE aggregate ({agg['aggregate']}) was matched "
-                f"only to programmes in the KNUST Science / Engineering / Health cut-off list. "
-                f"Academic signals: {'; '.join(academic_bits) if academic_bits else 'building profile'}. "
-                f"Trait emphasis: {', '.join(t for t, _ in top_traits) if top_traits else 'still learning about you'}."
+                f"{psych_prose} After {phase.name}, Atlas combined your psychometric profile"
+                f"{challenge_bit} with your estimated aggregate of {agg} to suggest suitable "
+                f"programmes near your results."
             )
         else:
             rationale = (
-                f"After {phase.name}, Atlas could not compute a reliable WASSCE aggregate from "
-                f"your uploaded grades, so no KNUST programmes were suggested. "
-                f"Re-upload clearer results on the Recommendations page."
+                f"{psych_prose} Atlas could not yet compute a reliable aggregate from your "
+                f"uploaded results. Re-upload a clearer results slip on the Recommendations page."
             )
             suggestions = []
     else:
         rationale = (
-            f"After {phase.name}, upload your WASSCE results to receive KNUST programme "
-            f"matches from the official Science / Engineering / Health cut-off document. "
-            f"Atlas does not invent general programmes without grades. "
-            f"Trait emphasis so far: {', '.join(t for t, _ in top_traits) if top_traits else 'still learning about you'}."
+            f"{psych_prose} Upload your WASSCE results on the Recommendations page so Atlas "
+            f"can match programmes to both your profile and your aggregate."
         )
+
+    # Replace prior rows for this phase so history does not duplicate Phase cards.
+    await db.execute(
+        delete(Recommendation).where(
+            Recommendation.user_id == user_id,
+            Recommendation.phase_id == phase.id,
+        )
+    )
 
     is_final = phase.number == 3
     row = Recommendation(
@@ -166,6 +166,7 @@ async def generate_phase_recommendation(
 
 
 async def list_recommendations(db: AsyncSession, user_id: uuid.UUID) -> list[dict]:
+    """Return latest recommendation per phase only (no duplicate Phase cards)."""
     rows = (
         await db.execute(
             select(Recommendation, Phase)
@@ -174,17 +175,26 @@ async def list_recommendations(db: AsyncSession, user_id: uuid.UUID) -> list[dic
             .order_by(Recommendation.generated_at.desc())
         )
     ).all()
-    out = []
+
+    seen_phases: set[int] = set()
+    out: list[dict] = []
     for rec, phase in rows:
+        if phase.id in seen_phases:
+            continue
+        seen_phases.add(phase.id)
         out.append(
             {
                 "id": rec.id,
                 "phase": phase.number,
                 "phase_label": phase.name,
                 "generated_at": rec.generated_at.isoformat(),
-                "programme_suggestions": rec.programme_suggestions,
+                "programme_suggestions": sanitize_phase_suggestions(
+                    rec.programme_suggestions
+                ),
                 "rationale_summary": rec.rationale_summary,
                 "is_final": rec.is_final,
             }
         )
+    # Show Phase 1 → 2 → 3 for a natural story
+    out.sort(key=lambda r: int(r.get("phase") or 0))
     return out
