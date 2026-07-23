@@ -10,6 +10,7 @@ import {
   PhasePublic,
   startLevel,
   replayLevel,
+  storePhaseSession,
 } from '../lib/phasesApi';
 import { getAccessToken } from '../lib/authApi';
 
@@ -30,6 +31,7 @@ export default function ChallengesHomePage() {
   const [error, setError] = useState('');
   const [starting, setStarting] = useState<number | null>(null);
   const [selectedPhaseId, setSelectedPhaseId] = useState<number | null>(null);
+  const [recGuidance, setRecGuidance] = useState('');
 
   const load = useCallback(async () => {
     try {
@@ -55,6 +57,11 @@ export default function ChallengesHomePage() {
     [phases, selectedPhaseId],
   );
 
+  const selectPhase = (phaseId: number | null) => {
+    setSelectedPhaseId(phaseId);
+    setRecGuidance('');
+  };
+
   const onStart = async (levelId: number, status: string) => {
     if (status === 'locked') return;
     setStarting(levelId);
@@ -64,7 +71,7 @@ export default function ChallengesHomePage() {
         status === 'completed'
           ? await replayLevel(levelId)
           : await startLevel(levelId);
-      sessionStorage.setItem('atlasPhaseSession', JSON.stringify(session));
+      storePhaseSession(session);
       router.push(`/challenges/play?session=${session.session_id}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not start level');
@@ -78,6 +85,20 @@ export default function ChallengesHomePage() {
 
   const phaseLocked = (phase: PhasePublic) => phase.status === 'locked';
 
+  const onGetRecommendation = () => {
+    if (!selectedPhase) return;
+    const done = completedCount(selectedPhase);
+    const total = selectedPhase.levels.length || 10;
+    const allDone = selectedPhase.levels.every((l) => l.status === 'completed');
+    if (allDone) {
+      setRecGuidance('');
+      router.push('/recommendations');
+      return;
+    }
+    setRecGuidance(
+      `You are making great progress!\n\nComplete the remaining levels in this phase (${done} of ${total} done) to unlock your personalised programme recommendations.\n\nWe also recommend exploring at least one lesson in the Learning Center to strengthen your learner profile and improve future recommendations.`,
+    );
+  };
   return (
     <div className="min-h-screen bg-transparent">
       <Sidebar />
@@ -94,7 +115,7 @@ export default function ChallengesHomePage() {
           <>
             <button
               type="button"
-              onClick={() => setSelectedPhaseId(null)}
+              onClick={() => selectPhase(null)}
               className="inline-flex items-center gap-2 rounded-full border border-[#BFDBFE] bg-white px-4 py-2 text-sm font-semibold text-[#2563EB] shadow-sm transition hover:border-[#2563EB] hover:bg-[#EFF6FF]"
             >
               <span aria-hidden className="text-base leading-none">←</span>
@@ -134,7 +155,7 @@ export default function ChallengesHomePage() {
                 <button
                   key={phase.id}
                   type="button"
-                  onClick={() => setSelectedPhaseId(phase.id)}
+                  onClick={() => selectPhase(phase.id)}
                   className={`group flex min-h-[280px] sm:min-h-[320px] flex-col rounded-3xl border px-5 py-6 sm:px-6 sm:py-7 text-left transition duration-200 hover:-translate-y-1 hover:shadow-lg ${
                     locked
                       ? 'border-slate-200 bg-gradient-to-b from-slate-50 to-slate-100/80 hover:border-slate-300'
@@ -277,14 +298,35 @@ export default function ChallengesHomePage() {
               })}
             </div>
 
-            {selectedPhase.levels.every((l) => l.status === 'completed') ? (
-              <Link
-                href={`/challenges/checkpoint?phase=${selectedPhase.number}`}
-                className="inline-block mt-6 text-sm font-medium text-[#2563EB]"
-              >
-                Open Phase {selectedPhase.number} psychometric checkpoint →
-              </Link>
-            ) : null}
+            <div className="mt-6 flex flex-col gap-3">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                {selectedPhase.levels.every((l) => l.status === 'completed') ? (
+                  <Link
+                    href={`/challenges/checkpoint?phase=${selectedPhase.number}`}
+                    className="inline-block text-sm font-medium text-[#2563EB]"
+                  >
+                    Open Phase {selectedPhase.number} psychometric checkpoint →
+                  </Link>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={onGetRecommendation}
+                  className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-[#7C3AED] to-[#5B21B6] px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:opacity-95 active:scale-[0.98] transition"
+                >
+                  Get Recommendation
+                </button>
+              </div>
+              {recGuidance ? (
+                <div className="rounded-xl border border-[#FDE68A] bg-[#FFFBEB] px-4 py-4">
+                  <p className="text-sm font-semibold text-[#92400E]">
+                    You are not yet eligible for a recommendation.
+                  </p>
+                  <p className="text-sm text-[#78350F] mt-1.5 leading-relaxed whitespace-pre-line">
+                    {recGuidance}
+                  </p>
+                </div>
+              ) : null}
+            </div>
           </div>
         )}
       </main>

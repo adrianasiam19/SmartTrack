@@ -94,8 +94,8 @@ function CheckpointInner() {
           <ul className="mt-6 space-y-2">
             {recommendation.programme_suggestions.length === 0 ? (
               <li className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-[#92400E]">
-                No KNUST programmes yet — upload your WASSCE results on the Recommendations
-                page so Atlas can match your aggregate to the official cut-off list.
+                Upload your WASSCE results on the Recommendations page so Atlas can
+                match programmes to your profile and aggregate.
               </li>
             ) : (
               recommendation.programme_suggestions.map((s) => (
@@ -104,7 +104,6 @@ function CheckpointInner() {
                   className="rounded-lg border border-slate-200 bg-white px-4 py-3"
                 >
                   {s.programme}
-                  <span className="text-[#64748B]"> · KNUST cut-off match</span>
                 </li>
               ))
             )}

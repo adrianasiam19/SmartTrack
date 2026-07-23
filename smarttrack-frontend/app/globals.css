@@ -52,7 +52,7 @@ html {
 
 body {
   color: var(--foreground);
-  background: #F8FAFC;
+  background: transparent;
   font-family: var(--font-inter);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

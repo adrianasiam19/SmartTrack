@@ -32,6 +32,7 @@ from app.assessment.academic_recommendations import (
     programme_fallback_skills,
 )
 from app.recommendations.ml_career import generate_ml_knust_alternate
+from app.recommendations.eligibility import evaluate_recommendation_eligibility
 from app.database import get_db
 from app.auth.dependencies import get_current_user
 from app.users.models import User, AcademicRecord
@@ -643,7 +644,23 @@ async def generate_recommendations(
 
     Combines stealth challenge thetas (when available), behavioural traits,
     Starter Arena profile, declared programme, and uploaded academic grades.
+
+    Requires all levels completed in at least one phase (Learning Center is
+    encouraged but not mandatory).
     """
+    eligibility = await evaluate_recommendation_eligibility(db, current_user)
+    if not eligibility.get("eligible"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "code": "recommendation_locked",
+                "title": eligibility.get("title"),
+                "message": eligibility.get("message"),
+                "short_message": eligibility.get("short_message"),
+                "eligibility": eligibility,
+            },
+        )
+
     if not has_academic_upload(current_user):
         # Also allow users who already saved AcademicRecord rows.
         existing = await db.execute(
@@ -689,8 +706,8 @@ async def generate_recommendations(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=(
                 "No grades were extracted from your upload. "
-                "Re-upload a clearer WASSCE results PDF/image — recommendations only come "
-                "from the KNUST Science/Engineering/Health cut-off list matched to your grades."
+                "Re-upload a clearer WASSCE results PDF/image so Atlas can calculate "
+                "your aggregate and recommend suitable programmes."
             ),
         )
 
@@ -713,7 +730,6 @@ async def generate_recommendations(
             or "Could not compute aggregate from uploaded grades.",
         )
 
-    # Alternate ML track only — never replaces KNUST cut-off primary list.
     ml_alternate = generate_ml_knust_alternate(
         academic_grades=academic_grades,
         behavioral_traits=behavioral_traits,
@@ -729,11 +745,15 @@ async def generate_recommendations(
         "performance_level": recommendations_result.get("performance_level"),
         "summary_message": recommendations_result.get("summary_message"),
         "detailed_message": recommendations_result.get("detailed_message"),
-        "recommendations": recommendations_result.get("recommendations"),
+        "recommendations": recommendations_result.get("suitable_programmes")
+        or recommendations_result.get("recommendations"),
+        "suitable_programmes": recommendations_result.get("suitable_programmes") or [],
+        "competitive_programmes": recommendations_result.get("competitive_programmes") or [],
         "grades_used": recommendations_result.get("grades_used", 0),
+        "admission_insights": recommendations_result.get("admission_insights"),
         "knust": recommendations_result.get("knust"),
-        "source": "knust_cutoffs",
-        "primary_source": "knust_cutoffs",
+        "source": "atlas_combined",
+        "primary_source": "atlas_combined",
         "ml_alternate": ml_alternate,
         "upload": {
             "filename": upload.get("filename"),

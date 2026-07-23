@@ -5,6 +5,9 @@ import { fetchWithAuth } from './authApi';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
+/** Must match backend Settings.CHALLENGE_FORMAT_VERSION — stale sessions are regenerated. */
+export const CHALLENGE_FORMAT_VERSION = 5;
+
 export type LevelPublic = {
   id: number;
   number: number;
@@ -53,6 +56,65 @@ export async function replayLevel(levelId: number) {
   });
   if (!res.ok) throw new Error('Failed to replay level');
   return res.json();
+}
+
+/** Persist session and ensure it uses the current adaptive challenge format. */
+export function storePhaseSession(session: Record<string, unknown>) {
+  const stamped = {
+    ...session,
+    format_version:
+      typeof session.format_version === 'number'
+        ? session.format_version
+        : CHALLENGE_FORMAT_VERSION,
+  };
+  sessionStorage.setItem('atlasPhaseSession', JSON.stringify(stamped));
+  return stamped;
+}
+
+export function readPhaseSession(): Record<string, unknown> | null {
+  const raw = sessionStorage.getItem('atlasPhaseSession');
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
+export function isFreshPhaseSession(session: Record<string, unknown> | null): boolean {
+  if (!session) return false;
+  return Number(session.format_version) === CHALLENGE_FORMAT_VERSION;
+}
+
+/**
+ * If the cached play session predates mixed question types / images,
+ * start or replay the level again so every attempt uses the new format.
+ */
+export async function refreshPhaseSessionIfStale(): Promise<Record<string, unknown> | null> {
+  const cached = readPhaseSession();
+  if (isFreshPhaseSession(cached)) return cached;
+
+  const levelId = Number(cached?.level_id);
+  if (!Number.isFinite(levelId) || levelId <= 0) {
+    sessionStorage.removeItem('atlasPhaseSession');
+    return null;
+  }
+
+  const preferReplay = Boolean(cached?.is_replay);
+  try {
+    const fresh = preferReplay
+      ? await replayLevel(levelId)
+      : await startLevel(levelId);
+    return storePhaseSession(fresh);
+  } catch {
+    try {
+      const fresh = await startLevel(levelId);
+      return storePhaseSession(fresh);
+    } catch {
+      sessionStorage.removeItem('atlasPhaseSession');
+      return null;
+    }
+  }
 }
 
 export async function submitPhaseAnswer(
@@ -166,5 +228,41 @@ export async function completeCheckpoint(phaseNumber: number) {
 export async function getRecommendationHistory() {
   const res = await fetchWithAuth(`${API_BASE}/recommendations/history`);
   if (!res.ok) throw new Error('Failed to load recommendations');
+  return res.json();
+}
+
+export type RecommendationEligibility = {
+  eligible: boolean;
+  title: string;
+  message: string;
+  short_message: string;
+  mandatory: {
+    all_levels_in_a_phase_completed: boolean;
+    phases_completed_levels: number[];
+    focus_phase: {
+      number: number;
+      name: string;
+      levels_completed: number;
+      levels_total: number;
+      levels_remaining: number;
+    } | null;
+  };
+  recommended: {
+    learning_center_lesson_completed: boolean;
+    required: boolean;
+    completed_lesson_count: number;
+  };
+  phases: Array<{
+    phase_number: number;
+    phase_name: string;
+    levels_completed: number;
+    levels_total: number;
+    all_levels_completed: boolean;
+  }>;
+};
+
+export async function getRecommendationEligibility(): Promise<RecommendationEligibility> {
+  const res = await fetchWithAuth(`${API_BASE}/recommendations/eligibility`);
+  if (!res.ok) throw new Error('Failed to load recommendation eligibility');
   return res.json();
 }

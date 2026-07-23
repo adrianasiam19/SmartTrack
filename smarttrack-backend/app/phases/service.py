@@ -304,8 +304,9 @@ async def start_level(
             question_text=generated["question_text"],
             question_type=generated.get("question_type", "mcq"),
             options=generated.get("options"),
-            correct_answer=generated["correct_answer"],
+            correct_answer=str(generated["correct_answer"])[:500],
             difficulty=eff,
+            explanation=generated.get("explanation"),
         )
         db.add(resp)
         await db.flush()
@@ -318,6 +319,9 @@ async def start_level(
                 "question_type": resp.question_type,
                 "options": resp.options,
                 "difficulty": eff,
+                "image": (resp.options or {}).get("image")
+                if isinstance(resp.options, dict)
+                else None,
             }
         )
         q_index += 1
@@ -333,6 +337,7 @@ async def start_level(
         "phase_number": phase.number,
         "level_number": level.number,
         "is_replay": replay,
+        "format_version": int(getattr(settings, "CHALLENGE_FORMAT_VERSION", 2)),
         "question_count": len(questions_out),
         "subject_mix": mix,
         "questions": questions_out,
@@ -363,18 +368,17 @@ async def submit_answer(
     if q.user_answer is not None:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Already answered")
 
-    is_correct = answer.strip().lower() == (q.correct_answer or "").strip().lower()
-    # Also accept option letter match if options are dict with labels
-    if not is_correct and isinstance(q.options, dict):
-        for key, val in q.options.items():
-            if str(val).strip().lower() == answer.strip().lower():
-                is_correct = key.strip().lower() == (q.correct_answer or "").strip().lower()
-                break
-            if key.strip().lower() == answer.strip().lower():
-                is_correct = key.strip().lower() == (q.correct_answer or "").strip().lower()
-                break
+    from app.phases.answer_grading import grade_answer
 
-    q.user_answer = answer
+    is_correct = grade_answer(
+        question_type=q.question_type or "mcq",
+        correct_answer=q.correct_answer or "",
+        user_answer=answer,
+        options=q.options if isinstance(q.options, dict) else None,
+    )
+
+    # Persist truncated answer for schema limits
+    q.user_answer = answer[:500]
     q.is_correct = is_correct
     q.time_taken_seconds = time_taken_seconds
     q.answered_at = datetime.now(timezone.utc)

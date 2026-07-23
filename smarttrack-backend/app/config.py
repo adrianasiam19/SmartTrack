@@ -65,6 +65,12 @@ class Settings(BaseSettings):
     ML_ALTERNATE_ENABLED: bool = True
     ML_ALTERNATE_TOP_N: int = 5
 
+    PIXABAY_API_KEY: str = ""
+    EDUCATIONAL_IMAGES_ENABLED: bool = True
+    EDUCATIONAL_IMAGE_CACHE_PATH: str = "data/educational_image_cache.json"
+    # Bump when challenge question payload / UI contract changes (invalidates old clients).
+    CHALLENGE_FORMAT_VERSION: int = 5
+
     @property
     def cors_origins_list(self) -> List[str]:
         return [o.strip() for o in self.CORS_ORIGINS.split(",")]

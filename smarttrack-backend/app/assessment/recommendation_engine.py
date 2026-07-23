@@ -166,23 +166,27 @@ class RecommendationEngine:
 
     def generate_recommendations(self) -> Dict[str, Any]:
         from app.recommendations.cutoffs import apply_cutoff_boundaries
+        from app.recommendations.presentation import select_suitable_and_competitive
 
         if not self.academic_grades:
             return {
                 "recommendations": [],
+                "suitable_programmes": [],
+                "competitive_programmes": [],
                 "performance_level": self.performance_level,
                 "academic_score": self.academic_score,
                 "summary_message": (
                     "Upload readable WASSCE / academic results first. "
-                    "Recommendations only come from the KNUST Science, Engineering & "
-                    "Health Sciences cut-off catalogue matched to your grades."
+                    "Atlas combines your results, aggregate, learning profile, "
+                    "and challenge performance to recommend suitable programmes."
                 ),
                 "detailed_message": (
-                    "Atlas does not invent general programmes. "
-                    "Grades are required to compute your aggregate against official cut-offs."
+                    "Grades are required so Atlas can calculate your aggregate "
+                    "and keep recommendations close to your results."
                 ),
                 "grades_used": 0,
                 "knust": None,
+                "admission_insights": None,
                 "error": "grades_required",
             }
 
@@ -190,49 +194,56 @@ class RecommendationEngine:
         knust = apply_cutoff_boundaries(
             grades=self.academic_grades,
             family_fit_scores=family_fit,
-            limit_per_band=12,
+            limit_per_band=50,
+        )
+        selected = select_suitable_and_competitive(
+            grades=self.academic_grades,
+            family_fit_scores=family_fit,
+            limit=8,
         )
         agg = knust.get("aggregate") or {}
-        recommendations = self._programme_cards_from_bands(knust)
-
-        eligible_n = (knust.get("counts") or {}).get("eligible", 0)
-        stretch_n = (knust.get("counts") or {}).get("stretch", 0)
-        reach_n = (knust.get("counts") or {}).get("reach", 0)
+        suitable = selected.get("suitable") or []
+        competitive = selected.get("competitive") or []
 
         if agg.get("aggregate") is None:
             summary = (
                 "Could not compute a WASSCE aggregate from the uploaded grades "
                 "(need Core English, Core Mathematics, and enough other subjects). "
-                "Re-upload a clearer results slip — no programmes are recommended "
-                "until an aggregate can be calculated against KNUST cut-offs."
+                "Re-upload a clearer results slip to unlock programme recommendations."
             )
-            recommendations = []
+            suitable = []
+            competitive = []
         else:
             complete = "complete" if agg.get("complete") else "provisional"
             summary = (
                 f"Your estimated WASSCE aggregate is {agg['aggregate']} ({complete}). "
-                f"Matches are taken only from the KNUST {knust.get('cycle')} "
-                f"Science / Engineering / Health cut-off document: "
-                f"{eligible_n} eligible, {stretch_n} stretch"
-                f"{f', {reach_n} reach (shown separately)' if reach_n else ''}."
+                f"Atlas ranked programmes that fit your psychometric profile and challenge "
+                f"performance, then kept those whose admission points sit near your aggregate."
             )
-            if not recommendations:
+            if not suitable and not competitive:
                 summary += (
-                    " No programmes fall in the eligible or stretch bands for this aggregate; "
-                    "see Reach for aspirational options that need a stronger aggregate."
+                    " No close matches were found for this aggregate yet — "
+                    "try confirming your grades or strengthening weaker subjects."
                 )
 
         return {
-            "recommendations": recommendations,
+            "recommendations": suitable,
+            "suitable_programmes": suitable,
+            "competitive_programmes": competitive,
             "performance_level": self.performance_level,
             "academic_score": self.academic_score,
             "summary_message": summary,
             "detailed_message": (
-                "Every programme listed is from KNUST_Science_Engineering_Health_Cutoffs "
-                "(2025/2026). Soft profile signals only re-order programmes inside a band; "
-                "they never add programmes outside the document."
+                "Recommendations combine academic results, aggregate, psychometric profile, "
+                "and challenge performance. Competitive programmes match your strengths but "
+                "are typically more selective than your current aggregate."
             ),
             "grades_used": len(self.academic_grades),
             "knust": knust,
-            "error": None if recommendations or agg.get("aggregate") is not None else "aggregate_unavailable",
+            "admission_insights": {
+                "aggregate": agg.get("aggregate"),
+                "complete": agg.get("complete"),
+                "nearby_range": 2,
+            },
+            "error": None if suitable or competitive or agg.get("aggregate") is not None else "aggregate_unavailable",
         }

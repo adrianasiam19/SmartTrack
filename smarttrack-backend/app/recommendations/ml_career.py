@@ -41,7 +41,8 @@ def generate_ml_knust_alternate(
             "role": "alternate",
             "model": "knust_dt",
             "predictions": [],
-            "disclaimer": "ML alternate recommendations are disabled.",
+            "programmes": [],
+            "disclaimer": "Learning profile insights are disabled.",
         }
 
     try:
@@ -56,9 +57,11 @@ def generate_ml_knust_alternate(
             "role": "alternate",
             "model": "knust_dt",
             "predictions": [],
+            "programmes": [],
             "error": "model_unavailable",
             "disclaimer": (
-                "ML alternate could not load. Primary KNUST cut-off matches are unchanged."
+                "Learning profile insights are temporarily unavailable. "
+                "Your main programme recommendations are unchanged."
             ),
         }
 
@@ -79,10 +82,11 @@ def generate_ml_knust_alternate(
             "role": "alternate",
             "model": "knust_dt",
             "predictions": [],
+            "programmes": [],
             "error": "model_file_missing",
             "disclaimer": (
-                "Train the KNUST DT first (python -m ml_aspect.knust_dt.generate_data && "
-                "python -m ml_aspect.knust_dt.train). Primary cut-offs unchanged."
+                "Learning profile insights are temporarily unavailable. "
+                "Your main programme recommendations are unchanged."
             ),
         }
     except Exception as e:
@@ -92,29 +96,39 @@ def generate_ml_knust_alternate(
             "role": "alternate",
             "model": "knust_dt",
             "predictions": [],
+            "programmes": [],
             "error": "prediction_failed",
             "disclaimer": (
-                "ML alternate failed to run. Primary KNUST cut-off matches are unchanged."
+                "Learning profile insights could not be generated right now. "
+                "Your main programme recommendations are unchanged."
             ),
         }
+
+    from app.recommendations.presentation import format_ml_as_learner_programmes
+
+    aggregate = None
+    if knust_payload:
+        aggregate = (knust_payload.get("aggregate") or {}).get("aggregate")
+    learner_programmes = format_ml_as_learner_programmes(
+        predictions, aggregate=aggregate
+    )
 
     return {
         "enabled": True,
         "role": "alternate",
         "never_primary": True,
         "model": "knust_dt",
+        "title": "Learning profile insights",
         "gate": "eligible_or_stretch_only",
-        "university": "KNUST",
-        "cycle": (knust_payload or {}).get("cycle") or "2025/2026",
         "features": {
             "aggregate": features.get("aggregate"),
-            "pts_english": features.get("pts_english"),
-            "pts_core_maths": features.get("pts_core_maths"),
         },
         "predictions": predictions,
+        "programmes": learner_programmes,
         "disclaimer": (
-            "Alternate Decision Tree ranking inside your Eligible/Stretch KNUST "
-            "programmes only (rule-labeled teacher, no LLM). "
-            "Primary admissions list is still the cut-off bands above."
+            "Additional suggestions from Atlas' machine-learning model. "
+            "This model was trained on synthetic (simulated) student profiles for the MVP, "
+            "so results are exploratory and may be less accurate until real learner data is available."
         ),
+        "training_note": "synthetic_mvp",
     }

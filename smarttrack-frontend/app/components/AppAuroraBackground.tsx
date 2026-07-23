@@ -1,16 +1,11 @@
 "use client";
 
 import { AuroraBackground } from "@/components/ui/aurora-background";
-import { usePathname } from "next/navigation";
 
 /**
- * Fixed aurora layer behind app content.
- * Skipped on `/` so the intro landing keeps its own full-bleed look.
+ * Fixed aurora layer behind all app content.
  */
 export default function AppAuroraBackground() {
-  const pathname = usePathname();
-  if (pathname === "/") return null;
-
   return (
     <AuroraBackground
       aria-hidden
