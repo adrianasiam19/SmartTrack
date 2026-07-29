@@ -27,10 +27,13 @@ function formatApiDetail(detail: unknown): string {
       short_message?: string;
       title?: string;
       detail?: string;
+      code?: string;
     };
-    if (d.message) return d.message;
-    if (d.short_message) return d.short_message;
-    if (d.title) return d.title;
+    const parts: string[] = [];
+    if (d.title) parts.push(d.title);
+    if (d.message && d.message !== d.title) parts.push(d.message);
+    else if (d.short_message && d.short_message !== d.title) parts.push(d.short_message);
+    if (parts.length) return parts.join('\n\n');
     if (d.detail) return d.detail;
   }
   return 'Could not generate recommendations. Please try again.';
@@ -80,6 +83,9 @@ type RecommendationPayload = {
     disclaimer?: string;
     programmes?: ProgrammeCard[];
   } | null;
+  primary_source?: string;
+  used_fallback?: boolean;
+  learner_notice?: string | null;
 };
 
 type PhaseRecommendation = {
@@ -415,7 +421,6 @@ export default function RecommendationsPage() {
     result?.recommendations ||
     [];
   const competitive = result?.competitive_programmes || [];
-  const mlProgrammes = result?.ml_alternate?.programmes || [];
 
   if (loading) {
     return (
@@ -630,6 +635,11 @@ export default function RecommendationsPage() {
                   {result.summary_message && (
                     <p className="text-sm text-[#64748B] mb-4">{result.summary_message}</p>
                   )}
+                  {result.learner_notice ? (
+                    <p className="text-sm text-[#92400E] bg-[#FFFBEB] border border-[#FDE68A] rounded-xl px-4 py-3 mb-4 whitespace-pre-line">
+                      {result.learner_notice}
+                    </p>
+                  ) : null}
                   <div className="flex flex-wrap gap-3 text-sm">
                     {typeof result.grades_used === 'number' && (
                       <span className="px-3 py-1.5 rounded-lg bg-[#FFF7ED] text-[#C2410C] font-semibold">
@@ -662,19 +672,6 @@ export default function RecommendationsPage() {
                       You may wish to explore fee-paying or self-financing options where available.
                     </p>
                     <ProgrammeList items={competitive} onSelect={setSelected} />
-                  </section>
-                )}
-
-                {result.ml_alternate?.enabled && mlProgrammes.length > 0 && (
-                  <section className="space-y-3">
-                    <h3 className="text-lg font-bold text-[#1E293B]">
-                      Machine Learning Suggestions
-                    </h3>
-                    <p className="text-sm text-[#64748B]">
-                      {result.ml_alternate.disclaimer ||
-                        'Additional ML suggestions. Trained on synthetic MVP data, so treat as exploratory.'}
-                    </p>
-                    <ProgrammeList items={mlProgrammes} onSelect={setSelected} />
                   </section>
                 )}
               </motion.div>

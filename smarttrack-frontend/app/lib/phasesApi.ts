@@ -6,7 +6,7 @@ import { fetchWithAuth } from './authApi';
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
 /** Must match backend Settings.CHALLENGE_FORMAT_VERSION — stale sessions are regenerated. */
-export const CHALLENGE_FORMAT_VERSION = 5;
+export const CHALLENGE_FORMAT_VERSION = 10;
 
 export type LevelPublic = {
   id: number;
@@ -153,6 +153,8 @@ export async function submitPhaseAnswer(
     xp_earned: number;
     user_xp?: number;
     rank?: string;
+    streak?: number;
+    streak_incremented?: boolean;
     learning_nudge?: {
       subject: string;
       message?: string;
@@ -181,6 +183,8 @@ export async function completePhaseSession(sessionId: number) {
     session_xp?: number;
     user_xp?: number;
     rank?: string;
+    streak?: number;
+    streak_incremented?: boolean;
     learning_nudge?: {
       subject: string;
       message?: string;

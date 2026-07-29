@@ -1,35 +1,63 @@
 """
-Serve-time KNUST Decision Tree alternate ranker.
+Serve-time KNUST Decision Tree ranker.
 
 Flow:
   1. Build features (aggregate + subject points + traits/accuracies)
   2. predict_proba over KNUST programme classes
-  3. Keep ONLY programmes in Eligible ∪ Stretch from the primary cut-off payload
-  4. Sort by model probability → alternate list
-
-Never changes bands, aggregate, or XP. Never used as startup/primary.
+  3. Keep ONLY programmes in Eligible ∪ Stretch from the cut-off payload
+  4. Sort by model probability → ranked list
 """
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Any, Optional
 
 import joblib
-import numpy as np
 import pandas as pd
 
 from ml_aspect.knust_dt.features import FEATURE_COLUMNS, MISSING_SUBJECT_POINTS
 
+logger = logging.getLogger(__name__)
+
 MODEL_PATH = Path(__file__).resolve().parent / "knust_dt_model.pkl"
 _model_cache = None
+_model_load_error: str | None = None
+
+
+def model_status() -> dict[str, Any]:
+    """Lightweight probe for debug / self-test (does not force a reload)."""
+    return {
+        "path": str(MODEL_PATH),
+        "exists": MODEL_PATH.exists(),
+        "cached": _model_cache is not None,
+        "last_load_error": _model_load_error,
+    }
 
 
 def load_model(model_path: Optional[Path] = None):
-    global _model_cache
-    if _model_cache is None:
-        path = model_path or MODEL_PATH
-        _model_cache = joblib.load(path)
-    return _model_cache
+    """Load and cache the Decision Tree bundle. Raises on failure."""
+    global _model_cache, _model_load_error
+    if _model_cache is not None:
+        return _model_cache
+    path = Path(model_path) if model_path else MODEL_PATH
+    if not path.exists():
+        _model_load_error = f"Decision Tree model file not found: {path}"
+        logger.error(_model_load_error)
+        raise FileNotFoundError(_model_load_error)
+    try:
+        bundle = joblib.load(path)
+        _model_cache = bundle
+        _model_load_error = None
+        classes = getattr((bundle or {}).get("label_encoder"), "classes_", None)
+        n_classes = len(classes) if classes is not None else 0
+        logger.info("Loaded KNUST Decision Tree model from %s (%s classes)", path, n_classes)
+        return _model_cache
+    except Exception as exc:
+        _model_cache = None
+        _model_load_error = f"{type(exc).__name__}: {exc}"
+        logger.exception("Failed to load Decision Tree model from %s", path)
+        raise
 
 
 def grades_to_dt_features(

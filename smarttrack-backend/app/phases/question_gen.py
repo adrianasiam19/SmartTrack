@@ -24,11 +24,10 @@ from typing import Any
 import httpx
 
 from app.config import settings
-from app.media.educational_images import (
-    mentions_visual,
-    resolve_educational_image,
-)
-from app.media.labelled_diagrams import labels_legend_text, pick_labelled_diagram
+from app.media.educational_images import mentions_visual
+from app.media.image_plan import ImagePlanner
+from app.media.image_retrieval import retrieve_for_plan
+from app.media.labelled_diagrams import labels_legend_text
 from app.phases.academic_bank import select_question as select_from_bank
 from app.phases.adaptive import normalize_question_text
 from app.phases.curriculum_topics import (
@@ -119,15 +118,15 @@ TYPE_WEIGHTS: dict[str, dict[str, int]] = {
         "diagram_label": 2,
     },
     "social_studies": {
-        "mcq": 2,
+        "mcq": 3,
         "true_false": 2,
-        "fill_blank": 1,
+        "fill_blank": 2,
         "short_answer": 2,
         "matching": 2,
         "ordering": 2,
         "scenario": 3,
-        "image_mcq": 2,
-        "diagram_label": 1,
+        "image_mcq": 0,
+        "diagram_label": 0,
     },
     "core_maths": {
         "mcq": 3,
@@ -148,10 +147,14 @@ TYPE_WEIGHTS: dict[str, dict[str, int]] = {
         "matching": 2,
         "ordering": 2,
         "scenario": 3,
-        "image_mcq": 1,
+        "image_mcq": 0,
         "diagram_label": 0,
     },
 }
+
+# Free-search images are too unreliable for these subjects — text-only challenges.
+NO_IMAGE_SUBJECTS = frozenset({"english", "social_studies"})
+
 
 SHS_LEAK_RE = re.compile(
     r"\b(SHS\s*[123]|senior\s*high|WASSCE\s*past\s*paper|your\s*textbook|"
@@ -398,12 +401,111 @@ def _bind_image(payload: dict[str, Any], image: dict[str, Any] | None) -> dict[s
 
 def _strip_diagram_language(text: str) -> str:
     text = re.sub(
-        r"(?i)\b(study|look at|observe|examine)\s+the\s+(diagram|figure|image|picture|map|graph)\s*(below|above|shown)?[,:]?\s*",
+        r"(?i)\b(study|look at|observe|examine)\s+the\s+"
+        r"(diagram|figure|image|picture|map|graph|illustration|scene)\s*"
+        r"(below|above|shown|described)?[,:]?\s*",
         "",
         text,
     )
-    text = re.sub(r"(?i)\bthe\s+(diagram|figure|image)\s+shows\s+", "Regarding this concept: ", text)
+    text = re.sub(
+        r"(?i)\bthe\s+(diagram|figure|image|illustration)\s+shows\s+",
+        "Regarding this concept: ",
+        text,
+    )
+    text = re.sub(
+        r"(?i)\b(this|the)\s+(illustration|diagram|figure|image|picture)\b",
+        "this description",
+        text,
+    )
     return text.strip()
+
+
+def _detach_image(payload: dict[str, Any]) -> dict[str, Any]:
+    """Remove a bound image and any legend that depended on it."""
+    payload.pop("image", None)
+    opts = payload.get("options") if isinstance(payload.get("options"), dict) else None
+    if opts:
+        opts = dict(opts)
+        opts.pop("image", None)
+        opts.pop("legend", None)
+        payload["options"] = opts
+    return payload
+
+
+def _image_matches_text(image: dict[str, Any], text: str, concept: str = "") -> bool:
+    """Require real keyword overlap so we never show an unrelated figure."""
+    if (image.get("source") or "") == "atlas_svg":
+        # Atlas figures are authored for known topics — still check for hard conflicts
+        return not _image_question_conflict(image, text)
+    blob = f"{image.get('alt') or ''} {image.get('url') or ''} {image.get('concept') or ''}".lower()
+    stop = {
+        "the", "and", "for", "with", "from", "that", "this", "diagram", "figure",
+        "illustration", "educational", "image", "picture", "scene", "labelled",
+        "labeled", "africa", "ghana", "study", "shown", "below", "above",
+    }
+    raw = f"{concept} {text}"
+    tokens = {
+        t for t in re.split(r"[^a-z0-9]+", raw.lower())
+        if len(t) > 3 and t not in stop
+    }
+    if not tokens:
+        return False
+    hits = sum(1 for t in tokens if t in blob)
+    if hits < 2:
+        return False
+    return not _image_question_conflict(image, text)
+
+
+def _image_question_conflict(image: dict[str, Any], text: str) -> bool:
+    """True when the question topic and figure title clearly disagree."""
+    q = (text or "").lower()
+    img = f"{image.get('alt') or ''} {image.get('key') or ''}".lower()
+    pairs = [
+        (
+            r"\b(plane\s+mirror|incident\s+ray|angle of incidence|ray of light)\b",
+            r"\b(lake|mountain|landscape|forest|sunset|scenic|waterfall)\b",
+        ),
+        (
+            r"\b(pie\s*chart|bar\s*chart|histogram|number\s*line)\b",
+            r"\b(flower|landscape|portrait|animal|mountain|lake)\b",
+        ),
+        (
+            r"\b(plant\s+cell|chloroplast|vacuole)\b",
+            r"\b(animal\s+cell|heart|neuron|circuit|mirror)\b",
+        ),
+        (
+            r"\b(heart|circulatory|atrium|ventricle)\b",
+            r"\b(plant\s+cell|neuron|circuit|mirror|pie\s*chart)\b",
+        ),
+    ]
+    for q_re, img_re in pairs:
+        if re.search(q_re, q, re.I) and re.search(img_re, img, re.I):
+            return True
+    return False
+
+
+def _legend_for_image(image: dict[str, Any], *, labelled: bool) -> dict[str, str] | None:
+    """Legend must describe the bound figure — never an unrelated curriculum focus."""
+    if labelled and image.get("labels"):
+        return {
+            "title": "Diagram labels",
+            "hint": labels_legend_text(image),
+        }
+    chart = image.get("chart_data")
+    if isinstance(chart, dict) and chart:
+        bits = ", ".join(f"{k}: {v}" for k, v in chart.items())
+        return {
+            "title": "Read from the chart",
+            "hint": bits,
+        }
+    alt = str(image.get("alt") or "").strip()
+    if alt:
+        return {
+            "title": "What the figure shows",
+            "hint": alt,
+        }
+    return None
+
 
 
 async def _deepseek_json(messages: list[dict[str, str]], *, temperature: float = 0.75) -> dict[str, Any] | None:
@@ -445,55 +547,84 @@ async def _llm_question(
     curriculum_tag = phase_curriculum_label(phase_number)
     qtype = forced_type or _pick_question_type(subject, rng)
     topic = pick_curriculum_topic(phase_number, subject, rng)
-    topic_blob = f"{(topic or {}).get('topic','')} {(topic or {}).get('image_query','')} {subject}"
 
-    # Prefer Atlas labelled SVG whenever the type is diagram_label
-    labelled = False
-    image: dict[str, Any] | None = None
-    if qtype == "diagram_label" or (
-        subject == "integrated_science" and qtype == "image_mcq" and rng.random() < 0.45
-    ):
-        image = pick_labelled_diagram(topic_blob, subject)
-        labelled = bool(image)
-        if labelled:
-            qtype = "diagram_label"
+    qtype_l = (qtype or "").lower()
+    # English + Social Studies: never attach images (search quality is too weak).
+    if subject in NO_IMAGE_SUBJECTS:
+        if qtype_l in ("image_mcq", "diagram_label"):
+            qtype = "mcq"
+            qtype_l = "mcq"
 
-    wants_image = labelled or qtype in ("image_mcq", "diagram_label") or (
-        subject in ("integrated_science", "social_studies") and rng.random() < 0.3
+    prefer_labels = qtype_l in ("diagram_label",) or (
+        subject == "integrated_science" and qtype_l == "image_mcq" and rng.random() < 0.45
+    )
+    topic_needs_visual = bool(
+        subject not in NO_IMAGE_SUBJECTS
+        and topic
+        and re.search(
+            r"(?i)\b(image|diagram|map|chart|figure|illustration|inferring from images)\b",
+            f"{topic.get('topic') or ''} {topic.get('image_query') or ''}",
+        )
     )
 
-    image_block = ""
-    if wants_image and not image and topic:
-        image = await resolve_educational_image(
-            topic.get("image_query") or topic.get("topic") or label,
-            preferred_alt=topic.get("topic"),
+    # Image Planner (metadata only) → Image Retrieval Service
+    plan = ImagePlanner.plan_from_curriculum_topic(
+        topic,
+        subject=subject,
+        requires_labels=prefer_labels,
+        question_type=qtype,
+    )
+    wants_image = (
+        subject not in NO_IMAGE_SUBJECTS
+        and (
+            prefer_labels
+            or qtype_l in ("image_mcq", "diagram_label")
+            or topic_needs_visual
+            or (subject == "integrated_science" and rng.random() < 0.3)
         )
-        if not image:
-            wants_image = False
-            if qtype in ("image_mcq", "diagram_label"):
-                qtype = "mcq"
+    )
+    if not wants_image:
+        plan.needed = False
+
+    image: dict[str, Any] | None = None
+    labelled = False
+    image_block = ""
+    if plan.needed:
+        image = await retrieve_for_plan(plan)
+        labelled = bool(image and (image.get("source") == "atlas_svg" or image.get("labels")))
+        if labelled:
+            qtype = "diagram_label"
+        elif not image and qtype_l in ("image_mcq", "diagram_label"):
+            qtype = "mcq"
 
     if image:
         image_block = (
-            "An educational diagram is PROVIDED with this item. Write the question for it.\n"
+            "CRITICAL IMAGE ALIGNMENT RULES:\n"
+            "An educational figure was already selected. You MUST write the question "
+            "about THIS figure only — do not invent a different diagram, map, chart, "
+            "or scene.\n"
+            f"- Concept: {plan.concept}\n"
             f"- Image title/alt: {image.get('alt')}\n"
             f"- Source: {image.get('source')}\n"
-            f"- Attribution: {image.get('attribution')}\n"
         )
+        if image.get("chart_data"):
+            image_block += f"- Chart values: {image.get('chart_data')}\n"
+            image_block += (
+                "Ask a question that can be answered ONLY from these chart values.\n"
+            )
         if labelled and image.get("labels"):
             image_block += (
                 f"- Label key: {labels_legend_text(image)}\n"
                 "You MUST ask which letter (A/B/C/D) matches a structure from that key.\n"
-                "correct_answer must be the letter. choices should be the structure names or letters.\n"
+                "correct_answer must be the letter.\n"
             )
         else:
             image_block += (
-                f"- Curriculum topic: {(topic or {}).get('topic')}\n"
-                f"- Focus: {(topic or {}).get('focus')}\n"
                 "Do NOT ask about lettered labels on this unlabelled figure.\n"
+                "Do NOT mention plane mirrors, organs, or charts that are not visible "
+                "in the image title/alt above.\n"
             )
         if qtype == "fill_blank":
-            # Visual + fill blank is fragile; prefer MCQ/image types with images
             qtype = "image_mcq" if not labelled else "diagram_label"
 
     avoid = ""
@@ -514,6 +645,14 @@ async def _llm_question(
     else:
         band = "exam-hard / stretch"
 
+    topic_block = topic_prompt_block(topic)
+    if image and topic:
+        topic_block = (
+            f"Curriculum topic (internal): {topic.get('topic')}.\n"
+            "The provided figure overrides any conflicting focus — "
+            "ask only about what that figure actually shows.\n"
+        )
+
     prompt = (
         f"Generate ONE ORIGINAL {qtype} challenge item for Ghana secondary {label}.\n"
         f"Phase {phase_number}, Level {level_number} of 10 "
@@ -522,7 +661,7 @@ async def _llm_question(
         f"Hard constraint — curriculum scope (internal only): {scope}\n"
         f"Internal curriculum mapping: {curriculum_tag}. "
         f"Depth target: {target}. Do NOT write SHS/year labels into the question.\n"
-        f"{topic_prompt_block(topic)}"
+        f"{topic_block}"
         f"{image_block}"
         f"Difficulty MUST match {effective_difficulty} on a 1–15 scale ({band}).\n"
         f"Adaptive context: {performance_summary}\n"
@@ -540,6 +679,9 @@ async def _llm_question(
                     "content": (
                         "You are Atlas, an adaptive AI assessment designer for Ghana secondary learners. "
                         "Every item must be fully answerable from the text and any provided diagram. "
+                        "If a figure is provided, the question MUST match that figure exactly — "
+                        "never ask about a plane mirror when the figure is a landscape, "
+                        "never ask about a pie chart when the figure is something else. "
                         "Never reference missing charts/tables/images. "
                         "Never expose SHS labels. Reply with JSON only."
                     ),
@@ -560,10 +702,23 @@ async def _llm_question(
             fallback=qtype,
         )
 
-        # If model asks for labels but we only have a stock image, swap to Atlas SVG
-        if needs_labelled_diagram({"question_text": text, "question_type": resolved_type}) and not labelled:
-            svg = pick_labelled_diagram(f"{text} {topic_blob}", subject)
-            if svg:
+        # If model asks for labels but we don't have a labelled asset, re-plan + retrieve
+        if (
+            subject not in NO_IMAGE_SUBJECTS
+            and needs_labelled_diagram({"question_text": text, "question_type": resolved_type})
+            and not labelled
+        ):
+            label_plan = ImagePlanner.plan_from_curriculum_topic(
+                topic,
+                subject=subject,
+                requires_labels=True,
+                question_type="diagram_label",
+            )
+            if not label_plan.concept:
+                label_plan.concept = text[:80]
+                label_plan.search_keywords = [f"Labelled {label_plan.concept} Diagram"]
+            svg = await retrieve_for_plan(label_plan)
+            if svg and (svg.get("labels") or svg.get("source") == "atlas_svg"):
                 image = svg
                 labelled = True
                 resolved_type = "diagram_label"
@@ -635,16 +790,7 @@ async def _llm_question(
 
         legend = None
         if image:
-            if labelled and image.get("labels"):
-                legend = {
-                    "title": "Diagram labels",
-                    "hint": labels_legend_text(image),
-                }
-            elif topic:
-                legend = {
-                    "title": "What to look for",
-                    "hint": topic.get("focus") or "",
-                }
+            legend = _legend_for_image(image, labelled=labelled)
 
         payload: dict[str, Any] = {
             "question_text": text,
@@ -664,34 +810,47 @@ async def _llm_question(
 
         payload = _bind_image(payload, image)
 
+        # Hard ban: English / Social Studies never show images
+        if subject in NO_IMAGE_SUBJECTS:
+            payload = _detach_image(payload)
+            if resolved_type in ("image_mcq", "diagram_label"):
+                resolved_type = "mcq"
+                payload["question_type"] = "mcq"
+
+        # If we already have an image, it must match the question; otherwise drop it.
+        bound = payload.get("image") if isinstance(payload.get("image"), dict) else None
+        if bound and (
+            not _image_matches_text(
+                bound, text, concept=str((topic or {}).get("topic") or plan.concept or "")
+            )
+            or _image_question_conflict(bound, text)
+        ):
+            logger.info(
+                "Dropping mismatched image alt=%r for question about %r",
+                (bound.get("alt") or "")[:80],
+                text[:80],
+            )
+            payload = _detach_image(payload)
+            bound = None
+            # Also scrub visual language left over from the mismatched pair
+            payload["question_text"] = _strip_diagram_language(
+                str(payload.get("question_text") or text)
+            )
         # Hard quality gates — reject broken items so caller retries
         if resolved_type == "fill_blank" and not fill_blank_is_self_contained(payload):
             logger.info("Rejected incomplete fill_blank")
             return None
         if visual_without_image(payload):
-            # Last chance: attach labelled or stock image, else strip language
-            rescue = pick_labelled_diagram(f"{text} {topic_blob}", subject)
-            if not rescue and topic:
-                rescue = await resolve_educational_image(
-                    topic.get("image_query") or topic.get("topic") or "educational diagram",
-                    preferred_alt=topic.get("topic"),
-                )
-            if rescue:
-                payload = _bind_image(payload, rescue)
-                if rescue.get("source") == "atlas_svg":
-                    opts = dict(payload.get("options") or {})
-                    opts["legend"] = {
-                        "title": "Diagram labels",
-                        "hint": labels_legend_text(rescue),
-                    }
-                    payload["options"] = opts
-            else:
-                payload["question_text"] = _strip_diagram_language(text)
-                opts = payload.get("options") if isinstance(payload.get("options"), dict) else {}
-                if opts.get("template"):
-                    opts["template"] = _strip_diagram_language(str(opts["template"]))
-                if visual_without_image(payload):
-                    return None
+            # Prefer a text-only item over attaching an unrelated stock figure.
+            payload["question_text"] = _strip_diagram_language(
+                str(payload.get("question_text") or text)
+            )
+            opts = payload.get("options") if isinstance(payload.get("options"), dict) else {}
+            if opts.get("template"):
+                opts["template"] = _strip_diagram_language(str(opts["template"]))
+                payload["options"] = opts
+            if visual_without_image(payload):
+                return None
 
         return payload
     except Exception as exc:

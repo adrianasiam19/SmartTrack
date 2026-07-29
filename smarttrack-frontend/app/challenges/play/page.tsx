@@ -36,15 +36,17 @@ type SessionPayload = {
 async function syncUserFromServer(partial?: {
   xp?: number | null;
   rank?: string | null;
+  streak?: number | null;
 }) {
   try {
-    if (partial?.xp != null || partial?.rank) {
+    if (partial?.xp != null || partial?.rank || partial?.streak != null) {
       const cached = getStoredUser();
       if (cached) {
         storeUser({
           ...cached,
           xp: partial.xp ?? cached.xp,
           rank: partial.rank ?? cached.rank,
+          streak: partial.streak ?? cached.streak,
         });
       }
     }
@@ -164,14 +166,19 @@ function PhasePlayInner() {
     res: {
       user_xp?: number;
       rank?: string;
+      streak?: number;
       xp_earned: number;
       is_correct: boolean;
     },
     timedOut: boolean,
   ) {
-    if (typeof res.user_xp === 'number') {
-      setUserXp(res.user_xp);
-      void syncUserFromServer({ xp: res.user_xp, rank: res.rank });
+    if (typeof res.user_xp === 'number' || typeof res.streak === 'number') {
+      if (typeof res.user_xp === 'number') setUserXp(res.user_xp);
+      void syncUserFromServer({
+        xp: res.user_xp,
+        rank: res.rank,
+        streak: res.streak,
+      });
     }
 
     const xpBit = res.xp_earned > 0 ? ` · +${res.xp_earned} XP` : '';
@@ -198,11 +205,12 @@ function PhasePlayInner() {
       level_id: complete.level_id ?? sessionData.level_id,
     });
     setDone(true);
-    if (typeof complete.user_xp === 'number') {
-      setUserXp(complete.user_xp);
+    if (typeof complete.user_xp === 'number' || typeof complete.streak === 'number') {
+      if (typeof complete.user_xp === 'number') setUserXp(complete.user_xp);
       void syncUserFromServer({
         xp: complete.user_xp,
         rank: complete.rank,
+        streak: complete.streak,
       });
     }
     sessionStorage.removeItem('atlasPhaseSession');

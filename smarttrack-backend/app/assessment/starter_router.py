@@ -212,6 +212,9 @@ async def complete_session(
         current_user.starter_arena_completed = True
         current_user.onboarding_completed = True
         current_user.learner_profile = profile
+        from app.users.gamification import record_daily_challenge_streak
+
+        record_daily_challenge_streak(current_user)
         db.add(current_user)
         await db.commit()
         await db.refresh(current_user)

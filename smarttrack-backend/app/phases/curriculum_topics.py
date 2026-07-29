@@ -52,18 +52,18 @@ CURRICULUM_TOPICS: dict[int, dict[str, list[dict[str, str]]]] = {
         "social_studies": [
             {
                 "topic": "Map reading basics",
-                "image_query": "simple political world map educational",
-                "focus": "Identify continents or oceans visible on the map.",
+                "image_query": "",
+                "focus": "Explain how to read directions, symbols, or scale on a map using a text scenario.",
             },
             {
                 "topic": "Ghana's physical environment",
-                "image_query": "West Africa map Ghana highlighted",
-                "focus": "Locate Ghana or neighbouring countries on a regional map.",
+                "image_query": "",
+                "focus": "Describe Ghana's location, neighbours, or key physical features from written facts.",
             },
             {
                 "topic": "Environmental sanitation",
-                "image_query": "environmental pollution litter illustration",
-                "focus": "Identify the environmental problem shown and a good community response.",
+                "image_query": "",
+                "focus": "Identify pollution/sanitation problems and good community responses from a written scenario.",
             },
         ],
         "core_maths": [
@@ -80,9 +80,9 @@ CURRICULUM_TOPICS: dict[int, dict[str, list[dict[str, str]]]] = {
         ],
         "english": [
             {
-                "topic": "Picture comprehension",
-                "image_query": "students classroom discussion illustration",
-                "focus": "Infer the main idea or mood of the scene.",
+                "topic": "Reading comprehension",
+                "image_query": "",
+                "focus": "Infer main idea, mood, or purpose from a short written passage.",
             },
         ],
     },
@@ -110,8 +110,8 @@ CURRICULUM_TOPICS: dict[int, dict[str, list[dict[str, str]]]] = {
             },
             {
                 "topic": "Reflection of light",
-                "image_query": "reflection of light mirror ray diagram",
-                "focus": "Identify reflection and relate angle of incidence/reflection conceptually.",
+                "image_query": "plane mirror reflection ray diagram incident reflected normal",
+                "focus": "Use the ray diagram: incident ray, normal, reflected ray, and equal angles.",
             },
             {
                 "topic": "Reproduction in flowering plants",
@@ -122,18 +122,18 @@ CURRICULUM_TOPICS: dict[int, dict[str, list[dict[str, str]]]] = {
         "social_studies": [
             {
                 "topic": "Climate and vegetation",
-                "image_query": "Africa climate zones map educational",
-                "focus": "Relate map zones to climate/vegetation patterns.",
+                "image_query": "",
+                "focus": "Relate climate zones to vegetation patterns using written descriptions.",
             },
             {
                 "topic": "Population and settlement",
-                "image_query": "urban rural settlement illustration",
-                "focus": "Identify settlement type and related social issues.",
+                "image_query": "",
+                "focus": "Compare urban and rural settlement features and related social issues from text.",
             },
             {
                 "topic": "Natural resources of Ghana",
-                "image_query": "mining gold cocoa resources Ghana illustration",
-                "focus": "Identify a resource-related activity shown and its economic importance.",
+                "image_query": "",
+                "focus": "Explain the economic importance of Ghana's natural resources from a written scenario.",
             },
         ],
         "core_maths": [
@@ -150,9 +150,9 @@ CURRICULUM_TOPICS: dict[int, dict[str, list[dict[str, str]]]] = {
         ],
         "english": [
             {
-                "topic": "Inferring from images",
-                "image_query": "community market scene illustration Africa",
-                "focus": "Infer purpose, audience, or main idea from the scene.",
+                "topic": "Inferring meaning from text",
+                "image_query": "",
+                "focus": "Infer purpose, audience, or main idea from a short written description or passage.",
             },
         ],
     },
@@ -192,18 +192,18 @@ CURRICULUM_TOPICS: dict[int, dict[str, list[dict[str, str]]]] = {
         "social_studies": [
             {
                 "topic": "Governance and constitution",
-                "image_query": "democratic government branches diagram",
-                "focus": "Identify branches of government or democratic participation themes.",
+                "image_query": "",
+                "focus": "Explain branches of government or democratic participation from written facts.",
             },
             {
                 "topic": "Globalisation and development",
-                "image_query": "global trade shipping ports illustration",
-                "focus": "Relate the scene to trade, interdependence, or development.",
+                "image_query": "",
+                "focus": "Relate trade, interdependence, or development using a written scenario.",
             },
             {
                 "topic": "Map skills advanced (reinforcement)",
-                "image_query": "topographic map contour lines educational",
-                "focus": "Interpret overall map type (e.g. relief/contour) without inventing spot heights.",
+                "image_query": "",
+                "focus": "Interpret map types (e.g. relief/contour concepts) from written descriptions, not a figure.",
             },
         ],
         "core_maths": [
@@ -220,9 +220,9 @@ CURRICULUM_TOPICS: dict[int, dict[str, list[dict[str, str]]]] = {
         ],
         "english": [
             {
-                "topic": "Critical viewing",
-                "image_query": "public health poster campaign illustration",
-                "focus": "Identify purpose, tone, or intended audience of the visual text.",
+                "topic": "Critical reading of persuasive text",
+                "image_query": "",
+                "focus": "Identify purpose, tone, or intended audience of a short written campaign or notice.",
             },
         ],
     },
@@ -260,8 +260,13 @@ def pick_curriculum_topic(
 def topic_prompt_block(topic: dict[str, str] | None) -> str:
     if not topic:
         return ""
-    return (
-        f"Curriculum topic (internal): {topic.get('topic')}.\n"
-        f"Concept focus: {topic.get('focus')}.\n"
-        f"Preferred diagram search: {topic.get('image_query')}.\n"
-    )
+    lines = [
+        f"Curriculum topic (internal): {topic.get('topic')}.",
+        f"Concept focus: {topic.get('focus')}.",
+    ]
+    image_query = (topic.get("image_query") or "").strip()
+    if image_query:
+        lines.append(f"Preferred diagram search: {image_query}.")
+    else:
+        lines.append("Do NOT invent or refer to any diagram, map, image, or illustration.")
+    return "\n".join(lines) + "\n"

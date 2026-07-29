@@ -21,6 +21,9 @@ from app.learning.service import (
     TutorUnavailable,
     answer_lesson_question,
     generate_ai_lesson,
+    generate_explore_source,
+    resolve_explore_subject,
+    _slugify_topic,
 )
 from app.phases.models import UserSubjectPerformance
 from app.users.gamification import apply_xp
@@ -32,10 +35,11 @@ router = APIRouter(prefix="/learning", tags=["Learning Center"])
 LEVEL_PREFERENCE = {"SHS 1", "SHS 2", "SHS 3"}
 
 POPULAR_FALLBACK_IDS = [
-    "cm-s1-m1-l1",
-    "eng-s1-s5-l1",
-    "is-s1-m1-l1",
-    "ss-s1-m1-l1",
+    "coremath-m1t1",
+    "eng-lang-s5t1",
+    "int-sci-s1t1",
+    "soc-st-s1t1",
+    "bio-2-s4t1",
 ]
 
 
@@ -364,7 +368,7 @@ async def unified_search(
 async def list_or_search_topics(
     query: str = Query(default="", max_length=150),
     subject: str | None = Query(default=None, max_length=100),
-    limit: int = Query(default=50, ge=1, le=100),
+    limit: int = Query(default=100, ge=1, le=250),
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -377,6 +381,99 @@ async def list_or_search_topics(
         user=user,
         db=db,
     )
+
+
+class ExploreTopicRequest(BaseModel):
+    query: str = Field(min_length=2, max_length=150)
+    subject: str | None = Field(default=None, max_length=100)
+
+
+@router.post("/explore", response_model=TopicResponse)
+async def explore_topic(
+    body: ExploreTopicRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    When catalogue search misses, Atlas AI creates a learnable topic so the
+    student can open lesson notes and chat immediately.
+    """
+    title = body.query.strip()
+    if len(title) < 2:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Enter a topic to explore.",
+        )
+
+    matches = await unified_search(
+        q=title,
+        query=None,
+        subject=body.subject,
+        limit=5,
+        user=user,
+        db=db,
+    )
+    if matches:
+        best = matches[0]
+        existing = await db.execute(
+            select(CurriculumLesson).where(
+                CurriculumLesson.curriculum_id == best.curriculum_id
+            )
+        )
+        lesson = existing.scalar_one_or_none()
+        if lesson and _search_score(_normalise(title), lesson) >= 0.72:
+            return best
+
+    subject = resolve_explore_subject(body.subject, title)
+    curriculum_id = f"explore-{_slugify_topic(subject)}-{_slugify_topic(title)}"[:120]
+
+    existing_row = await db.execute(
+        select(CurriculumLesson).where(CurriculumLesson.curriculum_id == curriculum_id)
+    )
+    cached = existing_row.scalar_one_or_none()
+    if cached:
+        return _topic_from_lesson(cached, reason="Prepared by Atlas AI")
+
+    shs_level = _soft_level(user)
+    try:
+        source = await generate_explore_source(
+            title=title,
+            subject=subject,
+            shs_level=shs_level,
+        )
+    except TutorUnavailable as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Atlas AI could not prepare this topic. Please try again.",
+        ) from exc
+
+    search_bits = [
+        str(source.get("title") or title),
+        subject,
+        str(source.get("overview") or ""),
+        str(source.get("summary") or ""),
+        " ".join(str(x) for x in (source.get("key_concepts") or [])),
+        " ".join(str(x) for x in (source.get("explanations") or [])),
+    ]
+    lesson = CurriculumLesson(
+        curriculum_id=curriculum_id,
+        title=str(source.get("title") or title).strip()[:500],
+        subject=subject,
+        programme="Both",
+        shs_levels=[shs_level] if shs_level in LEVEL_PREFERENCE else ["SHS 1", "SHS 2"],
+        unit_id="atlas-explore",
+        difficulty=2,
+        estimated_minutes=15,
+        xp_reward=35,
+        source_content=source,
+        search_text=re.sub(r"\s+", " ", " ".join(search_bits)).strip().lower(),
+        ai_content_by_level={},
+        ai_content_version="v1",
+    )
+    db.add(lesson)
+    await db.commit()
+    await db.refresh(lesson)
+    return _topic_from_lesson(lesson, reason="Prepared by Atlas AI")
 
 
 @router.get("/library", response_model=LibraryHomeResponse)

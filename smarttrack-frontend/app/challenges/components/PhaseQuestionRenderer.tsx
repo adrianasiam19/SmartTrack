@@ -93,11 +93,6 @@ function EducationalImage({
           <p className="mt-1 text-xs text-[#475569] leading-relaxed">{legend.hint}</p>
         </div>
       ) : null}
-      {img.attribution ? (
-        <figcaption className="px-3 py-2 text-[11px] text-[#94A3B8]">
-          {img.attribution}
-        </figcaption>
-      ) : null}
     </figure>
   );
 }
