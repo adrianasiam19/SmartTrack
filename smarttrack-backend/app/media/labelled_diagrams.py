@@ -240,6 +240,153 @@ def neuron_labelled() -> dict[str, Any]:
     }
 
 
+def plane_mirror_reflection() -> dict[str, Any]:
+    """Plane mirror ray diagram — incident ray, normal, reflected ray."""
+    svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="640" height="420" viewBox="0 0 640 420">
+  <rect width="640" height="420" fill="#F8FAFC"/>
+  {_DEFS}
+  <text x="320" y="30" text-anchor="middle" font-size="18" font-family="Arial" font-weight="700" fill="#0F172A">Reflection at a plane mirror</text>
+  <line x1="320" y1="70" x2="320" y2="340" stroke="#64748B" stroke-width="10"/>
+  <line x1="328" y1="70" x2="328" y2="340" stroke="#94A3B8" stroke-width="2" stroke-dasharray="4 4"/>
+  <text x="360" y="60" font-size="13" font-family="Arial" fill="#475569">Plane mirror</text>
+  <line x1="320" y1="200" x2="200" y2="200" stroke="#0F172A" stroke-width="2" stroke-dasharray="6 4"/>
+  <line x1="80" y1="110" x2="320" y2="200" stroke="#DC2626" stroke-width="3" marker-end="url(#arrow)"/>
+  <line x1="320" y1="200" x2="80" y2="290" stroke="#2563EB" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M280 200 A40 40 0 0 0 295 170" fill="none" stroke="#166534" stroke-width="2"/>
+  <path d="M280 200 A40 40 0 0 1 295 230" fill="none" stroke="#166534" stroke-width="2"/>
+  <text x="250" y="175" font-size="12" font-family="Arial" fill="#166534">i</text>
+  <text x="250" y="235" font-size="12" font-family="Arial" fill="#166534">r</text>
+  {_label_marker(100, 90, "A", 160, 130)}
+  {_label_marker(140, 200, "B", 240, 200)}
+  {_label_marker(100, 310, "C", 160, 270)}
+  {_label_marker(400, 200, "D", 330, 200)}
+  <text x="40" y="390" font-size="12" font-family="Arial" fill="#334155">A = incident ray · B = normal · C = reflected ray · D = plane mirror</text>
+</svg>"""
+    return {
+        "url": _data_uri(svg),
+        "alt": "Labelled plane mirror reflection ray diagram showing incident ray, normal and reflected ray",
+        "attribution": "Atlas labelled diagram",
+        "source": "atlas_svg",
+        "license": "Atlas",
+        "labels": {
+            "A": "incident ray",
+            "B": "normal",
+            "C": "reflected ray",
+            "D": "plane mirror",
+        },
+        "key": "plane_mirror",
+    }
+
+
+def bar_chart_simple() -> dict[str, Any]:
+    svg = """<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400">
+  <rect width="640" height="400" fill="#F8FAFC"/>
+  <text x="320" y="28" text-anchor="middle" font-size="18" font-family="Arial" font-weight="700" fill="#0F172A">Bar chart — pupils in clubs</text>
+  <line x1="80" y1="340" x2="580" y2="340" stroke="#334155" stroke-width="2"/>
+  <line x1="80" y1="340" x2="80" y2="60" stroke="#334155" stroke-width="2"/>
+  <rect x="120" y="220" width="70" height="120" fill="#3B82F6"/>
+  <rect x="230" y="140" width="70" height="200" fill="#10B981"/>
+  <rect x="340" y="180" width="70" height="160" fill="#F59E0B"/>
+  <rect x="450" y="100" width="70" height="240" fill="#EF4444"/>
+  <text x="155" y="360" text-anchor="middle" font-size="13" font-family="Arial" fill="#334155">Drama</text>
+  <text x="265" y="360" text-anchor="middle" font-size="13" font-family="Arial" fill="#334155">Science</text>
+  <text x="375" y="360" text-anchor="middle" font-size="13" font-family="Arial" fill="#334155">Music</text>
+  <text x="485" y="360" text-anchor="middle" font-size="13" font-family="Arial" fill="#334155">Sport</text>
+  <text x="155" y="210" text-anchor="middle" font-size="12" font-family="Arial" fill="#0F172A">12</text>
+  <text x="265" y="130" text-anchor="middle" font-size="12" font-family="Arial" fill="#0F172A">20</text>
+  <text x="375" y="170" text-anchor="middle" font-size="12" font-family="Arial" fill="#0F172A">16</text>
+  <text x="485" y="90" text-anchor="middle" font-size="12" font-family="Arial" fill="#0F172A">24</text>
+  <text x="40" y="200" font-size="12" font-family="Arial" fill="#64748B" transform="rotate(-90 40 200)">Number of pupils</text>
+</svg>"""
+    return {
+        "url": _data_uri(svg),
+        "alt": "Bar chart of pupils in Drama Science Music and Sport clubs",
+        "attribution": "Atlas educational chart",
+        "source": "atlas_svg",
+        "license": "Atlas",
+        "labels": None,
+        "key": "bar_chart",
+        "chart_data": {"Drama": 12, "Science": 20, "Music": 16, "Sport": 24},
+    }
+
+
+def pie_chart_simple() -> dict[str, Any]:
+    svg = """<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400">
+  <rect width="640" height="400" fill="#F8FAFC"/>
+  <text x="320" y="28" text-anchor="middle" font-size="18" font-family="Arial" font-weight="700" fill="#0F172A">Pie chart — favourite subjects</text>
+  <circle cx="280" cy="210" r="120" fill="#3B82F6"/>
+  <path d="M280 210 L280 90 A120 120 0 0 1 383 265 Z" fill="#10B981"/>
+  <path d="M280 210 L383 265 A120 120 0 0 1 200 310 Z" fill="#F59E0B"/>
+  <path d="M280 210 L200 310 A120 120 0 0 1 280 90 Z" fill="#EF4444"/>
+  <rect x="440" y="120" width="18" height="18" fill="#3B82F6"/><text x="468" y="134" font-size="13" font-family="Arial" fill="#334155">Maths 25%</text>
+  <rect x="440" y="155" width="18" height="18" fill="#10B981"/><text x="468" y="169" font-size="13" font-family="Arial" fill="#334155">Science 35%</text>
+  <rect x="440" y="190" width="18" height="18" fill="#F59E0B"/><text x="468" y="204" font-size="13" font-family="Arial" fill="#334155">English 20%</text>
+  <rect x="440" y="225" width="18" height="18" fill="#EF4444"/><text x="468" y="239" font-size="13" font-family="Arial" fill="#334155">History 20%</text>
+</svg>"""
+    return {
+        "url": _data_uri(svg),
+        "alt": "Pie chart of favourite subjects Maths Science English History",
+        "attribution": "Atlas educational chart",
+        "source": "atlas_svg",
+        "license": "Atlas",
+        "labels": None,
+        "key": "pie_chart",
+        "chart_data": {"Maths": 25, "Science": 35, "English": 20, "History": 20},
+    }
+
+
+def number_line_simple() -> dict[str, Any]:
+    ticks = "".join(
+        f'<line x1="{x}" y1="108" x2="{x}" y2="132" stroke="#1E3A8A" stroke-width="2"/>'
+        f'<text x="{x}" y="160" text-anchor="middle" font-size="14" font-family="Arial" fill="#0F172A">{n}</text>'
+        for n, x in zip(range(-3, 5), range(100, 540, 60))
+    )
+    svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="640" height="220" viewBox="0 0 640 220">
+  <rect width="640" height="220" fill="#F8FAFC"/>
+  <text x="320" y="36" text-anchor="middle" font-size="18" font-family="Arial" font-weight="700" fill="#0F172A">Number line</text>
+  <line x1="60" y1="120" x2="580" y2="120" stroke="#1E3A8A" stroke-width="3"/>
+  <polygon points="580,120 560,110 560,130" fill="#1E3A8A"/>
+  <polygon points="60,120 80,110 80,130" fill="#1E3A8A"/>
+  {ticks}
+  <circle cx="280" cy="120" r="8" fill="#DC2626"/>
+  <text x="280" y="95" text-anchor="middle" font-size="13" font-family="Arial" fill="#DC2626">P</text>
+</svg>"""
+    return {
+        "url": _data_uri(svg),
+        "alt": "Number line from -3 to 4 with point P at 0",
+        "attribution": "Atlas educational chart",
+        "source": "atlas_svg",
+        "license": "Atlas",
+        "labels": None,
+        "key": "number_line",
+    }
+
+
+def linear_graph_simple() -> dict[str, Any]:
+    svg = """<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400">
+  <rect width="640" height="400" fill="#F8FAFC"/>
+  <text x="320" y="28" text-anchor="middle" font-size="18" font-family="Arial" font-weight="700" fill="#0F172A">Straight-line graph y = x + 1</text>
+  <line x1="80" y1="320" x2="560" y2="320" stroke="#334155" stroke-width="2"/>
+  <line x1="200" y1="60" x2="200" y2="340" stroke="#334155" stroke-width="2"/>
+  <text x="550" y="345" font-size="13" font-family="Arial" fill="#334155">x</text>
+  <text x="210" y="70" font-size="13" font-family="Arial" fill="#334155">y</text>
+  <line x1="120" y1="280" x2="480" y2="100" stroke="#2563EB" stroke-width="3"/>
+  <circle cx="200" cy="240" r="5" fill="#DC2626"/>
+  <circle cx="280" cy="200" r="5" fill="#DC2626"/>
+  <circle cx="360" cy="160" r="5" fill="#DC2626"/>
+  <text x="40" y="380" font-size="12" font-family="Arial" fill="#475569">Points shown on the line: (0,1), (2,3), (4,5)</text>
+</svg>"""
+    return {
+        "url": _data_uri(svg),
+        "alt": "Linear graph of y equals x plus 1 on a coordinate plane",
+        "attribution": "Atlas educational chart",
+        "source": "atlas_svg",
+        "license": "Atlas",
+        "labels": None,
+        "key": "linear_graph",
+    }
+
+
 _CATALOG = {
     "plant_cell": plant_cell_labelled,
     "animal_cell": animal_cell_labelled,
@@ -247,6 +394,11 @@ _CATALOG = {
     "circuit": circuit_labelled,
     "flower": flower_labelled,
     "neuron": neuron_labelled,
+    "plane_mirror": plane_mirror_reflection,
+    "bar_chart": bar_chart_simple,
+    "pie_chart": pie_chart_simple,
+    "number_line": number_line_simple,
+    "linear_graph": linear_graph_simple,
 }
 
 
@@ -257,16 +409,31 @@ _TOPIC_HINTS = [
     (("circuit", "resistor", "battery", "bulb", "switch", "lamp"), "circuit"),
     (("flower", "petal", "ovary", "anther", "stamen", "pollination"), "flower"),
     (("neuron", "axon", "dendrite", "nervous"), "neuron"),
+    (
+        (
+            "plane mirror",
+            "reflection of light",
+            "incident ray",
+            "reflected ray",
+            "angle of incidence",
+            "ray diagram",
+            "mirror ray",
+        ),
+        "plane_mirror",
+    ),
+    (("bar chart", "bar graph", "simple bar"), "bar_chart"),
+    (("pie chart", "pie graph"), "pie_chart"),
+    (("number line",), "number_line"),
+    (("linear graph", "straight-line graph", "coordinate plane", "y = x"), "linear_graph"),
 ]
 
 
 def pick_labelled_diagram(topic_text: str = "", subject: str = "") -> dict[str, Any] | None:
+    """Return a matching Atlas diagram when topic text strongly matches a known figure."""
     blob = f"{subject} {topic_text}".lower()
     for keys, name in _TOPIC_HINTS:
         if any(k in blob for k in keys):
             return _CATALOG[name]()
-    if subject == "integrated_science":
-        return plant_cell_labelled()
     return None
 
 

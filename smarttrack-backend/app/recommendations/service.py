@@ -11,6 +11,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.phases.models import Phase, UserSubjectPerformance
 from app.phases.service import unlock_next_phase_after_recommendation
 from app.psychometrics.models import PsychometricOption, UserPsychometricBankResponse
+from app.recommendations.cutoffs import apply_cutoff_boundaries
+from app.recommendations.ml_career import generate_ml_knust_alternate
 from app.recommendations.models import Recommendation
 from app.recommendations.presentation import (
     build_psychometric_prose,
@@ -107,7 +109,24 @@ async def generate_phase_recommendation(
             limit=6,
         )
         agg = (selected.get("aggregate") or {}).get("aggregate")
-        suggestions = selected.get("suitable") or []
+        # ML Decision Tree is primary; cut-off list is silent fallback.
+        knust_payload = apply_cutoff_boundaries(
+            grades=grades,
+            family_fit_scores=family_fit,
+            limit_per_band=50,
+        )
+        trait_floats = {k: float(v) for k, v in trait_scores.items()}
+        ml = generate_ml_knust_alternate(
+            academic_grades=grades,
+            behavioral_traits=trait_floats,
+            skill_estimates={},
+            knust_payload=knust_payload,
+        )
+        if ml.get("enabled") and ml.get("programmes"):
+            suggestions = list(ml.get("programmes") or [])[:6]
+        else:
+            suggestions = selected.get("suitable") or []
+
         if agg is not None:
             challenge_bit = (
                 f" Your challenge work has been especially strong in {', '.join(strong_subjects)}."

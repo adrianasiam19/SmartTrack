@@ -321,10 +321,10 @@ def format_ml_as_learner_programmes(
             "family_fit_score": int(round(float(pred.get("confidence") or 0) * 100)),
         }
         why = (
-            f"Atlas' learning profile model also highlighted {name} based on your "
-            f"subject pattern, challenge performance, and psychometric signals."
+            f"Atlas matched {name} to your subject pattern, challenge performance, "
+            f"and psychometric profile."
         )
-        out.append(enrich_programme(item, why=why, method="learning_profile_model"))
+        out.append(enrich_programme(item, why=why, method="ml_decision_tree"))
     return out
 
 

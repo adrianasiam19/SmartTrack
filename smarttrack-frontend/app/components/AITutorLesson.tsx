@@ -246,6 +246,22 @@ export default function AITutorLesson({
         <div className="space-y-5">
           <Panel title="Overview">
             <p className="text-gray-600 leading-relaxed">{lesson.simple_introduction}</p>
+            {lesson.visual_aid?.url ? (
+              <figure className="mt-5 overflow-hidden rounded-xl border border-gray-200 bg-[#F8FAFC]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={lesson.visual_aid.url}
+                  alt={lesson.visual_aid.alt || lesson.topic_title}
+                  referrerPolicy="no-referrer"
+                  className="w-full max-h-80 object-contain"
+                />
+                {lesson.visual_aid.legend ? (
+                  <figcaption className="px-3 py-2 text-xs text-[#475569] border-t border-gray-100">
+                    {lesson.visual_aid.legend}
+                  </figcaption>
+                ) : null}
+              </figure>
+            ) : null}
             <p className="mt-4 text-gray-600 leading-relaxed">{lesson.short_summary}</p>
           </Panel>
           {lesson.important_points.length > 0 ? (

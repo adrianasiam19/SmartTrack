@@ -29,7 +29,7 @@ from app.phases.adaptive import (
 )
 from app.phases.models import Level, Phase, UserLevelProgress, UserPhaseProgress, UserSubjectPerformance
 from app.phases.question_gen import generate_subject_question
-from app.users.gamification import apply_xp, rank_for_xp
+from app.users.gamification import apply_xp, rank_for_xp, record_daily_challenge_streak
 from app.users.models import User
 
 logger = logging.getLogger(__name__)
@@ -397,6 +397,9 @@ async def submit_answer(
         user_rank = user.rank
         user_xp = user.xp or 0
 
+    # Any answered challenge question counts toward the daily activity streak.
+    streak_info = record_daily_challenge_streak(user)
+
     cfg = _adaptive_cfg()
     level = None
     phase_floor = 1
@@ -444,6 +447,8 @@ async def submit_answer(
         "xp_earned": xp_earned,
         "user_xp": user_xp,
         "rank": user_rank,
+        "streak": streak_info.get("streak"),
+        "streak_incremented": streak_info.get("incremented"),
         "learning_nudge": nudge,
     }
 
@@ -561,6 +566,8 @@ async def complete_session(db: AsyncSession, user_id: uuid.UUID, session_id: int
     await db.commit()
 
     user = (await db.execute(select(User).where(User.id == user_id))).scalar_one()
+    streak_info = record_daily_challenge_streak(user)
+    await db.commit()
     return {
         "passed": passed,
         "score": score,
@@ -574,6 +581,8 @@ async def complete_session(db: AsyncSession, user_id: uuid.UUID, session_id: int
         "session_xp": session.total_xp,
         "user_xp": user.xp or 0,
         "rank": user.rank or rank_for_xp(user.xp or 0),
+        "streak": streak_info.get("streak"),
+        "streak_incremented": streak_info.get("incremented"),
     }
 
 

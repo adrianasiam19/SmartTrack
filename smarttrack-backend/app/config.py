@@ -60,16 +60,20 @@ class Settings(BaseSettings):
     CHALLENGE_EXCLUDE_HISTORY: int = 80
     PSYCHO_CHECKPOINT_COUNT: int = 8  # one question from each of 8 varied categories
 
-    # ── ML alternate recommendations (never primary / startup) ─────────────
-    # When true, generate endpoint may attach ml_alternate after KNUST cut-offs.
+    # ── ML programme recommendations (Decision Tree is primary) ───────────
+    ML_RECOMMENDATIONS_ENABLED: bool = True
+    ML_RECOMMENDATIONS_TOP_N: int = 8
+    # Legacy aliases (still accepted via env for older .env files)
     ML_ALTERNATE_ENABLED: bool = True
     ML_ALTERNATE_TOP_N: int = 5
+    # When true (or ENVIRONMENT=development), attach recommendation debug payload.
+    RECOMMENDATION_DEBUG: bool = False
 
     PIXABAY_API_KEY: str = ""
     EDUCATIONAL_IMAGES_ENABLED: bool = True
     EDUCATIONAL_IMAGE_CACHE_PATH: str = "data/educational_image_cache.json"
     # Bump when challenge question payload / UI contract changes (invalidates old clients).
-    CHALLENGE_FORMAT_VERSION: int = 5
+    CHALLENGE_FORMAT_VERSION: int = 10
 
     @property
     def cors_origins_list(self) -> List[str]:
