@@ -260,13 +260,13 @@ async def update_daily_streak_progress(
     await db.flush()
 
     if body.completed:
-        from app.users.gamification import apply_xp
+        from app.users.gamification import apply_xp, record_daily_challenge_streak
 
         level_xp_map = {1: 100, 2: 150, 3: 200}
         xp_reward = level_xp_map.get(body.level_id, 100)
         xp_earned, _rank, _user_xp = apply_xp(current_user, xp_reward)
-        current_user.streak = (current_user.streak or 0) + 1
-        streak_updated = True
+        streak_info = record_daily_challenge_streak(current_user)
+        streak_updated = bool(streak_info.get("incremented"))
         await db.flush()
 
     await db.commit()

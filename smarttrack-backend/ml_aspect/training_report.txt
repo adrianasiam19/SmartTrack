@@ -1,0 +1,44 @@
+ATLAS Career Recommendation Model — Training Report
+=======================================================
+
+Dataset: synthetic_students.csv (6000 students)
+Train/Test split: 4800 / 1200
+
+Top-1 accuracy: 0.834
+Top-3 accuracy: 0.998
+
+Per-class report:
+                        precision    recall  f1-score   support
+
+            accounting       0.87      0.90      0.89        73
+           agriculture       0.90      0.97      0.93        73
+       banking-finance       0.70      0.70      0.70        81
+      computer-science       0.88      0.90      0.89        73
+             economics       0.61      0.61      0.61        72
+             education       0.77      0.70      0.73        69
+electrical-engineering       0.71      0.68      0.69        77
+     engineering-civil       0.66      0.65      0.66        78
+            journalism       0.84      0.86      0.85        71
+                   law       0.96      0.96      0.96        80
+             marketing       0.97      1.00      0.99        75
+      medicine-surgery       0.87      0.90      0.88        77
+               nursing       0.91      0.94      0.93        72
+              pharmacy       0.88      0.76      0.81        75
+            psychology       0.81      0.86      0.83        73
+ public-administration       0.99      0.94      0.96        81
+
+              accuracy                           0.83      1200
+             macro avg       0.83      0.83      0.83      1200
+          weighted avg       0.83      0.83      0.83      1200
+
+Top 10 feature importances:
+trait_empathy                  0.124013
+trait_creative                 0.106734
+trait_practical                0.106658
+trait_leadership               0.078095
+trait_social                   0.072861
+trait_analytical               0.060438
+wassce_literature              0.046013
+wassce_economics               0.042957
+wassce_biology                 0.036892
+wassce_financial_accounting    0.033995

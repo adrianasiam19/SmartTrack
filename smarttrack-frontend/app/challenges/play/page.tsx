@@ -4,21 +4,23 @@ import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Sidebar from '../../components/Sidebar';
 import BottomNav from '../../components/BottomNav';
+import PhaseQuestionRenderer, {
+  answerReady,
+  type PhaseQuestion,
+} from '../components/PhaseQuestionRenderer';
 import {
   completePhaseSession,
   startLevel,
   submitPhaseAnswer,
+  refreshPhaseSessionIfStale,
+  storePhaseSession,
 } from '../../lib/phasesApi';
 import { getCurrentUser, getStoredUser, storeUser } from '../../lib/authApi';
 
 const QUESTION_TIMEOUT = 60;
 
-type Q = {
-  id: number;
-  subject: string;
-  question_text: string;
-  options: Record<string, string> | null;
-  difficulty?: number;
+type Q = PhaseQuestion & {
+  options: Record<string, unknown> | null;
 };
 
 type SessionPayload = {
@@ -26,21 +28,25 @@ type SessionPayload = {
   level_id: number;
   phase_number: number;
   level_number: number;
+  is_replay?: boolean;
+  format_version?: number;
   questions: Q[];
 };
 
 async function syncUserFromServer(partial?: {
   xp?: number | null;
   rank?: string | null;
+  streak?: number | null;
 }) {
   try {
-    if (partial?.xp != null || partial?.rank) {
+    if (partial?.xp != null || partial?.rank || partial?.streak != null) {
       const cached = getStoredUser();
       if (cached) {
         storeUser({
           ...cached,
           xp: partial.xp ?? cached.xp,
           rank: partial.rank ?? cached.rank,
+          streak: partial.streak ?? cached.streak,
         });
       }
     }
@@ -64,7 +70,6 @@ function PhasePlayInner() {
   const [timeLeft, setTimeLeft] = useState(QUESTION_TIMEOUT);
   const [userXp, setUserXp] = useState<number | null>(null);
   const [startingNext, setStartingNext] = useState(false);
-  const [redoing, setRedoing] = useState(false);
   const [actionError, setActionError] = useState('');
   const [result, setResult] = useState<{
     passed: boolean;
@@ -94,18 +99,22 @@ function PhasePlayInner() {
   const advanceTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const raw = sessionStorage.getItem('atlasPhaseSession');
-    if (!raw) {
-      router.replace('/challenges');
-      return;
-    }
-    try {
-      setSession(JSON.parse(raw) as SessionPayload);
-    } catch {
-      router.replace('/challenges');
-    }
-    const cached = getStoredUser();
-    if (cached) setUserXp(cached.xp ?? 0);
+    let cancelled = false;
+    const load = async () => {
+      const fresh = await refreshPhaseSessionIfStale();
+      if (cancelled) return;
+      if (!fresh) {
+        router.replace('/challenges');
+        return;
+      }
+      setSession(fresh as unknown as SessionPayload);
+      const cached = getStoredUser();
+      if (cached) setUserXp(cached.xp ?? 0);
+    };
+    void load();
+    return () => {
+      cancelled = true;
+    };
   }, [router, searchParams]);
 
   useEffect(() => {
@@ -121,14 +130,6 @@ function PhasePlayInner() {
   }, [session]);
 
   const question = useMemo(() => session?.questions[index] ?? null, [session, index]);
-
-  const options = useMemo(() => {
-    if (!question?.options) return [] as { key: string; text: string }[];
-    return Object.entries(question.options).map(([key, text]) => ({
-      key,
-      text: String(text),
-    }));
-  }, [question]);
 
   // Reset UI + start a clean 60s countdown for each question
   useEffect(() => {
@@ -165,14 +166,19 @@ function PhasePlayInner() {
     res: {
       user_xp?: number;
       rank?: string;
+      streak?: number;
       xp_earned: number;
       is_correct: boolean;
     },
     timedOut: boolean,
   ) {
-    if (typeof res.user_xp === 'number') {
-      setUserXp(res.user_xp);
-      void syncUserFromServer({ xp: res.user_xp, rank: res.rank });
+    if (typeof res.user_xp === 'number' || typeof res.streak === 'number') {
+      if (typeof res.user_xp === 'number') setUserXp(res.user_xp);
+      void syncUserFromServer({
+        xp: res.user_xp,
+        rank: res.rank,
+        streak: res.streak,
+      });
     }
 
     const xpBit = res.xp_earned > 0 ? ` · +${res.xp_earned} XP` : '';
@@ -199,11 +205,12 @@ function PhasePlayInner() {
       level_id: complete.level_id ?? sessionData.level_id,
     });
     setDone(true);
-    if (typeof complete.user_xp === 'number') {
-      setUserXp(complete.user_xp);
+    if (typeof complete.user_xp === 'number' || typeof complete.streak === 'number') {
+      if (typeof complete.user_xp === 'number') setUserXp(complete.user_xp);
       void syncUserFromServer({
         xp: complete.user_xp,
         rank: complete.rank,
+        streak: complete.streak,
       });
     }
     sessionStorage.removeItem('atlasPhaseSession');
@@ -220,7 +227,7 @@ function PhasePlayInner() {
     lockRef.current = true;
 
     const answer = selectedRef.current.trim();
-    if (!timedOut && !answer) {
+    if (!timedOut && (!answer || (currentQuestion && !answerReady(currentQuestion, answer)))) {
       lockRef.current = false;
       return;
     }
@@ -273,7 +280,7 @@ function PhasePlayInner() {
 
   if (!session || !question) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC]">
+      <div className="min-h-screen bg-transparent">
         <Sidebar />
         <main className="w-full max-w-2xl mx-auto px-4 sm:px-6 pt-20 lg:pt-10 pb-28 text-[#64748B]">
           Loading session…
@@ -284,8 +291,7 @@ function PhasePlayInner() {
   }
 
   if (done && result) {
-    const busyAction = startingNext || redoing;
-    const currentLevelId = result.level_id ?? session.level_id;
+    const busyAction = startingNext;
 
     const onContinueNextLevel = async () => {
       if (!result.next_level_id || busyAction) return;
@@ -293,7 +299,7 @@ function PhasePlayInner() {
       setActionError('');
       try {
         const sessionPayload = await startLevel(result.next_level_id);
-        sessionStorage.setItem('atlasPhaseSession', JSON.stringify(sessionPayload));
+        storePhaseSession(sessionPayload);
         window.location.href = `/challenges/play?session=${sessionPayload.session_id}`;
       } catch (e) {
         setActionError(
@@ -303,35 +309,19 @@ function PhasePlayInner() {
       }
     };
 
-    const onRedoLevel = async () => {
-      if (!currentLevelId || busyAction) return;
-      setRedoing(true);
-      setActionError('');
-      try {
-        const sessionPayload = await startLevel(currentLevelId);
-        sessionStorage.setItem('atlasPhaseSession', JSON.stringify(sessionPayload));
-        window.location.href = `/challenges/play?session=${sessionPayload.session_id}`;
-      } catch (e) {
-        setActionError(e instanceof Error ? e.message : 'Could not redo level');
-        setRedoing(false);
-      }
-    };
-
     const hasPrimary =
-      result.next === 'psychometric_checkpoint' ||
-      (result.passed && !!result.next_level_id) ||
-      !result.passed;
+      result.next === 'psychometric_checkpoint' || !!result.next_level_id;
 
     return (
-      <div className="min-h-screen bg-[#F8FAFC]">
+      <div className="min-h-screen bg-transparent">
         <Sidebar />
         <main className="w-full max-w-xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-10 pb-28">
           <h1 className="text-2xl font-semibold text-[#0F172A]">
             Level complete
           </h1>
           <p className="mt-3 text-[#64748B]">
-            Score {(result.score * 100).toFixed(0)}% —{' '}
-            {result.passed ? 'passed' : 'below the pass threshold (70%).'}
+            Score {(result.score * 100).toFixed(0)}% — keep going. Difficulty
+            adapts by subject for your next level.
           </p>
           {typeof result.session_xp === 'number' ? (
             <p className="mt-2 text-sm font-medium text-[#2563EB]">
@@ -395,7 +385,7 @@ function PhasePlayInner() {
                 Continue to psychometric checkpoint
               </button>
             ) : null}
-            {result.passed && result.next_level_id ? (
+            {result.next_level_id ? (
               <button
                 type="button"
                 disabled={busyAction}
@@ -403,16 +393,6 @@ function PhasePlayInner() {
                 onClick={() => void onContinueNextLevel()}
               >
                 {startingNext ? 'Starting…' : 'Continue to next level'}
-              </button>
-            ) : null}
-            {!result.passed && currentLevelId ? (
-              <button
-                type="button"
-                disabled={busyAction}
-                className="rounded-lg bg-[#2563EB] text-white px-4 py-2.5 font-medium disabled:opacity-50"
-                onClick={() => void onRedoLevel()}
-              >
-                {redoing ? 'Starting…' : 'Redo level'}
               </button>
             ) : null}
             <button
@@ -438,10 +418,21 @@ function PhasePlayInner() {
     timeLeft <= 10 ? 'bg-red-500' : timeLeft <= 20 ? 'bg-[#D97706]' : 'bg-[#4F46E5]';
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-transparent">
       <Sidebar />
       <main className="w-full max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-10 pb-28">
-        <div className="flex items-center justify-between gap-3">
+        <button
+          type="button"
+          onClick={() => router.push('/challenges')}
+          className="inline-flex items-center gap-2 rounded-full border border-[#BFDBFE] bg-white px-4 py-2 text-sm font-semibold text-[#2563EB] shadow-sm transition hover:border-[#2563EB] hover:bg-[#EFF6FF]"
+        >
+          <span aria-hidden className="text-base leading-none">
+            ←
+          </span>
+          All phases
+        </button>
+
+        <div className="mt-5 flex items-center justify-between gap-3">
           <p className="text-sm text-[#64748B]">
             Phase {session.phase_number} · Level {session.level_number} ·{' '}
             {index + 1}/{session.questions.length} · {QUESTION_TIMEOUT}s each
@@ -476,33 +467,20 @@ function PhasePlayInner() {
           />
         </div>
 
-        <h1 className="mt-4 text-xl font-semibold text-[#0F172A]">
-          {question.question_text}
-        </h1>
-        <div className="mt-6 space-y-3">
-          {options.map((opt) => (
-            <button
-              key={opt.key}
-              type="button"
-              disabled={busy}
-              onClick={() => setSelected(opt.key)}
-              className={`w-full text-left rounded-xl border px-4 py-3 transition ${
-                selected === opt.key
-                  ? 'border-[#2563EB] bg-[#EFF6FF]'
-                  : 'border-slate-200 bg-white hover:border-slate-300'
-              }`}
-            >
-              <span className="font-medium mr-2">{opt.key}.</span>
-              {opt.text}
-            </button>
-          ))}
+        <div className="mt-4">
+          <PhaseQuestionRenderer
+            question={question}
+            busy={busy}
+            value={selected}
+            onChange={setSelected}
+          />
         </div>
         {feedback ? (
           <p className="mt-4 text-sm text-[#475569]">{feedback}</p>
         ) : null}
         <button
           type="button"
-          disabled={!selected || busy}
+          disabled={!answerReady(question, selected) || busy}
           onClick={() => void submitCurrent(false)}
           className="mt-6 rounded-lg bg-[#2563EB] text-white px-5 py-2.5 disabled:opacity-50"
         >

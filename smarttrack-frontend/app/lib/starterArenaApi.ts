@@ -114,8 +114,8 @@ export function normalizeStarterOptions(
  * Start a new Starter Arena session with mixed psychometric + cognitive questions.
  */
 export async function startStarterArena(
-  psychometricCount: number = 6,
-  academicCount: number = 6
+  psychometricCount: number = 4,
+  academicCount: number = 4
 ): Promise<StartSessionResponse> {
   const response = await fetch(`${API_BASE_URL}/starter-arena/start`, {
     method: 'POST',

@@ -31,7 +31,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] overflow-hidden">
+    <div className="min-h-screen bg-transparent overflow-hidden">
       {/* ── SPLIT-SCREEN HERO ── */}
       <section className="flex flex-col lg:flex-row h-screen">
         {/* ── LEFT PANEL (60%) - HERO IMAGE ── */}
@@ -102,7 +102,7 @@ export default function Home() {
         </div>
 
         {/* ── RIGHT PANEL (40%) - SIGN IN / CREATE ACCOUNT ── */}
-        <div className="lg:w-[40%] flex items-center justify-center p-6 sm:p-8 lg:p-12 xl:p-16 bg-[#F8FAFC]">
+        <div className="lg:w-[40%] flex items-center justify-center p-6 sm:p-8 lg:p-12 xl:p-16 bg-transparent">
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}

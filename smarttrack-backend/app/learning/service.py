@@ -211,7 +211,41 @@ real-life applications only when none can be responsibly inferred from the sourc
         max_tokens=3_500,
         temperature=0.45,
     )
-    return _parse_lesson_json(raw)
+    lesson = _parse_lesson_json(raw)
+
+    # Attach educational visual via Image Planner + Retrieval Service
+    # (skip English / Social Studies — free-search images are too unreliable)
+    subject_key = (subject or "").strip().lower().replace(" ", "_")
+    if subject_key in ("english", "english_language", "social_studies", "socialstudies"):
+        return lesson
+
+    try:
+        from app.media.image_plan import ImagePlanner
+        from app.media.image_retrieval import retrieve_for_plan
+        from app.media.labelled_diagrams import labels_legend_text
+
+        plan = ImagePlanner.plan_from_lesson(
+            title=str(lesson.get("topic_title") or title),
+            subject=subject,
+            introduction=str(lesson.get("simple_introduction") or ""),
+        )
+        image = await retrieve_for_plan(plan)
+        if image:
+            visual = {
+                "url": image.get("url"),
+                "alt": image.get("alt") or plan.concept,
+                "attribution": image.get("attribution"),
+                "concept": plan.concept,
+                "requires_labels": plan.requires_labels,
+            }
+            if image.get("labels"):
+                visual["legend"] = labels_legend_text(image)
+            lesson["visual_aid"] = visual
+    except Exception:
+        # Visuals are optional — never fail the lesson
+        pass
+
+    return lesson
 
 
 CHALLENGE_SUBJECT_TO_CURRICULUM = {
@@ -271,3 +305,133 @@ OFFICIAL DATABASE SOURCE:
             messages.append({"role": role, "content": content[:4_000]})
     messages.append({"role": "user", "content": question})
     return await _call_model(messages, max_tokens=1_800, temperature=0.55)
+
+
+EXPLORE_SUBJECTS = {
+    "english language",
+    "core mathematics",
+    "integrated science",
+    "social studies",
+    "biology",
+    "chemistry",
+    "physics",
+    "additional mathematics",
+}
+
+
+def _slugify_topic(value: str) -> str:
+    slug = re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
+    return (slug or "topic")[:80]
+
+
+async def generate_explore_source(
+    *,
+    title: str,
+    subject: str,
+    shs_level: str,
+) -> dict[str, Any]:
+    """Build curriculum-style source notes so teach/ask can ground on them."""
+    system_prompt = f"""
+You are Atlas AI building SHS lesson source notes for Ghanaian students ({shs_level}).
+Write accurate, curriculum-aligned teaching notes for "{title}" in {subject}.
+Keep scope appropriate for senior high school. Do not invent university-level material.
+
+Return only valid JSON with this shape:
+{{
+  "title": "string",
+  "subject": "string",
+  "overview": "2-4 sentence overview",
+  "key_concepts": ["concept 1", "concept 2"],
+  "explanations": ["clear explanation paragraph", "another paragraph"],
+  "worked_examples": [
+    {{"title": "string", "steps": ["step 1", "step 2"], "answer": "string"}}
+  ],
+  "practice_ideas": ["string"],
+  "common_mistakes": ["string"],
+  "summary": "short summary"
+}}
+Include at least 3 key concepts and 2 explanation paragraphs.
+""".strip()
+    user_prompt = (
+        f"Create SHS source notes for topic: {title}\n"
+        f"Subject: {subject}\n"
+        f"Level: {shs_level}"
+    )
+    raw = await _call_model(
+        [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+        max_tokens=2_800,
+        temperature=0.4,
+    )
+    candidate = raw.strip()
+    fenced = re.search(r"```(?:json)?\s*(\{.*\})\s*```", candidate, re.DOTALL)
+    if fenced:
+        candidate = fenced.group(1)
+    else:
+        start, end = candidate.find("{"), candidate.rfind("}")
+        if start >= 0 and end > start:
+            candidate = candidate[start : end + 1]
+    try:
+        payload = json.loads(candidate)
+    except json.JSONDecodeError as exc:
+        raise TutorUnavailable("Could not prepare this topic") from exc
+    if not isinstance(payload, dict):
+        raise TutorUnavailable("Could not prepare this topic")
+
+    return {
+        "id": f"explore-{_slugify_topic(title)}",
+        "title": str(payload.get("title") or title).strip() or title,
+        "subject": subject,
+        "overview": str(payload.get("overview") or "").strip(),
+        "key_concepts": payload.get("key_concepts")
+        if isinstance(payload.get("key_concepts"), list)
+        else [],
+        "explanations": payload.get("explanations")
+        if isinstance(payload.get("explanations"), list)
+        else [],
+        "worked_examples": payload.get("worked_examples")
+        if isinstance(payload.get("worked_examples"), list)
+        else [],
+        "practice_ideas": payload.get("practice_ideas")
+        if isinstance(payload.get("practice_ideas"), list)
+        else [],
+        "common_mistakes": payload.get("common_mistakes")
+        if isinstance(payload.get("common_mistakes"), list)
+        else [],
+        "summary": str(payload.get("summary") or "").strip(),
+    }
+
+
+def resolve_explore_subject(subject: str | None, title: str) -> str:
+    cleaned = (subject or "").strip()
+    if cleaned.lower() in EXPLORE_SUBJECTS:
+        # Preserve canonical casing from known set
+        for name in (
+            "English Language",
+            "Core Mathematics",
+            "Integrated Science",
+            "Social Studies",
+            "Biology",
+            "Chemistry",
+            "Physics",
+            "Additional Mathematics",
+        ):
+            if name.lower() == cleaned.lower():
+                return name
+    lowered = f"{title} {cleaned}".lower()
+    if any(k in lowered for k in ("math", "algebra", "quadratic", "equation", "geometry")):
+        return "Core Mathematics"
+    if any(k in lowered for k in ("photo", "cell", "plant", "animal", "bio")):
+        return "Biology"
+    if any(k in lowered for k in ("chem", "acid", "atom", "mole")):
+        return "Chemistry"
+    if any(k in lowered for k in ("force", "motion", "electric", "physics")):
+        return "Physics"
+    if any(k in lowered for k in ("english", "essay", "grammar", "comprehension")):
+        return "English Language"
+    if any(k in lowered for k in ("ghana", "citizen", "govern", "social")):
+        return "Social Studies"
+    return cleaned.title() if cleaned else "Integrated Science"
+

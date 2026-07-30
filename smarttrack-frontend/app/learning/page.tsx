@@ -26,6 +26,7 @@ import {
 import { ALL_LESSONS } from '../lib/learningContent';
 import {
   completeCurriculumLesson,
+  exploreCurriculumTopic,
   getLibraryHome,
   listTopicsBySubject,
   searchCurriculumTopics,
@@ -145,6 +146,7 @@ function LearningInner() {
   const [searchResults, setSearchResults] = useState<CurriculumTopic[]>([]);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchBusy, setSearchBusy] = useState(false);
+  const [exploreBusy, setExploreBusy] = useState(false);
   const [highlight, setHighlight] = useState(0);
   const searchRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -186,13 +188,12 @@ function LearningInner() {
     );
     try {
       const data = await getLibraryHome(signal);
-      // Prefer API IDs only — local ALL_LESSONS IDs can 404 on /teach if DB is empty
       setLibrary({
         ...data,
         recommended:
           data.recommended?.length > 0
             ? data.recommended
-            : [],
+            : emptyLibrary(completed).recommended,
       });
     } catch {
       // Offline / API down: show starter cards, but teach may still fail without seed
@@ -281,6 +282,21 @@ function LearningInner() {
     });
   };
 
+  const exploreWithAtlas = async (rawQuery: string, subject?: string) => {
+    const query = rawQuery.trim();
+    if (query.length < 2 || exploreBusy) return;
+    setExploreBusy(true);
+    try {
+      const topic = await exploreCurriculumTopic(query, subject);
+      openTopic(topic.curriculum_id);
+    } catch {
+      // Keep search open so the student can retry
+      setSearchOpen(true);
+    } finally {
+      setExploreBusy(false);
+    }
+  };
+
   const openSubject = async (subjectId: string) => {
     setSelectedSubject(subjectId);
     setView('subject');
@@ -355,7 +371,7 @@ function LearningInner() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC]">
+      <div className="min-h-screen bg-transparent">
         <Sidebar />
         <main className="w-full max-w-4xl mx-auto px-4 pt-20 lg:pt-10 pb-28 text-[#64748B] flex items-center gap-2">
           <Loader2 className="w-4 h-4 animate-spin" /> Loading Learning Center…
@@ -367,7 +383,7 @@ function LearningInner() {
 
   if (view === 'topic' && activeTopicId) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC]">
+      <div className="min-h-screen bg-transparent">
         <Sidebar />
         <AppLayout>
           <main className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-10 pb-28">
@@ -386,7 +402,7 @@ function LearningInner() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-transparent">
       <Sidebar />
       <AppLayout>
         <main className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-10 pb-28">
@@ -488,9 +504,29 @@ function LearningInner() {
                       {!searchBusy &&
                       subjectMatch(searchQuery).length === 0 &&
                       searchResults.length === 0 ? (
-                        <p className="px-4 py-6 text-sm text-gray-500 text-center">
-                          No matches. Try “Photosynthesis” or “Quadratic Equations”.
-                        </p>
+                        <div className="px-4 py-5 text-center space-y-3">
+                          <p className="text-sm text-gray-500">
+                            No catalogue match yet. Atlas AI can still teach this topic.
+                          </p>
+                          <button
+                            type="button"
+                            disabled={exploreBusy || searchQuery.trim().length < 2}
+                            onClick={() => void exploreWithAtlas(searchQuery)}
+                            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#4F46E5] px-3 py-2 text-xs font-semibold text-white disabled:opacity-60"
+                          >
+                            {exploreBusy ? (
+                              <>
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                Preparing with Atlas AI…
+                              </>
+                            ) : (
+                              <>
+                                <Sparkles className="w-3.5 h-3.5" />
+                                Teach “{searchQuery.trim()}” with Atlas AI
+                              </>
+                            )}
+                          </button>
+                        </div>
                       ) : null}
                     </div>
                   ) : null}
@@ -635,7 +671,34 @@ function LearningInner() {
                     <Loader2 className="w-4 h-4 animate-spin" /> Loading topics…
                   </div>
                 ) : subjectTopics.length === 0 ? (
-                  <p className="mt-8 text-sm text-gray-500">No topics available yet for this subject.</p>
+                  <div className="mt-8 space-y-3">
+                    <p className="text-sm text-gray-500">
+                      No catalogue topics loaded for this subject yet. Atlas AI can still teach a topic you choose.
+                    </p>
+                    <button
+                      type="button"
+                      disabled={exploreBusy}
+                      onClick={() =>
+                        void exploreWithAtlas(
+                          `${selectedSubject} fundamentals`,
+                          selectedSubject,
+                        )
+                      }
+                      className="inline-flex items-center gap-2 rounded-lg bg-[#4F46E5] px-3 py-2 text-xs font-semibold text-white disabled:opacity-60"
+                    >
+                      {exploreBusy ? (
+                        <>
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          Preparing with Atlas AI…
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-3.5 h-3.5" />
+                          Start with Atlas AI
+                        </>
+                      )}
+                    </button>
+                  </div>
                 ) : (
                   <div className="mt-6 space-y-2">
                     {subjectTopics.map((topic) => (
@@ -739,7 +802,7 @@ export default function LearningPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center text-sm text-gray-500">
+        <div className="min-h-screen bg-transparent flex items-center justify-center text-sm text-gray-500">
           Loading…
         </div>
       }

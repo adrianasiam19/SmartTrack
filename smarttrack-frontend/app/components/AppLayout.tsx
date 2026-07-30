@@ -1,21 +1,14 @@
 'use client';
 
 import { ReactNode } from 'react';
-import Watermark from './Watermark';
 
 interface AppLayoutProps {
   children: ReactNode;
-  /** Use lighter watermark opacity for challenge pages */
+  /** Kept for call-site compatibility; watermark is applied globally. */
   isChallenge?: boolean;
 }
 
-export default function AppLayout({ children, isChallenge = false }: AppLayoutProps) {
-  return (
-    <div className="min-h-screen bg-[#F8FAFC] relative">
-      <Watermark isChallenge={isChallenge} />
-      <div className="relative z-10">
-        {children}
-      </div>
-    </div>
-  );
+export default function AppLayout({ children }: AppLayoutProps) {
+  // Transparent so the global ATLAS watermark can show through; body supplies the page tint.
+  return <div className="relative min-h-screen bg-transparent">{children}</div>;
 }

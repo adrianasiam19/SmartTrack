@@ -34,10 +34,6 @@ import { getRandomLogicQuestions } from '../../lib/logicArenaData';
 import { getRandomQuantQuestions } from '../../lib/quantArenaData';
 import { getRandomScientificQuestions } from '../../lib/scientificArenaData';
 import {
-  getRandomStarterQuestions,
-  type StarterQuestion,
-} from '../../lib/starterArenaData';
-import {
   startStarterArena,
   completeStarterArena,
   normalizeStarterOptions,
@@ -92,29 +88,6 @@ interface GameSession {
   totalTime: number;
   startTime: number;
   totalQuestions?: number;
-}
-
-function starterToQuestion(sq: StarterQuestion): Question {
-  const idNum = parseInt(sq.id.replace('SA-', ''), 10);
-  return {
-    id: 1000 + idNum,
-    domain: sq.domain,
-    question: sq.question,
-    question_type: sq.interaction,
-    options: sq.options || {},
-    answer_hash: btoa(`ST_SEC_2024:${sq.correctKey || 'A'}`),
-    _category: sq.domain,
-    _explanation: sq.explanation,
-    _answers: sq.answers,
-    _hints: sq.hints,
-    _pattern: sq.pattern,
-    _leftItems: sq.leftItems,
-    _rightItems: sq.rightItems,
-    _correctMatches: sq.correctMatches,
-    _rankedOrder: sq.rankedOrder,
-    _allowMultiple: sq.allowMultiple,
-    _xp: 0,
-  };
 }
 
 function shuffleArray<T>(arr: T[]): T[] {
@@ -280,9 +253,9 @@ function ChallengeArena() {
     }
   }, [isPlacement, phase, starterSessionId, psychResponses, academicResponses, markStarterArenaComplete]);
 
-  // For placement: use actual count from API (defaults to 12 if not available yet)
-  const MAX_QUESTIONS = isPlacement ? (session.totalQuestions || 12) : 10;
-  const QUESTION_TIMEOUT = isPlacement ? 45 : 30;
+  // For placement: use actual count from API (defaults to 8: 4 LLM + 4 psychometric)
+  const MAX_QUESTIONS = isPlacement ? (session.totalQuestions || 8) : 10;
+  const QUESTION_TIMEOUT = isPlacement ? 0 : 30;
 
   const decryptAnswer = (hash: string): string => {
     try {
@@ -337,9 +310,9 @@ function ChallengeArena() {
       let initialQuestions: Question[] = [];
 
       if (isPlacement) {
-        // Adaptive Starter Arena already alternates psych + cognitive questions.
+        // Adaptive Starter Arena: 2 LLM thinking → 2 psychometric → repeat (8 total).
         try {
-          const session = await startStarterArena(6, 6);
+          const session = await startStarterArena(4, 4);
           setStarterSessionId(session.session_id);
           setSession((prev) => ({ ...prev, totalQuestions: session.total_count }));
           initialQuestions = session.questions.map((sq: StarterArenaQuestion, idx: number) => {
@@ -369,9 +342,12 @@ function ChallengeArena() {
           setShortResponseDraft('');
           setRankingOrder([]);
         } catch (e: any) {
-          console.warn('Adaptive Starter Arena failed, falling back:', e);
-          const raw = getRandomStarterQuestions(MAX_QUESTIONS);
-          initialQuestions = raw.map(starterToQuestion);
+          console.warn('Adaptive Starter Arena failed:', e);
+          setError(
+            e?.message ||
+              'Could not start Starter Arena. Check that the backend is running, then try again.',
+          );
+          return;
         }
       } else if (isLogicArena) {
         initialQuestions = getRandomLogicQuestions(MAX_QUESTIONS);
@@ -408,6 +384,11 @@ function ChallengeArena() {
 
   const handleSubmitAnswer = async (answerKey: string) => {
     if (!currentQuestion || loading) return;
+    // Starter Arena must learn from the user — never advance on empty/timeout.
+    if (isPlacement) {
+      const trimmed = (answerKey || '').trim();
+      if (!trimmed || trimmed === 'timeout') return;
+    }
     setSelectedAnswer(answerKey);
     setLoading(true);
 
@@ -673,6 +654,8 @@ function ChallengeArena() {
   };
 
   useEffect(() => {
+    // Placement / Starter Arena has no timer — wait for a real answer.
+    if (isPlacement) return;
     let timer: NodeJS.Timeout;
     if (phase === 'gameplay' && timeLeft > 0) {
       timer = setInterval(() => setTimeLeft((p) => p - 1), 1000);
@@ -680,7 +663,7 @@ function ChallengeArena() {
       handleSubmitAnswer(selectedAnswer || 'timeout');
     }
     return () => clearInterval(timer);
-  }, [phase, timeLeft]);
+  }, [phase, timeLeft, isPlacement]);
 
   useEffect(() => {
     if (isPlacement) return;
@@ -1480,7 +1463,7 @@ function ChallengeArena() {
 export default function ChallengeArenaPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
+      <div className="min-h-screen bg-transparent flex items-center justify-center">
         <div className="w-10 h-10 border-4 border-[#4F46E5] border-t-transparent rounded-full animate-spin" />
       </div>
     }>

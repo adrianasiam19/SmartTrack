@@ -30,6 +30,14 @@ export interface AITaughtLesson {
   important_points: string[];
   common_mistakes: string[];
   short_summary: string;
+  visual_aid?: {
+    url?: string;
+    alt?: string;
+    attribution?: string;
+    concept?: string;
+    requires_labels?: boolean;
+    legend?: string;
+  } | null;
 }
 
 export interface TaughtLessonResponse {
@@ -97,13 +105,31 @@ export async function listTopicsBySubject(
   subject: string,
   signal?: AbortSignal,
 ): Promise<CurriculumTopic[]> {
-  const params = new URLSearchParams({ subject, limit: '100' });
+  const params = new URLSearchParams({ subject, limit: '200' });
   const response = await fetch(`${API_BASE_URL}/learning/topics?${params}`, {
     headers: authHeaders(),
     signal,
   });
   if (!response.ok) {
     throw await readError(response, 'Unable to load topics.');
+  }
+  return response.json();
+}
+
+export async function exploreCurriculumTopic(
+  query: string,
+  subject?: string,
+): Promise<CurriculumTopic> {
+  const response = await fetch(`${API_BASE_URL}/learning/explore`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify({
+      query,
+      ...(subject ? { subject } : {}),
+    }),
+  });
+  if (!response.ok) {
+    throw await readError(response, 'Atlas AI could not prepare this topic.');
   }
   return response.json();
 }

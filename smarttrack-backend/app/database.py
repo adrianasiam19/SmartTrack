@@ -13,12 +13,12 @@ logger = logging.getLogger(__name__)
 MAX_DB_RETRIES = 3
 DB_RETRY_DELAY_S = 2
 
-# ── Async engine — connects to Neon PostgreSQL ────────────────────────────────
+# ── Async engine (local Postgres or hosted Neon, etc.) ────────────────────────
 engine = create_async_engine(
     settings.DATABASE_URL,
     echo=settings.ENVIRONMENT == "development",  # SQL logging in dev only
-    pool_pre_ping=True,    # Verify connections before use (good for Neon's serverless)
-    pool_recycle=300,       # Recycle connections every 5 mins (Neon best practice)
+    pool_pre_ping=True,    # Verify connections before use
+    pool_recycle=300,       # Recycle connections periodically
     pool_size=5,            # Keep a small pool ready
     max_overflow=10,        # Allow burst connections
 )

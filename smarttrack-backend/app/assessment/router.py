@@ -31,6 +31,16 @@ from app.assessment.academic_recommendations import (
     has_academic_upload,
     programme_fallback_skills,
 )
+from app.recommendations.ml_career import generate_ml_knust_alternate
+from app.recommendations.eligibility import evaluate_recommendation_eligibility
+from app.recommendations.messages import (
+    AGGREGATE_UNAVAILABLE,
+    GRADES_NOT_EXTRACTED,
+    ML_FALLBACK_NOTICE,
+    NO_ACADEMIC_UPLOAD,
+    NO_MATCHING_PROGRAMMES,
+    PHASE_INCOMPLETE,
+)
 from app.database import get_db
 from app.auth.dependencies import get_current_user
 from app.users.models import User, AcademicRecord
@@ -574,6 +584,11 @@ async def submit_response(
             profile.value = value
             profile.last_updated = datetime.now(timezone.utc)
 
+        # Arena / legacy challenge answers also count toward daily streak.
+        from app.users.gamification import record_daily_challenge_streak
+
+        streak_info = record_daily_challenge_streak(current_user)
+
         await db.commit()
 
         # 5. Get Next Batch from session pool (no repeats)
@@ -593,6 +608,8 @@ async def submit_response(
             "status": "success",
             "is_correct": is_correct,
             "next_questions": next_qs_resp,
+            "streak": streak_info.get("streak"),
+            "streak_updated": streak_info.get("incremented"),
         }
     except Exception as e:
         import traceback
@@ -642,16 +659,31 @@ async def generate_recommendations(
 
     Combines stealth challenge thetas (when available), behavioural traits,
     Starter Arena profile, declared programme, and uploaded academic grades.
+
+    Requires all levels completed in at least one phase (Learning Center is
+    encouraged but not mandatory).
     """
+    from app.config import settings as app_settings
+
+    debug_mode = bool(getattr(app_settings, "RECOMMENDATION_DEBUG", False))
+
+    eligibility = await evaluate_recommendation_eligibility(db, current_user)
+    if not eligibility.get("eligible"):
+        detail = dict(PHASE_INCOMPLETE)
+        detail["title"] = eligibility.get("title") or detail["title"]
+        detail["message"] = eligibility.get("message") or detail["message"]
+        detail["short_message"] = eligibility.get("short_message") or detail["short_message"]
+        detail["eligibility"] = eligibility
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=detail)
+
     if not has_academic_upload(current_user):
-        # Also allow users who already saved AcademicRecord rows.
         existing = await db.execute(
             select(AcademicRecord).where(AcademicRecord.user_id == current_user.id).limit(1)
         )
         if existing.scalar_one_or_none() is None:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Upload your WASSCE or academic results first, then tap Get Recommendations.",
+                detail=NO_ACADEMIC_UPLOAD,
             )
 
     skills_res = await db.execute(
@@ -683,6 +715,12 @@ async def generate_recommendations(
             if g.get("subject") and g.get("grade")
         ]
 
+    if not academic_grades:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=GRADES_NOT_EXTRACTED,
+        )
+
     if not skill_estimates:
         skill_estimates = programme_fallback_skills(current_user.programme)
 
@@ -695,19 +733,109 @@ async def generate_recommendations(
     )
     recommendations_result = engine.generate_recommendations()
 
-    return {
+    if recommendations_result.get("error") == "aggregate_unavailable":
+        detail = dict(AGGREGATE_UNAVAILABLE)
+        if recommendations_result.get("summary_message"):
+            detail["message"] = (
+                f"{detail['message']}\n\nDetails: {recommendations_result['summary_message']}"
+            )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=detail)
+
+    ml_primary = generate_ml_knust_alternate(
+        academic_grades=academic_grades,
+        behavioral_traits=behavioral_traits,
+        skill_estimates=skill_estimates,
+        xp=int(getattr(current_user, "xp", 0) or 0),
+        streak_days=int(getattr(current_user, "streak", 0) or 0),
+        knust_payload=recommendations_result.get("knust"),
+    )
+
+    rules_suitable = recommendations_result.get("suitable_programmes") or []
+    rules_competitive = recommendations_result.get("competitive_programmes") or []
+    ml_programmes = (
+        ml_primary.get("programmes") if ml_primary.get("enabled") else None
+    ) or []
+
+    learner_notice = None
+    used_fallback = False
+
+    if ml_programmes:
+        suitable = ml_programmes
+        primary_source = "knust_dt"
+        summary = (
+            recommendations_result.get("summary_message")
+            or "Here are programme matches based on your Atlas profile and results."
+        )
+    else:
+        # Explicit cut-off fallback after logging (already done inside ml_career)
+        used_fallback = True
+        suitable = rules_suitable
+        primary_source = "atlas_cutoffs_fallback"
+        summary = recommendations_result.get("summary_message")
+        if ml_primary.get("error"):
+            logger.error(
+                "Decision Tree unavailable for user=%s error=%s detail=%s",
+                current_user.id,
+                ml_primary.get("error"),
+                ml_primary.get("error_detail"),
+            )
+            learner_notice = ML_FALLBACK_NOTICE
+        if not suitable and not rules_competitive:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=NO_MATCHING_PROGRAMMES,
+            )
+
+    payload: dict = {
         "success": True,
         "academic_score": recommendations_result.get("academic_score"),
         "performance_level": recommendations_result.get("performance_level"),
-        "summary_message": recommendations_result.get("summary_message"),
+        "summary_message": summary,
         "detailed_message": recommendations_result.get("detailed_message"),
-        "recommendations": recommendations_result.get("recommendations"),
+        "recommendations": suitable,
+        "suitable_programmes": suitable,
+        "competitive_programmes": rules_competitive,
         "grades_used": recommendations_result.get("grades_used", 0),
+        "admission_insights": recommendations_result.get("admission_insights"),
+        "knust": recommendations_result.get("knust"),
+        "source": primary_source,
+        "primary_source": primary_source,
+        "used_fallback": used_fallback,
+        "learner_notice": learner_notice,
+        "ml_alternate": None,
         "upload": {
             "filename": upload.get("filename"),
             "grades_extracted": bool(upload.get("grades_extracted")),
         },
     }
+
+    if debug_mode:
+        predictions = ml_primary.get("predictions") or []
+        payload["debug"] = {
+            "decision_tree_model_loaded": bool(ml_primary.get("model_loaded")),
+            "recommendations_from_ml": primary_source == "knust_dt",
+            "fallback_used": used_fallback,
+            "primary_source": primary_source,
+            "ml_error": ml_primary.get("error"),
+            "ml_error_detail": ml_primary.get("error_detail"),
+            "model_status": ml_primary.get("model_status"),
+            "features_used": ml_primary.get("features_used") or {},
+            "prediction_confidence": [
+                {
+                    "programme": p.get("programme"),
+                    "confidence": p.get("confidence"),
+                    "eligibility_band": p.get("eligibility_band"),
+                }
+                for p in predictions[:12]
+            ],
+            "programme_count_ml": len(ml_programmes),
+            "programme_count_fallback_suitable": len(rules_suitable),
+            "grades_count": len(academic_grades),
+            "skill_domains": list(skill_estimates.keys()),
+            "trait_keys": list(behavioral_traits.keys()),
+        }
+
+    return payload
 
 
 @router.post("/academic/upload")
@@ -719,8 +847,8 @@ async def upload_academic_results(
     """
     Upload WASSCE / academic results (PDF or image).
 
-    Stores the file server-side, best-effort extracts grades with AI,
-    and unlocks the Get Recommendations action.
+    Stores the file server-side, extracts grades from PDFs with pypdf
+    (text + WASSCE parsing), and unlocks Get Recommendations.
     """
     data = await file.read()
     filename = file.filename or "academic_results.pdf"
@@ -767,8 +895,14 @@ async def upload_academic_results(
         "message": (
             f"Uploaded {filename}. Extracted {len(grades)} subject grade(s)."
             if grades
-            else f"Uploaded {filename}. You can still generate recommendations from your Atlas profile."
+            else (
+                "WASSCE results could not be extracted from this file. "
+                "Please re-upload a clearer PDF or image (full results page, good lighting), "
+                "or use a text-based PDF export."
+            )
         ),
+        "code": None if grades else "wassce_extraction_failed",
+        "title": None if grades else "WASSCE results could not be extracted",
     }
 
 

@@ -10,6 +10,7 @@ import {
   getCurrentUser,
   UserProfile,
 } from '../lib/authApi';
+import { markDashboardVisited } from '../lib/dashboardWelcome';
 
 function buildNavItems() {
   return [
@@ -70,10 +71,12 @@ export default function Sidebar() {
   };
 
   const handleLogout = async () => {
+    const uid = user?.id || getStoredUser()?.id;
+    if (uid) markDashboardVisited(uid);
     try { await logout(); } catch {}
     setUser(null);
     setIsOpen(false);
-    router.push('/');
+    router.replace('/login');
   };
 
   const handleToggle = useCallback(() => {

@@ -99,7 +99,7 @@ export default function OnboardingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
+      <div className="min-h-screen bg-transparent flex items-center justify-center">
         <div className="w-12 h-12 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -154,7 +154,7 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="overflow-x-hidden bg-[#F8FAFC]">
+    <div className="overflow-x-hidden bg-transparent">
       <AnimatePresence mode="wait" custom={direction}>
         {step === 'welcome' && (
           <motion.div
