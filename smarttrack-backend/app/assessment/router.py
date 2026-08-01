@@ -835,6 +835,14 @@ async def generate_recommendations(
             "trait_keys": list(behavioral_traits.keys()),
         }
 
+    try:
+        from app.notifications.events import notify_recommendations_unlocked
+
+        await notify_recommendations_unlocked(db, current_user.id)
+        await db.commit()
+    except Exception:
+        logger.exception("Failed to create recommendations-unlocked notification")
+
     return payload
 
 

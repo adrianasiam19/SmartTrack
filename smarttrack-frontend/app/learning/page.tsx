@@ -3,15 +3,7 @@
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  ArrowLeft,
-  Bookmark,
-  BookOpen,
-  Clock,
-  Loader2,
-  Search,
-  Sparkles,
-} from 'lucide-react';
+import { ArrowLeft, Loader2, Search, Sparkles } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import BottomNav from '../components/BottomNav';
 import AppLayout from '../components/AppLayout';
@@ -37,24 +29,21 @@ import {
 type View = 'home' | 'subject' | 'topic';
 
 const CORE_SUBJECTS = [
-  { id: 'English Language', label: 'English Language', color: '#D97706' },
+  { id: 'English Language', label: 'English Language', color: '#F59E0B' },
   { id: 'Core Mathematics', label: 'Core Mathematics', color: '#4F46E5' },
-  { id: 'Integrated Science', label: 'Integrated Science', color: '#059669' },
-  { id: 'Social Studies', label: 'Social Studies', color: '#7C3AED' },
+  { id: 'Integrated Science', label: 'Integrated Science', color: '#10B981' },
+  { id: 'Social Studies', label: 'Social Studies', color: '#8B5CF6' },
 ] as const;
 
 const ELECTIVE_CANDIDATES = [
-  { id: 'Biology', label: 'Biology', color: '#16A34A' },
+  { id: 'Biology', label: 'Biology', color: '#22C55E' },
   { id: 'Chemistry', label: 'Chemistry', color: '#0EA5E9' },
   { id: 'Physics', label: 'Physics', color: '#6366F1' },
   { id: 'Additional Mathematics', label: 'Elective Mathematics', color: '#7C3AED' },
   { id: 'Elective Mathematics', label: 'Elective Mathematics', color: '#7C3AED' },
 ] as const;
 
-/** Local fallback when /learning/library is empty or unavailable */
-function buildLocalRecommendations(
-  completedIds: Set<string>,
-): CurriculumTopic[] {
+function buildLocalRecommendations(completedIds: Set<string>): CurriculumTopic[] {
   const picks: CurriculumTopic[] = [];
   const seen = new Set<string>();
   const preferSubjects = [
@@ -71,10 +60,7 @@ function buildLocalRecommendations(
   for (const subject of preferSubjects) {
     if (picks.length >= 6) break;
     const lesson = ALL_LESSONS.find(
-      (l) =>
-        l.subject === subject &&
-        !completedIds.has(l.id) &&
-        !seen.has(l.id),
+      (l) => l.subject === subject && !completedIds.has(l.id) && !seen.has(l.id),
     );
     if (!lesson) continue;
     seen.add(lesson.id);
@@ -148,13 +134,20 @@ function LearningInner() {
   const [searchBusy, setSearchBusy] = useState(false);
   const [exploreBusy, setExploreBusy] = useState(false);
   const [highlight, setHighlight] = useState(0);
+  const [showAllRecommended, setShowAllRecommended] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const browseRef = useRef<HTMLElement>(null);
   const abortRef = useRef<AbortController | null>(null);
 
   const bookmarkIds = useMemo(
     () => new Set((library?.bookmarks || []).map((b) => b.curriculum_id)),
     [library?.bookmarks],
   );
+
+  const completedIds = useMemo(() => {
+    const profile = (user?.learner_profile || {}) as { completed_lessons?: string[] };
+    return new Set(Array.isArray(profile.completed_lessons) ? profile.completed_lessons : []);
+  }, [user?.learner_profile]);
 
   const coreSubjects = useMemo(
     () => CORE_SUBJECTS.filter((s) => subjectHasContent(s.id)),
@@ -165,10 +158,8 @@ function LearningInner() {
     const seen = new Set<string>();
     return ELECTIVE_CANDIDATES.filter((s) => {
       if (!subjectHasContent(s.id)) return false;
-      // Deduplicate Elective/Additional Mathematics labels
-      const key = s.label;
-      if (seen.has(key)) return false;
-      seen.add(key);
+      if (seen.has(s.label)) return false;
+      seen.add(s.label);
       return true;
     });
   }, []);
@@ -180,12 +171,7 @@ function LearningInner() {
     const completed = new Set(
       Array.isArray(profile.completed_lessons) ? profile.completed_lessons : [],
     );
-    // Always show starter suggestions immediately (no Phase 1 required)
-    setLibrary((prev) =>
-      prev?.recommended?.length
-        ? prev
-        : emptyLibrary(completed),
-    );
+    setLibrary((prev) => (prev?.recommended?.length ? prev : emptyLibrary(completed)));
     try {
       const data = await getLibraryHome(signal);
       setLibrary({
@@ -196,7 +182,6 @@ function LearningInner() {
             : emptyLibrary(completed).recommended,
       });
     } catch {
-      // Offline / API down: show starter cards, but teach may still fail without seed
       setLibrary(emptyLibrary(completed));
     }
   }, []);
@@ -223,7 +208,6 @@ function LearningInner() {
     void init();
   }, [router, refreshLibrary]);
 
-  // Deep-link: /learning?topic=curriculum_id
   useEffect(() => {
     const topic = searchParams.get('topic');
     if (!topic || loading) return;
@@ -276,7 +260,6 @@ function LearningInner() {
     setView('topic');
     setSearchOpen(false);
     setSearchQuery('');
-    // Reflect in URL for shareable deep links
     router.replace(`/learning?topic=${encodeURIComponent(curriculumId)}`, {
       scroll: false,
     });
@@ -290,7 +273,6 @@ function LearningInner() {
       const topic = await exploreCurriculumTopic(query, subject);
       openTopic(topic.curriculum_id);
     } catch {
-      // Keep search open so the student can retry
       setSearchOpen(true);
     } finally {
       setExploreBusy(false);
@@ -305,7 +287,6 @@ function LearningInner() {
       const topics = await listTopicsBySubject(subjectId);
       setSubjectTopics(topics);
     } catch {
-      // Fallback to local bundle
       setSubjectTopics(
         ALL_LESSONS.filter((l) => l.subject === subjectId).map((l) => ({
           curriculum_id: l.id,
@@ -369,11 +350,21 @@ function LearningInner() {
     );
   };
 
+  const recommended = library?.recommended || [];
+  const visibleRecommended = showAllRecommended ? recommended : recommended.slice(0, 6);
+
+  const continueTopic = library?.continue_learning;
+  const continueProgress = continueTopic
+    ? completedIds.has(continueTopic.curriculum_id)
+      ? 100
+      : 45
+    : 0;
+
   if (loading) {
     return (
       <div className="min-h-screen bg-transparent">
         <Sidebar />
-        <main className="w-full max-w-4xl mx-auto px-4 pt-20 lg:pt-10 pb-28 text-[#64748B] flex items-center gap-2">
+        <main className="w-full max-w-5xl mx-auto px-4 pt-20 lg:pt-10 pb-28 text-[#64748B] flex items-center gap-2">
           <Loader2 className="w-4 h-4 animate-spin" /> Loading Learning Center…
         </main>
         <BottomNav />
@@ -405,12 +396,12 @@ function LearningInner() {
     <div className="min-h-screen bg-transparent">
       <Sidebar />
       <AppLayout>
-        <main className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-10 pb-28">
+        <main className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-10 pb-28">
           {view !== 'home' ? (
             <button
               type="button"
               onClick={handleBack}
-              className="flex items-center gap-2 text-sm text-gray-500 hover:text-[#1E293B] mb-4"
+              className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 mb-5"
             >
               <ArrowLeft className="w-4 h-4" /> Back
             </button>
@@ -420,19 +411,26 @@ function LearningInner() {
             {view === 'home' ? (
               <motion.div
                 key="home"
-                initial={{ opacity: 0, y: 8 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
+                className="space-y-8"
               >
-                <h1 className="text-2xl font-semibold text-[#0F172A]">Learning Center</h1>
-                <p className="mt-1 text-sm text-[#64748B]">
-                  Search any subject or topic — available for every phase.
-                </p>
+                <header>
+                  <p className="text-[11px] font-semibold tracking-[0.18em] uppercase text-[#4F46E5]">
+                    Learning Center
+                  </p>
+                  <h1 className="mt-2 text-3xl sm:text-4xl font-bold tracking-tight text-slate-900">
+                    What are we exploring today?
+                  </h1>
+                  <p className="mt-2 text-sm text-slate-500">
+                    Search any subject or topic — available for every phase.
+                  </p>
+                </header>
 
-                {/* Search */}
-                <div ref={searchRef} className="relative mt-6">
-                  <div className="flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 shadow-sm focus-within:border-[#4F46E5]">
-                    <Search className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                <div ref={searchRef} className="relative">
+                  <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3.5 shadow-sm focus-within:border-[#4F46E5]/50 focus-within:ring-2 focus-within:ring-[#4F46E5]/10">
+                    <Search className="w-5 h-5 text-slate-400 flex-shrink-0" />
                     <input
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
@@ -440,7 +438,11 @@ function LearningInner() {
                       onKeyDown={(e) => {
                         const subjects = subjectMatch(searchQuery);
                         const combined = [
-                          ...subjects.map((s) => ({ type: 'subject' as const, id: s.id, label: s.label })),
+                          ...subjects.map((s) => ({
+                            type: 'subject' as const,
+                            id: s.id,
+                            label: s.label,
+                          })),
                           ...searchResults.map((t) => ({
                             type: 'topic' as const,
                             id: t.curriculum_id,
@@ -449,7 +451,9 @@ function LearningInner() {
                         ];
                         if (e.key === 'ArrowDown') {
                           e.preventDefault();
-                          setHighlight((h) => Math.min(h + 1, Math.max(0, combined.length - 1)));
+                          setHighlight((h) =>
+                            Math.min(h + 1, Math.max(0, combined.length - 1)),
+                          );
                         } else if (e.key === 'ArrowUp') {
                           e.preventDefault();
                           setHighlight((h) => Math.max(h - 1, 0));
@@ -461,26 +465,28 @@ function LearningInner() {
                         }
                       }}
                       placeholder="Search any subject or topic..."
-                      className="flex-1 bg-transparent text-sm text-[#0F172A] outline-none placeholder:text-gray-400"
+                      className="flex-1 bg-transparent text-[15px] text-slate-900 outline-none placeholder:text-slate-400"
                     />
-                    {searchBusy ? <Loader2 className="w-4 h-4 animate-spin text-[#4F46E5]" /> : null}
+                    {searchBusy ? (
+                      <Loader2 className="w-4 h-4 animate-spin text-[#4F46E5]" />
+                    ) : null}
                   </div>
 
                   {searchOpen && searchQuery.trim().length >= 2 ? (
-                    <div className="absolute z-30 mt-2 w-full rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden max-h-80 overflow-y-auto">
+                    <div className="absolute z-30 mt-2 w-full rounded-2xl border border-slate-200 bg-white shadow-xl overflow-hidden max-h-80 overflow-y-auto">
                       {subjectMatch(searchQuery).map((s, idx) => (
                         <button
                           key={`sub-${s.id}`}
                           type="button"
                           onClick={() => void openSubject(s.id)}
-                          className={`w-full text-left px-4 py-3 text-sm border-b border-gray-50 ${
-                            highlight === idx ? 'bg-[#EEF2FF]' : 'hover:bg-gray-50'
+                          className={`w-full text-left px-4 py-3 text-sm border-b border-slate-50 ${
+                            highlight === idx ? 'bg-indigo-50' : 'hover:bg-slate-50'
                           }`}
                         >
                           <span className="text-[10px] uppercase tracking-wide text-[#4F46E5] font-semibold">
                             Subject
                           </span>
-                          <p className="font-medium text-[#0F172A]">{s.label}</p>
+                          <p className="font-medium text-slate-900">{s.label}</p>
                         </button>
                       ))}
                       {searchResults.map((t, i) => {
@@ -490,14 +496,14 @@ function LearningInner() {
                             key={t.curriculum_id}
                             type="button"
                             onClick={() => openTopic(t.curriculum_id)}
-                            className={`w-full text-left px-4 py-3 text-sm border-b border-gray-50 last:border-0 ${
-                              highlight === idx ? 'bg-[#EEF2FF]' : 'hover:bg-gray-50'
+                            className={`w-full text-left px-4 py-3 text-sm border-b border-slate-50 last:border-0 ${
+                              highlight === idx ? 'bg-indigo-50' : 'hover:bg-slate-50'
                             }`}
                           >
-                            <span className="text-[10px] uppercase tracking-wide text-gray-400 font-semibold">
+                            <span className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold">
                               Topic · {t.subject}
                             </span>
-                            <p className="font-medium text-[#0F172A]">{t.title}</p>
+                            <p className="font-medium text-slate-900">{t.title}</p>
                           </button>
                         );
                       })}
@@ -505,14 +511,14 @@ function LearningInner() {
                       subjectMatch(searchQuery).length === 0 &&
                       searchResults.length === 0 ? (
                         <div className="px-4 py-5 text-center space-y-3">
-                          <p className="text-sm text-gray-500">
+                          <p className="text-sm text-slate-500">
                             No catalogue match yet. Atlas AI can still teach this topic.
                           </p>
                           <button
                             type="button"
                             disabled={exploreBusy || searchQuery.trim().length < 2}
                             onClick={() => void exploreWithAtlas(searchQuery)}
-                            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#4F46E5] px-3 py-2 text-xs font-semibold text-white disabled:opacity-60"
+                            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#4F46E5] px-3.5 py-2 text-xs font-semibold text-white disabled:opacity-60"
                           >
                             {exploreBusy ? (
                               <>
@@ -532,110 +538,112 @@ function LearningInner() {
                   ) : null}
                 </div>
 
-                {/* Continue */}
-                {library?.continue_learning ? (
-                  <section className="mt-8">
-                    <SectionTitle icon={<BookOpen className="w-4 h-4" />} title="Continue Learning" />
-                    <TopicCard
-                      topic={library.continue_learning}
-                      onClick={() => openTopic(library.continue_learning!.curriculum_id)}
-                    />
-                  </section>
+                {continueTopic ? (
+                  <button
+                    type="button"
+                    onClick={() => openTopic(continueTopic.curriculum_id)}
+                    className="w-full rounded-2xl bg-gradient-to-r from-[#7C3AED] to-[#4F46E5] p-5 sm:p-6 text-left text-white shadow-sm hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[11px] font-semibold tracking-[0.14em] uppercase text-white/80">
+                          Continue learning — {continueTopic.subject}
+                        </p>
+                        <h2 className="mt-2 text-xl sm:text-2xl font-bold leading-snug">
+                          {continueTopic.title}
+                        </h2>
+                        <div className="mt-4 max-w-md">
+                          <div className="h-1.5 rounded-full bg-white/25 overflow-hidden">
+                            <div
+                              className="h-full rounded-full bg-white transition-all"
+                              style={{ width: `${continueProgress}%` }}
+                            />
+                          </div>
+                          <p className="mt-2 text-xs text-white/80">
+                            {continueProgress}% complete
+                          </p>
+                        </div>
+                      </div>
+                      <span className="inline-flex self-start sm:self-center items-center justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-[#4F46E5] shrink-0">
+                        Resume
+                      </span>
+                    </div>
+                  </button>
                 ) : null}
 
-                {/* Recommended */}
-                <section className="mt-8">
-                  <SectionTitle icon={<Sparkles className="w-4 h-4" />} title="Recommended for You" />
-                  {(library?.recommended?.length || 0) > 0 ? (
-                    <div className="grid sm:grid-cols-2 gap-3">
-                      {library!.recommended.map((topic) => (
-                        <TopicCard
+                <section>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-bold text-slate-900">Recommended for you</h2>
+                    {recommended.length > 6 ? (
+                      <button
+                        type="button"
+                        onClick={() => setShowAllRecommended((v) => !v)}
+                        className="text-sm font-medium text-[#4F46E5] hover:text-[#4338CA]"
+                      >
+                        {showAllRecommended ? 'Show less' : 'See all'}
+                      </button>
+                    ) : recommended.length > 0 ? (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          browseRef.current?.scrollIntoView({ behavior: 'smooth' })
+                        }
+                        className="text-sm font-medium text-[#4F46E5] hover:text-[#4338CA]"
+                      >
+                        See all
+                      </button>
+                    ) : null}
+                  </div>
+
+                  {visibleRecommended.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {visibleRecommended.map((topic) => (
+                        <button
                           key={topic.curriculum_id}
-                          topic={topic}
+                          type="button"
                           onClick={() => openTopic(topic.curriculum_id)}
-                        />
+                          className="text-left rounded-2xl border border-slate-200 bg-white px-4 py-4 hover:border-slate-300 hover:shadow-sm transition-all"
+                        >
+                          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-400">
+                            {topic.subject}
+                          </p>
+                          <p className="mt-2 text-[15px] font-semibold text-slate-900 leading-snug">
+                            {topic.title}
+                          </p>
+                        </button>
                       ))}
                     </div>
                   ) : (
-                    <div className="rounded-xl border border-dashed border-gray-200 bg-white px-4 py-5 text-sm text-gray-500">
-                      <p>
-                        Starter topics will appear here. After you play Challenges, recommendations
-                        become personalised from your weak subjects.
-                      </p>
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        <button
-                          type="button"
-                          onClick={() => void openSubject('Core Mathematics')}
-                          className="rounded-lg bg-[#4F46E5] px-3 py-1.5 text-xs font-semibold text-white"
-                        >
-                          Browse Core Mathematics
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => router.push('/challenges')}
-                          className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-[#0F172A]"
-                        >
-                          Play a challenge
-                        </button>
-                      </div>
+                    <div className="rounded-2xl border border-dashed border-slate-200 bg-white px-5 py-6 text-sm text-slate-500">
+                      Browse a subject below to start learning with Atlas AI.
                     </div>
                   )}
                 </section>
 
-                {/* Recent */}
-                {(library?.recent?.length || 0) > 0 ? (
-                  <section className="mt-8">
-                    <SectionTitle icon={<Clock className="w-4 h-4" />} title="Recent Learning" />
+                <section ref={browseRef} className="space-y-6">
+                  <h2 className="text-lg font-bold text-slate-900">Browse by subject</h2>
+
+                  <div>
+                    <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400 mb-3">
+                      Core subjects
+                    </h3>
                     <div className="grid sm:grid-cols-2 gap-3">
-                      {library!.recent.map((topic) => (
-                        <TopicCard
-                          key={topic.curriculum_id}
-                          topic={topic}
-                          onClick={() => openTopic(topic.curriculum_id)}
+                      {coreSubjects.map((subject) => (
+                        <SubjectCard
+                          key={subject.id}
+                          label={subject.label}
+                          color={subject.color}
+                          count={SUBJECTS_WITH_CONTENT.get(subject.id) || 0}
+                          onClick={() => void openSubject(subject.id)}
                         />
                       ))}
                     </div>
-                  </section>
-                ) : null}
-
-                {/* Saved */}
-                {(library?.bookmarks?.length || 0) > 0 ? (
-                  <section className="mt-8">
-                    <SectionTitle icon={<Bookmark className="w-4 h-4" />} title="Saved Topics" />
-                    <div className="grid sm:grid-cols-2 gap-3">
-                      {library!.bookmarks.map((topic) => (
-                        <TopicCard
-                          key={topic.curriculum_id}
-                          topic={topic}
-                          onClick={() => openTopic(topic.curriculum_id)}
-                        />
-                      ))}
-                    </div>
-                  </section>
-                ) : null}
-
-                {/* Browse */}
-                <section className="mt-10">
-                  <h2 className="text-sm font-semibold text-[#0F172A] mb-4">Browse by Subject</h2>
-                  <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
-                    Core Subjects
-                  </h3>
-                  <div className="grid sm:grid-cols-2 gap-3 mb-8">
-                    {coreSubjects.map((subject) => (
-                      <SubjectCard
-                        key={subject.id}
-                        label={subject.label}
-                        color={subject.color}
-                        count={SUBJECTS_WITH_CONTENT.get(subject.id) || 0}
-                        onClick={() => void openSubject(subject.id)}
-                      />
-                    ))}
                   </div>
 
                   {electiveSubjects.length > 0 ? (
-                    <>
-                      <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
-                        Elective Subjects
+                    <div>
+                      <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400 mb-3">
+                        Elective subjects
                       </h3>
                       <div className="grid sm:grid-cols-2 gap-3">
                         {electiveSubjects.map((subject) => (
@@ -648,7 +656,7 @@ function LearningInner() {
                           />
                         ))}
                       </div>
-                    </>
+                    </div>
                   ) : null}
                 </section>
               </motion.div>
@@ -661,19 +669,25 @@ function LearningInner() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
               >
-                <h1 className="text-2xl font-semibold text-[#0F172A]">{selectedSubject}</h1>
-                <p className="mt-1 text-sm text-[#64748B]">
+                <p className="text-[11px] font-semibold tracking-[0.16em] uppercase text-[#4F46E5]">
+                  Subject
+                </p>
+                <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
+                  {selectedSubject}
+                </h1>
+                <p className="mt-2 text-sm text-slate-500">
                   Choose a topic to open lesson notes and Atlas AI.
                 </p>
 
                 {topicsLoading ? (
-                  <div className="mt-8 flex items-center gap-2 text-sm text-gray-500">
+                  <div className="mt-8 flex items-center gap-2 text-sm text-slate-500">
                     <Loader2 className="w-4 h-4 animate-spin" /> Loading topics…
                   </div>
                 ) : subjectTopics.length === 0 ? (
                   <div className="mt-8 space-y-3">
-                    <p className="text-sm text-gray-500">
-                      No catalogue topics loaded for this subject yet. Atlas AI can still teach a topic you choose.
+                    <p className="text-sm text-slate-500">
+                      No catalogue topics loaded for this subject yet. Atlas AI can still
+                      teach a topic you choose.
                     </p>
                     <button
                       type="button"
@@ -684,7 +698,7 @@ function LearningInner() {
                           selectedSubject,
                         )
                       }
-                      className="inline-flex items-center gap-2 rounded-lg bg-[#4F46E5] px-3 py-2 text-xs font-semibold text-white disabled:opacity-60"
+                      className="inline-flex items-center gap-2 rounded-xl bg-[#4F46E5] px-3.5 py-2 text-xs font-semibold text-white disabled:opacity-60"
                     >
                       {exploreBusy ? (
                         <>
@@ -700,17 +714,19 @@ function LearningInner() {
                     </button>
                   </div>
                 ) : (
-                  <div className="mt-6 space-y-2">
+                  <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {subjectTopics.map((topic) => (
                       <button
                         key={topic.curriculum_id}
                         type="button"
                         onClick={() => openTopic(topic.curriculum_id)}
-                        className="w-full text-left rounded-xl border border-gray-200 bg-white px-4 py-3.5 hover:border-[#4F46E5]/40 hover:shadow-sm transition-all"
+                        className="w-full text-left rounded-2xl border border-slate-200 bg-white px-4 py-4 hover:border-slate-300 hover:shadow-sm transition-all"
                       >
-                        <p className="font-medium text-[#0F172A]">{topic.title}</p>
-                        <p className="text-xs text-gray-400 mt-0.5">
-                          {topic.estimated_minutes} min · {topic.xp_reward} XP
+                        <p className="font-semibold text-slate-900 text-[15px] leading-snug">
+                          {topic.title}
+                        </p>
+                        <p className="text-xs text-slate-400 mt-1.5">
+                          {topic.estimated_minutes} min
                         </p>
                       </button>
                     ))}
@@ -723,45 +739,6 @@ function LearningInner() {
       </AppLayout>
       <BottomNav />
     </div>
-  );
-}
-
-function SectionTitle({
-  icon,
-  title,
-}: {
-  icon: React.ReactNode;
-  title: string;
-}) {
-  return (
-    <div className="flex items-center gap-2 mb-3">
-      <span className="text-[#4F46E5]">{icon}</span>
-      <h2 className="text-sm font-semibold text-[#0F172A]">{title}</h2>
-    </div>
-  );
-}
-
-function TopicCard({
-  topic,
-  onClick,
-}: {
-  topic: CurriculumTopic;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="text-left rounded-xl border border-gray-200 bg-white p-4 hover:border-[#4F46E5]/40 hover:shadow-sm transition-all"
-    >
-      <p className="text-[10px] uppercase tracking-wide text-gray-400 font-semibold">
-        {topic.subject}
-      </p>
-      <p className="mt-1 font-medium text-[#0F172A] text-sm leading-snug">{topic.title}</p>
-      {topic.reason ? (
-        <p className="mt-2 text-xs text-[#4F46E5]">{topic.reason}</p>
-      ) : null}
-    </button>
   );
 }
 
@@ -780,18 +757,18 @@ function SubjectCard({
     <button
       type="button"
       onClick={onClick}
-      className="text-left rounded-xl border border-gray-200 bg-white p-4 hover:border-gray-300 hover:shadow-sm transition-all"
+      className="text-left rounded-2xl border border-slate-200 bg-white px-4 py-4 hover:border-slate-300 hover:shadow-sm transition-all"
     >
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3.5">
         <div
-          className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
+          className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-bold text-base flex-shrink-0"
           style={{ backgroundColor: color }}
         >
           {label.charAt(0)}
         </div>
-        <div>
-          <p className="font-semibold text-[#0F172A] text-sm">{label}</p>
-          <p className="text-xs text-gray-400 mt-0.5">{count} topics</p>
+        <div className="min-w-0">
+          <p className="font-semibold text-slate-900 text-[15px] truncate">{label}</p>
+          <p className="text-xs text-slate-400 mt-0.5">{count} topics</p>
         </div>
       </div>
     </button>
@@ -802,7 +779,7 @@ export default function LearningPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-transparent flex items-center justify-center text-sm text-gray-500">
+        <div className="min-h-screen bg-transparent flex items-center justify-center text-sm text-slate-500">
           Loading…
         </div>
       }

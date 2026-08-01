@@ -567,6 +567,47 @@ async def complete_session(db: AsyncSession, user_id: uuid.UUID, session_id: int
 
     user = (await db.execute(select(User).where(User.id == user_id))).scalar_one()
     streak_info = record_daily_challenge_streak(user)
+
+    if level_completed and phase_number is not None:
+        try:
+            from app.notifications.events import notify_level_completed
+
+            level_num = 1
+            if session.level_id:
+                lvl = (
+                    await db.execute(select(Level).where(Level.id == session.level_id))
+                ).scalar_one_or_none()
+                if lvl:
+                    level_num = lvl.number
+            await notify_level_completed(
+                db,
+                user_id,
+                phase_number=phase_number,
+                level_number=level_num,
+                xp_earned=int(session.total_xp or 0),
+                score=float(score) * 100.0,
+            )
+            # Last level of a phase → nudge toward checkpoint / recommendations
+            if next_action == "psychometric_checkpoint":
+                from app.notifications.events import notify_system
+
+                await notify_system(
+                    db,
+                    user_id,
+                    title="Phase levels complete",
+                    message=(
+                        f"You finished all levels in Phase {phase_number}. "
+                        "Complete the psychometric checkpoint to unlock recommendations."
+                    ),
+                    data={
+                        "event": "phase_levels_complete",
+                        "phase_number": phase_number,
+                        "href": "/challenges",
+                    },
+                )
+        except Exception:
+            logger.exception("Failed to create level-complete notification")
+
     await db.commit()
     return {
         "passed": passed,
@@ -598,13 +639,25 @@ async def unlock_next_phase_after_recommendation(
             )
         )
     ).scalar_one_or_none()
-    if upp:
-        upp.status = "completed"
-        upp.completed_at = datetime.now(timezone.utc)
-
     phase = (await db.execute(select(Phase).where(Phase.id == phase_id))).scalar_one_or_none()
     if not phase:
         return
+
+    if upp:
+        upp.status = "completed"
+        upp.completed_at = datetime.now(timezone.utc)
+        try:
+            from app.notifications.events import notify_phase_completed
+
+            await notify_phase_completed(
+                db,
+                user_id,
+                phase_number=phase.number,
+                phase_name=phase.name,
+            )
+        except Exception:
+            logger.exception("Failed to create phase-complete notification")
+
     next_phase = (
         await db.execute(select(Phase).where(Phase.number == phase.number + 1))
     ).scalar_one_or_none()

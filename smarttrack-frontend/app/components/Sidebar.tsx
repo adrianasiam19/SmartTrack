@@ -11,6 +11,7 @@ import {
   UserProfile,
 } from '../lib/authApi';
 import { markDashboardVisited } from '../lib/dashboardWelcome';
+import NotificationBell from './NotificationBell';
 
 function buildNavItems() {
   return [
@@ -114,6 +115,8 @@ export default function Sidebar() {
           <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
         </svg>
       </button>
+
+      <NotificationBell />
 
       {/* ── Backdrop overlay ── */}
       <div

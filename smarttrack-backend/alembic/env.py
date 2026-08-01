@@ -14,6 +14,7 @@ from app.assessment.models import Question, LearningModule, CurriculumLesson, Ps
 from app.phases.models import Phase, Level, UserPhaseProgress, UserLevelProgress, UserSubjectPerformance  # noqa: F401
 from app.psychometrics.models import PsychometricQuestion, PsychometricOption, UserPsychometricBankResponse  # noqa: F401
 from app.recommendations.models import Recommendation  # noqa: F401
+from app.notifications.models import Notification  # noqa: F401
 
 from app.database import Base
 

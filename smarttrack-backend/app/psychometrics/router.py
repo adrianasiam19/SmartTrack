@@ -145,6 +145,21 @@ async def complete_checkpoint(
         )
 
     rec = await generate_phase_recommendation(db, current_user.id, phase.id)
+
+    try:
+        from app.notifications.events import notify_psychometric_completed
+
+        await notify_psychometric_completed(
+            db, current_user.id, phase_number=phase.number
+        )
+        await db.commit()
+    except Exception:
+        import logging
+
+        logging.getLogger(__name__).exception(
+            "Failed to create psychometric notification"
+        )
+
     return CheckpointCompleteResponse(
         answered=answered,
         required=required,

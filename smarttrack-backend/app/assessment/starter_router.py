@@ -216,6 +216,14 @@ async def complete_session(
 
         record_daily_challenge_streak(current_user)
         db.add(current_user)
+
+        try:
+            from app.notifications.events import notify_starter_arena_completed
+
+            await notify_starter_arena_completed(db, current_user.id)
+        except Exception:
+            logger.exception("Failed to create starter-arena notification")
+
         await db.commit()
         await db.refresh(current_user)
 

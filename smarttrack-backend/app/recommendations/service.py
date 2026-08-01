@@ -1,6 +1,7 @@
 """Phase-attributed programme recommendations — learner-facing, university-neutral."""
 from __future__ import annotations
 
+import logging
 import uuid
 from collections import defaultdict
 from datetime import datetime, timezone
@@ -20,6 +21,8 @@ from app.recommendations.presentation import (
     select_suitable_and_competitive,
 )
 from app.users.models import AcademicRecord
+
+logger = logging.getLogger(__name__)
 
 AFFINITY_TO_FAMILY = {
     "engineering": "Engineering",
@@ -172,6 +175,19 @@ async def generate_phase_recommendation(
     await db.refresh(row)
 
     await unlock_next_phase_after_recommendation(db, user_id, phase.id)
+
+    try:
+        from app.notifications.events import notify_recommendation_ready
+
+        await notify_recommendation_ready(
+            db,
+            user_id,
+            phase_number=phase.number,
+            is_final=is_final,
+        )
+        await db.commit()
+    except Exception:
+        logger.exception("Failed to create recommendation notification")
 
     return {
         "id": row.id,

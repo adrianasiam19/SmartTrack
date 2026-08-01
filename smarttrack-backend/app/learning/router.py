@@ -684,6 +684,22 @@ async def complete_lesson(
     profile["completed_lessons"] = completed[-200:]
     user.learner_profile = profile
     flag_modified(user, "learner_profile")
+
+    try:
+        from app.notifications.events import notify_lesson_completed
+
+        await notify_lesson_completed(
+            db,
+            user.id,
+            title=curriculum.title,
+            subject=curriculum.subject,
+            xp_earned=xp_earned,
+        )
+    except Exception:
+        import logging
+
+        logging.getLogger(__name__).exception("Failed to create lesson notification")
+
     await db.commit()
     return LessonCompleteResponse(
         curriculum_id=curriculum_id,
