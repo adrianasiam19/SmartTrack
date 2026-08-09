@@ -21,6 +21,18 @@ import {
 
 function formatApiDetail(detail: unknown): string {
   if (typeof detail === 'string') return detail;
+  if (Array.isArray(detail)) {
+    return detail
+      .map((item) => {
+        if (typeof item === 'string') return item;
+        if (item && typeof item === 'object' && 'msg' in item) {
+          return String((item as { msg?: string }).msg || '');
+        }
+        return '';
+      })
+      .filter(Boolean)
+      .join('\n') || 'Something went wrong. Please try again.';
+  }
   if (detail && typeof detail === 'object') {
     const d = detail as {
       message?: string;
@@ -38,6 +50,8 @@ function formatApiDetail(detail: unknown): string {
   }
   return 'Could not generate recommendations. Please try again.';
 }
+
+type PendingGrade = { subject: string; grade: string };
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 const ACADEMIC_FLAG_KEY = 'atlas_academic_data';
@@ -64,6 +78,7 @@ type ProgrammeCard = {
   admission_insight?: string;
   method?: string;
   learn_more_url?: string | null;
+  rank?: number;
 };
 
 type RecommendationPayload = {
@@ -84,8 +99,11 @@ type RecommendationPayload = {
     programmes?: ProgrammeCard[];
   } | null;
   primary_source?: string;
+  recommendation_kind?: string;
+  wassce_used?: boolean;
   used_fallback?: boolean;
   learner_notice?: string | null;
+  behavioural_baseline?: string[];
 };
 
 type PhaseRecommendation = {
@@ -113,23 +131,30 @@ function ProgrammeList({
   }
   return (
     <ul className="space-y-3">
-      {items.map((p) => (
-        <li key={`${p.programme}-${p.method || 'main'}`}>
+      {items.map((p, index) => (
+        <li key={`${p.programme}-${p.method || 'main'}-${p.rank || index}`}>
           <button
             type="button"
             onClick={() => onSelect(p)}
             className="w-full text-left rounded-2xl border border-[#E2E8F0] bg-white px-5 py-4 hover:border-[#2563EB] hover:shadow-sm transition"
           >
-            <p className="font-semibold text-[#1E293B]">{p.programme}</p>
-            {p.family && (
-              <p className="text-xs text-[#64748B] mt-1">{p.family}</p>
-            )}
-            {p.why_recommended && (
-              <p className="text-sm text-[#475569] mt-2 line-clamp-2">
-                {p.why_recommended}
-              </p>
-            )}
-            <p className="text-xs font-medium text-[#2563EB] mt-3">View details →</p>
+            <div className="flex items-start gap-3">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#EEF2FF] text-sm font-bold text-[#2563EB]">
+                {p.rank ?? index + 1}
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold text-[#1E293B]">{p.programme}</p>
+                {p.family && (
+                  <p className="text-xs text-[#64748B] mt-1">{p.family}</p>
+                )}
+                {p.why_recommended && (
+                  <p className="text-sm text-[#475569] mt-2 line-clamp-2">
+                    {p.why_recommended}
+                  </p>
+                )}
+                <p className="text-xs font-medium text-[#2563EB] mt-3">View details →</p>
+              </div>
+            </div>
           </button>
         </li>
       ))}
@@ -240,6 +265,12 @@ export default function RecommendationsPage() {
   const [uploadError, setUploadError] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [uploadMessage, setUploadMessage] = useState('');
+  const [pendingGrades, setPendingGrades] = useState<PendingGrade[] | null>(null);
+  const [pendingFilename, setPendingFilename] = useState<string | null>(null);
+  const [pendingStoredName, setPendingStoredName] = useState<string | null>(null);
+  const [pendingCandidateName, setPendingCandidateName] = useState<string | null>(null);
+  const [isConfirming, setIsConfirming] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generateError, setGenerateError] = useState('');
   const [result, setResult] = useState<RecommendationPayload | null>(null);
@@ -261,11 +292,26 @@ export default function RecommendationsPage() {
         const fresh = await getCurrentUser();
         setUser(fresh);
 
-        const profileUpload = (fresh.learner_profile as { academic_upload?: { filename?: string } } | null)
-          ?.academic_upload;
-        if (profileUpload?.filename) {
+        const profile = fresh.learner_profile as {
+          academic_upload?: { filename?: string; confirmed?: boolean };
+          academic_upload_pending?: {
+            filename?: string;
+            stored_name?: string;
+            grades?: PendingGrade[];
+            candidate_name?: string;
+          };
+        } | null;
+        const profileUpload = profile?.academic_upload;
+        const pending = profile?.academic_upload_pending;
+        if (pending?.grades?.length) {
+          setPendingGrades(pending.grades);
+          setPendingFilename(pending.filename || null);
+          setPendingStoredName(pending.stored_name || null);
+          setPendingCandidateName(pending.candidate_name || null);
+        }
+        if (profileUpload?.filename && profileUpload.confirmed !== false) {
           setUploadedFileName(profileUpload.filename);
-        } else if (localStorage.getItem(ACADEMIC_FLAG_KEY) === 'true') {
+        } else if (!pending?.grades?.length && localStorage.getItem(ACADEMIC_FLAG_KEY) === 'true') {
           setUploadedFileName(localStorage.getItem(ACADEMIC_FILE_KEY));
         }
 
@@ -345,19 +391,29 @@ export default function RecommendationsPage() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        throw new Error(data?.detail || 'Upload failed. Please try again.');
+        throw new Error(formatApiDetail(data?.detail) || 'Upload failed. Please try again.');
       }
 
+      const records = Array.isArray(data.records) ? (data.records as PendingGrade[]) : [];
+      if (data.needs_confirmation && records.length > 0) {
+        setPendingGrades(records);
+        setPendingFilename(data.filename || file.name);
+        setPendingStoredName(data.stored_name || null);
+        setPendingCandidateName(data.candidate_name || null);
+        setUploadMessage(
+          data.message ||
+            'Review the grades below and confirm before Atlas uses them.',
+        );
+        return;
+      }
+
+      // Legacy fallback if an older server still auto-saves.
       const filename = data.filename || file.name;
       localStorage.setItem(ACADEMIC_FLAG_KEY, 'true');
       localStorage.setItem(ACADEMIC_FILE_KEY, filename);
       setUploadedFileName(filename);
-      setUploadMessage(
-        data.message ||
-          (data.grades_extracted
-            ? 'Upload saved and grades detected.'
-            : 'Upload saved. Tap Get Recommendations when you are ready.'),
-      );
+      setPendingGrades(null);
+      setUploadMessage(data.message || 'Upload saved.');
       try {
         const fresh = await getCurrentUser();
         setUser(fresh);
@@ -371,13 +427,116 @@ export default function RecommendationsPage() {
     }
   };
 
+  const handleConfirmGrades = async () => {
+    if (!pendingGrades?.length) return;
+    setIsConfirming(true);
+    setUploadError('');
+    try {
+      const res = await fetchWithAuth(`${API_BASE}/challenges/academic/confirm`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          records: pendingGrades.map((g) => ({
+            subject: g.subject,
+            grade: g.grade,
+            exam_type: 'WASSCE',
+          })),
+          filename: pendingFilename || undefined,
+          stored_name: pendingStoredName || undefined,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(formatApiDetail(data?.detail) || 'Could not confirm grades.');
+      }
+      const filename = data.filename || pendingFilename || 'WASSCE results';
+      localStorage.setItem(ACADEMIC_FLAG_KEY, 'true');
+      localStorage.setItem(ACADEMIC_FILE_KEY, filename);
+      setUploadedFileName(filename);
+      setPendingGrades(null);
+      setPendingFilename(null);
+      setPendingStoredName(null);
+      setPendingCandidateName(null);
+      setUploadMessage(
+        data.message ||
+          'WASSCE grades saved. Tap Get Recommendations to refine your matches.',
+      );
+      try {
+        const fresh = await getCurrentUser();
+        setUser(fresh);
+        const elig = await getRecommendationEligibility();
+        setEligibility(elig);
+      } catch {
+        // Non-fatal
+      }
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Could not confirm grades.');
+    } finally {
+      setIsConfirming(false);
+    }
+  };
+
+  const handleDiscardPending = async () => {
+    setUploadError('');
+    try {
+      await fetchWithAuth(`${API_BASE}/challenges/academic/pending`, {
+        method: 'DELETE',
+      });
+    } catch {
+      // Still clear local preview
+    }
+    setPendingGrades(null);
+    setPendingFilename(null);
+    setPendingStoredName(null);
+    setPendingCandidateName(null);
+    setUploadMessage('Upload cancelled. Your previous results (if any) are unchanged.');
+  };
+
+  const handleRemoveResults = async () => {
+    if (
+      !window.confirm(
+        'Remove your WASSCE results from Atlas? Recommendations will use your Atlas activity only.',
+      )
+    ) {
+      return;
+    }
+    setIsRemoving(true);
+    setUploadError('');
+    try {
+      const res = await fetchWithAuth(`${API_BASE}/challenges/academic`, {
+        method: 'DELETE',
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(formatApiDetail(data?.detail) || 'Could not remove results.');
+      }
+      localStorage.removeItem(ACADEMIC_FLAG_KEY);
+      localStorage.removeItem(ACADEMIC_FILE_KEY);
+      setUploadedFileName(null);
+      setPendingGrades(null);
+      setPendingFilename(null);
+      setPendingStoredName(null);
+      setPendingCandidateName(null);
+      setUploadMessage(data.message || 'WASSCE results removed.');
+      setResult(null);
+      try {
+        const fresh = await getCurrentUser();
+        setUser(fresh);
+        const elig = await getRecommendationEligibility();
+        setEligibility(elig);
+      } catch {
+        // Non-fatal
+      }
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Could not remove results.');
+    } finally {
+      setIsRemoving(false);
+    }
+  };
+
   const handleGetRecommendations = async () => {
     if (eligibility && !eligibility.eligible) {
       setGenerateError(eligibility.message);
-      return;
-    }
-    if (!uploadedFileName) {
-      setGenerateError('Upload your academic results first.');
       return;
     }
     setGenerateError('');
@@ -400,6 +559,28 @@ export default function RecommendationsPage() {
       } catch {
         // non-fatal
       }
+      try {
+        const history = await getRecommendationHistory();
+        const items: PhaseRecommendation[] = Array.isArray(history)
+          ? history
+          : history?.items || [];
+        const byPhase = new Map<number, PhaseRecommendation>();
+        for (const item of items) {
+          const existing = byPhase.get(item.phase);
+          if (
+            !existing ||
+            new Date(item.generated_at).getTime() >
+              new Date(existing.generated_at).getTime()
+          ) {
+            byPhase.set(item.phase, item);
+          }
+        }
+        setPhaseHistory(
+          Array.from(byPhase.values()).sort((a, b) => a.phase - b.phase),
+        );
+      } catch {
+        // non-fatal
+      }
     } catch (err) {
       setGenerateError(
         err instanceof Error ? err.message : 'Could not generate recommendations.',
@@ -411,6 +592,8 @@ export default function RecommendationsPage() {
 
   // Optimistic when eligibility has not loaded; backend remains the hard gate.
   const phaseUnlocked = !eligibility || eligibility.eligible;
+  const allPhasesDone = Boolean(eligibility?.all_phases_completed);
+  const wassceRecommended = Boolean(eligibility?.wassce_recommended_now);
   const focus = eligibility?.mandatory?.focus_phase;
   const learningDone = Boolean(
     eligibility?.recommended?.learning_center_lesson_completed,
@@ -484,22 +667,25 @@ export default function RecommendationsPage() {
                     <p className="text-sm text-[#475569] mb-3">{item.rationale_summary}</p>
                     {(item.programme_suggestions || []).length === 0 ? (
                       <p className="text-sm text-[#94A3B8]">
-                        Upload your results to unlock specific programme matches for this phase.
+                        Complete this phase checkpoint again to refresh behavioural programme matches.
                       </p>
                     ) : (
-                      <ul className="space-y-2">
-                        {(item.programme_suggestions || []).slice(0, 6).map((s) => (
+                      <ol className="space-y-2 list-none">
+                        {(item.programme_suggestions || []).slice(0, 6).map((s, idx) => (
                           <li key={s.programme}>
                             <button
                               type="button"
                               onClick={() => setSelected(s)}
-                              className="text-left text-sm font-medium text-[#1E293B] hover:text-[#2563EB]"
+                              className="text-left text-sm font-medium text-[#1E293B] hover:text-[#2563EB] flex items-center gap-2"
                             >
+                              <span className="text-[#2563EB] font-bold w-5">
+                                {s.rank ?? idx + 1}.
+                              </span>
                               {s.programme}
                             </button>
                           </li>
                         ))}
-                      </ul>
+                      </ol>
                     )}
                   </div>
                 ))}
@@ -519,16 +705,22 @@ export default function RecommendationsPage() {
 
               <h2 className="text-xl font-bold text-[#1E293B] mb-3">
                 {phaseUnlocked
-                  ? 'Unlock Your Programme Matches'
+                  ? allPhasesDone
+                    ? 'Your matches — refine with WASSCE (optional)'
+                    : 'Your programme matches from Atlas'
                   : 'Recommendations unlock with progress'}
               </h2>
               <p className="text-sm text-[#64748B] max-w-lg mx-auto mb-4 leading-relaxed">
-                Atlas recommendations are based on three signals only:
+                Atlas builds recommendations from your journey. WASSCE is optional and used
+                at the end to refine admission insights:
               </p>
               <ul className="text-sm text-[#475569] max-w-md mx-auto mb-6 space-y-1.5 text-left list-disc list-inside">
-                <li>Academic Results (uploaded WASSCE / academic results)</li>
                 <li>Psychometric Profile</li>
-                <li>Challenge Performance</li>
+                <li>Challenge Performance &amp; subject strengths</li>
+                <li>Learning Centre activity</li>
+                <li>
+                  WASSCE / academic results — optional refine after all phases
+                </li>
               </ul>
 
               {!phaseUnlocked && (
@@ -568,6 +760,19 @@ export default function RecommendationsPage() {
                 </p>
               )}
 
+              {phaseUnlocked && (allPhasesDone || wassceRecommended) && (
+                <div className="max-w-lg mx-auto mb-6 rounded-xl border border-[#BFDBFE] bg-[#EFF6FF] px-5 py-4 text-left">
+                  <p className="text-sm font-semibold text-[#1E40AF]">
+                    Optional: upload WASSCE to refine your matches
+                  </p>
+                  <p className="text-sm text-[#1E3A8A] mt-2 leading-relaxed">
+                    You already have behavioural recommendations from Atlas. Uploading results
+                    lets Atlas tweak the ranking with your aggregate and university cut-offs.
+                    This is never compulsory.
+                  </p>
+                </div>
+              )}
+
               <input
                 ref={fileInputRef}
                 type="file"
@@ -579,41 +784,105 @@ export default function RecommendationsPage() {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <button
                   type="button"
+                  onClick={() => void handleGetRecommendations()}
+                  disabled={
+                    isUploading || isGenerating || isConfirming || isRemoving || !phaseUnlocked
+                  }
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-white bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] shadow-lg shadow-[#2563EB]/20 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.98]"
+                >
+                  {isGenerating ? 'Generating…' : 'Get Recommendations'}
+                </button>
+
+                <button
+                  type="button"
                   onClick={openFilePicker}
-                  disabled={isUploading || isGenerating}
+                  disabled={isUploading || isGenerating || isConfirming || isRemoving}
                   className={`inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold transition-all duration-200 active:scale-[0.98] disabled:opacity-60 ${
-                    uploadedFileName
-                      ? 'bg-[#EEF2FF] border border-[#C7D2FE] text-[#2563EB]'
-                      : 'bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] text-white shadow-lg shadow-[#2563EB]/20 hover:shadow-xl hover:from-[#3B82F6] hover:to-[#2563EB]'
+                    allPhasesDone || uploadedFileName
+                      ? 'bg-gradient-to-r from-[#7C3AED] to-[#5B21B6] text-white shadow-lg shadow-[#7C3AED]/20'
+                      : 'bg-[#EEF2FF] border border-[#C7D2FE] text-[#2563EB]'
                   }`}
                 >
                   {isUploading
                     ? 'Uploading…'
                     : uploadedFileName
                       ? 'Replace Results'
-                      : 'Upload WASSCE or Academic Results'}
+                      : allPhasesDone
+                        ? 'Upload WASSCE to refine'
+                        : 'Upload WASSCE (optional)'}
                 </button>
 
-                <button
-                  type="button"
-                  onClick={() => void handleGetRecommendations()}
-                  disabled={isUploading || isGenerating}
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-white bg-gradient-to-r from-[#7C3AED] to-[#5B21B6] shadow-lg shadow-[#7C3AED]/20 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.98]"
-                >
-                  {isGenerating ? 'Generating…' : 'Get Recommendations'}
-                </button>
+                {uploadedFileName && !pendingGrades && (
+                  <button
+                    type="button"
+                    onClick={() => void handleRemoveResults()}
+                    disabled={isUploading || isGenerating || isConfirming || isRemoving}
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold border border-[#FECACA] bg-white text-[#B91C1C] hover:bg-[#FEF2F2] disabled:opacity-60 transition-all active:scale-[0.98]"
+                  >
+                    {isRemoving ? 'Removing…' : 'Remove Results'}
+                  </button>
+                )}
               </div>
 
-              {uploadedFileName && (
+              {pendingGrades && pendingGrades.length > 0 && (
+                <div className="max-w-lg mx-auto mt-6 rounded-xl border border-[#C7D2FE] bg-white px-5 py-4 text-left">
+                  <p className="text-sm font-semibold text-[#1E40AF]">
+                    Confirm these WASSCE grades
+                  </p>
+                  <p className="text-xs text-[#64748B] mt-1 mb-3">
+                    {pendingFilename
+                      ? `From “${pendingFilename}”. `
+                      : ''}
+                    {pendingCandidateName
+                      ? `Candidate name matched: ${pendingCandidateName}. `
+                      : ''}
+                    Atlas will not use them until you confirm.
+                  </p>
+                  <ul className="divide-y divide-[#E2E8F0] text-sm mb-4 max-h-56 overflow-y-auto">
+                    {pendingGrades.map((g) => (
+                      <li
+                        key={`${g.subject}-${g.grade}`}
+                        className="flex items-center justify-between py-2 gap-3"
+                      >
+                        <span className="text-[#334155]">{g.subject}</span>
+                        <span className="font-semibold text-[#1E293B] tabular-nums">
+                          {g.grade}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <button
+                      type="button"
+                      onClick={() => void handleConfirmGrades()}
+                      disabled={isConfirming || isUploading}
+                      className="inline-flex flex-1 items-center justify-center px-4 py-2.5 rounded-xl font-semibold text-white bg-[#059669] hover:bg-[#047857] disabled:opacity-60"
+                    >
+                      {isConfirming ? 'Saving…' : 'Confirm & save'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void handleDiscardPending()}
+                      disabled={isConfirming || isUploading}
+                      className="inline-flex flex-1 items-center justify-center px-4 py-2.5 rounded-xl font-semibold border border-[#E2E8F0] text-[#475569] hover:bg-[#F8FAFC] disabled:opacity-60"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {uploadedFileName && !pendingGrades && (
                 <p className="text-sm text-[#2563EB] mt-4">
-                  Uploaded: <span className="font-medium">{uploadedFileName}</span>
+                  Saved: <span className="font-medium">{uploadedFileName}</span>
+                  {' — '}tap Get Recommendations again to apply the refine.
                 </p>
               )}
               {uploadMessage && (
-                <p className="text-sm text-[#059669] mt-3">{uploadMessage}</p>
+                <p className="text-sm text-[#059669] mt-3 whitespace-pre-line">{uploadMessage}</p>
               )}
               {uploadError && (
-                <p className="text-sm text-[#DC2626] mt-4">{uploadError}</p>
+                <p className="text-sm text-[#DC2626] mt-4 whitespace-pre-line">{uploadError}</p>
               )}
               {generateError && (
                 <p className="text-sm text-[#78350F] mt-4 whitespace-pre-line text-left max-w-lg mx-auto bg-[#FFFBEB] border border-[#FDE68A] rounded-xl px-4 py-3">
@@ -630,7 +899,9 @@ export default function RecommendationsPage() {
               >
                 <div className="bg-white border border-[#BFDBFE] rounded-2xl p-6">
                   <h3 className="text-lg font-bold text-[#1E293B] mb-2">
-                    Admission Insights
+                    {result.wassce_used
+                      ? 'Refined with WASSCE'
+                      : 'Programme Match (from Atlas activity)'}
                   </h3>
                   {result.summary_message && (
                     <p className="text-sm text-[#64748B] mb-4">{result.summary_message}</p>
@@ -641,7 +912,16 @@ export default function RecommendationsPage() {
                     </p>
                   ) : null}
                   <div className="flex flex-wrap gap-3 text-sm">
-                    {typeof result.grades_used === 'number' && (
+                    {result.wassce_used ? (
+                      <span className="px-3 py-1.5 rounded-lg bg-[#DCFCE7] text-[#166534] font-semibold">
+                        Academic refine applied
+                      </span>
+                    ) : (
+                      <span className="px-3 py-1.5 rounded-lg bg-[#EEF2FF] text-[#3730A3] font-semibold">
+                        Behavioural match · no WASSCE required
+                      </span>
+                    )}
+                    {typeof result.grades_used === 'number' && result.grades_used > 0 && (
                       <span className="px-3 py-1.5 rounded-lg bg-[#FFF7ED] text-[#C2410C] font-semibold">
                         {result.grades_used} grade{result.grades_used === 1 ? '' : 's'} used
                       </span>
@@ -656,9 +936,12 @@ export default function RecommendationsPage() {
                 </div>
 
                 <section className="space-y-3">
-                  <h3 className="text-lg font-bold text-[#1E293B]">Recommended Programmes</h3>
+                  <h3 className="text-lg font-bold text-[#1E293B]">
+                    {result.wassce_used ? 'Refined programme ranking' : 'Ranked programmes'}
+                  </h3>
                   <p className="text-sm text-[#64748B]">
-                    Strong profile matches whose admission points sit close to your aggregate.
+                    Listed in order of recommendation strength (1 = strongest match). No
+                    percentages are shown.
                   </p>
                   <ProgrammeList items={suitable} onSelect={setSelected} />
                 </section>

@@ -1,0 +1,437 @@
+{
+  "v1|core mathematics|shs 2|matrices|2": {
+    "queries": [
+      "SHS 2 Mathematics Matrices",
+      "Matrices explained for beginners",
+      "Matrices Mathematics tutorial",
+      "Matrices worked examples Mathematics"
+    ],
+    "resources": [
+      {
+        "id": "ytsearch:0:SHS+2+Mathematics+Matrices",
+        "kind": "video",
+        "title": "Find videos: SHS 2 Mathematics Matrices",
+        "url": "https://www.youtube.com/results?search_query=SHS+2+Mathematics+Matrices",
+        "provider": "youtube",
+        "thumbnail_url": null,
+        "channel": "YouTube Search",
+        "duration_seconds": null,
+        "description": "Opens educational YouTube results for this lesson topic.",
+        "query": "SHS 2 Mathematics Matrices",
+        "extra": {
+          "duration_label": null,
+          "is_search": true
+        }
+      },
+      {
+        "id": "ytsearch:1:Matrices+explained+for+beginners",
+        "kind": "video",
+        "title": "Find videos: Matrices explained for beginners",
+        "url": "https://www.youtube.com/results?search_query=Matrices+explained+for+beginners",
+        "provider": "youtube",
+        "thumbnail_url": null,
+        "channel": "YouTube Search",
+        "duration_seconds": null,
+        "description": "Opens educational YouTube results for this lesson topic.",
+        "query": "Matrices explained for beginners",
+        "extra": {
+          "duration_label": null,
+          "is_search": true
+        }
+      }
+    ],
+    "cached_at": 1785709398.4379935
+  },
+  "v1|additional mathematics|shs 2|introduction to differentiation and derivatives|3": {
+    "queries": [
+      "SHS 2 Additional Mathematics Differentiation and Derivatives",
+      "Differentiation and Derivatives explained for beginners",
+      "Differentiation and Derivatives Additional Mathematics tutorial",
+      "Differentiation and Derivatives worked examples Additional Mathematics"
+    ],
+    "resources": [
+      {
+        "id": "yt:N2PpRnFqnqY",
+        "kind": "video",
+        "title": "Derivative as a concept | Derivatives introduction | AP Calculus AB | Khan Academy",
+        "url": "https://www.youtube.com/watch?v=N2PpRnFqnqY",
+        "provider": "youtube",
+        "thumbnail_url": "https://i.ytimg.com/vi/N2PpRnFqnqY/mqdefault.jpg",
+        "channel": "Khan Academy",
+        "duration_seconds": 436,
+        "description": "Courses on Khan Academy are always 100% free. Start practicing—and saving your progress—now: ...",
+        "query": "Differentiation and Derivatives explained for beginners",
+        "extra": {
+          "duration_label": "7:16"
+        }
+      },
+      {
+        "id": "yt:FLAm7Hqm-58",
+        "kind": "video",
+        "title": "Derivatives for Beginners - Basic Introduction",
+        "url": "https://www.youtube.com/watch?v=FLAm7Hqm-58",
+        "provider": "youtube",
+        "thumbnail_url": "https://i.ytimg.com/vi/FLAm7Hqm-58/mqdefault.jpg",
+        "channel": "The Organic Chemistry Tutor",
+        "duration_seconds": 3484,
+        "description": "This calculus video tutorial provides a basic introduction into derivatives for beginners. Here is a list of topics: Calculus 1 Final ...",
+        "query": "Differentiation and Derivatives explained for beginners",
+        "extra": {
+          "duration_label": "58:04"
+        }
+      },
+      {
+        "id": "yt:WsQQvHm4lSw",
+        "kind": "video",
+        "title": "Understand Calculus in 35 Minutes",
+        "url": "https://www.youtube.com/watch?v=WsQQvHm4lSw",
+        "provider": "youtube",
+        "thumbnail_url": "https://i.ytimg.com/vi/WsQQvHm4lSw/mqdefault.jpg",
+        "channel": "The Organic Chemistry Tutor",
+        "duration_seconds": 2182,
+        "description": "This video makes an attempt to teach the fundamentals of calculus 1 such as limits, derivatives, and integration. It explains how to ...",
+        "query": "SHS 2 Additional Mathematics Differentiation and Derivatives",
+        "extra": {
+          "duration_label": "36:22"
+        }
+      }
+    ],
+    "cached_at": 1785844972.3864481
+  },
+  "v1|core mathematics|shs 1|introduction to vectors|3": {
+    "queries": [
+      "SHS 1 Mathematics Vectors",
+      "Vectors explained for beginners",
+      "Vectors Mathematics tutorial",
+      "Vectors worked examples Mathematics"
+    ],
+    "resources": [
+      {
+        "id": "yt:EwSHKuSxX_8",
+        "kind": "video",
+        "title": "Vectors - Basic Introduction - Physics",
+        "url": "https://www.youtube.com/watch?v=EwSHKuSxX_8",
+        "provider": "youtube",
+        "thumbnail_url": "https://i.ytimg.com/vi/EwSHKuSxX_8/mqdefault.jpg",
+        "channel": "The Organic Chemistry Tutor",
+        "duration_seconds": 733,
+        "description": "This physics video tutorial provides a basic introduction into vectors. It explains the differences between scalar and vector ...",
+        "query": "Vectors explained for beginners",
+        "extra": {
+          "duration_label": "12:13"
+        }
+      },
+      {
+        "id": "yt:fNk_zzaMoSs",
+        "kind": "video",
+        "title": "Vectors | Chapter 1, Essence of linear algebra",
+        "url": "https://www.youtube.com/watch?v=fNk_zzaMoSs",
+        "provider": "youtube",
+        "thumbnail_url": "https://i.ytimg.com/vi/fNk_zzaMoSs/mqdefault.jpg",
+        "channel": "3Blue1Brown",
+        "duration_seconds": 592,
+        "description": "Beginning the linear algebra series with the basics. Help fund future projects: https://www.patreon.com/3blue1brown Music: ...",
+        "query": "Vectors explained for beginners",
+        "extra": {
+          "duration_label": "9:52"
+        }
+      },
+      {
+        "id": "yt:iXdMpXMuEGI",
+        "kind": "video",
+        "title": "Vectors - Precalculus",
+        "url": "https://www.youtube.com/watch?v=iXdMpXMuEGI",
+        "provider": "youtube",
+        "thumbnail_url": "https://i.ytimg.com/vi/iXdMpXMuEGI/mqdefault.jpg",
+        "channel": "The Organic Chemistry Tutor",
+        "duration_seconds": 1127,
+        "description": "This precalculus video tutorial provides a basic introduction into vectors. It explains how to find the magnitude and direction of a ...",
+        "query": "SHS 1 Mathematics Vectors",
+        "extra": {
+          "duration_label": "18:47"
+        }
+      }
+    ],
+    "cached_at": 1785884927.8001266
+  },
+  "v1|integrated science|shs 2|structure of the lungs and aerobic respiration|3": {
+    "queries": [
+      "SHS 2 Integrated Science Structure of the Lungs and Aerobic Respiration",
+      "Structure of the Lungs and Aerobic Respiration explained for beginners",
+      "Structure of the Lungs and Aerobic Respiration Integrated Science tutorial",
+      "Structure of the Lungs and Aerobic Respiration worked examples Integrated Science"
+    ],
+    "resources": [
+      {
+        "id": "yt:v_j-LD2YEqg",
+        "kind": "video",
+        "title": "Respiratory System",
+        "url": "https://www.youtube.com/watch?v=v_j-LD2YEqg",
+        "provider": "youtube",
+        "thumbnail_url": "https://i.ytimg.com/vi/v_j-LD2YEqg/mqdefault.jpg",
+        "channel": "Amoeba Sisters",
+        "duration_seconds": 455,
+        "description": "Join the Amoeba Sisters for a brief tour through the human respiratory system! This video will discuss why the respiratory system ...",
+        "query": "SHS 2 Integrated Science Structure of the Lungs and Aerobic Respiration",
+        "extra": {
+          "duration_label": "7:35"
+        }
+      },
+      {
+        "id": "yt:iiE3myHDl1o",
+        "kind": "video",
+        "title": "Respiratory System | Structure and Function",
+        "url": "https://www.youtube.com/watch?v=iiE3myHDl1o",
+        "provider": "youtube",
+        "thumbnail_url": "https://i.ytimg.com/vi/iiE3myHDl1o/mqdefault.jpg",
+        "channel": "Siebert Science",
+        "duration_seconds": 884,
+        "description": "Learning anatomy & physiology? Check out these resources I've made to help you learn! ↙️ FREE A&P SURVIVAL GUIDE ...",
+        "query": "SHS 2 Integrated Science Structure of the Lungs and Aerobic Respiration",
+        "extra": {
+          "duration_label": "14:44"
+        }
+      },
+      {
+        "id": "yt:7FhzSSQxM54",
+        "kind": "video",
+        "title": "Respiratory System of the Human Body - How the Lungs Work! (Animation)",
+        "url": "https://www.youtube.com/watch?v=7FhzSSQxM54",
+        "provider": "youtube",
+        "thumbnail_url": "https://i.ytimg.com/vi/7FhzSSQxM54/mqdefault.jpg",
+        "channel": "Thomas Schwenke",
+        "duration_seconds": 653,
+        "description": "In this animation, the respiratory organs of humans, such as the lungs, trachea and pleura, are described in a detailed manner.",
+        "query": "SHS 2 Integrated Science Structure of the Lungs and Aerobic Respiration",
+        "extra": {
+          "duration_label": "10:53"
+        }
+      }
+    ],
+    "cached_at": 1785885479.8046887
+  },
+  "v1|english language|shs 1|identifying themes in texts|3": {
+    "queries": [
+      "SHS 1 English Identifying Themes in Texts",
+      "Identifying Themes in Texts explained for beginners",
+      "Identifying Themes in Texts English tutorial",
+      "Identifying Themes in Texts worked examples English"
+    ],
+    "resources": [
+      {
+        "id": "yt:MAu3e5GZo4k",
+        "kind": "video",
+        "title": "Understanding theme | Reading | Khan Academy",
+        "url": "https://www.youtube.com/watch?v=MAu3e5GZo4k",
+        "provider": "youtube",
+        "thumbnail_url": "https://i.ytimg.com/vi/MAu3e5GZo4k/mqdefault.jpg",
+        "channel": "Khan Academy",
+        "duration_seconds": 378,
+        "description": "Keep going! Check out the next lesson and practice what you're learning: ...",
+        "query": "Identifying Themes in Texts explained for beginners",
+        "extra": {
+          "duration_label": "6:18"
+        }
+      },
+      {
+        "id": "yt:N7FuG4PQLzc",
+        "kind": "video",
+        "title": "Dominant Themes in African Poetry: The Master Brewer | SHS 1 English S2 W9 (AY21) | School Support",
+        "url": "https://www.youtube.com/watch?v=N7FuG4PQLzc",
+        "provider": "youtube",
+        "thumbnail_url": "https://i.ytimg.com/vi/N7FuG4PQLzc/mqdefault.jpg",
+        "channel": "School Support",
+        "duration_seconds": 182,
+        "description": "Welcome to School Support — Your #1 Digital Classroom for SHS, STEM, TVET & SHTS Education in Ghana. In this lesson ...",
+        "query": "SHS 1 English Identifying Themes in Texts",
+        "extra": {
+          "duration_label": "3:02"
+        }
+      },
+      {
+        "id": "yt:I5KZcdAmWLw",
+        "kind": "video",
+        "title": "&quot;What is a Theme in Literature?&quot;: A Literary Guide for English Students and Teachers",
+        "url": "https://www.youtube.com/watch?v=I5KZcdAmWLw",
+        "provider": "youtube",
+        "thumbnail_url": "https://i.ytimg.com/vi/I5KZcdAmWLw/mqdefault.jpg",
+        "channel": "OSU School of Writing, Literature and Film",
+        "duration_seconds": 264,
+        "description": "What is a theme in literature? How do you find a theme? Senior instructor J.T. Bushnell answers these questions using examples ...",
+        "query": "SHS 1 English Identifying Themes in Texts",
+        "extra": {
+          "duration_label": "4:24"
+        }
+      }
+    ],
+    "cached_at": 1786136315.8534708
+  },
+  "v1|chemistry|shs 1|introduction to chemistry|3": {
+    "queries": [
+      "SHS 1 Chemistry Chemistry",
+      "Chemistry explained for beginners",
+      "Chemistry Chemistry tutorial",
+      "Chemistry worked examples Chemistry"
+    ],
+    "resources": [
+      {
+        "id": "yt:WT_8m_SLlWU",
+        "kind": "video",
+        "title": "Introduction to chemistry | states of matter ",
+        "url": "https://www.youtube.com/watch?v=WT_8m_SLlWU",
+        "provider": "youtube",
+        "thumbnail_url": "https://i.ytimg.com/vi/WT_8m_SLlWU/mqdefault.jpg",
+        "channel": "Nurse Bright",
+        "duration_seconds": 537,
+        "description": "This video lesson teaches on the introduction to chemistry with a very Easy to understand approach, in this lesson, you will learn ...",
+        "query": "SHS 1 Chemistry Chemistry",
+        "extra": {
+          "duration_label": "8:57"
+        }
+      },
+      {
+        "id": "yt:5iTOphGnCtg",
+        "kind": "video",
+        "title": "GENERAL CHEMISTRY explained in 19 Minutes",
+        "url": "https://www.youtube.com/watch?v=5iTOphGnCtg",
+        "provider": "youtube",
+        "thumbnail_url": "https://i.ytimg.com/vi/5iTOphGnCtg/mqdefault.jpg",
+        "channel": "Wacky Science",
+        "duration_seconds": 1129,
+        "description": "ALL OF PHYSICS in 14 Minutes: https://youtu.be/ZAqIoDhornk Oh yeah also I have Instagram now: ...",
+        "query": "SHS 1 Chemistry Chemistry",
+        "extra": {
+          "duration_label": "18:49"
+        }
+      },
+      {
+        "id": "yt:vDy0w3ZxcyU",
+        "kind": "video",
+        "title": "Periodicity | Full Topic | A level Chemistry",
+        "url": "https://www.youtube.com/watch?v=vDy0w3ZxcyU",
+        "provider": "youtube",
+        "thumbnail_url": "https://i.ytimg.com/vi/vDy0w3ZxcyU/mqdefault.jpg",
+        "channel": "The Chemistry Tutor",
+        "duration_seconds": 1765,
+        "description": "Explore More & Full Notes All A Level Chemistry Videos: ...",
+        "query": "SHS 1 Chemistry Chemistry",
+        "extra": {
+          "duration_label": "29:25"
+        }
+      }
+    ],
+    "cached_at": 1786216906.5161092
+  },
+  "v1|integrated science|shs 1|types of soap|3": {
+    "queries": [
+      "SHS 1 Integrated Science Types of Soap",
+      "Types of Soap explained for beginners",
+      "Types of Soap Integrated Science tutorial",
+      "Types of Soap worked examples Integrated Science"
+    ],
+    "resources": [
+      {
+        "id": "yt:2mqN7ZhDsUA",
+        "kind": "video",
+        "title": "Difference Between REST API vs Web API vs SOAP API Explained",
+        "url": "https://www.youtube.com/watch?v=2mqN7ZhDsUA",
+        "provider": "youtube",
+        "thumbnail_url": "https://i.ytimg.com/vi/2mqN7ZhDsUA/mqdefault.jpg",
+        "channel": "Learn with Whiteboard",
+        "duration_seconds": 444,
+        "description": "Supercharge your website with Kinsta's Managed Cloud Hosting http://bit.ly/3JOGKT8 Confused about understanding what's Web ...",
+        "query": "Types of Soap explained for beginners",
+        "extra": {
+          "duration_label": "7:24"
+        }
+      },
+      {
+        "id": "yt:EK7IsJ2eFrg",
+        "kind": "video",
+        "title": "The Science of Soap",
+        "url": "https://www.youtube.com/watch?v=EK7IsJ2eFrg",
+        "provider": "youtube",
+        "thumbnail_url": "https://i.ytimg.com/vi/EK7IsJ2eFrg/mqdefault.jpg",
+        "channel": "cleaninstitute",
+        "duration_seconds": 162,
+        "description": "Have you ever thought about what soap is? This slippery, sudsy stuff we use every day does its job without us thinking much ...",
+        "query": "Types of Soap explained for beginners",
+        "extra": {
+          "duration_label": "2:42"
+        }
+      },
+      {
+        "id": "yt:TxL5dgyxxgs",
+        "kind": "video",
+        "title": "Soap Making for Beginners | Melt and Pour",
+        "url": "https://www.youtube.com/watch?v=TxL5dgyxxgs",
+        "provider": "youtube",
+        "thumbnail_url": "https://i.ytimg.com/vi/TxL5dgyxxgs/mqdefault.jpg",
+        "channel": "Homegrown Florida",
+        "duration_seconds": 61,
+        "description": "Get a copy of my Homegrown Florida Gardening Guide below https://homegrownflorida.myshopify.com/ ...",
+        "query": "Types of Soap explained for beginners",
+        "extra": {
+          "duration_label": "1:01"
+        }
+      }
+    ],
+    "cached_at": 1786217114.8598893
+  },
+  "v1|biology|shs 1|ecological tools and sampling methods|3": {
+    "queries": [
+      "SHS 1 Biology Ecological Tools and Sampling Methods",
+      "Ecological Tools and Sampling Methods explained for beginners",
+      "Ecological Tools and Sampling Methods Biology tutorial",
+      "Ecological Tools and Sampling Methods worked examples Biology"
+    ],
+    "resources": [
+      {
+        "id": "yt:fSmedyVv-Us",
+        "kind": "video",
+        "title": "Sampling Methods 101: Probability &amp; Non-Probability Sampling Explained Simply",
+        "url": "https://www.youtube.com/watch?v=fSmedyVv-Us",
+        "provider": "youtube",
+        "thumbnail_url": "https://i.ytimg.com/vi/fSmedyVv-Us/mqdefault.jpg",
+        "channel": "Grad Coach",
+        "duration_seconds": 1108,
+        "description": "GET 1-ON-1 HELP [FREE CONSULTATION]: https://gradcoach.com/?utm_source=YT&utm_campaign=fSmedyVv-Us FREE ...",
+        "query": "Ecological Tools and Sampling Methods explained for beginners",
+        "extra": {
+          "duration_label": "18:28"
+        }
+      },
+      {
+        "id": "yt:RhMOCxXcDrQ",
+        "kind": "video",
+        "title": "Sampling with Quadrats - GCSE Biology Required Practical",
+        "url": "https://www.youtube.com/watch?v=RhMOCxXcDrQ",
+        "provider": "youtube",
+        "thumbnail_url": "https://i.ytimg.com/vi/RhMOCxXcDrQ/mqdefault.jpg",
+        "channel": "Malmesbury Education",
+        "duration_seconds": 268,
+        "description": "Dr Acton shows you how to estimate population size using random sampling with a quadrat, as well as using it to observe ...",
+        "query": "SHS 1 Biology Ecological Tools and Sampling Methods",
+        "extra": {
+          "duration_label": "4:28"
+        }
+      },
+      {
+        "id": "yt:02xmatumPIg",
+        "kind": "video",
+        "title": "SSS-Biology-Ecological Instruments practical 1",
+        "url": "https://www.youtube.com/watch?v=02xmatumPIg",
+        "provider": "youtube",
+        "thumbnail_url": "https://i.ytimg.com/vi/02xmatumPIg/mqdefault.jpg",
+        "channel": "Education LASG",
+        "duration_seconds": 336,
+        "description": "Lagos State Government Ministry of Education Television and Radio Lesson for Senior Secondary Students, Sign Language ...",
+        "query": "SHS 1 Biology Ecological Tools and Sampling Methods",
+        "extra": {
+          "duration_label": "5:36"
+        }
+      }
+    ],
+    "cached_at": 1786220877.4009962
+  }
+}

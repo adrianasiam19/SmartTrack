@@ -21,6 +21,8 @@ from app.phases.router import router as phases_router
 from app.psychometrics.router import router as psychometrics_router
 from app.recommendations.router import router as recommendations_router
 from app.notifications.router import router as notifications_router
+from app.progress.router import router as progress_router
+from app.course_directory.router import router as course_directory_router
 
 # Import models so create_all sees them
 import app.phases.models  # noqa: F401
@@ -29,10 +31,17 @@ import app.recommendations.models  # noqa: F401
 import app.assessment.models  # noqa: F401
 import app.users.models  # noqa: F401
 import app.notifications.models  # noqa: F401
+import app.notifications.push_tokens  # noqa: F401
+import app.auth.models  # noqa: F401
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup / shutdown events."""
+    from app.mailer import assert_mailer_ready_for_environment
+
+    assert_mailer_ready_for_environment()
+
     # Auto-create tables in development (Alembic handles production via migration scripts)
     if settings.ENVIRONMENT == "development":
         try:
@@ -99,6 +108,8 @@ app.include_router(phases_router, prefix="/api/v1")
 app.include_router(psychometrics_router, prefix="/api/v1")
 app.include_router(recommendations_router, prefix="/api/v1")
 app.include_router(notifications_router, prefix="/api/v1")
+app.include_router(progress_router, prefix="/api/v1")
+app.include_router(course_directory_router, prefix="/api/v1")
 
 
 # ── Root route ────────────────────────────────────────────────────────────────

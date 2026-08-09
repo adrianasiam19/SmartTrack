@@ -240,6 +240,197 @@ def neuron_labelled() -> dict[str, Any]:
     }
 
 
+def osmosis_labelled() -> dict[str, Any]:
+    svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400">
+  <rect width="640" height="400" fill="#F8FAFC"/>
+  {_DEFS}
+  <text x="320" y="28" text-anchor="middle" font-size="18" font-family="Arial" font-weight="700" fill="#0F172A">Osmosis (labelled)</text>
+  <rect x="80" y="70" width="220" height="240" rx="8" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="3"/>
+  <rect x="340" y="70" width="220" height="240" rx="8" fill="#FEE2E2" stroke="#DC2626" stroke-width="3"/>
+  <line x1="300" y1="70" x2="300" y2="310" stroke="#166534" stroke-width="6"/>
+  <text x="190" y="100" text-anchor="middle" font-size="13" font-family="Arial" fill="#1E3A8A">Dilute solution</text>
+  <text x="450" y="100" text-anchor="middle" font-size="13" font-family="Arial" fill="#7F1D1D">Concentrated solution</text>
+  <circle cx="140" cy="160" r="8" fill="#93C5FD"/><circle cx="180" cy="200" r="8" fill="#93C5FD"/>
+  <circle cx="220" cy="170" r="8" fill="#93C5FD"/><circle cx="160" cy="240" r="8" fill="#93C5FD"/>
+  <circle cx="200" cy="260" r="8" fill="#93C5FD"/><circle cx="240" cy="220" r="8" fill="#93C5FD"/>
+  <circle cx="400" cy="150" r="8" fill="#FCA5A5"/><circle cx="440" cy="190" r="8" fill="#FCA5A5"/>
+  <circle cx="480" cy="160" r="8" fill="#FCA5A5"/><circle cx="420" cy="230" r="8" fill="#FCA5A5"/>
+  <circle cx="460" cy="250" r="8" fill="#FCA5A5"/><circle cx="500" cy="210" r="8" fill="#FCA5A5"/>
+  <circle cx="390" cy="270" r="8" fill="#FCA5A5"/><circle cx="510" cy="140" r="8" fill="#FCA5A5"/>
+  <path d="M250 200 L350 200" stroke="#0EA5E9" stroke-width="3" marker-end="url(#arrow)"/>
+  {_label_marker(60, 180, "A", 140, 200)}
+  {_label_marker(300, 50, "B", 300, 90)}
+  {_label_marker(580, 180, "C", 480, 200)}
+  {_label_marker(300, 340, "D", 300, 220)}
+  <text x="40" y="370" font-size="12" font-family="Arial" fill="#334155">A = dilute side · B = selectively permeable membrane · C = concentrated side · D = water movement</text>
+</svg>"""
+    return {
+        "url": _data_uri(svg),
+        "alt": "Labelled osmosis diagram with membrane and water movement",
+        "attribution": "Atlas labelled diagram",
+        "source": "atlas_svg",
+        "license": "Atlas",
+        "labels": {
+            "A": "dilute solution",
+            "B": "selectively permeable membrane",
+            "C": "concentrated solution",
+            "D": "water movement (osmosis)",
+        },
+        "key": "osmosis",
+    }
+
+
+def digestive_system_labelled() -> dict[str, Any]:
+    svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="640" height="440" viewBox="0 0 640 440">
+  <rect width="640" height="440" fill="#F8FAFC"/>
+  {_DEFS}
+  <text x="320" y="28" text-anchor="middle" font-size="18" font-family="Arial" font-weight="700" fill="#0F172A">Human digestive system (labelled)</text>
+  <ellipse cx="320" cy="80" rx="36" ry="28" fill="#FDE68A" stroke="#B45309" stroke-width="2"/>
+  <rect x="305" y="105" width="30" height="50" rx="8" fill="#FDBA74" stroke="#C2410C" stroke-width="2"/>
+  <ellipse cx="320" cy="190" rx="55" ry="40" fill="#FCA5A5" stroke="#B91C1C" stroke-width="2"/>
+  <path d="M320 230 Q280 280 300 340 Q320 380 340 340 Q360 280 320 230" fill="#FDE68A" stroke="#A16207" stroke-width="2"/>
+  <ellipse cx="400" cy="250" rx="28" ry="20" fill="#BBF7D0" stroke="#15803D" stroke-width="2"/>
+  {_label_marker(220, 70, "A", 290, 80)}
+  {_label_marker(220, 140, "B", 305, 130)}
+  {_label_marker(220, 200, "C", 280, 190)}
+  {_label_marker(420, 340, "D", 340, 320)}
+  <text x="40" y="410" font-size="12" font-family="Arial" fill="#334155">A = mouth · B = oesophagus · C = stomach · D = intestines</text>
+</svg>"""
+    return {
+        "url": _data_uri(svg),
+        "alt": "Labelled human digestive system overview",
+        "attribution": "Atlas labelled diagram",
+        "source": "atlas_svg",
+        "license": "Atlas",
+        "labels": {
+            "A": "mouth",
+            "B": "oesophagus",
+            "C": "stomach",
+            "D": "intestines",
+        },
+        "key": "digestive",
+    }
+
+
+def photosynthesis_labelled() -> dict[str, Any]:
+    svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400">
+  <rect width="640" height="400" fill="#F8FAFC"/>
+  {_DEFS}
+  <text x="320" y="28" text-anchor="middle" font-size="18" font-family="Arial" font-weight="700" fill="#0F172A">Photosynthesis (labelled)</text>
+  <ellipse cx="320" cy="200" rx="90" ry="50" fill="#86EFAC" stroke="#166534" stroke-width="3"/>
+  <line x1="320" y1="250" x2="320" y2="320" stroke="#15803D" stroke-width="8"/>
+  <circle cx="160" cy="100" r="36" fill="#FDE047" stroke="#CA8A04" stroke-width="2"/>
+  <path d="M200 120 L250 160" stroke="#EAB308" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M200 220 L250 210" stroke="#0EA5E9" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="150" y="230" font-size="12" font-family="Arial" fill="#0369A1">CO₂</text>
+  <path d="M200 280 L270 250" stroke="#64748B" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="140" y="290" font-size="12" font-family="Arial" fill="#475569">H₂O</text>
+  <path d="M390 180 L460 140" stroke="#16A34A" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="470" y="140" font-size="12" font-family="Arial" fill="#166534">glucose</text>
+  <path d="M390 220 L470 240" stroke="#38BDF8" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="480" y="250" font-size="12" font-family="Arial" fill="#0369A1">O₂</text>
+  {_label_marker(120, 80, "A", 160, 100)}
+  {_label_marker(120, 200, "B", 200, 220)}
+  {_label_marker(320, 120, "C", 320, 170)}
+  {_label_marker(520, 130, "D", 450, 150)}
+  <text x="40" y="370" font-size="12" font-family="Arial" fill="#334155">A = sunlight · B = carbon dioxide · C = leaf (chloroplast) · D = glucose (food)</text>
+</svg>"""
+    return {
+        "url": _data_uri(svg),
+        "alt": "Labelled photosynthesis process diagram for a leaf",
+        "attribution": "Atlas labelled diagram",
+        "source": "atlas_svg",
+        "license": "Atlas",
+        "labels": {
+            "A": "sunlight",
+            "B": "carbon dioxide",
+            "C": "leaf / chloroplast",
+            "D": "glucose",
+        },
+        "key": "photosynthesis",
+    }
+
+
+def food_chain_labelled() -> dict[str, Any]:
+    svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#F8FAFC"/>
+  {_DEFS}
+  <text x="320" y="28" text-anchor="middle" font-size="18" font-family="Arial" font-weight="700" fill="#0F172A">Food chain (labelled)</text>
+  <rect x="40" y="140" width="100" height="70" rx="10" fill="#BBF7D0" stroke="#166534" stroke-width="2"/>
+  <text x="90" y="180" text-anchor="middle" font-size="13" font-family="Arial" fill="#14532D">Grass</text>
+  <path d="M150 175 L200 175" stroke="#334155" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="210" y="140" width="100" height="70" rx="10" fill="#FDE68A" stroke="#B45309" stroke-width="2"/>
+  <text x="260" y="180" text-anchor="middle" font-size="13" font-family="Arial" fill="#78350F">Grasshopper</text>
+  <path d="M320 175 L370 175" stroke="#334155" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="380" y="140" width="100" height="70" rx="10" fill="#FECACA" stroke="#B91C1C" stroke-width="2"/>
+  <text x="430" y="180" text-anchor="middle" font-size="13" font-family="Arial" fill="#7F1D1D">Lizard</text>
+  <path d="M490 175 L540 175" stroke="#334155" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="550" y="140" width="70" height="70" rx="10" fill="#DDD6FE" stroke="#5B21B6" stroke-width="2"/>
+  <text x="585" y="180" text-anchor="middle" font-size="12" font-family="Arial" fill="#4C1D95">Hawk</text>
+  {_label_marker(90, 100, "A", 90, 140)}
+  {_label_marker(260, 100, "B", 260, 140)}
+  {_label_marker(430, 100, "C", 430, 140)}
+  {_label_marker(585, 100, "D", 585, 140)}
+  <text x="40" y="320" font-size="12" font-family="Arial" fill="#334155">A = producer · B = primary consumer · C = secondary consumer · D = tertiary consumer</text>
+</svg>"""
+    return {
+        "url": _data_uri(svg),
+        "alt": "Labelled food chain diagram producers and consumers",
+        "attribution": "Atlas labelled diagram",
+        "source": "atlas_svg",
+        "license": "Atlas",
+        "labels": {
+            "A": "producer",
+            "B": "primary consumer",
+            "C": "secondary consumer",
+            "D": "tertiary consumer",
+        },
+        "key": "food_chain",
+    }
+
+
+def ph_scale_labelled() -> dict[str, Any]:
+    svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#F8FAFC"/>
+  {_DEFS}
+  <text x="320" y="28" text-anchor="middle" font-size="18" font-family="Arial" font-weight="700" fill="#0F172A">pH scale (labelled)</text>
+  <defs>
+    <linearGradient id="phgrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#DC2626"/>
+      <stop offset="50%" stop-color="#FDE047"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+  </defs>
+  <rect x="60" y="160" width="520" height="40" rx="8" fill="url(#phgrad)" stroke="#334155" stroke-width="2"/>
+  <text x="80" y="150" font-size="12" font-family="Arial" fill="#7F1D1D">Acid</text>
+  <text x="300" y="150" text-anchor="middle" font-size="12" font-family="Arial" fill="#854D0E">Neutral</text>
+  <text x="540" y="150" text-anchor="end" font-size="12" font-family="Arial" fill="#1E3A8A">Alkali</text>
+  <text x="70" y="230" font-size="11" font-family="Arial" fill="#334155">0</text>
+  <text x="310" y="230" font-size="11" font-family="Arial" fill="#334155">7</text>
+  <text x="560" y="230" font-size="11" font-family="Arial" fill="#334155">14</text>
+  <line x1="320" y1="155" x2="320" y2="210" stroke="#0F172A" stroke-width="2"/>
+  {_label_marker(100, 100, "A", 120, 160)}
+  {_label_marker(320, 100, "B", 320, 160)}
+  {_label_marker(520, 100, "C", 500, 160)}
+  {_label_marker(200, 280, "D", 200, 200)}
+  <text x="40" y="330" font-size="12" font-family="Arial" fill="#334155">A = acidic · B = neutral (pH 7) · C = alkaline · D = pH scale</text>
+</svg>"""
+    return {
+        "url": _data_uri(svg),
+        "alt": "Labelled pH scale showing acid neutral and alkali",
+        "attribution": "Atlas labelled diagram",
+        "source": "atlas_svg",
+        "license": "Atlas",
+        "labels": {
+            "A": "acidic",
+            "B": "neutral (pH 7)",
+            "C": "alkaline",
+            "D": "pH scale",
+        },
+        "key": "ph_scale",
+    }
+
+
 def plane_mirror_reflection() -> dict[str, Any]:
     """Plane mirror ray diagram — incident ray, normal, reflected ray."""
     svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="640" height="420" viewBox="0 0 640 420">
@@ -394,6 +585,11 @@ _CATALOG = {
     "circuit": circuit_labelled,
     "flower": flower_labelled,
     "neuron": neuron_labelled,
+    "osmosis": osmosis_labelled,
+    "digestive": digestive_system_labelled,
+    "photosynthesis": photosynthesis_labelled,
+    "food_chain": food_chain_labelled,
+    "ph_scale": ph_scale_labelled,
     "plane_mirror": plane_mirror_reflection,
     "bar_chart": bar_chart_simple,
     "pie_chart": pie_chart_simple,
@@ -409,6 +605,60 @@ _TOPIC_HINTS = [
     (("circuit", "resistor", "battery", "bulb", "switch", "lamp"), "circuit"),
     (("flower", "petal", "ovary", "anther", "stamen", "pollination"), "flower"),
     (("neuron", "axon", "dendrite", "nervous"), "neuron"),
+    (
+        (
+            "osmosis",
+            "diffusion and osmosis",
+            "semi permeable",
+            "selectively permeable",
+            "semi-permeable",
+        ),
+        "osmosis",
+    ),
+    (
+        (
+            "digestive",
+            "digestion",
+            "oesophagus",
+            "esophagus",
+            "stomach",
+            "intestine",
+        ),
+        "digestive",
+    ),
+    (
+        (
+            "photosynthesis",
+            "chloroplast",
+            "glucose",
+            "carbon dioxide",
+            "sunlight",
+        ),
+        "photosynthesis",
+    ),
+    (
+        (
+            "food chain",
+            "food web",
+            "ecosystem",
+            "producer",
+            "consumer",
+            "primary consumer",
+        ),
+        "food_chain",
+    ),
+    (
+        (
+            "ph scale",
+            "pH scale",
+            "acids",
+            "bases",
+            "alkali",
+            "indicator",
+            "acidic",
+        ),
+        "ph_scale",
+    ),
     (
         (
             "plane mirror",

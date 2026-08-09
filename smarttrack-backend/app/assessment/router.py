@@ -15,7 +15,8 @@ from app.assessment.schemas import (
     TelemetrySubmitResponse, CalibrationStartResponse, NextQuestionResponse,
     PsychometricCardResponse, PsychometricSubmitRequest, PsychometricSubmitResponse,
     DashboardResponse, LeaderboardResponse, LeaderboardEntry,
-    SaveAcademicRecordsRequest, LearningModuleResponse, RecommendedModulesResponse,
+    SaveAcademicRecordsRequest, ConfirmAcademicUploadRequest,
+    LearningModuleResponse, RecommendedModulesResponse,
     ExplanationRequest, ExplanationResponse, DashboardResponse,
     GenerateChallengeRequest, GenerateChallengeResponse, GeneratedChallenge
 )
@@ -26,10 +27,16 @@ from app.assessment.recommendation_engine import RecommendationEngine
 from app.assessment.academic_recommendations import (
     validate_academic_file,
     save_academic_file,
-    extract_grades_with_ai,
+    analyze_academic_document,
+    compare_candidate_to_profile,
     merge_academic_upload_into_profile,
+    merge_academic_pending_into_profile,
+    clear_academic_pending_from_profile,
+    clear_academic_upload_from_profile,
+    delete_stored_academic_file,
     has_academic_upload,
     programme_fallback_skills,
+    MIN_GRADES_FOR_CONFIRM,
 )
 from app.recommendations.ml_career import generate_ml_knust_alternate
 from app.recommendations.eligibility import evaluate_recommendation_eligibility
@@ -655,15 +662,16 @@ async def generate_recommendations(
     db: AsyncSession = Depends(get_db),
 ):
     """
-    Generate programme recommendations after academic upload unlock.
+    Dual-path programme recommendations.
 
-    Combines stealth challenge thetas (when available), behavioural traits,
-    Starter Arena profile, declared programme, and uploaded academic grades.
+    • Without WASSCE: BehaviouralProgrammeMatch from psych + challenges + learning.
+    • With WASSCE: admission refine (aggregate + cut-offs + Decision Tree) that
+      tweaks the behavioural picture with academic results.
 
-    Requires all levels completed in at least one phase (Learning Center is
-    encouraged but not mandatory).
+    Requires all levels completed in at least one phase. WASSCE is never mandatory.
     """
     from app.config import settings as app_settings
+    from app.recommendations.service import generate_behavioural_recommendations
 
     debug_mode = bool(getattr(app_settings, "RECOMMENDATION_DEBUG", False))
 
@@ -675,16 +683,6 @@ async def generate_recommendations(
         detail["short_message"] = eligibility.get("short_message") or detail["short_message"]
         detail["eligibility"] = eligibility
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=detail)
-
-    if not has_academic_upload(current_user):
-        existing = await db.execute(
-            select(AcademicRecord).where(AcademicRecord.user_id == current_user.id).limit(1)
-        )
-        if existing.scalar_one_or_none() is None:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=NO_ACADEMIC_UPLOAD,
-            )
 
     skills_res = await db.execute(
         select(UserSkillEstimate).where(UserSkillEstimate.user_id == current_user.id)
@@ -708,21 +706,101 @@ async def generate_recommendations(
 
     profile = current_user.learner_profile if isinstance(current_user.learner_profile, dict) else {}
     upload = profile.get("academic_upload") or {}
-    if not academic_grades and isinstance(upload.get("grades"), list):
+    if (
+        not academic_grades
+        and isinstance(upload, dict)
+        and upload.get("confirmed") is not False
+        and isinstance(upload.get("grades"), list)
+    ):
         academic_grades = [
             {"subject": g.get("subject", ""), "grade": g.get("grade", "")}
             for g in upload["grades"]
             if g.get("subject") and g.get("grade")
         ]
 
+    # ── Path A: behavioural match (no WASSCE) ───────────────────────────────
     if not academic_grades:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=GRADES_NOT_EXTRACTED,
+        behavioural = await generate_behavioural_recommendations(
+            db, current_user, limit=8
         )
+        programmes = list(behavioural.get("programmes") or [])
+        if not programmes:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=NO_MATCHING_PROGRAMMES,
+            )
+        # Number ranks explicitly for UI (order = strength; no percentages).
+        for i, card in enumerate(programmes, start=1):
+            card["rank"] = card.get("rank") or i
 
+        refine_hint = None
+        if eligibility.get("all_phases_completed"):
+            refine_hint = (
+                "Optional: upload your WASSCE or academic results to refine these "
+                "matches with aggregate and admission cut-offs."
+            )
+        elif eligibility.get("wassce_recommended_now"):
+            refine_hint = (
+                "When you finish all phases, you can upload WASSCE results to tweak "
+                "this list with admission insights."
+            )
+
+        payload: dict = {
+            "success": True,
+            "recommendation_kind": "behavioural_match",
+            "wassce_used": False,
+            "academic_score": None,
+            "performance_level": None,
+            "summary_message": behavioural.get("summary_message"),
+            "detailed_message": (
+                "These programmes are ranked from your psychometric profile, challenge "
+                "performance, and learning activity in Atlas. Order shows match strength. "
+                "WASSCE upload is optional and refines admission insights later."
+            ),
+            "recommendations": programmes,
+            "suitable_programmes": programmes,
+            "competitive_programmes": [],
+            "grades_used": 0,
+            "admission_insights": None,
+            "knust": None,
+            "source": "behavioural_match",
+            "primary_source": "behavioural_match",
+            "used_fallback": False,
+            "learner_notice": refine_hint,
+            "ml_alternate": None,
+            "upload": {
+                "filename": upload.get("filename"),
+                "grades_extracted": bool(upload.get("grades_extracted")),
+            },
+            "eligibility": eligibility,
+        }
+        if debug_mode:
+            payload["debug"] = {
+                "recommendation_kind": "behavioural_match",
+                "family_fit_scores": behavioural.get("family_fit_scores"),
+                "confidence": behavioural.get("confidence"),
+                "signals": behavioural.get("signals"),
+                "skill_domains": list(skill_estimates.keys()),
+                "trait_keys": list(behavioral_traits.keys()),
+            }
+        try:
+            from app.notifications.events import notify_recommendations_unlocked
+
+            await notify_recommendations_unlocked(db, current_user.id)
+            await db.commit()
+        except Exception:
+            logger.exception("Failed to create recommendations-unlocked notification")
+        return payload
+
+    # ── Path B: WASSCE refine (admission + DT) ───────────────────────────────
     if not skill_estimates:
         skill_estimates = programme_fallback_skills(current_user.programme)
+
+    # Behavioural baseline kept for comparison / messaging (same cumulative signals).
+    behavioural = await generate_behavioural_recommendations(db, current_user, limit=8)
+    behavioural_names = [
+        str(p.get("programme")) for p in (behavioural.get("programmes") or [])[:8]
+    ]
 
     engine = RecommendationEngine(
         skill_estimates=skill_estimates,
@@ -734,12 +812,63 @@ async def generate_recommendations(
     recommendations_result = engine.generate_recommendations()
 
     if recommendations_result.get("error") == "aggregate_unavailable":
-        detail = dict(AGGREGATE_UNAVAILABLE)
+        # Soft-fall back to behavioural matches (same as empty cut-off path) —
+        # partial/odd uploads must not hard-block recommendations.
+        suitable = list(behavioural.get("programmes") or [])
+        if not suitable:
+            detail = dict(AGGREGATE_UNAVAILABLE)
+            if recommendations_result.get("summary_message"):
+                detail["message"] = (
+                    f"{detail['message']}\n\nDetails: {recommendations_result['summary_message']}"
+                )
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=detail)
+        for i, card in enumerate(suitable, start=1):
+            if isinstance(card, dict):
+                card["rank"] = card.get("rank") or i
+        notice = (
+            "Atlas could not compute an admission aggregate from this upload, "
+            "so your behavioural programme matches were kept. Re-upload clearer "
+            "results anytime to refine with cut-offs."
+        )
         if recommendations_result.get("summary_message"):
-            detail["message"] = (
-                f"{detail['message']}\n\nDetails: {recommendations_result['summary_message']}"
-            )
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=detail)
+            notice = f"{notice} ({recommendations_result['summary_message']})"
+        payload = {
+            "success": True,
+            "recommendation_kind": "behavioural_match",
+            "wassce_used": True,
+            "academic_score": None,
+            "performance_level": None,
+            "summary_message": behavioural.get("summary_message"),
+            "detailed_message": (
+                "Your long-term Atlas behaviour still drives these ranked matches. "
+                "Admission refine needs a complete aggregate from uploaded grades."
+            ),
+            "recommendations": suitable,
+            "suitable_programmes": suitable,
+            "competitive_programmes": [],
+            "grades_used": recommendations_result.get("grades_used", 0),
+            "admission_insights": None,
+            "knust": None,
+            "source": "behavioural_match_after_grades",
+            "primary_source": "behavioural_match_after_grades",
+            "used_fallback": True,
+            "learner_notice": notice,
+            "behavioural_baseline": behavioural_names,
+            "ml_alternate": None,
+            "upload": {
+                "filename": upload.get("filename"),
+                "grades_extracted": bool(upload.get("grades_extracted")),
+            },
+            "eligibility": eligibility,
+        }
+        try:
+            from app.notifications.events import notify_recommendations_unlocked
+
+            await notify_recommendations_unlocked(db, current_user.id)
+            await db.commit()
+        except Exception:
+            logger.exception("Failed to create recommendations-unlocked notification")
+        return payload
 
     ml_primary = generate_ml_knust_alternate(
         academic_grades=academic_grades,
@@ -756,18 +885,20 @@ async def generate_recommendations(
         ml_primary.get("programmes") if ml_primary.get("enabled") else None
     ) or []
 
-    learner_notice = None
+    learner_notice = (
+        "Your WASSCE / academic results were used to refine the behavioural matches "
+        "Atlas already built from your learning journey."
+    )
     used_fallback = False
 
     if ml_programmes:
         suitable = ml_programmes
         primary_source = "knust_dt"
         summary = (
-            recommendations_result.get("summary_message")
-            or "Here are programme matches based on your Atlas profile and results."
-        )
+            "Atlas combined your behavioural profile with your uploaded results. "
+            + (recommendations_result.get("summary_message") or "")
+        ).strip()
     else:
-        # Explicit cut-off fallback after logging (already done inside ml_career)
         used_fallback = True
         suitable = rules_suitable
         primary_source = "atlas_cutoffs_fallback"
@@ -781,17 +912,35 @@ async def generate_recommendations(
             )
             learner_notice = ML_FALLBACK_NOTICE
         if not suitable and not rules_competitive:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=NO_MATCHING_PROGRAMMES,
+            # Soft fall back to behavioural list rather than hard-fail after upload.
+            suitable = list(behavioural.get("programmes") or [])
+            primary_source = "behavioural_match_after_grades"
+            summary = behavioural.get("summary_message")
+            learner_notice = (
+                "Admission cut-offs could not rank programmes for these grades, "
+                "so Atlas kept your behavioural matches."
             )
+            if not suitable:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=NO_MATCHING_PROGRAMMES,
+                )
 
-    payload: dict = {
+    for i, card in enumerate(suitable, start=1):
+        if isinstance(card, dict):
+            card["rank"] = card.get("rank") or i
+
+    payload = {
         "success": True,
+        "recommendation_kind": "wassce_refined",
+        "wassce_used": True,
         "academic_score": recommendations_result.get("academic_score"),
         "performance_level": recommendations_result.get("performance_level"),
         "summary_message": summary,
-        "detailed_message": recommendations_result.get("detailed_message"),
+        "detailed_message": (
+            "Recommendations combine your long-term Atlas behaviour with uploaded "
+            "academic results, aggregate, and admission cut-offs. Order shows strength."
+        ),
         "recommendations": suitable,
         "suitable_programmes": suitable,
         "competitive_programmes": rules_competitive,
@@ -802,16 +951,19 @@ async def generate_recommendations(
         "primary_source": primary_source,
         "used_fallback": used_fallback,
         "learner_notice": learner_notice,
+        "behavioural_baseline": behavioural_names,
         "ml_alternate": None,
         "upload": {
             "filename": upload.get("filename"),
             "grades_extracted": bool(upload.get("grades_extracted")),
         },
+        "eligibility": eligibility,
     }
 
     if debug_mode:
         predictions = ml_primary.get("predictions") or []
         payload["debug"] = {
+            "recommendation_kind": "wassce_refined",
             "decision_tree_model_loaded": bool(ml_primary.get("model_loaded")),
             "recommendations_from_ml": primary_source == "knust_dt",
             "fallback_used": used_fallback,
@@ -820,6 +972,7 @@ async def generate_recommendations(
             "ml_error_detail": ml_primary.get("error_detail"),
             "model_status": ml_primary.get("model_status"),
             "features_used": ml_primary.get("features_used") or {},
+            "behavioural_baseline": behavioural_names,
             "prediction_confidence": [
                 {
                     "programme": p.get("programme"),
@@ -846,6 +999,13 @@ async def generate_recommendations(
     return payload
 
 
+def _academic_error(code: str, title: str, message: str) -> HTTPException:
+    return HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail={"code": code, "title": title, "message": message},
+    )
+
+
 @router.post("/academic/upload")
 async def upload_academic_results(
     file: UploadFile = File(...),
@@ -853,10 +1013,10 @@ async def upload_academic_results(
     db: AsyncSession = Depends(get_db),
 ):
     """
-    Upload WASSCE / academic results (PDF or image).
+    Upload a WASSCE results file for preview.
 
-    Stores the file server-side, extracts grades from PDFs with pypdf
-    (text + WASSCE parsing), and unlocks Get Recommendations.
+    Does NOT save grades until the learner confirms via /academic/confirm.
+    Rejects files that do not look like WAEC/WASSCE results.
     """
     data = await file.read()
     filename = file.filename or "academic_results.pdf"
@@ -864,53 +1024,255 @@ async def upload_academic_results(
     if error:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error)
 
-    stored_name, _path = save_academic_file(str(current_user.id), filename, data)
-    grades = await extract_grades_with_ai(
+    analysis = await analyze_academic_document(
         filename=filename,
         content_type=file.content_type,
         data=data,
+        profile_name=getattr(current_user, "full_name", None),
     )
+    grades = list(analysis.get("grades") or [])
+    waec = analysis.get("waec") or {}
+    is_waec = bool(waec.get("is_waec"))
+    name_match = analysis.get("name_match") or {}
+    candidate_name = analysis.get("candidate_name")
 
-    # Replace academic records when we extracted grades
-    if grades:
-        await db.execute(
-            delete(AcademicRecord).where(AcademicRecord.user_id == current_user.id)
-        )
-        for row in grades:
-            db.add(
-                AcademicRecord(
-                    user_id=current_user.id,
-                    subject=row["subject"],
-                    grade=row["grade"],
-                    exam_type="WASSCE",
-                )
+    if not is_waec:
+        reasons = list(waec.get("reasons") or [])
+        if "no_readable_text" in reasons or "unreadable" in reasons:
+            raise _academic_error(
+                "wassce_unreadable",
+                "Could not read this file",
+                "Atlas could not read text from this PDF (it may be a scan or image-only file). "
+                "Please upload a clearer photo of your WASSCE results slip, or a text-based PDF export.",
             )
+        raise _academic_error(
+            "not_waec_document",
+            "This doesn't look like a WAEC results document",
+            "Atlas only accepts WAEC/WASSCE results slips (or a clear photo/PDF of one). "
+            "School reports, transcripts, and other documents are not accepted. "
+            "Please upload your official WASSCE statement of results.",
+        )
 
-    current_user.learner_profile = merge_academic_upload_into_profile(
-        current_user.learner_profile if isinstance(current_user.learner_profile, dict) else {},
+    if name_match.get("reason") == "profile_name_incomplete":
+        raise _academic_error(
+            "profile_name_incomplete",
+            "Complete your profile name first",
+            "Your Atlas profile needs your full name (at least first and last name) "
+            "so we can match it to the candidate name on your WASSCE results. "
+            "Update your profile, then upload again.",
+        )
+
+    if name_match.get("reason") == "document_name_missing" or not candidate_name:
+        raise _academic_error(
+            "candidate_name_missing",
+            "Could not read the candidate name",
+            "Atlas could not find a candidate name on this results document. "
+            "Please upload a clearer full-page copy of your WASSCE statement of results "
+            "where your name is visible.",
+        )
+
+    if not name_match.get("matched"):
+        doc = name_match.get("document_name") or candidate_name or "unknown"
+        profile = name_match.get("profile_name") or current_user.full_name or "your profile"
+        raise _academic_error(
+            "name_mismatch",
+            "Name on results does not match your profile",
+            f"The candidate name on this document (“{doc}”) does not match your Atlas "
+            f"profile name (“{profile}”). "
+            "You can only upload your own WASSCE results. "
+            "If your profile name is wrong, update it to match your results slip, then try again.",
+        )
+
+    if len(grades) < MIN_GRADES_FOR_CONFIRM:
+        raise _academic_error(
+            "wassce_extraction_failed",
+            "WASSCE results could not be extracted",
+            "We recognised a WAEC-style document but could not read enough subject grades "
+            f"(need at least {MIN_GRADES_FOR_CONFIRM}). "
+            "Please re-upload a clearer PDF or image of the full results page.",
+        )
+
+    stored_name, _path = save_academic_file(str(current_user.id), filename, data)
+    profile = (
+        current_user.learner_profile
+        if isinstance(current_user.learner_profile, dict)
+        else {}
+    )
+    # Drop any previous pending file before storing a new preview.
+    old_pending = profile.get("academic_upload_pending") or {}
+    if isinstance(old_pending, dict):
+        delete_stored_academic_file(
+            str(current_user.id), old_pending.get("stored_name")
+        )
+
+    current_user.learner_profile = merge_academic_pending_into_profile(
+        profile,
         filename=filename,
         stored_name=stored_name,
         grades=grades,
+        waec=waec,
+        candidate_name=candidate_name,
+        name_match=name_match,
     )
     await db.commit()
     await db.refresh(current_user)
 
     return {
         "success": True,
+        "needs_confirmation": True,
         "filename": filename,
-        "grades_extracted": bool(grades),
+        "stored_name": stored_name,
+        "grades_extracted": True,
         "records": grades,
+        "candidate_name": candidate_name,
+        "name_match": name_match,
+        "waec": waec,
         "message": (
-            f"Uploaded {filename}. Extracted {len(grades)} subject grade(s)."
-            if grades
-            else (
-                "WASSCE results could not be extracted from this file. "
-                "Please re-upload a clearer PDF or image (full results page, good lighting), "
-                "or use a text-based PDF export."
-            )
+            f"Name matched (“{candidate_name}”). Found {len(grades)} subject grade(s). "
+            "Please confirm these grades before Atlas uses them."
         ),
-        "code": None if grades else "wassce_extraction_failed",
-        "title": None if grades else "WASSCE results could not be extracted",
+        "code": None,
+        "title": None,
+    }
+
+
+@router.post("/academic/confirm")
+async def confirm_academic_upload(
+    body: ConfirmAcademicUploadRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Persist confirmed WASSCE grades after the learner reviews the extraction."""
+    if not body.records:
+        raise _academic_error(
+            "no_grades",
+            "No grades to confirm",
+            "Confirm at least one subject grade, or cancel and upload again.",
+        )
+
+    profile = (
+        current_user.learner_profile
+        if isinstance(current_user.learner_profile, dict)
+        else {}
+    )
+    pending = profile.get("academic_upload_pending") or {}
+    filename = body.filename or pending.get("filename") or "wassce_results.pdf"
+    stored_name = body.stored_name or pending.get("stored_name") or "confirmed"
+
+    # Re-check name against the slip name captured at upload (blocks profile spoofing
+    # after a successful upload of someone else's results).
+    pending_candidate = None
+    if isinstance(pending, dict):
+        pending_candidate = pending.get("candidate_name")
+    name_check = compare_candidate_to_profile(
+        getattr(current_user, "full_name", None),
+        pending_candidate,
+    )
+    if not name_check.get("matched"):
+        raise _academic_error(
+            "name_mismatch",
+            "Name on results does not match your profile",
+            "These results cannot be confirmed because the candidate name on the document "
+            "does not match your Atlas profile name. Upload your own WASSCE results, "
+            "or update your profile name to match your slip.",
+        )
+
+    grade_list = [
+        {"subject": r.subject.strip(), "grade": r.grade.strip().upper()}
+        for r in body.records
+        if r.subject and r.grade
+    ]
+    if len(grade_list) < 1:
+        raise _academic_error(
+            "no_grades",
+            "No grades to confirm",
+            "Confirm at least one subject grade, or cancel and upload again.",
+        )
+
+    # Replace previous confirmed file on disk when confirming a new pending upload.
+    old_upload = profile.get("academic_upload") or {}
+    if isinstance(old_upload, dict):
+        old_stored = old_upload.get("stored_name")
+        if old_stored and old_stored != stored_name:
+            delete_stored_academic_file(str(current_user.id), old_stored)
+
+    await db.execute(
+        delete(AcademicRecord).where(AcademicRecord.user_id == current_user.id)
+    )
+    for row in grade_list:
+        db.add(
+            AcademicRecord(
+                user_id=current_user.id,
+                subject=row["subject"],
+                grade=row["grade"],
+                exam_type=body.exam_type or "WASSCE",
+            )
+        )
+
+    current_user.learner_profile = merge_academic_upload_into_profile(
+        profile,
+        filename=filename,
+        stored_name=stored_name,
+        grades=grade_list,
+        confirmed=True,
+    )
+    await db.commit()
+    await db.refresh(current_user)
+
+    return {
+        "success": True,
+        "confirmed": True,
+        "filename": filename,
+        "records": grade_list,
+        "message": f"Saved {len(grade_list)} WASSCE grade(s). Tap Get Recommendations to refine.",
+    }
+
+
+@router.delete("/academic/pending")
+async def discard_academic_pending(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Cancel an unconfirmed upload preview without removing saved results."""
+    profile = (
+        current_user.learner_profile
+        if isinstance(current_user.learner_profile, dict)
+        else {}
+    )
+    pending = profile.get("academic_upload_pending") or {}
+    if isinstance(pending, dict):
+        delete_stored_academic_file(str(current_user.id), pending.get("stored_name"))
+    current_user.learner_profile = clear_academic_pending_from_profile(profile)
+    await db.commit()
+    return {"success": True, "message": "Pending WASSCE upload discarded."}
+
+
+@router.delete("/academic")
+async def remove_academic_results(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Remove confirmed WASSCE grades and any pending upload."""
+    profile = (
+        current_user.learner_profile
+        if isinstance(current_user.learner_profile, dict)
+        else {}
+    )
+    for key in ("academic_upload", "academic_upload_pending"):
+        block = profile.get(key) or {}
+        if isinstance(block, dict):
+            delete_stored_academic_file(str(current_user.id), block.get("stored_name"))
+
+    await db.execute(
+        delete(AcademicRecord).where(AcademicRecord.user_id == current_user.id)
+    )
+    current_user.learner_profile = clear_academic_upload_from_profile(profile)
+    await db.commit()
+    await db.refresh(current_user)
+
+    return {
+        "success": True,
+        "message": "WASSCE results removed. Recommendations will use Atlas activity only.",
     }
 
 
@@ -964,6 +1326,7 @@ async def save_academic_records(
         filename="manual_entry",
         stored_name="manual_entry",
         grades=grade_list,
+        confirmed=True,
     )
 
     await db.commit()

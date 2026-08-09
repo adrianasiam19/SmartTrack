@@ -11,7 +11,9 @@ export type PhaseQuestion = {
   image?: {
     url?: string;
     alt?: string;
-    attribution?: string;
+    concept?: string;
+    requires_labels?: boolean;
+    labels?: unknown;
   } | null;
   difficulty?: number;
 };
@@ -22,6 +24,25 @@ type Props = {
   value: string;
   onChange: (value: string) => void;
 };
+
+function normalizeType(raw?: string | null) {
+  const q = (raw || 'mcq').toLowerCase().replace(/[\s-]+/g, '_');
+  const aliases: Record<string, string> = {
+    truefalse: 'true_false',
+    tf: 'true_false',
+    fillblank: 'fill_blank',
+    fill_in_the_blank: 'fill_blank',
+    shortanswer: 'short_answer',
+    short_response: 'short_answer',
+    match: 'matching',
+    order: 'ordering',
+    sequence: 'ordering',
+    rank: 'ordering',
+    diagram: 'diagram_label',
+    image: 'image_mcq',
+  };
+  return aliases[q] || q;
+}
 
 function getChoices(options: Record<string, unknown> | null | undefined) {
   if (!options) return [] as { key: string; text: string }[];
@@ -42,9 +63,14 @@ function getChoices(options: Record<string, unknown> | null | undefined) {
           'accepted',
           'left',
           'right',
+          'left_items',
+          'right_items',
           'correct_matches',
           'items',
           'correct_order',
+          'order',
+          'steps',
+          'sequence',
           'instruction',
           'legend',
         ].includes(key)
@@ -53,7 +79,29 @@ function getChoices(options: Record<string, unknown> | null | undefined) {
       }
       return typeof val === 'string' || typeof val === 'number';
     })
-    .map(([key, text]) => ({ key, text: String(text) }));
+    .map(([key, text]) => ({ key, text: String(text) }))
+    .sort((a, b) => a.key.localeCompare(b.key));
+}
+
+function asStringList(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  const out: string[] = [];
+  const seen = new Set<string>();
+  for (const item of value) {
+    let text = '';
+    if (typeof item === 'string' || typeof item === 'number') {
+      text = String(item).trim();
+    } else if (item && typeof item === 'object') {
+      const obj = item as Record<string, unknown>;
+      text = String(obj.text || obj.label || obj.value || obj.item || '').trim();
+    }
+    if (!text) continue;
+    const key = text.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(text);
+  }
+  return out;
 }
 
 function EducationalImage({
@@ -65,7 +113,7 @@ function EducationalImage({
 }) {
   const fromOptions =
     options && typeof options.image === 'object' && options.image
-      ? (options.image as { url?: string; alt?: string; attribution?: string })
+      ? (options.image as { url?: string; alt?: string; concept?: string })
       : null;
   const img = image?.url ? image : fromOptions;
   const legend =
@@ -118,8 +166,9 @@ export default function PhaseQuestionRenderer({
   value,
   onChange,
 }: Props) {
-  const qtype = (question.question_type || 'mcq').toLowerCase();
+  const qtype = normalizeType(question.question_type);
   const options = (question.options || {}) as Record<string, unknown>;
+  const choices = getChoices(options);
 
   return (
     <div>
@@ -170,7 +219,7 @@ export default function PhaseQuestionRenderer({
       ) : (
         <McqUI
           busy={busy}
-          choices={getChoices(options)}
+          choices={choices}
           value={value}
           onChange={onChange}
         />
@@ -190,6 +239,14 @@ function McqUI({
   value: string;
   onChange: (v: string) => void;
 }) {
+  if (choices.length < 2) {
+    return (
+      <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        This question is missing answer choices. Tap Skip / Next if available, or
+        restart the level to load a fresh question.
+      </div>
+    );
+  }
   return (
     <div className="mt-6 space-y-3">
       {choices.map((opt) => (
@@ -257,9 +314,10 @@ function ShortAnswerUI({
         value={value}
         disabled={busy}
         onChange={(e) => onChange(e.target.value)}
+        onInput={(e) => onChange((e.target as HTMLTextAreaElement).value)}
         rows={3}
         placeholder="Type your answer…"
-        className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-[#0F172A] outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20"
+        className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-[#0F172A] outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 disabled:opacity-60"
       />
     </div>
   );
@@ -276,7 +334,9 @@ function FillBlankUI({
   value: string;
   onChange: (v: string) => void;
 }) {
-  const template = String(options.template || '');
+  const rawTemplate = String(options.template || '');
+  // Normalize any run of 3+ underscores to a single blank token
+  const template = rawTemplate.replace(/_{3,}/g, '___');
   const answerCount = Array.isArray(options.answers)
     ? options.answers.length
     : Math.max(1, (template.match(/___/g) || []).length || 1);
@@ -291,9 +351,7 @@ function FillBlankUI({
   };
 
   if (!template) {
-    return (
-      <ShortAnswerUI busy={busy} value={value} onChange={onChange} />
-    );
+    return <ShortAnswerUI busy={busy} value={value} onChange={onChange} />;
   }
 
   return (
@@ -328,8 +386,8 @@ function MatchingUI({
   value: string;
   onChange: (v: string) => void;
 }) {
-  const left = Array.isArray(options.left) ? (options.left as string[]) : [];
-  const right = Array.isArray(options.right) ? (options.right as string[]) : [];
+  const left = asStringList(options.left ?? options.left_items);
+  const right = asStringList(options.right ?? options.right_items);
   const instruction = String(options.instruction || 'Match each item on the left.');
   const [activeLeft, setActiveLeft] = useState<number | null>(null);
 
@@ -368,6 +426,14 @@ function MatchingUI({
     onChange(JSON.stringify(next));
     setActiveLeft(null);
   };
+
+  if (left.length < 2 || right.length < 2) {
+    return (
+      <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        This matching question is incomplete. Restart the level to load a fresh question.
+      </div>
+    );
+  }
 
   return (
     <div className="mt-6 space-y-3">
@@ -428,14 +494,17 @@ function OrderingUI({
   value: string;
   onChange: (v: string) => void;
 }) {
-  const sourceItems = useMemo(() => {
-    const items = Array.isArray(options.items)
-      ? (options.items as string[])
-      : Array.isArray(options.correct_order)
-        ? (options.correct_order as string[])
-        : [];
-    // Stable shuffle per question id for display
-    const arr = [...items];
+  // Canonical order = correct sequence (backend stores both as correct order)
+  const canonical = useMemo(() => {
+    const items = asStringList(
+      options.items ?? options.correct_order ?? options.order ?? options.steps ?? options.sequence,
+    );
+    return items;
+  }, [options]);
+
+  // Stable shuffled presentation keyed by question id
+  const displayPool = useMemo(() => {
+    const arr = canonical.map((text, index) => ({ id: index, text }));
     let seed = questionId * 2654435761;
     for (let i = arr.length - 1; i > 0; i -= 1) {
       seed = (seed * 1664525 + 1013904223) >>> 0;
@@ -443,47 +512,71 @@ function OrderingUI({
       [arr[i], arr[j]] = [arr[j], arr[i]];
     }
     return arr;
-  }, [options, questionId]);
+  }, [canonical, questionId]);
 
-  const ordered = useMemo(() => {
-    if (!value) return [] as string[];
+  const orderedIds = useMemo(() => {
+    if (!value) return [] as number[];
     try {
       const parsed = JSON.parse(value);
-      if (Array.isArray(parsed)) return parsed.map(String);
+      if (Array.isArray(parsed)) {
+        // Prefer id-based payload; fall back to matching text against canonical
+        if (parsed.every((x) => typeof x === 'number')) {
+          return parsed.map(Number);
+        }
+        const texts = parsed.map(String);
+        return texts
+          .map((t) => canonical.findIndex((c) => c === t))
+          .filter((i) => i >= 0);
+      }
     } catch {
-      return value.split('|').filter(Boolean);
+      return value
+        .split('|')
+        .map((t) => canonical.findIndex((c) => c === t))
+        .filter((i) => i >= 0);
     }
     return [];
-  }, [value]);
+  }, [value, canonical]);
 
-  const remaining = sourceItems.filter((item) => !ordered.includes(item));
+  const remaining = displayPool.filter((item) => !orderedIds.includes(item.id));
 
-  const add = (item: string) => {
-    if (busy) return;
-    onChange(JSON.stringify([...ordered, item]));
+  const emit = (ids: number[]) => {
+    // Persist the ordered TEXT sequence — matches backend grading
+    onChange(JSON.stringify(ids.map((id) => canonical[id])));
+  };
+
+  const add = (id: number) => {
+    if (busy || orderedIds.includes(id)) return;
+    emit([...orderedIds, id]);
   };
   const removeLast = () => {
-    if (busy || !ordered.length) return;
-    onChange(JSON.stringify(ordered.slice(0, -1)));
+    if (busy || !orderedIds.length) return;
+    emit(orderedIds.slice(0, -1));
   };
   const reset = () => onChange('');
 
+  if (canonical.length < 3) {
+    return (
+      <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        This ordering question is missing its items. Restart the level to load a fresh
+        question.
+      </div>
+    );
+  }
+
   return (
     <div className="mt-6 space-y-4">
-      <p className="text-sm text-[#64748B]">
-        Tap items in the correct order.
-      </p>
+      <p className="text-sm text-[#64748B]">Tap items in the correct order.</p>
       <div className="min-h-[3rem] rounded-xl border border-dashed border-[#BFDBFE] bg-[#EFF6FF]/50 px-3 py-3 space-y-2">
-        {ordered.length === 0 ? (
+        {orderedIds.length === 0 ? (
           <p className="text-xs text-[#94A3B8]">Your sequence appears here…</p>
         ) : (
-          ordered.map((item, idx) => (
+          orderedIds.map((id, idx) => (
             <div
-              key={`${item}-${idx}`}
+              key={`ord-${id}`}
               className="rounded-lg border border-[#BFDBFE] bg-white px-3 py-2 text-sm text-[#0F172A]"
             >
               <span className="mr-2 font-semibold text-[#2563EB]">{idx + 1}.</span>
-              {item}
+              {canonical[id]}
             </div>
           ))
         )}
@@ -491,20 +584,20 @@ function OrderingUI({
       <div className="flex flex-wrap gap-2">
         {remaining.map((item) => (
           <button
-            key={item}
+            key={`pool-${item.id}`}
             type="button"
             disabled={busy}
-            onClick={() => add(item)}
+            onClick={() => add(item.id)}
             className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm hover:border-[#2563EB]"
           >
-            {item}
+            {item.text}
           </button>
         ))}
       </div>
       <div className="flex gap-2">
         <button
           type="button"
-          disabled={busy || !ordered.length}
+          disabled={busy || !orderedIds.length}
           onClick={removeLast}
           className="text-xs font-medium text-[#64748B] hover:text-[#0F172A]"
         >
@@ -512,7 +605,7 @@ function OrderingUI({
         </button>
         <button
           type="button"
-          disabled={busy || !ordered.length}
+          disabled={busy || !orderedIds.length}
           onClick={reset}
           className="text-xs font-medium text-[#64748B] hover:text-[#0F172A]"
         >
@@ -524,15 +617,16 @@ function OrderingUI({
 }
 
 export function answerReady(question: PhaseQuestion, value: string): boolean {
-  const qtype = (question.question_type || 'mcq').toLowerCase();
+  const qtype = normalizeType(question.question_type);
   const v = value.trim();
   if (!v) return false;
+  const options = (question.options || {}) as Record<string, unknown>;
+
   if (qtype === 'matching') {
     try {
       const parsed = JSON.parse(v);
-      const left = Array.isArray(question.options?.left)
-        ? (question.options!.left as string[])
-        : [];
+      const left = asStringList(options.left ?? options.left_items);
+      if (left.length < 2) return false;
       if (Array.isArray(parsed)) return parsed.length === left.length;
       if (parsed && typeof parsed === 'object') {
         return Object.keys(parsed).length === left.length;
@@ -540,26 +634,48 @@ export function answerReady(question: PhaseQuestion, value: string): boolean {
     } catch {
       return v.includes(':');
     }
+    return false;
   }
+
   if (qtype === 'ordering') {
+    const items = asStringList(
+      options.items ?? options.correct_order ?? options.order ?? options.steps,
+    );
+    if (items.length < 3) return false;
     try {
       const parsed = JSON.parse(v);
-      const items = Array.isArray(question.options?.items)
-        ? (question.options!.items as string[])
-        : [];
       return Array.isArray(parsed) && parsed.length === items.length;
     } catch {
       return false;
     }
   }
+
   if (qtype === 'fill_blank') {
-    const answers = Array.isArray(question.options?.answers)
-      ? (question.options!.answers as string[])
-      : [];
+    const template = String(options.template || '').replace(/_{3,}/g, '___');
+    const answers = Array.isArray(options.answers) ? (options.answers as string[]) : [];
+    // UI falls back to a single textarea when template is missing
+    if (!template) return Boolean(v);
+    const expected =
+      answers.length || Math.max(1, (template.match(/___/g) || []).length || 1);
     const parts = v.split('|');
-    return answers.length
-      ? parts.length === answers.length && parts.every((p) => p.trim())
-      : Boolean(v);
+    return parts.length >= expected && parts.slice(0, expected).every((p) => p.trim());
   }
+
+  if (qtype === 'true_false') {
+    return v.toLowerCase() === 'true' || v.toLowerCase() === 'false';
+  }
+
+  if (
+    qtype === 'mcq' ||
+    qtype === 'scenario' ||
+    qtype === 'image_mcq' ||
+    qtype === 'diagram_label'
+  ) {
+    const choices = getChoices(options);
+    if (choices.length < 2) return false;
+    return choices.some((c) => c.key === v || c.text === v);
+  }
+
+  // short_answer and anything else: any non-empty trimmed text
   return Boolean(v);
 }

@@ -26,7 +26,9 @@ async def notify_level_completed(
         user_id=user_id,
         title="Level completed",
         message=f"You completed Phase {phase_number}, Level {level_number}.{score_bit}{xp_bit}",
-        notification_type=NotificationType.PROGRESS,
+        category=NotificationType.PROGRESS,
+        action_link="/challenges",
+        priority="normal",
         data={
             "event": "level_completed",
             "phase_number": phase_number,
@@ -50,7 +52,9 @@ async def notify_phase_completed(
         user_id=user_id,
         title="Phase completed",
         message=f"Congratulations! You completed {label}.",
-        notification_type=NotificationType.ACHIEVEMENT,
+        category=NotificationType.ACHIEVEMENT,
+        action_link="/challenges",
+        priority="high",
         data={
             "event": "phase_completed",
             "phase_number": phase_number,
@@ -82,7 +86,9 @@ async def notify_recommendation_ready(
         user_id=user_id,
         title=title,
         message=message,
-        notification_type=NotificationType.RECOMMENDATION,
+        category=NotificationType.RECOMMENDATION,
+        action_link="/recommendations",
+        priority="high",
         data={
             "event": "recommendation_generated",
             "phase_number": phase_number,
@@ -101,7 +107,9 @@ async def notify_recommendations_unlocked(
         user_id=user_id,
         title="Recommendations unlocked",
         message="Your programme recommendations are now available.",
-        notification_type=NotificationType.RECOMMENDATION,
+        category=NotificationType.RECOMMENDATION,
+        action_link="/recommendations",
+        priority="high",
         data={"event": "recommendations_unlocked", "href": "/recommendations"},
     )
 
@@ -120,7 +128,9 @@ async def notify_psychometric_completed(
             f"You finished the Phase {phase_number} psychometric checkpoint. "
             "Recommendations are being prepared."
         ),
-        notification_type=NotificationType.PROGRESS,
+        category=NotificationType.PROGRESS,
+        action_link="/recommendations",
+        priority="normal",
         data={
             "event": "psychometric_completed",
             "phase_number": phase_number,
@@ -138,7 +148,9 @@ async def notify_starter_arena_completed(
         user_id=user_id,
         title="Starter Arena complete",
         message="You completed the Starter Arena. Your learner profile is ready.",
-        notification_type=NotificationType.ACHIEVEMENT,
+        category=NotificationType.ACHIEVEMENT,
+        action_link="/dashboard",
+        priority="high",
         data={"event": "starter_arena_completed", "href": "/dashboard"},
     )
 
@@ -157,7 +169,9 @@ async def notify_lesson_completed(
         user_id=user_id,
         title="Lesson completed",
         message=f'You finished "{title}" in {subject}.{xp_bit}',
-        notification_type=NotificationType.LEARNING,
+        category=NotificationType.LEARNING,
+        action_link="/learning",
+        priority="normal",
         data={
             "event": "lesson_completed",
             "subject": subject,
@@ -182,7 +196,8 @@ async def notify_xp_earned(
         user_id=user_id,
         title="XP earned",
         message=f"You earned +{amount} XP.{suffix}",
-        notification_type=NotificationType.XP,
+        category=NotificationType.XP,
+        priority="low",
         data={"event": "xp_earned", "xp_earned": amount},
     )
 
@@ -194,12 +209,84 @@ async def notify_system(
     title: str,
     message: str,
     data: dict[str, Any] | None = None,
+    action_link: str | None = None,
+    priority: str = "normal",
 ) -> None:
+    href = action_link
+    if not href and isinstance(data, dict):
+        href = data.get("href") if isinstance(data.get("href"), str) else None
     await create_notification(
         db,
         user_id=user_id,
         title=title,
         message=message,
-        notification_type=NotificationType.SYSTEM,
+        category=NotificationType.SYSTEM,
+        action_link=href,
+        priority=priority,
         data=data,
+    )
+
+
+async def notify_badge_unlocked(
+    db: AsyncSession,
+    user_id: uuid.UUID,
+    *,
+    rank: str,
+) -> None:
+    """Celebrate a rank / badge unlock (Stage 7)."""
+    slug = str(rank).lower().replace(" ", "_")
+    rule_key = f"badge_unlocked_{slug}"
+    try:
+        from app.notifications.engine import has_any_rule
+
+        if await has_any_rule(db, user_id, rule_key):
+            return
+    except Exception:
+        pass
+    await create_notification(
+        db,
+        user_id=user_id,
+        title="Badge unlocked",
+        message=f"Badge unlocked: you've reached {rank}.",
+        category=NotificationType.ACHIEVEMENT,
+        action_link="/dashboard",
+        priority="high",
+        data={
+            "event": "badge_unlocked",
+            "rule_key": rule_key,
+            "rank": rank,
+            "badge": rank,
+            "href": "/dashboard",
+        },
+    )
+
+
+async def notify_streak_milestone(
+    db: AsyncSession,
+    user_id: uuid.UUID,
+    *,
+    streak: int,
+) -> None:
+    rule_key = f"streak_milestone_{streak}"
+    try:
+        from app.notifications.engine import has_any_rule
+
+        if await has_any_rule(db, user_id, rule_key):
+            return
+    except Exception:
+        pass
+    await create_notification(
+        db,
+        user_id=user_id,
+        title="Streak milestone!",
+        message=f"Amazing — you've kept a {streak}-day learning streak.",
+        category=NotificationType.STREAK,
+        action_link="/dashboard",
+        priority="high",
+        data={
+            "event": "streak_milestone",
+            "rule_key": rule_key,
+            "streak": streak,
+            "href": "/dashboard",
+        },
     )

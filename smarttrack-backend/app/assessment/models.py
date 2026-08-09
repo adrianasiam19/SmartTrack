@@ -425,8 +425,9 @@ class ChallengeResponse(Base):
     question_text: Mapped[str] = mapped_column(Text, nullable=False)
     question_type: Mapped[str] = mapped_column(String(30), nullable=False, default="mcq")
     options: Mapped[dict | None] = mapped_column(JSON, nullable=True)
-    correct_answer: Mapped[str] = mapped_column(String(500), nullable=False)
-    user_answer: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    # Text: ordering/matching JSON answers can exceed 500 chars
+    correct_answer: Mapped[str] = mapped_column(Text, nullable=False)
+    user_answer: Mapped[str | None] = mapped_column(Text, nullable=True)
     is_correct: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
     # Effective difficulty after per-subject adaptive adjustment
     difficulty: Mapped[int | None] = mapped_column(Integer, nullable=True)

@@ -1,4 +1,4 @@
-import { getAccessToken } from './authApi';
+import { fetchWithAuth } from './authApi';
 
 const API_BASE_URL =
   (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_API_URL) ||
@@ -30,10 +30,10 @@ export interface AITaughtLesson {
   important_points: string[];
   common_mistakes: string[];
   short_summary: string;
+  /** Learner-facing visual only — no attribution / source / license. */
   visual_aid?: {
     url?: string;
     alt?: string;
-    attribution?: string;
     concept?: string;
     requires_labels?: boolean;
     legend?: string;
@@ -61,14 +61,6 @@ export interface LibraryHome {
   bookmarks: CurriculumTopic[];
 }
 
-function authHeaders(): HeadersInit {
-  const token = getAccessToken();
-  return {
-    'Content-Type': 'application/json',
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
-}
-
 async function readError(response: Response, fallback: string): Promise<Error> {
   if (response.status === 401) {
     return new Error('Your session expired. Please sign in again, then retry.');
@@ -91,8 +83,7 @@ export async function searchCurriculumTopics(
 ): Promise<CurriculumTopic[]> {
   const params = new URLSearchParams({ q: query, limit: '20' });
   if (subject) params.set('subject', subject);
-  const response = await fetch(`${API_BASE_URL}/learning/search?${params}`, {
-    headers: authHeaders(),
+  const response = await fetchWithAuth(`${API_BASE_URL}/learning/search?${params}`, {
     signal,
   });
   if (!response.ok) {
@@ -106,8 +97,7 @@ export async function listTopicsBySubject(
   signal?: AbortSignal,
 ): Promise<CurriculumTopic[]> {
   const params = new URLSearchParams({ subject, limit: '200' });
-  const response = await fetch(`${API_BASE_URL}/learning/topics?${params}`, {
-    headers: authHeaders(),
+  const response = await fetchWithAuth(`${API_BASE_URL}/learning/topics?${params}`, {
     signal,
   });
   if (!response.ok) {
@@ -120,9 +110,8 @@ export async function exploreCurriculumTopic(
   query: string,
   subject?: string,
 ): Promise<CurriculumTopic> {
-  const response = await fetch(`${API_BASE_URL}/learning/explore`, {
+  const response = await fetchWithAuth(`${API_BASE_URL}/learning/explore`, {
     method: 'POST',
-    headers: authHeaders(),
     body: JSON.stringify({
       query,
       ...(subject ? { subject } : {}),
@@ -135,8 +124,7 @@ export async function exploreCurriculumTopic(
 }
 
 export async function getLibraryHome(signal?: AbortSignal): Promise<LibraryHome> {
-  const response = await fetch(`${API_BASE_URL}/learning/library`, {
-    headers: authHeaders(),
+  const response = await fetchWithAuth(`${API_BASE_URL}/learning/library`, {
     signal,
   });
   if (!response.ok) {
@@ -150,9 +138,9 @@ export async function toggleLearningBookmark(curriculumId: string): Promise<{
   bookmarked: boolean;
   bookmarks: CurriculumTopic[];
 }> {
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `${API_BASE_URL}/learning/bookmarks/${encodeURIComponent(curriculumId)}/toggle`,
-    { method: 'POST', headers: authHeaders() },
+    { method: 'POST' },
   );
   if (!response.ok) {
     throw await readError(response, 'Could not update bookmark.');
@@ -164,9 +152,9 @@ export async function getRelatedTopics(
   curriculumId: string,
   signal?: AbortSignal,
 ): Promise<CurriculumTopic[]> {
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `${API_BASE_URL}/learning/lessons/${encodeURIComponent(curriculumId)}/related`,
-    { headers: authHeaders(), signal },
+    { signal },
   );
   if (!response.ok) {
     throw await readError(response, 'Unable to load related topics.');
@@ -179,11 +167,10 @@ export async function getAITaughtLesson(
   curriculumId: string,
   signal?: AbortSignal,
 ): Promise<TaughtLessonResponse> {
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `${API_BASE_URL}/learning/lessons/${encodeURIComponent(curriculumId)}/teach`,
     {
       method: 'POST',
-      headers: authHeaders(),
       signal,
     },
   );
@@ -193,16 +180,64 @@ export async function getAITaughtLesson(
   return response.json();
 }
 
+export type LearningResourceKind =
+  | 'video'
+  | 'pdf'
+  | 'simulation'
+  | 'animation'
+  | 'link';
+
+export interface LearningResource {
+  id: string;
+  kind: LearningResourceKind;
+  title: string;
+  url: string;
+  provider: string;
+  thumbnail_url?: string | null;
+  channel?: string | null;
+  duration_seconds?: number | null;
+  description?: string | null;
+  query?: string | null;
+  extra?: {
+    duration_label?: string | null;
+    [key: string]: unknown;
+  } | null;
+}
+
+export interface LessonResourcesResponse {
+  curriculum_id: string;
+  queries: string[];
+  resources: LearningResource[];
+}
+
+/** Deferred optional resources (videos first). Does not block lesson teach. */
+export async function getLessonResources(
+  curriculumId: string,
+  options?: { kinds?: LearningResourceKind[]; limit?: number; signal?: AbortSignal },
+): Promise<LessonResourcesResponse> {
+  const params = new URLSearchParams({
+    kinds: (options?.kinds ?? ['video']).join(','),
+    limit: String(options?.limit ?? 3),
+  });
+  const response = await fetchWithAuth(
+    `${API_BASE_URL}/learning/lessons/${encodeURIComponent(curriculumId)}/resources?${params}`,
+    { signal: options?.signal },
+  );
+  if (!response.ok) {
+    throw await readError(response, 'Unable to load learning resources.');
+  }
+  return response.json();
+}
+
 export async function askCurriculumTutor(
   curriculumId: string,
   message: string,
   history: TutorMessage[],
 ): Promise<string> {
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `${API_BASE_URL}/learning/lessons/${encodeURIComponent(curriculumId)}/ask`,
     {
       method: 'POST',
-      headers: authHeaders(),
       body: JSON.stringify({ message, history }),
     },
   );
@@ -219,11 +254,10 @@ export async function completeCurriculumLesson(curriculumId: string): Promise<{
   rank: string;
   already_completed: boolean;
 }> {
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `${API_BASE_URL}/learning/lessons/${encodeURIComponent(curriculumId)}/complete`,
     {
       method: 'POST',
-      headers: authHeaders(),
     },
   );
   if (!response.ok) {

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useState, useCallback } from 'react';
 import AtlasIntroAnimation from './components/AtlasIntroAnimation';
 import { startGoogleSignIn } from './lib/authApi';
@@ -34,23 +34,17 @@ export default function Home() {
     <div className="min-h-screen bg-transparent overflow-hidden">
       {/* ── SPLIT-SCREEN HERO ── */}
       <section className="flex flex-col lg:flex-row h-screen">
-        {/* ── LEFT PANEL (60%) - HERO IMAGE ── */}
+        {/* ── LEFT PANEL (60%) - BRAND SURFACE (no photo) ── */}
         <div className="relative lg:w-[60%] h-[50vh] lg:h-screen overflow-hidden">
-          {/* Background image - Academic campus building */}
-          <div
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{
-              backgroundImage: 'url("https://images.pexels.com/photos/8926544/pexels-photo-8926544.jpeg?auto=compress&cs=tinysrgb&w=1200&h=900&dpr=1")',
-            }}
-          />
-          {/* Sophisticated gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#1E3A8A]/85 via-[#2563EB]/70 to-[#7C3AED]/50" />
+          {/* Atmosphere: gradient only — no stock photography */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#1E3A8A] via-[#2563EB] to-[#1D4ED8]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/50 via-transparent to-white/5" />
 
           {/* Subtle pattern overlay */}
           <div
-            className="absolute inset-0 opacity-[0.04]"
+            className="absolute inset-0 opacity-[0.06]"
             style={{
-              backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)',
+              backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.85) 1px, transparent 1px)',
               backgroundSize: '32px 32px',
             }}
           />
@@ -91,8 +85,8 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.35 }}
                 className="text-base sm:text-lg text-[#BFDBFE] leading-relaxed max-w-lg font-light"
               >
-                An intelligent platform for Ghanaian students to discover their strengths,
-                improve their skills, and explore academic paths that match their potential.
+                An intelligent platform to discover your strengths, improve your skills,
+                and explore academic paths that match your potential.
               </motion.p>
             </div>
 
@@ -161,11 +155,6 @@ export default function Home() {
                 <p className="text-sm text-[#DC2626] text-center mt-3">{googleError}</p>
               )}
             </div>
-
-            {/* Trust indicator */}
-            <p className="text-center text-sm text-[#94A3B8] mt-6">
-              Free for students in Ghana
-            </p>
           </motion.div>
         </div>
       </section>

@@ -1379,9 +1379,9 @@ function ChallengeArena() {
               className="w-full py-3 border border-gray-200 text-gray-500 rounded-xl hover:bg-gray-50 transition-all">
               Back to Challenges
             </button>
-            <button onClick={() => router.push('/challenges/leaderboard')}
+            <button onClick={() => router.push('/dashboard#personal-progress')}
               className="w-full py-3 border border-gray-200 text-gray-400 rounded-xl hover:bg-gray-50 transition-all text-sm">
-              View Leaderboard
+              View Your Progress
             </button>
           </div>
         </div>

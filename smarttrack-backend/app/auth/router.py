@@ -16,10 +16,12 @@ from urllib.parse import urlencode
 from datetime import datetime, timezone
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth import schemas
+from app.auth.models import PasswordReset
 from app.auth.service import (
     create_access_token,
     create_refresh_token,
@@ -122,6 +124,16 @@ async def login(body: schemas.LoginRequest, db: AsyncSession = Depends(get_db)):
             detail="Your account has been deactivated.",
         )
 
+    previous_login = user.last_login
+    try:
+        from app.notifications.engine import notify_return_after_absence
+
+        await notify_return_after_absence(db, user, previous_login=previous_login)
+    except Exception:
+        import logging
+
+        logging.getLogger(__name__).exception("Return-after-absence notification failed")
+
     user.last_login = datetime.now(timezone.utc)
 
     access_token = create_access_token(user.id)
@@ -165,14 +177,14 @@ async def google_auth_url(redirect_uri: str):
     Return the Google OAuth consent screen URL.
     The frontend opens this URL to start the OAuth flow.
     """
-    if not settings.GOOGLE_CLIENT_ID or "your-google-client-id" in settings.GOOGLE_CLIENT_ID:
+    if not settings.google_oauth_configured():
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Google Sign-In is not configured on this server.",
         )
 
     params = {
-        "client_id": settings.GOOGLE_CLIENT_ID,
+        "client_id": settings.google_client_id_clean,
         "redirect_uri": redirect_uri,
         "response_type": "code",
         "scope": "openid email profile",
@@ -217,36 +229,67 @@ async def google_callback(
 
 # ── Forgot / reset password ───────────────────────────────────────────────────
 
+async def _send_reset_email_safe(email: str, reset_url: str) -> None:
+    """Background send — never raises into the HTTP response."""
+    try:
+        await send_password_reset_email(email, reset_url)
+    except Exception:
+        logger.exception("Password reset email failed for %s", email)
+
+
 @router.post("/forgot-password", response_model=schemas.ForgotPasswordResponse)
 async def forgot_password(
-    body: schemas.ForgotPasswordRequest, db: AsyncSession = Depends(get_db)
+    body: schemas.ForgotPasswordRequest,
+    background_tasks: BackgroundTasks,
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Request a password reset email.
 
     Always returns a generic success message so account existence is not leaked.
     Google-only accounts cannot reset a password they do not have.
+
+    Dev fallback: `dev_reset_link` is returned only when ENVIRONMENT is not
+    production (independent of whether Resend credentials are present).
     """
     generic = (
         "Password reset instructions have been sent to your email address."
     )
     user = await get_user_by_email(body.email.lower(), db)
     dev_reset_link: str | None = None
+    is_production = (settings.ENVIRONMENT or "").strip().lower() == "production"
 
     if user and user.password_hash and user.is_active:
-        token = create_password_reset_token(user.id, user.email)
-        reset_url = f"{settings.FRONTEND_URL.rstrip('/')}/reset-password?token={token}"
-        try:
-            emailed = await send_password_reset_email(user.email, reset_url)
-            if not emailed and settings.ENVIRONMENT == "development":
-                # Local testing aid when SMTP is not configured.
-                dev_reset_link = reset_url
-                logger.info("Dev password reset link for %s: %s", user.email, reset_url)
-        except Exception:
-            # Do not leak provider failures to the client.
-            logger.exception("Password reset email failed for %s", user.email)
-            if settings.ENVIRONMENT == "development":
-                dev_reset_link = reset_url
+        token, jti, expires_at = create_password_reset_token(user.id, user.email)
+        # Invalidate any previous unused tokens for this user (single active reset).
+        await db.execute(
+            update(PasswordReset)
+            .where(
+                PasswordReset.user_id == user.id,
+                PasswordReset.used_at.is_(None),
+            )
+            .values(used_at=datetime.now(timezone.utc))
+        )
+        db.add(
+            PasswordReset(
+                jti=jti,
+                user_id=user.id,
+                expires_at=expires_at,
+            )
+        )
+        # Persist ledger before email so a crash mid-send cannot orphan a usable token
+        # without a DB row (and so background send always races after commit).
+        await db.commit()
+
+        reset_url = (
+            f"{settings.FRONTEND_URL.rstrip('/')}/reset-password?token={token}"
+        )
+        background_tasks.add_task(_send_reset_email_safe, user.email, reset_url)
+
+        # Safe local aid: expose link in non-production only (not gated on API keys).
+        if not is_production:
+            dev_reset_link = reset_url
+            logger.info("Dev password reset link for %s: %s", user.email, reset_url)
 
     return schemas.ForgotPasswordResponse(message=generic, dev_reset_link=dev_reset_link)
 
@@ -255,7 +298,7 @@ async def forgot_password(
 async def reset_password(
     body: schemas.ResetPasswordRequest, db: AsyncSession = Depends(get_db)
 ):
-    """Set a new password using a valid reset token from the email link."""
+    """Set a new password using a valid, unused reset token from the email link."""
     from jose import JWTError
 
     try:
@@ -267,8 +310,23 @@ async def reset_password(
         )
 
     try:
-        user_id, email = verify_password_reset_token(body.token)
+        user_id, email, jti = verify_password_reset_token(body.token)
     except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This password reset link is invalid or has expired.",
+        )
+
+    now = datetime.now(timezone.utc)
+    reset_row = (
+        await db.execute(select(PasswordReset).where(PasswordReset.jti == jti))
+    ).scalar_one_or_none()
+    if (
+        reset_row is None
+        or reset_row.used_at is not None
+        or reset_row.expires_at <= now
+        or reset_row.user_id != user_id
+    ):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="This password reset link is invalid or has expired.",
@@ -287,6 +345,7 @@ async def reset_password(
         )
 
     user.password_hash = hash_password(body.password)
+    reset_row.used_at = now
     await revoke_all_refresh_tokens(user.id, db)
 
     return schemas.MessageResponse(

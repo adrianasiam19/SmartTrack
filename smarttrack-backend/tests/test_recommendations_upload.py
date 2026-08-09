@@ -106,11 +106,86 @@ def test_parse_grades_from_wassce_text():
     assert by_subject["Elective Mathematics"] == "A1"
 
 
+def test_assess_waec_rejects_plain_grade_list():
+    from app.assessment.academic_recommendations import (
+        assess_waec_document,
+        parse_grades_from_text,
+    )
+
+    text = """
+    English Language B3
+    Core Mathematics A1
+    Integrated Science C4
+    Social Studies B2
+    Physics B3
+    Chemistry C5
+    """
+    grades = parse_grades_from_text(text)
+    assert len(grades) >= 4
+    result = assess_waec_document(text, grades=grades)
+    assert result["is_waec"] is False
+
+
+def test_assess_waec_accepts_official_markers():
+    from app.assessment.academic_recommendations import (
+        assess_waec_document,
+        parse_grades_from_text,
+    )
+
+    text = """
+    WEST AFRICAN EXAMINATIONS COUNCIL
+    WASSCE Statement of Results
+    Candidate Number: 1234567
+    English Language B3
+    Core Mathematics A1
+    Integrated Science C4
+    Social Studies B2
+    Physics B3
+    Chemistry C5
+    """
+    grades = parse_grades_from_text(text)
+    result = assess_waec_document(text, grades=grades)
+    assert result["is_waec"] is True
+    assert result["confidence"] >= 0.7
+
+
+def test_extract_and_match_candidate_name():
+    from app.assessment.academic_recommendations import (
+        compare_candidate_to_profile,
+        extract_candidate_name_from_text,
+    )
+
+    text = """
+    WEST AFRICAN EXAMINATIONS COUNCIL
+    Candidate Name: ASIAMAH YAW KWAME
+    English Language B3
+    """
+    assert extract_candidate_name_from_text(text) == "ASIAMAH YAW KWAME"
+
+    # Order / missing middle name still matches
+    ok = compare_candidate_to_profile("Yaw Kwame Asiamah", "ASIAMAH YAW KWAME")
+    assert ok["matched"] is True
+
+    bad = compare_candidate_to_profile("Yaw Kwame Asiamah", "MENSAH KOFI")
+    assert bad["matched"] is False
+    assert bad["reason"] == "name_mismatch"
+
+    missing = compare_candidate_to_profile("Yaw Kwame Asiamah", None)
+    assert missing["matched"] is False
+    assert missing["reason"] == "document_name_missing"
+
+    short_profile = compare_candidate_to_profile("Yaw", "YAW KWAME ASIAMAH")
+    assert short_profile["matched"] is False
+    assert short_profile["reason"] == "profile_name_incomplete"
+
+
 def test_extract_grades_uses_pypdf_text(monkeypatch):
     import asyncio
     from app.assessment import academic_recommendations as mod
 
     sample = (
+        "WEST AFRICAN EXAMINATIONS COUNCIL\n"
+        "WASSCE\n"
         "English Language B3\n"
         "Core Mathematics A1\n"
         "Integrated Science C4\n"
@@ -133,4 +208,28 @@ def test_extract_grades_uses_pypdf_text(monkeypatch):
     subjects = {g["subject"] for g in grades}
     assert "Core Mathematics" in subjects
     assert "English Language" in subjects
+
+
+def test_analyze_rejects_non_waec_pdf_text(monkeypatch):
+    import asyncio
+    from app.assessment import academic_recommendations as mod
+
+    sample = (
+        "School Progress Report\n"
+        "English Language B3\n"
+        "Core Mathematics A1\n"
+        "Integrated Science C4\n"
+        "Social Studies B2\n"
+        "Physics B3\n"
+    )
+    monkeypatch.setattr(mod, "extract_text_from_pdf", lambda _data: sample)
+
+    result = asyncio.run(
+        mod.analyze_academic_document(
+            filename="report.pdf",
+            content_type="application/pdf",
+            data=b"%PDF-fake",
+        )
+    )
+    assert result["waec"]["is_waec"] is False
 

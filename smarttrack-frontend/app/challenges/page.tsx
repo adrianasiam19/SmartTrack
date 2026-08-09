@@ -8,6 +8,7 @@ import BottomNav from '../components/BottomNav';
 import {
   getProgression,
   PhasePublic,
+  warmPrefetchBuffer,
   startLevel,
   replayLevel,
   storePhaseSession,
@@ -41,6 +42,9 @@ export default function ChallengesHomePage() {
       }
       const data = await getProgression();
       setPhases(data.phases);
+      setError('');
+      // Background only — never surface prefetch failures on this page.
+      void warmPrefetchBuffer().catch(() => undefined);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load');
     } finally {
@@ -56,6 +60,16 @@ export default function ChallengesHomePage() {
     () => phases.find((p) => p.id === selectedPhaseId) ?? null,
     [phases, selectedPhaseId],
   );
+
+  // Warm the rolling buffer while the learner browses the phase map.
+  useEffect(() => {
+    if (!selectedPhase) return;
+    const target =
+      selectedPhase.levels.find((l) => l.status === 'in_progress') ||
+      selectedPhase.levels.find((l) => l.status === 'available');
+    if (!target) return;
+    void warmPrefetchBuffer().catch(() => undefined);
+  }, [selectedPhase]);
 
   const selectPhase = (phaseId: number | null) => {
     setSelectedPhaseId(phaseId);
@@ -75,7 +89,6 @@ export default function ChallengesHomePage() {
       router.push(`/challenges/play?session=${session.session_id}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not start level');
-    } finally {
       setStarting(null);
     }
   };
@@ -89,7 +102,9 @@ export default function ChallengesHomePage() {
     if (!selectedPhase) return;
     const done = completedCount(selectedPhase);
     const total = selectedPhase.levels.length || 10;
-    const allDone = selectedPhase.levels.every((l) => l.status === 'completed');
+    const allDone =
+      selectedPhase.levels.length > 0 &&
+      selectedPhase.levels.every((l) => l.status === 'completed');
     if (allDone) {
       setRecGuidance('');
       router.push('/recommendations');
@@ -300,7 +315,8 @@ export default function ChallengesHomePage() {
 
             <div className="mt-6 flex flex-col gap-3">
               <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                {selectedPhase.levels.every((l) => l.status === 'completed') ? (
+                {selectedPhase.levels.length > 0 &&
+                selectedPhase.levels.every((l) => l.status === 'completed') ? (
                   <Link
                     href={`/challenges/checkpoint?phase=${selectedPhase.number}`}
                     className="inline-block text-sm font-medium text-[#2563EB]"
@@ -330,6 +346,15 @@ export default function ChallengesHomePage() {
           </div>
         )}
       </main>
+      {starting != null ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/35 backdrop-blur-[2px]">
+          <div
+            className="h-10 w-10 rounded-full border-2 border-white border-t-transparent animate-spin"
+            role="status"
+            aria-label="Loading"
+          />
+        </div>
+      ) : null}
       <BottomNav />
     </div>
   );

@@ -1,5 +1,12 @@
 'use client';
 
+/**
+ * Stage 8 — Notification User Interface
+ *
+ * Mounted on the Dashboard only. Shows unread badge, opens a panel
+ * sorted newest-first, highlights unread rows, marks read on open,
+ * and navigates via action_link when present.
+ */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -8,6 +15,7 @@ import {
   Bell,
   BookOpen,
   CheckCheck,
+  ChevronRight,
   Lightbulb,
   Loader2,
   Sparkles,
@@ -65,6 +73,20 @@ function typeMeta(type: string) {
         chip: 'bg-emerald-50 text-emerald-700',
         iconWrap: 'bg-emerald-100 text-emerald-700',
       };
+    case 'streak':
+      return {
+        label: 'Streak',
+        icon: Sparkles,
+        chip: 'bg-orange-50 text-orange-700',
+        iconWrap: 'bg-orange-100 text-orange-700',
+      };
+    case 'reminder':
+      return {
+        label: 'Reminder',
+        icon: Bell,
+        chip: 'bg-rose-50 text-rose-700',
+        iconWrap: 'bg-rose-100 text-rose-700',
+      };
     case 'system':
     default:
       return {
@@ -74,6 +96,28 @@ function typeMeta(type: string) {
         iconWrap: 'bg-slate-100 text-slate-600',
       };
   }
+}
+
+function isUnread(item: AppNotification) {
+  return !(item.read_status ?? item.is_read);
+}
+
+function actionHref(item: AppNotification): string | null {
+  if (typeof item.action_link === 'string' && item.action_link.trim()) {
+    return item.action_link.trim();
+  }
+  if (typeof item.data?.href === 'string' && item.data.href.trim()) {
+    return item.data.href.trim();
+  }
+  return null;
+}
+
+function sortNewestFirst(list: AppNotification[]) {
+  return [...list].sort((a, b) => {
+    const ta = new Date(a.created_at).getTime();
+    const tb = new Date(b.created_at).getTime();
+    return (Number.isFinite(tb) ? tb : 0) - (Number.isFinite(ta) ? ta : 0);
+  });
 }
 
 function formatWhen(iso: string) {
@@ -119,7 +163,7 @@ export default function NotificationBell() {
     setLoading(true);
     try {
       const data = await fetchNotifications({ limit: 40 });
-      setItems(data.notifications);
+      setItems(sortNewestFirst(data.notifications || []));
       setUnread(data.unread_count);
     } catch {
       /* ignore */
@@ -161,18 +205,20 @@ export default function NotificationBell() {
   }, []);
 
   const onOpenItem = async (item: AppNotification) => {
-    if (!item.is_read) {
+    if (isUnread(item)) {
       try {
         await markNotificationRead(item.id);
         setItems((prev) =>
-          prev.map((n) => (n.id === item.id ? { ...n, is_read: true } : n)),
+          prev.map((n) =>
+            n.id === item.id ? { ...n, is_read: true, read_status: true } : n,
+          ),
         );
         setUnread((c) => Math.max(0, c - 1));
       } catch {
         /* ignore */
       }
     }
-    const href = typeof item.data?.href === 'string' ? item.data.href : null;
+    const href = actionHref(item);
     setOpen(false);
     if (href) router.push(href);
   };
@@ -180,7 +226,9 @@ export default function NotificationBell() {
   const onMarkAll = async () => {
     try {
       await markAllNotificationsRead();
-      setItems((prev) => prev.map((n) => ({ ...n, is_read: true })));
+      setItems((prev) =>
+        prev.map((n) => ({ ...n, is_read: true, read_status: true })),
+      );
       setUnread(0);
     } catch {
       /* ignore */
@@ -195,28 +243,42 @@ export default function NotificationBell() {
         className="relative flex items-center justify-center w-11 h-11 bg-white border border-[#BFDBFE] rounded-xl shadow-md shadow-[#2563EB]/10 text-[#2563EB] hover:bg-[#EFF6FF] hover:shadow-lg active:scale-95 transition-all"
         aria-label={unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'}
         aria-expanded={open}
+        aria-controls="atlas-notification-panel"
+        aria-haspopup="dialog"
       >
         <Bell className="w-5 h-5" />
-        {unread > 0 ? (
-          <span className="absolute -top-1.5 -right-1.5 min-w-[1.25rem] h-5 px-1 rounded-full bg-[#EF4444] text-white text-[10px] font-bold flex items-center justify-center shadow-sm">
-            {unread > 99 ? '99+' : unread}
-          </span>
-        ) : null}
+        <AnimatePresence>
+          {unread > 0 ? (
+            <motion.span
+              key="badge"
+              initial={{ scale: 0.6, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.6, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 420, damping: 22 }}
+              className="absolute -top-1.5 -right-1.5 min-w-[1.25rem] h-5 px-1 rounded-full bg-[#EF4444] text-white text-[10px] font-bold flex items-center justify-center shadow-sm"
+            >
+              {unread > 99 ? '99+' : unread}
+            </motion.span>
+          ) : null}
+        </AnimatePresence>
       </button>
 
       <AnimatePresence>
         {open ? (
           <motion.div
+            id="atlas-notification-panel"
+            role="dialog"
+            aria-label="Notifications"
             initial={{ opacity: 0, y: -8, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -6, scale: 0.98 }}
             transition={{ duration: 0.16 }}
-            className="absolute right-0 mt-2 w-[min(100vw-2rem,22rem)] max-h-[min(70vh,28rem)] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl"
+            className="absolute right-0 mt-2 w-[min(100vw-2rem,22rem)] max-h-[min(70vh,28rem)] overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-xl shadow-[#0F172A]/10"
           >
-            <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-slate-100">
+            <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-slate-100 bg-gradient-to-r from-[#EFF6FF] to-white">
               <div>
-                <p className="text-sm font-semibold text-slate-900">Notifications</p>
-                <p className="text-[11px] text-slate-400">
+                <p className="text-sm font-semibold text-[#0F172A]">Notifications</p>
+                <p className="text-[11px] text-[#64748B]">
                   {unread > 0 ? `${unread} unread` : 'You are up to date'}
                 </p>
               </div>
@@ -224,7 +286,7 @@ export default function NotificationBell() {
                 <button
                   type="button"
                   onClick={() => void onMarkAll()}
-                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#4F46E5] hover:text-[#4338CA]"
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#2563EB] hover:text-[#1D4ED8]"
                 >
                   <CheckCheck className="w-3.5 h-3.5" />
                   Mark all read
@@ -239,7 +301,7 @@ export default function NotificationBell() {
                 </div>
               ) : items.length === 0 ? (
                 <div className="px-5 py-10 text-center">
-                  <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-indigo-50 text-[#4F46E5]">
+                  <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-[#EFF6FF] text-[#2563EB]">
                     <Sparkles className="w-5 h-5" />
                   </div>
                   <p className="text-sm font-medium text-slate-800">No notifications yet</p>
@@ -251,17 +313,19 @@ export default function NotificationBell() {
               ) : (
                 <ul className="divide-y divide-slate-100">
                   {items.map((item) => {
-                    const meta = typeMeta(item.type);
+                    const meta = typeMeta(item.category || item.type);
                     const Icon = meta.icon;
+                    const unreadRow = isUnread(item);
+                    const href = actionHref(item);
                     return (
                       <li key={item.id}>
                         <button
                           type="button"
                           onClick={() => void onOpenItem(item)}
                           className={`w-full text-left px-4 py-3.5 flex gap-3 transition-colors ${
-                            item.is_read
-                              ? 'bg-white hover:bg-slate-50'
-                              : 'bg-[#EEF2FF]/60 hover:bg-[#EEF2FF]'
+                            unreadRow
+                              ? 'bg-[#EFF6FF]/80 hover:bg-[#DBEAFE]'
+                              : 'bg-white hover:bg-slate-50'
                           }`}
                         >
                           <div
@@ -273,15 +337,18 @@ export default function NotificationBell() {
                             <div className="flex items-start justify-between gap-2">
                               <p
                                 className={`text-sm leading-snug ${
-                                  item.is_read
-                                    ? 'font-medium text-slate-700'
-                                    : 'font-semibold text-slate-900'
+                                  unreadRow
+                                    ? 'font-semibold text-[#0F172A]'
+                                    : 'font-medium text-slate-700'
                                 }`}
                               >
                                 {item.title}
                               </p>
-                              {!item.is_read ? (
-                                <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-[#4F46E5]" />
+                              {unreadRow ? (
+                                <span
+                                  className="mt-1 h-2 w-2 shrink-0 rounded-full bg-[#2563EB]"
+                                  aria-label="Unread"
+                                />
                               ) : null}
                             </div>
                             <p className="mt-0.5 text-xs text-slate-500 leading-relaxed line-clamp-2">
@@ -296,6 +363,12 @@ export default function NotificationBell() {
                               <span className="text-[10px] text-slate-400">
                                 {formatWhen(item.created_at)}
                               </span>
+                              {href ? (
+                                <span className="ml-auto inline-flex items-center gap-0.5 text-[10px] font-semibold text-[#2563EB]">
+                                  Open
+                                  <ChevronRight className="w-3 h-3" />
+                                </span>
+                              ) : null}
                             </div>
                           </div>
                         </button>

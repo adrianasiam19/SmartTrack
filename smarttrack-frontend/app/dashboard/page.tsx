@@ -6,6 +6,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Sidebar from '../components/Sidebar';
 import BottomNav from '../components/BottomNav';
 import AppLayout from '../components/AppLayout';
+import NotificationBell from '../components/NotificationBell';
+import PersonalProgressPanel from '../components/PersonalProgressPanel';
 import {
   getCurrentUser,
   getAccessToken,
@@ -16,6 +18,7 @@ import {
 import { hasPriorDashboardVisit } from '../lib/dashboardWelcome';
 import {
   getProgression,
+  warmPrefetchBuffer,
   type PhasePublic,
   type ProgressionMe,
 } from '../lib/phasesApi';
@@ -23,6 +26,15 @@ import {
   getLibraryHome,
   type CurriculumTopic,
 } from '../lib/learningApi';
+import {
+  fetchPersonalProgress,
+  type FutureModules,
+  type MotivationalInsight,
+  type NextGoal,
+  type PersonalProgressStats,
+  type ProgressVisualizations,
+  type WeeklyProgressSummary,
+} from '../lib/progressApi';
 
 const EDUCATIONAL_TIPS = [
   'The human brain has about 86 billion neurons — roughly as many as stars in the Milky Way’s neighbour galaxies.',
@@ -180,46 +192,55 @@ type NextAction = {
 
 function findNextAction(data: ProgressionMe): NextAction | null {
   const ordered = [...data.phases].sort((a, b) => a.number - b.number);
+  let completedFallback: NextAction | null = null;
+
   for (const phase of ordered) {
     if (phase.status === 'locked') continue;
+
     const levels = [...phase.levels].sort((a, b) => a.number - b.number);
     const completedLevels = levels.filter((l) => l.status === 'completed').length;
     const totalLevels = levels.length || 10;
     const progressPct = Math.round((completedLevels / totalLevels) * 100);
-    const hasStarted =
-      completedLevels > 0 ||
-      levels.some((l) => l.status === 'in_progress');
+    const allDone =
+      levels.length > 0 && levels.every((l) => l.status === 'completed');
 
-    const playable = levels.find(
-      (l) =>
-        l.status === 'available' ||
-        l.status === 'in_progress' ||
-        l.status === 'completed',
+    // Only incomplete unlocked levels — never completed or locked.
+    const next = levels.find(
+      (l) => l.status === 'available' || l.status === 'in_progress',
     );
-    // Prefer first incomplete playable level
-    const next =
-      levels.find(
-        (l) => l.status === 'available' || l.status === 'in_progress',
-      ) || playable;
 
-    if (next && next.status !== 'locked') {
-      const allDone = levels.every((l) => l.status === 'completed');
+    if (next) {
+      const hasStarted =
+        completedLevels > 0 || next.status === 'in_progress';
       return {
         phase,
         levelNumber: next.number,
         levelId: next.id,
-        label: allDone
-          ? `${phase.name} complete — open checkpoint or replay`
-          : hasStarted
-            ? `Continue ${phase.name} · Level ${next.number}`
-            : `Start ${phase.name} · Level ${next.number}`,
+        label: hasStarted
+          ? `Continue ${phase.name} · Level ${next.number}`
+          : `Start ${phase.name} · Level ${next.number}`,
         progressPct,
         completedLevels,
         totalLevels,
       };
     }
+
+    // Phase fully done: remember as checkpoint fallback; prefer later phases first.
+    if (allDone || phase.status === 'completed') {
+      const last = levels[levels.length - 1];
+      completedFallback = {
+        phase,
+        levelNumber: last?.number ?? totalLevels,
+        levelId: last?.id ?? 0,
+        label: `${phase.name} complete — open checkpoint or replay`,
+        progressPct: 100,
+        completedLevels,
+        totalLevels,
+      };
+    }
   }
-  return null;
+
+  return completedFallback;
 }
 
 function hasChallengeProgress(data: ProgressionMe | null): boolean {
@@ -247,6 +268,18 @@ export default function Dashboard() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [progression, setProgression] = useState<ProgressionMe | null>(null);
   const [learningRecs, setLearningRecs] = useState<CurriculumTopic[]>([]);
+  const [personalStats, setPersonalStats] =
+    useState<PersonalProgressStats | null>(null);
+  const [weeklySummary, setWeeklySummary] =
+    useState<WeeklyProgressSummary | null>(null);
+  const [progressViz, setProgressViz] =
+    useState<ProgressVisualizations | null>(null);
+  const [nextGoal, setNextGoal] = useState<NextGoal | null>(null);
+  const [insights, setInsights] = useState<MotivationalInsight[]>([]);
+  const [futureModules, setFutureModules] = useState<FutureModules | null>(
+    null,
+  );
+  const [progressLoading, setProgressLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [isReturningUser, setIsReturningUser] = useState(false);
 
@@ -270,10 +303,11 @@ export default function Dashboard() {
           setLoading(false);
         }
 
-        const [fresh, prog, library] = await Promise.all([
+        const [fresh, prog, library, progress] = await Promise.all([
           getCurrentUser(),
           getProgression().catch(() => null),
           getLibraryHome().catch(() => null),
+          fetchPersonalProgress().catch(() => null),
         ]);
         const destination = resolvePostAuthDestination(fresh);
         if (destination !== '/dashboard') {
@@ -283,10 +317,19 @@ export default function Dashboard() {
         setUser(fresh);
         setProgression(prog);
         setLearningRecs((library?.recommended || []).slice(0, 4));
+        setPersonalStats(progress?.stats ?? null);
+        setWeeklySummary(progress?.weekly_summary ?? null);
+        setProgressViz(progress?.visualizations ?? null);
+        setNextGoal(progress?.next_goal ?? null);
+        setInsights(progress?.insights ?? []);
+        setFutureModules(progress?.future_modules ?? null);
+        // Stage 4 — prepare next challenge levels in the background while browsing.
+        void warmPrefetchBuffer().catch(() => undefined);
       } catch {
         router.push('/login');
       } finally {
         setLoading(false);
+        setProgressLoading(false);
       }
     };
     loadData();
@@ -320,107 +363,80 @@ export default function Dashboard() {
   if (!user) return null;
 
   const firstName = user.full_name?.split(' ')[0] || 'there';
-  const userXp = typeof user.xp === 'number' ? user.xp : 0;
-  const userRank = user.rank || 'Beginner';
-  const userProgramme = user.programme || 'Student';
+  // Prefer Your-path focus so greeting never drifts from the path card.
+  const phaseSubtitle = nextAction
+    ? `Phase ${nextAction.phase.number}${
+        nextAction.phase.name ? ` · ${nextAction.phase.name}` : ''
+      } — Level ${nextAction.levelNumber}`
+    : personalStats
+      ? [
+          personalStats.current_phase != null
+            ? `Phase ${personalStats.current_phase}${
+                personalStats.current_phase_name
+                  ? ` · ${personalStats.current_phase_name}`
+                  : ''
+              }`
+            : null,
+          personalStats.current_level != null
+            ? `Level ${personalStats.current_level}`
+            : null,
+        ]
+          .filter(Boolean)
+          .join(' — ') || user.programme || 'Student'
+      : user.programme || 'Student';
 
   return (
     <AppLayout>
       <div className="flex min-h-screen">
         <Sidebar />
+        <NotificationBell />
         <div className="flex-1 pb-28 lg:pb-0">
           <main className="mx-auto max-w-3xl px-4 pt-20 sm:px-6 lg:px-8 lg:pt-10 pb-10">
-            {/* Hero welcome */}
+            {/* Greeting */}
             <motion.section
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-8"
+              className="mb-5"
             >
-              <p className="text-sm font-medium text-[#64748B]">Dashboard</p>
-              <h1 className="mt-1 text-3xl font-bold tracking-tight text-[#0F172A] sm:text-4xl">
+              <h1 className="text-3xl font-bold tracking-tight text-[#0F172A] sm:text-[2.5rem] sm:leading-tight">
                 {isReturningUser ? 'Welcome back,' : 'Welcome to ATLAS,'}{' '}
-                <span className="text-[#2563EB]">{firstName}</span>
+                {firstName}
               </h1>
-              <p className="mt-2 text-[#64748B]">{userProgramme}</p>
+              <p className="mt-1.5 text-sm text-[#64748B]">{phaseSubtitle}</p>
             </motion.section>
 
-            {/* XP strip — no streak emphasis */}
+            {/* Your path — first content block after welcome */}
             <motion.section
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.04 }}
-              className="mb-6 flex items-center justify-between gap-4 rounded-2xl border border-[#E2E8F0] bg-white px-5 py-4"
+              className="mb-4 overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white/95 shadow-sm backdrop-blur-sm"
             >
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-[#94A3B8]">
-                  Rank
-                </p>
-                <p className="mt-0.5 text-lg font-bold text-[#0F172A]">{userRank}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-xs font-semibold uppercase tracking-wider text-[#94A3B8]">
-                  XP
-                </p>
-                <p className="mt-0.5 text-lg font-bold text-[#2563EB]">
-                  {userXp.toLocaleString()}
-                </p>
-              </div>
-            </motion.section>
-
-            {/* Primary: live phase progress */}
-            <motion.section
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.08 }}
-              className="mb-6 overflow-hidden rounded-3xl border border-[#BFDBFE] bg-gradient-to-b from-[#EFF6FF] to-white shadow-sm"
-            >
-              <div className="px-6 pt-6 sm:px-8 sm:pt-8">
+              <div className="p-5 sm:p-6">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-[#2563EB]">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-[#2563EB]">
                       Your path
+                      {nextAction ? `: Phase ${nextAction.phase.number}` : ''}
                     </p>
-                    <h2 className="mt-1 text-2xl font-bold text-[#0F172A]">
-                      {nextAction
-                        ? nextAction.phase.name
-                        : 'Phase Challenges'}
+                    <h2 className="mt-1 text-xl font-bold text-[#0F172A]">
+                      {nextAction ? nextAction.phase.name : 'Phase Challenges'}
                     </h2>
-                    <p className="mt-2 text-sm leading-relaxed text-[#64748B]">
+                    <p className="mt-1.5 text-sm text-[#64748B]">
                       {nextAction
                         ? nextAction.label
                         : 'Start Phase 1 to begin mixed-subject challenges.'}
                     </p>
                   </div>
                   {nextAction ? (
-                    <span className="shrink-0 rounded-full border border-[#BFDBFE] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-[#2563EB]">
+                    <span className="shrink-0 rounded-full border border-[#BFDBFE] bg-[#EFF6FF] px-2.5 py-1 text-[11px] font-semibold text-[#2563EB]">
                       Level {nextAction.levelNumber}
                     </span>
                   ) : null}
                 </div>
 
-                {nextAction ? (
-                  <div className="mt-6 space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="font-medium text-[#475569]">
-                        {nextAction.completedLevels} of {nextAction.totalLevels}{' '}
-                        levels
-                      </span>
-                      <span className="font-semibold text-[#1E3A8A]">
-                        {nextAction.progressPct}%
-                      </span>
-                    </div>
-                    <div className="h-2.5 overflow-hidden rounded-full bg-[#DBEAFE]">
-                      <div
-                        className="h-full rounded-full bg-[#2563EB] transition-all"
-                        style={{ width: `${nextAction.progressPct}%` }}
-                      />
-                    </div>
-                  </div>
-                ) : null}
-
-                {/* Phase overview chips */}
                 {progression?.phases?.length ? (
-                  <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-3">
+                  <div className="mt-5 grid grid-cols-3 gap-2">
                     {progression.phases
                       .slice()
                       .sort((a, b) => a.number - b.number)
@@ -429,15 +445,19 @@ export default function Dashboard() {
                           (l) => l.status === 'completed',
                         ).length;
                         const total = phase.levels.length || 10;
+                        const isFocus =
+                          nextAction?.phase.number === phase.number;
                         return (
                           <div
                             key={phase.id}
-                            className={`rounded-2xl border px-3 py-3 text-center ${statusTone(phase.status)}`}
+                            className={`rounded-xl border px-2.5 py-3 text-center ${statusTone(phase.status)}${
+                              isFocus ? ' ring-2 ring-[#2563EB]/30' : ''
+                            }`}
                           >
                             <p className="text-[10px] font-semibold uppercase tracking-wider opacity-80">
                               Phase {phase.number}
                             </p>
-                            <p className="mt-1 text-sm font-bold capitalize">
+                            <p className="mt-1 text-xs font-bold capitalize">
                               {phase.status.replace(/_/g, ' ')}
                             </p>
                             <p className="mt-1 text-[11px] opacity-80">
@@ -450,24 +470,36 @@ export default function Dashboard() {
                 ) : null}
               </div>
 
-              <div className="mt-6 border-t border-[#DBEAFE] p-4 sm:p-5">
+              <div className="border-t border-[#F1F5F9] p-4 sm:px-6 sm:pb-5">
                 <button
                   type="button"
                   onClick={() => router.push('/challenges')}
-                  className="w-full rounded-2xl bg-[#2563EB] py-3.5 text-center text-base font-bold text-white shadow-md shadow-[#2563EB]/25 transition hover:bg-[#1D4ED8] active:scale-[0.99]"
+                  className="w-full rounded-xl bg-[#2563EB] py-3 text-center text-sm font-bold text-white transition hover:bg-[#1D4ED8] active:scale-[0.99]"
                 >
-                  {hasStartedChallenges ? 'Continue challenges' : 'Start challenges'}
+                  {hasStartedChallenges
+                    ? 'Continue Challenges'
+                    : 'Start Challenges'}
                 </button>
               </div>
             </motion.section>
 
-            {/* Learning recommendations from challenges + history */}
+            <PersonalProgressPanel
+              stats={personalStats}
+              weekly={weeklySummary}
+              visualizations={progressViz}
+              nextGoal={nextGoal}
+              insights={insights}
+              futureModules={futureModules}
+              loading={progressLoading}
+            />
+
+            {/* Recommended */}
             {learningRecs.length > 0 ? (
               <motion.section
-                initial={{ opacity: 0, y: 12 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="mb-6"
+                transition={{ delay: 0.08 }}
+                className="mb-4"
               >
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <h2 className="text-sm font-semibold text-[#0F172A]">
@@ -491,16 +523,18 @@ export default function Dashboard() {
                           `/learning?topic=${encodeURIComponent(topic.curriculum_id)}`,
                         )
                       }
-                      className="rounded-2xl border border-[#E2E8F0] bg-white p-4 text-left transition hover:border-[#2563EB] hover:shadow-sm"
+                      className="rounded-2xl border border-[#E2E8F0] bg-white/95 p-4 text-left shadow-sm backdrop-blur-sm transition hover:border-[#2563EB]"
                     >
                       <p className="text-[10px] font-semibold uppercase tracking-wider text-[#94A3B8]">
                         {topic.subject}
                       </p>
-                      <p className="mt-1 text-sm font-semibold text-[#0F172A] leading-snug">
+                      <p className="mt-1 text-sm font-semibold leading-snug text-[#0F172A]">
                         {topic.title}
                       </p>
                       {topic.reason ? (
-                        <p className="mt-1.5 text-xs text-[#2563EB]">{topic.reason}</p>
+                        <p className="mt-1.5 text-xs text-[#2563EB]">
+                          {topic.reason}
+                        </p>
                       ) : null}
                     </button>
                   ))}
@@ -508,44 +542,44 @@ export default function Dashboard() {
               </motion.section>
             ) : null}
 
-            {/* Secondary shortcuts */}
+            {/* Learning Center promo */}
             <motion.section
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.12 }}
-              className="mb-6 grid gap-4 grid-cols-1"
+              transition={{ delay: 0.1 }}
+              className="mb-4"
             >
               <button
                 type="button"
                 onClick={() => router.push('/learning')}
-                className="rounded-3xl border border-[#E2E8F0] bg-white p-5 text-left transition hover:border-[#2563EB] hover:shadow-md"
+                className="w-full rounded-2xl border border-[#E2E8F0] bg-white/95 p-5 text-left shadow-sm backdrop-blur-sm transition hover:border-[#2563EB]"
               >
-                <p className="text-xs font-semibold uppercase tracking-wider text-[#2563EB]">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-[#2563EB]">
                   Learning Center
                 </p>
-                <h3 className="mt-2 text-lg font-bold text-[#0F172A]">
+                <h3 className="mt-1.5 text-lg font-bold text-[#0F172A]">
                   Search lessons
                 </h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-[#64748B]">
+                <p className="mt-1 text-sm text-[#64748B]">
                   Practice topics with Atlas AI when you need extra support.
                 </p>
-                <span className="mt-4 inline-flex text-sm font-semibold text-[#2563EB]">
+                <span className="mt-3 inline-flex text-sm font-semibold text-[#2563EB]">
                   Open Learning →
                 </span>
               </button>
             </motion.section>
 
-            {/* Rotating educational tip */}
+            {/* Did you know */}
             <motion.section
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.16 }}
-              className="rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] px-5 py-4"
+              transition={{ delay: 0.12 }}
+              className="rounded-2xl border border-[#E2E8F0] bg-white/90 px-5 py-4 backdrop-blur-sm"
             >
-              <p className="text-xs font-semibold uppercase tracking-wider text-[#94A3B8]">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-[#7C3AED]">
                 Did you know?
               </p>
-              <div className="relative mt-1 min-h-[3.5rem]">
+              <div className="relative mt-1.5 min-h-[3rem]">
                 <AnimatePresence mode="wait">
                   <motion.p
                     key={tip}

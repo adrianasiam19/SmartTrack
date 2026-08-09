@@ -7,7 +7,8 @@ const NAV_ITEMS = [
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/challenges', label: 'Challenges' },
   { href: '/learning', label: 'Learning' },
-  { href: '/recommendations', label: 'Recommendations' },
+  { href: '/programmes', label: 'Courses' },
+  { href: '/recommendations', label: 'Recs' },
   { href: '/profile', label: 'Profile' },
 ];
 

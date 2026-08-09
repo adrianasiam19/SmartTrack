@@ -6,7 +6,7 @@ import { fetchWithAuth } from './authApi';
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
 /** Must match backend Settings.CHALLENGE_FORMAT_VERSION — stale sessions are regenerated. */
-export const CHALLENGE_FORMAT_VERSION = 10;
+export const CHALLENGE_FORMAT_VERSION = 12;
 
 export type LevelPublic = {
   id: number;
@@ -56,6 +56,84 @@ export async function replayLevel(levelId: number) {
   });
   if (!res.ok) throw new Error('Failed to replay level');
   return res.json();
+}
+
+export type PrefetchStatus = {
+  status: 'idle' | 'fetching' | 'ready' | 'error' | string;
+  level_id?: number | null;
+  format_version?: number | null;
+  question_count?: number;
+  error?: string | null;
+  cached_level_id?: number | null;
+  ready_levels?: number[];
+  fetching_levels?: number[];
+  buffer_size?: number;
+};
+
+export type WarmPrefetchResult = {
+  status: string;
+  warmed: number[];
+  ready_count: number;
+  fetching_count: number;
+  question_count: number;
+  ready_levels?: number[];
+  fetching_levels?: number[];
+};
+
+/** Kick off background generation for a level (usually the next one). */
+export async function prefetchLevel(levelId: number): Promise<PrefetchStatus> {
+  const res = await fetchWithAuth(`${API_BASE}/phases/levels/${levelId}/prefetch`, {
+    method: 'POST',
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to prefetch level');
+  }
+  return res.json();
+}
+
+/**
+ * Top up the rolling challenge buffer (next ~2–3 levels) in the background.
+ * Call from Dashboard / Challenges so Start can feel instant.
+ */
+export async function warmPrefetchBuffer(
+  anchorLevelId?: number | null,
+): Promise<WarmPrefetchResult> {
+  const qs =
+    anchorLevelId != null && Number.isFinite(anchorLevelId)
+      ? `?anchor_level_id=${anchorLevelId}`
+      : '';
+  const res = await fetchWithAuth(`${API_BASE}/phases/prefetch/warm${qs}`, {
+    method: 'POST',
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to warm challenge buffer');
+  }
+  return res.json();
+}
+
+export async function getPrefetchStatus(levelId: number): Promise<PrefetchStatus> {
+  const res = await fetchWithAuth(
+    `${API_BASE}/phases/levels/${levelId}/prefetch-status`,
+  );
+  if (!res.ok) throw new Error('Failed to load prefetch status');
+  return res.json();
+}
+
+/** Find the next level id within the same phase (or null at phase end). */
+export function findNextLevelId(
+  phases: PhasePublic[],
+  currentLevelId: number,
+): { id: number; number: number } | null {
+  for (const phase of phases) {
+    const idx = phase.levels.findIndex((l) => l.id === currentLevelId);
+    if (idx < 0) continue;
+    const next = phase.levels[idx + 1];
+    if (next) return { id: next.id, number: next.number };
+    return null;
+  }
+  return null;
 }
 
 /** Persist session and ensure it uses the current adaptive challenge format. */
@@ -240,6 +318,10 @@ export type RecommendationEligibility = {
   title: string;
   message: string;
   short_message: string;
+  all_phases_completed?: boolean;
+  wassce_optional?: boolean;
+  wassce_recommended_now?: boolean;
+  wassce_on_file?: boolean;
   mandatory: {
     all_levels_in_a_phase_completed: boolean;
     phases_completed_levels: number[];

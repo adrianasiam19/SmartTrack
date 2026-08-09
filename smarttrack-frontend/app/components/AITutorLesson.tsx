@@ -8,9 +8,11 @@ import {
   Bookmark,
   BookmarkCheck,
   CheckCircle2,
+  ExternalLink,
   Lightbulb,
   Loader2,
   MessageCircle,
+  Play,
   RefreshCw,
   Send,
 } from 'lucide-react';
@@ -18,9 +20,11 @@ import {
 import {
   askCurriculumTutor,
   getAITaughtLesson,
+  getLessonResources,
   getRelatedTopics,
   toggleLearningBookmark,
   type CurriculumTopic,
+  type LearningResource,
   type TaughtLessonResponse,
   type TutorMessage,
 } from '../lib/learningApi';
@@ -71,6 +75,8 @@ export default function AITutorLesson({
   const [bookmarked, setBookmarked] = useState(initiallyBookmarked);
   const [bookmarkBusy, setBookmarkBusy] = useState(false);
   const [related, setRelated] = useState<CurriculumTopic[]>([]);
+  const [videoResources, setVideoResources] = useState<LearningResource[]>([]);
+  const [videosLoading, setVideosLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -78,18 +84,57 @@ export default function AITutorLesson({
     setData(null);
     setLessonError(null);
     setTab('overview');
-    getAITaughtLesson(curriculumId, controller.signal)
-      .then(setData)
-      .catch((error) => {
-        if (error instanceof Error && error.name !== 'AbortError') {
-          setLessonError(error.message);
-        }
+    setMessages([]);
+    setCompleted(false);
+    setVideoResources([]);
+    setVideosLoading(false);
+
+    void (async () => {
+      try {
+        const taught = await getAITaughtLesson(curriculumId, controller.signal);
+        if (controller.signal.aborted) return;
+        setData(taught);
+      } catch (err) {
+        if (controller.signal.aborted) return;
+        setLessonError(err instanceof Error ? err.message : 'Could not load lesson.');
+      }
+    })();
+
+    void getRelatedTopics(curriculumId, controller.signal)
+      .then((topics) => {
+        if (!controller.signal.aborted) setRelated(topics);
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setRelated([]);
       });
-    getRelatedTopics(curriculumId, controller.signal)
-      .then(setRelated)
-      .catch(() => setRelated([]));
+
     return () => controller.abort();
   }, [curriculumId, reloadKey]);
+
+  // Load optional videos after the lesson is on screen (does not block teach).
+  useEffect(() => {
+    if (!data) return;
+    const controller = new AbortController();
+    setVideosLoading(true);
+    void getLessonResources(curriculumId, {
+      kinds: ['video'],
+      limit: 3,
+      signal: controller.signal,
+    })
+      .then((payload) => {
+        if (controller.signal.aborted) return;
+        setVideoResources(
+          (payload.resources || []).filter((r) => r.kind === 'video' && r.url),
+        );
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setVideoResources([]);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setVideosLoading(false);
+      });
+    return () => controller.abort();
+  }, [curriculumId, data]);
 
   useEffect(() => {
     setMessages([]);
@@ -440,6 +485,84 @@ export default function AITutorLesson({
         </Panel>
       ) : null}
 
+      {(videosLoading || videoResources.length > 0) ? (
+        <section className="mt-2 mb-5">
+          <Panel title="Recommended Videos" icon={<Play className="w-4 h-4" />}>
+            <p className="text-sm text-gray-500 mb-4">
+              Optional — watch if you prefer learning by video. You can skip this and keep reading.
+            </p>
+            {videosLoading && videoResources.length === 0 ? (
+              <div className="flex items-center gap-2 text-sm text-gray-500 py-2">
+                <Loader2 className="w-4 h-4 animate-spin text-[#4F46E5]" />
+                Finding educational videos…
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {videoResources.map((video) => {
+                  const duration =
+                    video.extra?.duration_label ||
+                    (typeof video.duration_seconds === 'number'
+                      ? formatVideoDuration(video.duration_seconds)
+                      : null);
+                  const isSearch = Boolean(video.extra?.is_search);
+                  return (
+                    <article
+                      key={video.id}
+                      className="flex flex-col sm:flex-row gap-3 rounded-xl border border-gray-200 bg-[#F8FAFC] p-3 sm:p-4"
+                    >
+                      <a
+                        href={video.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="relative block w-full sm:w-44 shrink-0 overflow-hidden rounded-lg bg-slate-200 aspect-video sm:aspect-auto sm:h-24"
+                      >
+                        {video.thumbnail_url ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={video.thumbnail_url}
+                            alt=""
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-full min-h-[5.5rem] items-center justify-center text-slate-400">
+                            <Play className="w-8 h-8" />
+                          </div>
+                        )}
+                        <span className="absolute inset-0 flex items-center justify-center bg-black/20">
+                          <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-[#4F46E5] shadow">
+                            <Play className="w-4 h-4 fill-current" />
+                          </span>
+                        </span>
+                      </a>
+                      <div className="min-w-0 flex-1 flex flex-col">
+                        <h3 className="font-semibold text-[#1E293B] text-sm leading-snug line-clamp-2">
+                          {video.title}
+                        </h3>
+                        <p className="mt-1 text-xs text-gray-500">
+                          {video.channel || video.provider}
+                          {duration ? ` · ${duration}` : ''}
+                        </p>
+                        <div className="mt-3 sm:mt-auto">
+                          <a
+                            href={video.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-[#4F46E5] px-3 py-2 text-xs font-semibold text-white hover:bg-[#4338CA] transition-colors"
+                          >
+                            {isSearch ? 'Open on YouTube' : 'Watch Video'}
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            )}
+          </Panel>
+        </section>
+      ) : null}
+
       <button
         type="button"
         onClick={completeLesson}
@@ -517,6 +640,15 @@ function AskComposer({
       </button>
     </div>
   );
+}
+
+function formatVideoDuration(seconds: number): string {
+  const total = Math.max(0, Math.floor(seconds));
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  return `${m}:${String(s).padStart(2, '0')}`;
 }
 
 function Panel({

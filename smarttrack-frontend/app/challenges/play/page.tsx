@@ -10,6 +10,11 @@ import PhaseQuestionRenderer, {
 } from '../components/PhaseQuestionRenderer';
 import {
   completePhaseSession,
+  findNextLevelId,
+  getPrefetchStatus,
+  getProgression,
+  prefetchLevel,
+  warmPrefetchBuffer,
   startLevel,
   submitPhaseAnswer,
   refreshPhaseSessionIfStale,
@@ -18,6 +23,7 @@ import {
 import { getCurrentUser, getStoredUser, storeUser } from '../../lib/authApi';
 
 const QUESTION_TIMEOUT = 60;
+
 
 type Q = PhaseQuestion & {
   options: Record<string, unknown> | null;
@@ -71,6 +77,7 @@ function PhasePlayInner() {
   const [userXp, setUserXp] = useState<number | null>(null);
   const [startingNext, setStartingNext] = useState(false);
   const [actionError, setActionError] = useState('');
+  const [prefetchLevelId, setPrefetchLevelId] = useState<number | null>(null);
   const [result, setResult] = useState<{
     passed: boolean;
     score: number;
@@ -110,12 +117,78 @@ function PhasePlayInner() {
       setSession(fresh as unknown as SessionPayload);
       const cached = getStoredUser();
       if (cached) setUserXp(cached.xp ?? 0);
+
+      // Stage 4 — while playing level N, prepare N+1 … N+buffer in the background.
+      try {
+        const progression = await getProgression();
+        if (cancelled) return;
+        const currentLevelId = Number(fresh.level_id);
+        const next = findNextLevelId(progression.phases, currentLevelId);
+        if (!next) return;
+        setPrefetchLevelId(next.id);
+        void warmPrefetchBuffer(currentLevelId).catch(() => undefined);
+        await prefetchLevel(next.id);
+      } catch {
+        // Prefetch is best-effort; start_level still works cold.
+      }
     };
     void load();
     return () => {
       cancelled = true;
     };
   }, [router, searchParams]);
+
+  // Poll prefetch readiness so Continue can feel instant.
+  useEffect(() => {
+    if (!prefetchLevelId || done) return;
+    let cancelled = false;
+    const poll = async () => {
+      try {
+        const status = await getPrefetchStatus(prefetchLevelId);
+        if (cancelled) return;
+        if (status.status === 'error') {
+          void prefetchLevel(prefetchLevelId).catch(() => undefined);
+        }
+      } catch {
+        /* ignore */
+      }
+    };
+    void poll();
+    const id = window.setInterval(() => void poll(), 4000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(id);
+    };
+  }, [prefetchLevelId, done]);
+
+  // When completion screen shows next level, keep polling / ensure prefetch.
+  useEffect(() => {
+    if (!done || !result?.next_level_id) return;
+    const nextId = result.next_level_id;
+    setPrefetchLevelId(nextId);
+    let cancelled = false;
+    const ensure = async () => {
+      try {
+        await prefetchLevel(nextId);
+      } catch {
+        /* ignore */
+      }
+    };
+    void ensure();
+    const id = window.setInterval(() => {
+      void getPrefetchStatus(nextId)
+        .then((status) => {
+          if (!cancelled && status.status === 'error') {
+            void prefetchLevel(nextId).catch(() => undefined);
+          }
+        })
+        .catch(() => undefined);
+    }, 2500);
+    return () => {
+      cancelled = true;
+      window.clearInterval(id);
+    };
+  }, [done, result?.next_level_id]);
 
   useEffect(() => {
     selectedRef.current = selected;
@@ -226,7 +299,8 @@ function PhasePlayInner() {
     if (lockRef.current) return;
     lockRef.current = true;
 
-    const answer = selectedRef.current.trim();
+    // Prefer live state; ref is a sync backup for the timeout path
+    const answer = (selected || selectedRef.current).trim();
     if (!timedOut && (!answer || (currentQuestion && !answerReady(currentQuestion, answer)))) {
       lockRef.current = false;
       return;
@@ -282,8 +356,12 @@ function PhasePlayInner() {
     return (
       <div className="min-h-screen bg-transparent">
         <Sidebar />
-        <main className="w-full max-w-2xl mx-auto px-4 sm:px-6 pt-20 lg:pt-10 pb-28 text-[#64748B]">
-          Loading session…
+        <main className="flex min-h-[50vh] w-full items-center justify-center px-4 pt-20 lg:pt-10 pb-28">
+          <div
+            className="h-10 w-10 rounded-full border-2 border-[#2563EB] border-t-transparent animate-spin"
+            role="status"
+            aria-label="Loading"
+          />
         </main>
         <BottomNav />
       </div>
@@ -292,6 +370,11 @@ function PhasePlayInner() {
 
   if (done && result) {
     const busyAction = startingNext;
+    const isPhaseFinale = result.next === 'psychometric_checkpoint';
+    const hasNextLevel = !!result.next_level_id && !isPhaseFinale;
+    const nextLevelLabel = result.next_level_number
+      ? `Continue to Level ${result.next_level_number}`
+      : 'Continue to Next Level';
 
     const onContinueNextLevel = async () => {
       if (!result.next_level_id || busyAction) return;
@@ -300,7 +383,20 @@ function PhasePlayInner() {
       try {
         const sessionPayload = await startLevel(result.next_level_id);
         storePhaseSession(sessionPayload);
-        window.location.href = `/challenges/play?session=${sessionPayload.session_id}`;
+        router.replace(`/challenges/play?session=${sessionPayload.session_id}`);
+        // Reset local play state for the new session without a full page reload.
+        setSession(sessionPayload as SessionPayload);
+        setIndex(0);
+        setSelected('');
+        setFeedback('');
+        setBusy(false);
+        setDone(false);
+        setResult(null);
+        setTimeLeft(QUESTION_TIMEOUT);
+        setPrefetchLevelId(null);
+        setStartingNext(false);
+        lockRef.current = false;
+        questionStartRef.current = Date.now();
       } catch (e) {
         setActionError(
           e instanceof Error ? e.message : 'Could not start next level',
@@ -309,19 +405,20 @@ function PhasePlayInner() {
       }
     };
 
-    const hasPrimary =
-      result.next === 'psychometric_checkpoint' || !!result.next_level_id;
-
     return (
       <div className="min-h-screen bg-transparent">
         <Sidebar />
         <main className="w-full max-w-xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-10 pb-28">
-          <h1 className="text-2xl font-semibold text-[#0F172A]">
-            Level complete
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#4F46E5]">
+            {isPhaseFinale ? 'Phase milestone' : 'Nice work'}
+          </p>
+          <h1 className="mt-2 text-2xl font-semibold text-[#0F172A]">
+            {isPhaseFinale ? 'Phase levels complete' : 'Level complete'}
           </h1>
           <p className="mt-3 text-[#64748B]">
-            Score {(result.score * 100).toFixed(0)}% — keep going. Difficulty
-            adapts by subject for your next level.
+            {isPhaseFinale
+              ? `You scored ${(result.score * 100).toFixed(0)}% on the final level. Complete the checkpoint to unlock your programme recommendations.`
+              : `Score ${(result.score * 100).toFixed(0)}% — ready for the next level. Difficulty adapts by subject as you go.`}
           </p>
           {typeof result.session_xp === 'number' ? (
             <p className="mt-2 text-sm font-medium text-[#2563EB]">
@@ -371,40 +468,46 @@ function PhasePlayInner() {
           {actionError ? (
             <p className="mt-3 text-sm text-red-600">{actionError}</p>
           ) : null}
-          <div className="mt-6 flex flex-col sm:flex-row gap-3">
-            {result.next === 'psychometric_checkpoint' ? (
+          <div className="mt-6 flex flex-col gap-3">
+            {isPhaseFinale ? (
               <button
                 type="button"
-                className="rounded-lg bg-[#2563EB] text-white px-4 py-2.5 font-medium"
+                className="w-full rounded-xl bg-[#4F46E5] text-white px-4 py-3 font-semibold shadow-sm hover:bg-[#4338CA] transition-colors"
                 onClick={() =>
                   router.push(
                     `/challenges/checkpoint?phase=${result.phase_number}`,
                   )
                 }
               >
-                Continue to psychometric checkpoint
+                Proceed to Recommendations
               </button>
             ) : null}
-            {result.next_level_id ? (
+            {hasNextLevel ? (
               <button
                 type="button"
                 disabled={busyAction}
-                className="rounded-lg bg-[#2563EB] text-white px-4 py-2.5 font-medium disabled:opacity-50"
+                className="w-full rounded-xl bg-[#4F46E5] text-white px-4 py-3 font-semibold shadow-sm hover:bg-[#4338CA] transition-colors disabled:opacity-50"
                 onClick={() => void onContinueNextLevel()}
               >
-                {startingNext ? 'Starting…' : 'Continue to next level'}
+                {startingNext ? (
+                  <span className="inline-flex items-center justify-center gap-2">
+                    <span
+                      className="h-4 w-4 rounded-full border-2 border-white border-t-transparent animate-spin"
+                      aria-hidden
+                    />
+                    <span className="sr-only">Loading</span>
+                  </span>
+                ) : (
+                  nextLevelLabel
+                )}
               </button>
             ) : null}
             <button
               type="button"
-              className={`rounded-lg px-4 py-2.5 font-medium ${
-                hasPrimary
-                  ? 'border border-slate-200 bg-white text-[#0F172A] hover:bg-slate-50'
-                  : 'bg-[#2563EB] text-white'
-              }`}
+              className="w-full rounded-xl border border-slate-200 bg-white text-[#0F172A] px-4 py-3 font-medium hover:bg-slate-50 transition-colors"
               onClick={() => router.push('/challenges')}
             >
-              Back to Phase map
+              Back to Phase Map
             </button>
           </div>
         </main>

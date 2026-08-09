@@ -37,7 +37,35 @@ class StartLevelResponse(BaseModel):
     is_replay: bool
     questions: List[dict[str, Any]]
     subject_mix: Optional[dict[str, int]] = None
+    format_version: Optional[int] = None
+    question_count: Optional[int] = None
+    from_prefetch: bool = False
 
+
+class PrefetchStatusResponse(BaseModel):
+    status: str
+    level_id: Optional[int] = None
+    format_version: Optional[int] = None
+    question_count: int = 0
+    error: Optional[str] = None
+    cached_level_id: Optional[int] = None
+    ready_levels: List[int] = Field(default_factory=list)
+    fetching_levels: List[int] = Field(default_factory=list)
+    error_levels: List[int] = Field(default_factory=list)
+    buffer_size: Optional[int] = None
+    buffer: List[dict[str, Any]] = Field(default_factory=list)
+
+
+class WarmPrefetchResponse(BaseModel):
+    status: str = "idle"
+    warmed: List[int] = Field(default_factory=list)
+    ready_count: int = 0
+    fetching_count: int = 0
+    question_count: int = 0
+    ready_levels: List[int] = Field(default_factory=list)
+    fetching_levels: List[int] = Field(default_factory=list)
+    buffer: List[dict[str, Any]] = Field(default_factory=list)
+    primary_ready: bool = False
 
 class SubmitAnswerRequest(BaseModel):
     question_id: int

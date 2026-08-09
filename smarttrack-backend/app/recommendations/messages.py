@@ -36,12 +36,13 @@ PHASE_INCOMPLETE = recommendation_error(
 
 NO_ACADEMIC_UPLOAD = recommendation_error(
     code="wassce_upload_missing",
-    title="WASSCE results required",
+    title="WASSCE results not uploaded yet",
     message=(
-        "Upload your WASSCE or academic results first, then tap Get Recommendations.\n\n"
-        "Atlas needs your subject grades to calculate your aggregate and match programmes."
+        "You already have programme matches from your Atlas activity.\n\n"
+        "Upload WASSCE or academic results only when you want Atlas to refine those "
+        "matches with your aggregate and admission cut-offs. This step is optional."
     ),
-    short_message="Upload your WASSCE or academic results first.",
+    short_message="WASSCE upload is optional — use it to refine admission insights.",
 )
 
 GRADES_NOT_EXTRACTED = recommendation_error(

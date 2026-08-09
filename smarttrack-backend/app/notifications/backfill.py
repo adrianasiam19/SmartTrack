@@ -41,12 +41,19 @@ def _add_row(
     is_read: bool = True,
 ) -> Notification:
     """Historical rows default to read so the badge stays calm after backfill."""
+    href = None
+    if isinstance(data, dict):
+        raw = data.get("href") or data.get("action_link")
+        href = str(raw)[:500] if raw else None
     row = Notification(
         user_id=user_id,
         title=title[:200],
         message=message.strip(),
+        category=notification_type.value,
         type=notification_type.value,
         is_read=is_read,
+        action_link=href,
+        priority=1,
         data=data,
         created_at=_as_utc(created_at),
     )

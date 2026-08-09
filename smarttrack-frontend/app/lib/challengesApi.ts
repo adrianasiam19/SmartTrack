@@ -510,7 +510,11 @@ export async function getUserProgress(): Promise<UserProgress> {
   return res.json();
 }
 
-/** Get leaderboard entries */
+/**
+ * Get leaderboard entries.
+ * Deferred for MVP — competitive rankings are not shown in the learner UI.
+ * Kept for future compatibility; prefer GET /progress/me for personal stats.
+ */
 export async function getLeaderboard(
   category: string = 'Overall',
   programme?: string

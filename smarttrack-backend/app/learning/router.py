@@ -60,6 +60,16 @@ class WorkedExample(BaseModel):
     answer: str
 
 
+class VisualAidPublic(BaseModel):
+    """Learner-facing visual only — no attribution, source, or license."""
+
+    url: str
+    alt: str | None = None
+    concept: str | None = None
+    requires_labels: bool | None = None
+    legend: str | None = None
+
+
 class AITaughtLesson(BaseModel):
     topic_title: str
     simple_introduction: str
@@ -69,6 +79,7 @@ class AITaughtLesson(BaseModel):
     important_points: list[str]
     common_mistakes: list[str]
     short_summary: str
+    visual_aid: VisualAidPublic | None = None
 
 
 class LessonResponse(BaseModel):
@@ -109,6 +120,28 @@ class BookmarkToggleResponse(BaseModel):
 
 class RelatedTopicsResponse(BaseModel):
     topics: list[TopicResponse]
+
+
+class LearningResourceItem(BaseModel):
+    """Optional supplementary resource (video today; pdf/simulation later)."""
+
+    id: str
+    kind: Literal["video", "pdf", "simulation", "animation", "link"]
+    title: str
+    url: str
+    provider: str
+    thumbnail_url: str | None = None
+    channel: str | None = None
+    duration_seconds: int | None = None
+    description: str | None = None
+    query: str | None = None
+    extra: dict[str, Any] | None = None
+
+
+class LessonResourcesResponse(BaseModel):
+    curriculum_id: str
+    queries: list[str] = Field(default_factory=list)
+    resources: list[LearningResourceItem] = Field(default_factory=list)
 
 
 def _normalise(value: str) -> str:
@@ -602,6 +635,54 @@ async def related_topics(
     )
 
 
+@router.get("/lessons/{curriculum_id}/resources", response_model=LessonResourcesResponse)
+async def lesson_resources(
+    curriculum_id: str,
+    kinds: str = Query(
+        default="video",
+        description="Comma-separated resource kinds (video, pdf, simulation, animation, link).",
+    ),
+    limit: int = Query(default=3, ge=1, le=6),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Deferred optional learning resources for a lesson (videos first).
+
+    Loaded separately from /teach so the AI lesson can appear immediately.
+    """
+    lesson = await _get_lesson(curriculum_id, db)
+    shs_level = _soft_level(user, lesson)
+    wanted = {k.strip().lower() for k in kinds.split(",") if k.strip()}
+    resources: list[dict[str, Any]] = []
+    queries: list[str] = []
+
+    if "video" in wanted:
+        try:
+            from app.media.video_retrieval import retrieve_educational_videos
+            from app.config import settings as app_settings
+
+            result = await retrieve_educational_videos(
+                title=lesson.title,
+                subject=lesson.subject,
+                shs_level=shs_level,
+                limit=limit or int(getattr(app_settings, "EDUCATIONAL_VIDEO_LIMIT", 3)),
+            )
+            queries = list(result.get("queries") or [])
+            resources.extend(result.get("resources") or [])
+        except Exception:
+            # Optional enrichment — never fail the lesson experience
+            pass
+
+    # Future: if "pdf" in wanted / "simulation" in wanted → plug in here.
+
+    return LessonResourcesResponse(
+        curriculum_id=curriculum_id,
+        queries=queries,
+        resources=resources,
+    )
+
+
 @router.post("/lessons/{curriculum_id}/teach", response_model=LessonResponse)
 async def teach_lesson(
     curriculum_id: str,
@@ -642,13 +723,19 @@ async def teach_lesson(
 
     await db.commit()
 
+    from app.media.learner_media import scrub_lesson_for_learner
+
+    public_lesson = scrub_lesson_for_learner(
+        taught_lesson if isinstance(taught_lesson, dict) else {}
+    )
+
     return LessonResponse(
         curriculum_id=curriculum.curriculum_id,
         subject=curriculum.subject,
         shs_level=shs_level,
         estimated_minutes=curriculum.estimated_minutes,
         xp_reward=curriculum.xp_reward,
-        lesson=taught_lesson,
+        lesson=public_lesson,
     )
 
 
@@ -679,9 +766,32 @@ async def complete_lesson(
             already_completed=True,
         )
 
+    prev_rank = user.rank or "Beginner"
+    prev_rank = user.rank or "Beginner"
     xp_earned, rank, user_xp = apply_xp(user, curriculum.xp_reward or 10)
+    if rank != prev_rank and rank != "Beginner":
+        try:
+            from app.notifications.events import notify_badge_unlocked
+
+            await notify_badge_unlocked(db, user.id, rank=rank)
+        except Exception:
+            import logging
+
+            logging.getLogger(__name__).exception("Failed to create badge notification")
     completed.append(curriculum_id)
     profile["completed_lessons"] = completed[-200:]
+    # Timestamped log for Personal Progress weekly summary (Stage 2)
+    lesson_log = list(profile.get("completed_lessons_log") or [])
+    if not isinstance(lesson_log, list):
+        lesson_log = []
+    lesson_log.append(
+        {
+            "id": curriculum_id,
+            "at": datetime.now(timezone.utc).isoformat(),
+            "xp": int(xp_earned or 0),
+        }
+    )
+    profile["completed_lessons_log"] = lesson_log[-200:]
     user.learner_profile = profile
     flag_modified(user, "learner_profile")
 

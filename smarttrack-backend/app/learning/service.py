@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 DEEPSEEK_CHAT_URL = "https://api.deepseek.com/v1/chat/completions"
 NVIDIA_CHAT_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
-AI_CONTENT_VERSION = "v2-deepseek"
+AI_CONTENT_VERSION = "v3-image-first"
 MAX_SOURCE_CHARS = 28_000
 
 REQUIRED_LESSON_KEYS = {
@@ -174,7 +174,104 @@ async def generate_ai_lesson(
     shs_level: str,
     source_content: dict[str, Any],
 ) -> dict[str, Any]:
+    """
+    Stage 4 — image-aware lesson generation.
+
+    Order (never attach an image after the lesson is written):
+      1. Analyze whether a visual is useful (from title/subject/source)
+      2. Plan + retrieve the best image (if needed)
+      3. Generate the lesson around that image, OR text-only if none fits
+    """
     grounding = build_grounding_text(source_content)
+    subject_key = (subject or "").strip().lower().replace(" ", "_")
+    english_only = subject_key in ("english", "english_language")
+
+    # ── Stage 1 — visual need (before any lesson text) ────────────────────
+    visual_needed = False
+    topic_hint = title
+    visual_need_meta: dict[str, Any] | None = None
+    if not english_only:
+        try:
+            from app.media.content_analysis import analyze_visual_need
+
+            decision = await analyze_visual_need(
+                subject=subject,
+                title=title,
+                context=grounding[:1_200],
+            )
+            visual_need_meta = decision.to_dict()
+            visual_needed = bool(decision.needed)
+            topic_hint = decision.topic_hint or title
+            if not visual_needed:
+                logger.info(
+                    "Learning visual skipped for %r (%s): %s",
+                    title,
+                    subject,
+                    decision.reason,
+                )
+        except Exception:
+            logger.exception("Visual need analysis failed for %r — text-only path", title)
+            visual_needed = False
+
+    # ── Stages 2–3 — plan + retrieve BEFORE writing the lesson ────────────
+    selected_image: dict[str, Any] | None = None
+    image_plan_meta: dict[str, Any] | None = None
+    if visual_needed:
+        try:
+            from app.media.image_plan import ImagePlanner
+            from app.media.image_retrieval import retrieve_for_plan
+
+            plan = await ImagePlanner.plan_for_learning(
+                subject=subject,
+                title=title,
+                introduction=grounding[:400],
+                topic_hint=topic_hint,
+            )
+            image_plan_meta = {
+                "needed": plan.needed,
+                "concept": plan.concept,
+                "image_type": plan.image_type,
+                "requires_labels": plan.requires_labels,
+                "preferred_format": plan.preferred_format,
+                "search_keywords": list(plan.search_keywords),
+                "avoid": list(plan.avoid)[:12],
+                "reason": plan.reason,
+                "planner_source": plan.planner_source,
+            }
+            if plan.needed:
+                selected_image = await retrieve_for_plan(plan)
+                if not selected_image:
+                    logger.info(
+                        "No suitable image for %r — generating text-only lesson",
+                        title,
+                    )
+        except Exception:
+            logger.exception("Image plan/retrieve failed for %r — text-only path", title)
+            selected_image = None
+
+    # ── Stage 4 — generate lesson around the selected image (or text-only) ─
+    image_teaching_block = ""
+    if selected_image:
+        from app.media.labelled_diagrams import labels_legend_text
+
+        legend = ""
+        if selected_image.get("labels"):
+            legend = labels_legend_text(selected_image)
+        image_teaching_block = (
+            "\n\nA suitable educational figure has ALREADY been selected for this lesson.\n"
+            "You MUST teach around this figure — reference it naturally in the introduction "
+            "and main explanation (e.g. \"Look at the diagram…\", \"In the illustration…\", "
+            "\"Using the labelled figure…\", \"Observe the chart…\").\n"
+            "Do NOT invent a different diagram, and do NOT ignore the figure.\n"
+            f"- Concept: {selected_image.get('concept') or topic_hint}\n"
+            f"- Figure title/alt: {selected_image.get('alt') or ''}\n"
+        )
+        if legend:
+            image_teaching_block += (
+                f"- Label legend (for teaching): {legend}\n"
+                "When helpful, refer to these labels while explaining.\n"
+            )
+
     system_prompt = f"""
 You are Atlas AI, an experienced Ghanaian SHS teacher teaching a {shs_level} student.
 The official database lesson below is your only factual and curricular source.
@@ -182,7 +279,7 @@ Do not add topics, formulas, claims, or skills that are absent from that source.
 Do not quote or reproduce textbook prose. Teach naturally in clear, age-appropriate
 language. Exclude unit introductions, objectives, "what you will learn", publisher
 notes, standards metadata, and administrative filler. Focus on {title} in {subject}.
-
+{image_teaching_block}
 Return only valid JSON with exactly this shape:
 {{
   "topic_title": "string",
@@ -213,38 +310,31 @@ real-life applications only when none can be responsibly inferred from the sourc
     )
     lesson = _parse_lesson_json(raw)
 
-    # Attach educational visual via Image Planner + Retrieval Service
-    # (skip English / Social Studies — free-search images are too unreliable)
-    subject_key = (subject or "").strip().lower().replace(" ", "_")
-    if subject_key in ("english", "english_language", "social_studies", "socialstudies"):
-        return lesson
+    if visual_need_meta is not None:
+        lesson["visual_need"] = visual_need_meta
+    if image_plan_meta is not None:
+        # Kept briefly for debugging; scrubbed from learner-facing responses.
+        lesson["image_plan"] = image_plan_meta
 
-    try:
-        from app.media.image_plan import ImagePlanner
-        from app.media.image_retrieval import retrieve_for_plan
-        from app.media.labelled_diagrams import labels_legend_text
+    if selected_image:
+        try:
+            from app.media.labelled_diagrams import labels_legend_text
+            from app.media.learner_media import (
+                extract_internal_attribution,
+                to_learner_image,
+            )
 
-        plan = ImagePlanner.plan_from_lesson(
-            title=str(lesson.get("topic_title") or title),
-            subject=subject,
-            introduction=str(lesson.get("simple_introduction") or ""),
-        )
-        image = await retrieve_for_plan(plan)
-        if image:
-            visual = {
-                "url": image.get("url"),
-                "alt": image.get("alt") or plan.concept,
-                "attribution": image.get("attribution"),
-                "concept": plan.concept,
-                "requires_labels": plan.requires_labels,
-            }
-            if image.get("labels"):
-                visual["legend"] = labels_legend_text(image)
+            internal = extract_internal_attribution(selected_image)
+            if internal:
+                lesson["visual_attribution_internal"] = internal
+            visual = to_learner_image(selected_image) or {}
+            if selected_image.get("labels"):
+                visual["legend"] = labels_legend_text(selected_image)
             lesson["visual_aid"] = visual
-    except Exception:
-        # Visuals are optional — never fail the lesson
-        pass
+        except Exception:
+            logger.exception("Failed to attach learner visual for %r", title)
 
+    lesson.pop("image_plan", None)
     return lesson
 
 

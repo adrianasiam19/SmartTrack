@@ -66,7 +66,7 @@ export default function ForgotPasswordPage() {
               {devLink && (
                 <div className="p-4 rounded-xl bg-[#FFFBEB] border border-[#FDE68A]">
                   <p className="text-xs text-[#92400E] mb-2">
-                    Development mode — SMTP is not configured, so use this link:
+                    Development mode — use this link (not shown in production):
                   </p>
                   <Link href={devLink} className="text-sm text-[#2563EB] break-all underline">
                     {devLink}

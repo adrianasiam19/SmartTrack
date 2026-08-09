@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import logging
 import random
+import re
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -53,6 +54,17 @@ def _eligible(
         if qid and qid in exclude_ids:
             continue
         if q.get("subject") != subject:
+            continue
+        text = str(q.get("question_text") or "")
+        # Block textbook-nav / meta / study-habit style bank rows
+        low = text.lower()
+        if re.search(
+            r"(?i)(\[\s*.*difficulty\s*\d+\s*\]|\b(section|chapter|unit)\s+\d+\b|"
+            r"most reliable next step|skip the problem and guess)",
+            text,
+        ):
+            continue
+        if "what would you read" in low:
             continue
         style = (q.get("exam_style") or "classroom").lower()
         if style == "wassce":

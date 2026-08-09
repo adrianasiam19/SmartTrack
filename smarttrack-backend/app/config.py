@@ -22,6 +22,27 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_ID: str
     GOOGLE_CLIENT_SECRET: str
 
+    @property
+    def google_client_id_clean(self) -> str:
+        """Client ID without accidental http(s):// paste prefix."""
+        value = (self.GOOGLE_CLIENT_ID or "").strip()
+        if value.startswith("https://"):
+            value = value[len("https://") :]
+        if value.startswith("http://"):
+            value = value[len("http://") :]
+        return value.strip()
+
+    def google_oauth_configured(self) -> bool:
+        client_id = self.google_client_id_clean
+        secret = (self.GOOGLE_CLIENT_SECRET or "").strip()
+        return bool(
+            client_id
+            and secret
+            and "your-google-client-id" not in client_id
+            and secret != "your-google-client-secret"
+            and client_id.endswith(".apps.googleusercontent.com")
+        )
+
     # ── DeepSeek AI ────────────────────────────────────────────────────────────
     DEEPSEEK_API_KEY: str = ""
     DEEPSEEK_MODEL: str = "deepseek-chat"
@@ -35,13 +56,18 @@ class Settings(BaseSettings):
     FRONTEND_URL: str = "http://localhost:3000"
     ENVIRONMENT: str = "development"
 
-    # ── Email / password reset (optional — logs reset link in development) ─
+    # ── Email / password reset (Resend) ─────────────────────────────────────
+    # Required in production (startup fails if missing). Optional in development
+    # — non-production still returns `dev_reset_link` for local testing.
+    RESEND_API_KEY: str = ""
+    MAIL_FROM: str = ""
+
+    # Legacy SMTP keys (unused — kept so old .env files still parse)
     SMTP_HOST: str = ""
     SMTP_PORT: int = 587
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""
     SMTP_USE_TLS: bool = True
-    MAIL_FROM: str = ""
 
     # ── Phase / Level progression ───────────────────────────────────────────
     # Pass threshold kept for analytics/config compatibility; progression no longer gates on it.
@@ -72,8 +98,57 @@ class Settings(BaseSettings):
     PIXABAY_API_KEY: str = ""
     EDUCATIONAL_IMAGES_ENABLED: bool = True
     EDUCATIONAL_IMAGE_CACHE_PATH: str = "data/educational_image_cache.json"
+    # YouTube Data API v3 (optional). Without it, Atlas uses a public search fallback.
+    YOUTUBE_API_KEY: str = ""
+    EDUCATIONAL_VIDEOS_ENABLED: bool = True
+    EDUCATIONAL_VIDEO_CACHE_PATH: str = "data/educational_video_cache.json"
+    EDUCATIONAL_VIDEO_CACHE_TTL_SECONDS: float = 86_400
+    EDUCATIONAL_VIDEO_LIMIT: int = 3
     # Bump when challenge question payload / UI contract changes (invalidates old clients).
-    CHALLENGE_FORMAT_VERSION: int = 10
+    CHALLENGE_FORMAT_VERSION: int = 12
+    # Parallel LLM question generation concurrency for a single level start.
+    CHALLENGE_GEN_CONCURRENCY: int = 6
+    # How long a prefetched question set stays valid (seconds).
+    CHALLENGE_PREFETCH_TTL_SECONDS: int = 900
+    # Rolling buffer: how many upcoming levels to keep prepared per learner.
+    CHALLENGE_PREFETCH_BUFFER_LEVELS: int = 3
+    # Max seconds start_level waits for an in-flight prefetch before regenerating.
+    CHALLENGE_PREFETCH_WAIT_SECONDS: float = 75.0
+    # When Dashboard/Challenges call /prefetch/warm, wait this long for the
+    # *current* playable level to become ready (fire-and-forget from FE).
+    CHALLENGE_PREFETCH_WARM_WAIT_SECONDS: float = 55.0
+    # Prefer academic bank before calling the LLM (keep False — LLM is primary).
+    CHALLENGE_BANK_FIRST: bool = False
+    # LLM attempts per question before bank/fallback (image/format misses retry first).
+    CHALLENGE_LLM_ATTEMPTS: int = 3
+    # DeepSeek read timeout per question call (seconds).
+    CHALLENGE_LLM_TIMEOUT_SECONDS: float = 20.0
+    # Fail DNS/connect quickly so offline DeepSeek cannot hang Start Level.
+    CHALLENGE_LLM_CONNECT_TIMEOUT_SECONDS: float = 3.0
+    # Legacy: force no challenge images (same as CHALLENGE_IMAGES_MODE=off).
+    CHALLENGE_FAST_SKIP_IMAGES: bool = False
+    # Challenge visuals (Option B default):
+    #   local_only — attach Atlas SVG / existing cache only (no live search; fast & safe)
+    #   off        — text-only challenges
+    #   full       — allow live Wikimedia/Openverse/Pixabay (slower; not for demo path)
+    CHALLENGE_IMAGES_MODE: str = "local_only"
+
+    # ── Notifications / future push (Stage 9) ─────────────────────────────
+    # Generation always persists in-app. Push channels stay dormant until
+    # PUSH_NOTIFICATIONS_ENABLED=true AND credentials are configured.
+    PUSH_NOTIFICATIONS_ENABLED: bool = False
+    # Firebase Admin credentials (JSON string OR path). Unused until FCM is wired.
+    FCM_CREDENTIALS_JSON: str = ""
+    FCM_CREDENTIALS_PATH: str = ""
+    # Web Push VAPID key pair (unused until Web Push is wired).
+    WEB_PUSH_VAPID_PUBLIC_KEY: str = ""
+    WEB_PUSH_VAPID_PRIVATE_KEY: str = ""
+    WEB_PUSH_VAPID_SUBJECT: str = "mailto:support@atlas.local"
+
+    # ── Personal Progress / future leaderboard module (Stage 5) ───────────
+    # Keep false for MVP (personal growth only). Flip to true + implement
+    # progress.future_modules.build_leaderboard_module_payload to mount rankings.
+    PROGRESS_LEADERBOARD_MODULE_ENABLED: bool = False
 
     @property
     def cors_origins_list(self) -> List[str]:

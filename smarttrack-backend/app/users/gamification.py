@@ -83,6 +83,9 @@ def record_daily_challenge_streak(user) -> dict[str, Any]:
 
     user.streak = new_streak
     profile[STREAK_LAST_DATE_KEY] = today.isoformat()
+    # Track personal best streak for the Progress Dashboard
+    longest = int(profile.get("longest_streak") or 0)
+    profile["longest_streak"] = max(longest, new_streak)
     user.learner_profile = profile
     try:
         from sqlalchemy.orm.attributes import flag_modified

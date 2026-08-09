@@ -21,11 +21,12 @@ def fill_blank_is_self_contained(payload: dict[str, Any]) -> bool:
     template = str(opts.get("template") or "")
     stem = str(payload.get("question_text") or "")
     combined = f"{stem}\n{template}".strip()
-    if len(combined) < 40:
+    # Softened length floor — prefer digit/context checks over raw character count
+    if len(combined) < 24:
         return False
     # Must contain either digits (numeric problem) or substantial prose context
     has_digit = bool(re.search(r"\d", combined))
-    has_choices_context = "___" in template and len(re.sub(r"_+", "", template)) > 25
+    has_choices_context = "___" in template and len(re.sub(r"_+", "", template)) > 18
     if INCOMPLETE_FILL_RE.search(combined) and not mentions_visual(combined):
         # Refers to missing table/chart without providing numbers
         if not has_digit:

@@ -24,10 +24,12 @@ def test_password_hash_roundtrip():
 
 def test_password_reset_token_roundtrip():
     user_id = uuid.uuid4()
-    token = create_password_reset_token(user_id, "student@example.com")
-    decoded_id, email = verify_password_reset_token(token)
+    token, jti, expires_at = create_password_reset_token(user_id, "student@example.com")
+    decoded_id, email, decoded_jti = verify_password_reset_token(token)
     assert decoded_id == user_id
     assert email == "student@example.com"
+    assert decoded_jti == jti
+    assert expires_at.tzinfo is not None
 
 
 def test_password_reset_token_rejects_access_token_type():
@@ -40,6 +42,7 @@ def test_password_reset_token_rejects_access_token_type():
             "email": "a@b.com",
             "exp": datetime.now(timezone.utc) + timedelta(hours=1),
             "type": "access",
+            "jti": "x",
         },
         settings.SECRET_KEY,
         algorithm=settings.ALGORITHM,

@@ -29,7 +29,9 @@ function buildChallengeStage(
     p.levels.filter((l) => l.status === 'in_progress' || l.status === 'available')
   );
   const completedPhases = phases.filter(
-    (p) => p.status === 'completed' || p.levels.every((l) => l.status === 'completed')
+    (p) =>
+      p.status === 'completed' ||
+      (p.levels.length > 0 && p.levels.every((l) => l.status === 'completed'))
   );
   const hasStarted =
     completedLevels.length > 0 ||
@@ -49,7 +51,9 @@ function buildChallengeStage(
   const allDone =
     phases.length > 0 &&
     phases.every(
-      (p) => p.status === 'completed' || p.levels.every((l) => l.status === 'completed')
+      (p) =>
+        p.status === 'completed' ||
+        (p.levels.length > 0 && p.levels.every((l) => l.status === 'completed'))
     );
 
   if (allDone) {

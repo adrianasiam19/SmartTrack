@@ -80,6 +80,14 @@ class SaveAcademicRecordsRequest(BaseModel):
     records: Optional[List[AcademicGradeRecord]] = None
     results: Optional[Dict[str, str]] = None
 
+
+class ConfirmAcademicUploadRequest(BaseModel):
+    """Confirm extracted WASSCE grades after upload preview."""
+    records: List[AcademicGradeRecord]
+    filename: Optional[str] = None
+    stored_name: Optional[str] = None
+    exam_type: str = "WASSCE"
+
 class LearningModuleResponse(BaseModel):
     id: int
     title: str

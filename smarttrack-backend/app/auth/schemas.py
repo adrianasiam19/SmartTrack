@@ -61,7 +61,8 @@ class ForgotPasswordRequest(BaseModel):
 
 class ForgotPasswordResponse(BaseModel):
     message: str
-    # Only returned in development when SMTP is not configured, for local testing.
+    # Only returned when ENVIRONMENT is not production (local testing aid).
+    # Not gated on whether Resend credentials are present.
     dev_reset_link: str | None = None
 
 

@@ -139,8 +139,8 @@ async def exchange_google_code(code: str, redirect_uri: str) -> dict:
             GOOGLE_TOKEN_URL,
             data={
                 "code": code,
-                "client_id": settings.GOOGLE_CLIENT_ID,
-                "client_secret": settings.GOOGLE_CLIENT_SECRET,
+                "client_id": settings.google_client_id_clean,
+                "client_secret": (settings.GOOGLE_CLIENT_SECRET or "").strip(),
                 "redirect_uri": redirect_uri,
                 "grant_type": "authorization_code",
             },
@@ -175,6 +175,17 @@ async def get_or_create_google_user(google_info: dict, db: AsyncSession) -> User
 
     if user:
         # Update avatar in case it changed
+        previous_login = user.last_login
+        try:
+            from app.notifications.engine import notify_return_after_absence
+
+            await notify_return_after_absence(db, user, previous_login=previous_login)
+        except Exception:
+            import logging
+
+            logging.getLogger(__name__).exception(
+                "Return-after-absence notification failed"
+            )
         user.avatar_url = avatar
         user.last_login = datetime.now(timezone.utc)
         return user
@@ -184,6 +195,17 @@ async def get_or_create_google_user(google_info: dict, db: AsyncSession) -> User
     user = result.scalar_one_or_none()
 
     if user:
+        previous_login = user.last_login
+        try:
+            from app.notifications.engine import notify_return_after_absence
+
+            await notify_return_after_absence(db, user, previous_login=previous_login)
+        except Exception:
+            import logging
+
+            logging.getLogger(__name__).exception(
+                "Return-after-absence notification failed"
+            )
         user.google_id = google_id
         user.avatar_url = avatar or user.avatar_url
         user.is_verified = True
@@ -215,87 +237,75 @@ async def get_or_create_google_user(google_info: dict, db: AsyncSession) -> User
 PASSWORD_RESET_TOKEN_HOURS = 1
 
 
-def create_password_reset_token(user_id: uuid.UUID, email: str) -> str:
-    """Short-lived JWT used only for password reset links."""
+def create_password_reset_token(
+    user_id: uuid.UUID, email: str
+) -> tuple[str, str, datetime]:
+    """
+    Short-lived JWT used only for password reset links.
+
+    Returns (token, jti, expires_at). Persist `jti` in password_resets for
+    single-use enforcement.
+    """
     expire = datetime.now(timezone.utc) + timedelta(hours=PASSWORD_RESET_TOKEN_HOURS)
+    jti = secrets.token_urlsafe(16)
     payload = {
         "sub": str(user_id),
         "email": email.lower(),
         "exp": expire,
         "type": "password_reset",
-        "jti": secrets.token_urlsafe(8),
+        "jti": jti,
     }
-    return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    token = jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    return token, jti, expire
 
 
-def verify_password_reset_token(token: str) -> tuple[uuid.UUID, str]:
+def verify_password_reset_token(token: str) -> tuple[uuid.UUID, str, str]:
     """
     Validate a password-reset JWT.
-    Returns (user_id, email). Raises JWTError on failure.
+    Returns (user_id, email, jti). Raises JWTError on failure.
     """
     payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
     if payload.get("type") != "password_reset":
         raise JWTError("Invalid token type")
     user_id = uuid.UUID(payload["sub"])
     email = str(payload.get("email") or "")
-    if not email:
-        raise JWTError("Missing email claim")
-    return user_id, email
+    jti = str(payload.get("jti") or "").strip()
+    if not email or not jti:
+        raise JWTError("Missing email or jti claim")
+    return user_id, email, jti
 
 
 async def send_password_reset_email(email: str, reset_url: str) -> bool:
     """
-    Send a password-reset email via SMTP when configured.
-    Returns True if an email provider accepted the message.
-    In development without SMTP, the link is logged so local testing still works.
+    Send a password-reset email via Resend (`app.mailer.send_mail`).
+
+    Returns True if Resend accepted the message. Raises on hard failures so
+    callers can log; does not decide whether to expose a dev link.
     """
     import logging
-    import smtplib
-    from email.message import EmailMessage
+
+    from app.mailer import send_mail
 
     log = logging.getLogger(__name__)
     subject = "Reset your Atlas password"
-    body = (
+    text = (
         "Hi,\n\n"
         "We received a request to reset your Atlas password.\n\n"
-        f"Open this link to choose a new password (expires in {PASSWORD_RESET_TOKEN_HOURS} hour):\n"
+        f"Open this link to choose a new password "
+        f"(expires in {PASSWORD_RESET_TOKEN_HOURS} hour):\n"
         f"{reset_url}\n\n"
         "If you did not request this, you can ignore this email.\n\n"
         "— Atlas\n"
     )
-
-    smtp_host = (settings.SMTP_HOST or "").strip()
-    smtp_user = (settings.SMTP_USER or "").strip()
-    smtp_password = (settings.SMTP_PASSWORD or "").strip()
-    mail_from = (settings.MAIL_FROM or smtp_user or "noreply@atlas.app").strip()
-
-    if not smtp_host:
-        log.warning(
-            "SMTP not configured — password reset link for %s: %s",
-            email,
-            reset_url,
-        )
-        return False
-
-    message = EmailMessage()
-    message["Subject"] = subject
-    message["From"] = mail_from
-    message["To"] = email
-    message.set_content(body)
-
-    try:
-        if settings.SMTP_USE_TLS:
-            with smtplib.SMTP(smtp_host, settings.SMTP_PORT, timeout=20) as server:
-                server.starttls()
-                if smtp_user:
-                    server.login(smtp_user, smtp_password)
-                server.send_message(message)
-        else:
-            with smtplib.SMTP_SSL(smtp_host, settings.SMTP_PORT, timeout=20) as server:
-                if smtp_user:
-                    server.login(smtp_user, smtp_password)
-                server.send_message(message)
-        return True
-    except Exception as exc:
-        log.error("Failed to send password reset email to %s: %s", email, exc)
-        raise
+    html = (
+        "<p>Hi,</p>"
+        "<p>We received a request to reset your Atlas password.</p>"
+        f"<p><a href=\"{reset_url}\">Choose a new password</a> "
+        f"(expires in {PASSWORD_RESET_TOKEN_HOURS} hour).</p>"
+        f"<p style=\"word-break:break-all;color:#64748B;font-size:12px\">{reset_url}</p>"
+        "<p>If you did not request this, you can ignore this email.</p>"
+        "<p>— Atlas</p>"
+    )
+    await send_mail(to=email, subject=subject, html=html, text=text)
+    log.info("Password reset email accepted by Resend for %s", email)
+    return True

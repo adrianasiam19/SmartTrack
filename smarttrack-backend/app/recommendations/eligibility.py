@@ -114,23 +114,46 @@ async def evaluate_recommendation_eligibility(
             "levels_remaining": remaining,
         }
 
+    all_phases_completed = (
+        len(phases_with_all_levels_done) >= len(phase_summaries) and len(phase_summaries) > 0
+    )
+    wassce_on_file = False
+    upload = profile.get("academic_upload") if isinstance(profile, dict) else None
+    if isinstance(upload, dict) and upload.get("confirmed") is not False:
+        if upload.get("filename") or upload.get("grades"):
+            wassce_on_file = True
+
     if eligible:
-        message = (
-            "You have unlocked programme recommendations by completing all levels "
-            "in at least one phase. Upload your academic results, then tap Get Recommendations."
-        )
+        if all_phases_completed:
+            title = "Learning journey complete"
+            message = (
+                "You have completed all challenge phases. Atlas can already recommend "
+                "programmes from your psychometric profile and challenge activity.\n\n"
+                "Optional next step: upload WASSCE or academic results so Atlas can tweak "
+                "those matches with your aggregate and admission cut-offs."
+            )
+        else:
+            title = "Recommendations unlocked"
+            message = (
+                "You have unlocked programme recommendations by completing all levels "
+                "in at least one phase. Tap Get Recommendations to see matches based on "
+                "your Atlas activity so far — WASSCE upload is not required yet."
+            )
         if not learning_done:
             message += (
                 " Tip: explore at least one Learning Center lesson to further strengthen "
                 "your learner profile."
             )
-        title = "Recommendations unlocked"
     else:
         title = FRIENDLY_BLOCKED_TITLE
         message = FRIENDLY_BLOCKED_MESSAGE
 
     return {
         "eligible": eligible,
+        "all_phases_completed": all_phases_completed,
+        "wassce_optional": True,
+        "wassce_recommended_now": all_phases_completed and not wassce_on_file,
+        "wassce_on_file": wassce_on_file,
         "mandatory": {
             "all_levels_in_a_phase_completed": eligible,
             "phases_completed_levels": phases_with_all_levels_done,

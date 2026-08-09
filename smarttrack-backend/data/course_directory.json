@@ -1,0 +1,2579 @@
+{
+  "note": "Course Directory reference catalogue for Atlas. Educational overview only — no cut-offs or eligibility claims. Expand by appending programmes.",
+  "fields": [
+    "Health Sciences",
+    "Engineering",
+    "Computer & IT",
+    "Business & Economics",
+    "Natural Sciences",
+    "Agriculture & Environment",
+    "Built Environment",
+    "Education",
+    "Social Sciences & Arts",
+    "Creative Arts & Communication",
+    "Law"
+  ],
+  "programmes": [
+    {
+      "slug": "medicine-mbchb",
+      "name": "MBChB Medicine",
+      "field": "Health Sciences",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "6 years",
+      "brief": "Train as a medical doctor with clinical rotations and biomedical science foundations.",
+      "core_topics": [
+        "Anatomy",
+        "Physiology",
+        "Pathology",
+        "Pharmacology",
+        "Clinical medicine",
+        "Community health"
+      ],
+      "career_paths": [
+        "Medical doctor",
+        "Clinical researcher",
+        "Public health physician"
+      ],
+      "related_shs_subjects": [
+        "Biology",
+        "Chemistry",
+        "Physics",
+        "Elective Mathematics"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "KNUST",
+        "UCC",
+        "UDS"
+      ],
+      "detailed_overview": "Medicine combines biomedical science with supervised clinical practice. Students study the structure and function of the human body, disease processes, and patient care across hospital and community settings. Graduates typically complete internship and residency pathways before independent practice."
+    },
+    {
+      "slug": "nursing",
+      "name": "BSc Nursing",
+      "field": "Health Sciences",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Prepare for professional nursing with patient care, clinical skills, and health promotion.",
+      "core_topics": [
+        "Fundamentals of nursing",
+        "Medical-surgical nursing",
+        "Maternal health",
+        "Community nursing",
+        "Pharmacology"
+      ],
+      "career_paths": [
+        "Registered nurse",
+        "Midwifery pathway",
+        "Public health nurse",
+        "Nurse educator"
+      ],
+      "related_shs_subjects": [
+        "Biology",
+        "Chemistry",
+        "English",
+        "Social Studies"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "KNUST",
+        "UCC",
+        "UEW",
+        "UDS"
+      ],
+      "detailed_overview": "Nursing programmes develop clinical judgment, compassionate care, and evidence-based practice through ward and community placements."
+    },
+    {
+      "slug": "pharmacy",
+      "name": "Doctor of Pharmacy / BPharm",
+      "field": "Health Sciences",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "6 years",
+      "brief": "Study medicines, patient counselling, and pharmaceutical science for community or hospital pharmacy.",
+      "core_topics": [
+        "Pharmaceutical chemistry",
+        "Pharmacology",
+        "Pharmaceutics",
+        "Clinical pharmacy",
+        "Pharmacy practice"
+      ],
+      "career_paths": [
+        "Pharmacist",
+        "Clinical pharmacist",
+        "Regulatory affairs",
+        "Pharmaceutical industry"
+      ],
+      "related_shs_subjects": [
+        "Biology",
+        "Chemistry",
+        "Physics",
+        "Elective Mathematics"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana",
+        "UCC"
+      ],
+      "detailed_overview": "Pharmacy education covers how medicines are designed, dispensed, and used safely across hospitals, community pharmacies, industry, and regulation."
+    },
+    {
+      "slug": "medical-laboratory-science",
+      "name": "BSc Medical Laboratory Science",
+      "field": "Health Sciences",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Learn diagnostic laboratory techniques used to detect and monitor disease.",
+      "core_topics": [
+        "Haematology",
+        "Microbiology",
+        "Clinical chemistry",
+        "Immunology",
+        "Lab management"
+      ],
+      "career_paths": [
+        "Medical laboratory scientist",
+        "Diagnostic specialist",
+        "Research technician"
+      ],
+      "related_shs_subjects": [
+        "Biology",
+        "Chemistry",
+        "Physics"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana",
+        "UCC",
+        "UDS"
+      ],
+      "detailed_overview": "Students learn to analyse blood, tissues, and other specimens that guide clinical decisions, with strong emphasis on biosafety and quality control."
+    },
+    {
+      "slug": "physician-assistantship",
+      "name": "BSc Physician Assistantship",
+      "field": "Health Sciences",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Train to support physicians in diagnosis, treatment, and primary care delivery.",
+      "core_topics": [
+        "Clinical medicine",
+        "Physical diagnosis",
+        "Emergency care",
+        "Pharmacology",
+        "Community practice"
+      ],
+      "career_paths": [
+        "Physician assistant",
+        "Primary care clinician",
+        "Emergency support clinician"
+      ],
+      "related_shs_subjects": [
+        "Biology",
+        "Chemistry",
+        "Physics"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Cape Coast"
+      ],
+      "detailed_overview": "Physician assistant programmes blend medical science with practical clinical training under physician supervision."
+    },
+    {
+      "slug": "physiotherapy",
+      "name": "BSc Physiotherapy and Sports Science",
+      "field": "Health Sciences",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Restore movement and function through rehabilitation science and therapeutic exercise.",
+      "core_topics": [
+        "Anatomy",
+        "Biomechanics",
+        "Therapeutic exercise",
+        "Sports injuries",
+        "Rehabilitation"
+      ],
+      "career_paths": [
+        "Physiotherapist",
+        "Sports therapist",
+        "Rehabilitation specialist"
+      ],
+      "related_shs_subjects": [
+        "Biology",
+        "Physics",
+        "Chemistry"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana"
+      ],
+      "detailed_overview": "Students study how the body moves and recovers, then apply exercise and education to help patients regain function."
+    },
+    {
+      "slug": "midwifery",
+      "name": "BSc Midwifery",
+      "field": "Health Sciences",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Specialise in pregnancy, childbirth, and newborn care in clinical and community settings.",
+      "core_topics": [
+        "Antenatal care",
+        "Labour and delivery",
+        "Postnatal care",
+        "Neonatal health",
+        "Reproductive health"
+      ],
+      "career_paths": [
+        "Midwife",
+        "Maternal health specialist",
+        "Community midwife"
+      ],
+      "related_shs_subjects": [
+        "Biology",
+        "Chemistry",
+        "English"
+      ],
+      "commonly_offered_at": [
+        "UCC",
+        "University of Ghana",
+        "KNUST",
+        "UDS"
+      ],
+      "detailed_overview": "Midwifery focuses on safe motherhood and newborn wellbeing, including emergency obstetric skills and family health education."
+    },
+    {
+      "slug": "dental-surgery",
+      "name": "BSc Dental Surgery",
+      "field": "Health Sciences",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "6 years",
+      "brief": "Study oral health, dental procedures, and preventive dentistry.",
+      "core_topics": [
+        "Oral anatomy",
+        "Restorative dentistry",
+        "Oral surgery basics",
+        "Preventive dentistry",
+        "Radiology"
+      ],
+      "career_paths": [
+        "Dentist",
+        "Oral health clinician",
+        "Dental public health"
+      ],
+      "related_shs_subjects": [
+        "Biology",
+        "Chemistry",
+        "Physics"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "KNUST"
+      ],
+      "detailed_overview": "Dental programmes combine biomedical science with clinical dentistry to diagnose and treat oral disease."
+    },
+    {
+      "slug": "veterinary-medicine",
+      "name": "DVM Veterinary Medicine",
+      "field": "Health Sciences",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "6 years",
+      "brief": "Care for animal health across companion, livestock, and public-health contexts.",
+      "core_topics": [
+        "Animal anatomy",
+        "Pathology",
+        "Surgery",
+        "Livestock health",
+        "Zoonoses"
+      ],
+      "career_paths": [
+        "Veterinarian",
+        "Livestock health officer",
+        "Veterinary public health"
+      ],
+      "related_shs_subjects": [
+        "Biology",
+        "Chemistry",
+        "Physics"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana"
+      ],
+      "detailed_overview": "Veterinary medicine covers animal care plus disease control that protects both animal and human health."
+    },
+    {
+      "slug": "public-health",
+      "name": "BSc Public Health",
+      "field": "Health Sciences",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Prevent disease and improve population health through epidemiology and health systems.",
+      "core_topics": [
+        "Epidemiology",
+        "Biostatistics",
+        "Health promotion",
+        "Environmental health",
+        "Health policy"
+      ],
+      "career_paths": [
+        "Public health officer",
+        "NGO health programme officer",
+        "Health educator"
+      ],
+      "related_shs_subjects": [
+        "Biology",
+        "Social Studies",
+        "English",
+        "Elective Mathematics"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "KNUST",
+        "UCC",
+        "UDS"
+      ],
+      "detailed_overview": "Public health looks beyond individual patients to communities and systems that reduce disease burden."
+    },
+    {
+      "slug": "nutrition-dietetics",
+      "name": "BSc Nutrition and Dietetics",
+      "field": "Health Sciences",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Apply food science and clinical nutrition to promote health and manage disease.",
+      "core_topics": [
+        "Human nutrition",
+        "Diet therapy",
+        "Food science",
+        "Community nutrition",
+        "Biochemistry"
+      ],
+      "career_paths": [
+        "Dietitian",
+        "Nutritionist",
+        "Food service manager",
+        "Public health nutritionist"
+      ],
+      "related_shs_subjects": [
+        "Biology",
+        "Chemistry",
+        "Home Economics"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "KNUST",
+        "UCC"
+      ],
+      "detailed_overview": "Students learn how nutrients affect the body and how tailored diets support wellness and recovery."
+    },
+    {
+      "slug": "medical-imaging",
+      "name": "BSc Medical Imaging",
+      "field": "Health Sciences",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Produce and interpret medical images that support diagnosis and treatment.",
+      "core_topics": [
+        "Radiographic technique",
+        "Anatomy",
+        "Radiation protection",
+        "Ultrasound basics",
+        "Image evaluation"
+      ],
+      "career_paths": [
+        "Radiographer",
+        "Medical imaging technologist"
+      ],
+      "related_shs_subjects": [
+        "Biology",
+        "Physics",
+        "Chemistry",
+        "Mathematics"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "KNUST"
+      ],
+      "detailed_overview": "Medical imaging trains students to operate equipment safely and produce diagnostic-quality images."
+    },
+    {
+      "slug": "herbal-medicine",
+      "name": "BSc Herbal Medicine",
+      "field": "Health Sciences",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Study medicinal plants and integrative approaches within a scientific framework.",
+      "core_topics": [
+        "Pharmacognosy",
+        "Phytochemistry",
+        "Traditional medicine",
+        "Clinical herbal practice"
+      ],
+      "career_paths": [
+        "Herbal medicine practitioner",
+        "Phytotherapy researcher"
+      ],
+      "related_shs_subjects": [
+        "Biology",
+        "Chemistry"
+      ],
+      "commonly_offered_at": [
+        "KNUST"
+      ],
+      "detailed_overview": "This programme connects ethnobotany and laboratory science for responsible plant-based therapies."
+    },
+    {
+      "slug": "optometry",
+      "name": "BSc Optometry",
+      "field": "Health Sciences",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Examine eyes, prescribe corrective lenses, and manage common visual disorders.",
+      "core_topics": [
+        "Ocular anatomy",
+        "Optics",
+        "Refraction",
+        "Contact lenses",
+        "Clinical optometry"
+      ],
+      "career_paths": [
+        "Optometrist",
+        "Vision care clinician"
+      ],
+      "related_shs_subjects": [
+        "Biology",
+        "Physics",
+        "Chemistry",
+        "Mathematics"
+      ],
+      "commonly_offered_at": [
+        "KNUST"
+      ],
+      "detailed_overview": "Optometry blends optics with clinical eye care for vision assessment and ocular health."
+    },
+    {
+      "slug": "computer-engineering",
+      "name": "BSc Computer Engineering",
+      "field": "Engineering",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Design computing hardware and embedded systems at the intersection of EE and CS.",
+      "core_topics": [
+        "Digital systems",
+        "Microprocessors",
+        "Embedded systems",
+        "Computer networks",
+        "Electronics"
+      ],
+      "career_paths": [
+        "Computer engineer",
+        "Embedded systems engineer",
+        "Hardware engineer"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "Physics",
+        "Chemistry",
+        "ICT"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana",
+        "UMaT"
+      ],
+      "detailed_overview": "Computer engineering focuses on how hardware and low-level software work together in modern devices."
+    },
+    {
+      "slug": "electrical-engineering",
+      "name": "BSc Electrical Engineering",
+      "field": "Engineering",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Design and analyse electrical power, electronics, and control systems.",
+      "core_topics": [
+        "Circuit theory",
+        "Power systems",
+        "Electronics",
+        "Control systems",
+        "Machines"
+      ],
+      "career_paths": [
+        "Electrical engineer",
+        "Power systems engineer",
+        "Electronics engineer"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "Physics",
+        "Chemistry"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana",
+        "UMaT",
+        "TTU"
+      ],
+      "detailed_overview": "Students learn to generate, distribute, and use electrical energy across industry and infrastructure."
+    },
+    {
+      "slug": "civil-engineering",
+      "name": "BSc Civil Engineering",
+      "field": "Engineering",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Plan and build infrastructure such as roads, bridges, water systems, and structures.",
+      "core_topics": [
+        "Structural analysis",
+        "Geotechnics",
+        "Hydraulics",
+        "Transportation",
+        "Construction management"
+      ],
+      "career_paths": [
+        "Civil engineer",
+        "Structural engineer",
+        "Project engineer"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "Physics",
+        "Chemistry"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana",
+        "UMaT",
+        "CKT-UTAS"
+      ],
+      "detailed_overview": "Civil engineering trains graduates to design resilient infrastructure for communities."
+    },
+    {
+      "slug": "mechanical-engineering",
+      "name": "BSc Mechanical Engineering",
+      "field": "Engineering",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Design machines, thermal systems, and manufacturing processes.",
+      "core_topics": [
+        "Thermodynamics",
+        "Mechanics",
+        "Manufacturing",
+        "Machine design",
+        "Fluid mechanics"
+      ],
+      "career_paths": [
+        "Mechanical engineer",
+        "Manufacturing engineer",
+        "Maintenance engineer"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "Physics",
+        "Chemistry"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana",
+        "UMaT",
+        "TTU"
+      ],
+      "detailed_overview": "Mechanical engineers apply physics and design methods to engines, plants, tools, and production lines."
+    },
+    {
+      "slug": "chemical-engineering",
+      "name": "BSc Chemical Engineering",
+      "field": "Engineering",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Turn raw materials into useful products through chemical process design.",
+      "core_topics": [
+        "Process engineering",
+        "Reaction engineering",
+        "Thermodynamics",
+        "Transport phenomena"
+      ],
+      "career_paths": [
+        "Chemical engineer",
+        "Process engineer",
+        "Petrochemical engineer"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "Chemistry",
+        "Physics"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana"
+      ],
+      "detailed_overview": "Chemical engineering connects chemistry with large-scale process design for fuels, foods, and materials."
+    },
+    {
+      "slug": "biomedical-engineering",
+      "name": "BSc Biomedical Engineering",
+      "field": "Engineering",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Apply engineering to medical devices, diagnostics, and healthcare technology.",
+      "core_topics": [
+        "Biomechanics",
+        "Medical instrumentation",
+        "Biomaterials",
+        "Physiology for engineers"
+      ],
+      "career_paths": [
+        "Biomedical engineer",
+        "Medical device specialist",
+        "Clinical engineer"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "Physics",
+        "Biology",
+        "Chemistry"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana"
+      ],
+      "detailed_overview": "Biomedical engineering sits between medicine and engineering, focusing on devices that diagnose or treat patients."
+    },
+    {
+      "slug": "aerospace-engineering",
+      "name": "BSc Aerospace Engineering",
+      "field": "Engineering",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Study aircraft and related aerospace systems, aerodynamics, and propulsion.",
+      "core_topics": [
+        "Aerodynamics",
+        "Flight mechanics",
+        "Propulsion",
+        "Structures",
+        "Avionics basics"
+      ],
+      "career_paths": [
+        "Aerospace engineer",
+        "Aviation systems engineer"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "Physics",
+        "Chemistry"
+      ],
+      "commonly_offered_at": [
+        "KNUST"
+      ],
+      "detailed_overview": "Aerospace programmes emphasise fluid mechanics, structures, and systems engineering for flight technologies."
+    },
+    {
+      "slug": "petroleum-engineering",
+      "name": "BSc Petroleum Engineering",
+      "field": "Engineering",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Explore oil and gas exploration, drilling, and production engineering.",
+      "core_topics": [
+        "Reservoir engineering",
+        "Drilling",
+        "Production",
+        "Petroleum geology basics"
+      ],
+      "career_paths": [
+        "Petroleum engineer",
+        "Reservoir engineer",
+        "Energy operations engineer"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "Physics",
+        "Chemistry"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "UMaT"
+      ],
+      "detailed_overview": "Students learn how hydrocarbons are located and produced with attention to safety and efficiency."
+    },
+    {
+      "slug": "telecommunications-engineering",
+      "name": "BSc Telecommunication Engineering",
+      "field": "Engineering",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Design communication networks, wireless systems, and signal transmission.",
+      "core_topics": [
+        "Signals and systems",
+        "RF communications",
+        "Networks",
+        "Digital communications"
+      ],
+      "career_paths": [
+        "Telecom engineer",
+        "Network engineer",
+        "RF engineer"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "Physics",
+        "ICT"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana"
+      ],
+      "detailed_overview": "Telecom engineering covers how voice, data, and media move across wired and wireless networks."
+    },
+    {
+      "slug": "materials-engineering",
+      "name": "BSc Materials Engineering",
+      "field": "Engineering",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Study metals, polymers, ceramics, and materials processing for industry.",
+      "core_topics": [
+        "Materials science",
+        "Metallurgy",
+        "Polymers",
+        "Characterisation",
+        "Processing"
+      ],
+      "career_paths": [
+        "Materials engineer",
+        "Metallurgist",
+        "Quality engineer"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "Physics",
+        "Chemistry"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "UMaT"
+      ],
+      "detailed_overview": "Materials engineers select and improve materials so products are stronger, lighter, or more sustainable."
+    },
+    {
+      "slug": "geological-engineering",
+      "name": "BSc Geological Engineering",
+      "field": "Engineering",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Apply geology to engineering problems in mining, construction, and resources.",
+      "core_topics": [
+        "Engineering geology",
+        "Rock mechanics",
+        "Hydrogeology",
+        "Exploration"
+      ],
+      "career_paths": [
+        "Geological engineer",
+        "Mining support engineer",
+        "Geotechnical specialist"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "Physics",
+        "Chemistry",
+        "Geography"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "UMaT"
+      ],
+      "detailed_overview": "This field connects earth science with engineering design for tunnels, foundations, and mining."
+    },
+    {
+      "slug": "industrial-engineering",
+      "name": "BSc Industrial Engineering",
+      "field": "Engineering",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Optimise people, processes, and systems for productivity and quality.",
+      "core_topics": [
+        "Operations research",
+        "Manufacturing systems",
+        "Quality control",
+        "Ergonomics",
+        "Supply chains"
+      ],
+      "career_paths": [
+        "Industrial engineer",
+        "Process improvement analyst",
+        "Operations manager"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "Physics",
+        "Economics"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana"
+      ],
+      "detailed_overview": "Industrial engineering focuses on efficiency — designing workflows and improving organisational performance."
+    },
+    {
+      "slug": "marine-engineering",
+      "name": "BSc Marine Engineering",
+      "field": "Engineering",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Engineering systems for ships and marine operations.",
+      "core_topics": [
+        "Marine power plants",
+        "Naval architecture basics",
+        "Marine systems",
+        "Maintenance"
+      ],
+      "career_paths": [
+        "Marine engineer",
+        "Ship systems engineer"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "Physics",
+        "Chemistry"
+      ],
+      "commonly_offered_at": [
+        "Regional Maritime University"
+      ],
+      "detailed_overview": "Marine engineering prepares graduates for propulsion and mechanical systems that keep vessels operating safely."
+    },
+    {
+      "slug": "automobile-engineering",
+      "name": "BSc Automobile Engineering",
+      "field": "Engineering",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Design, diagnose, and improve automotive systems and vehicle technology.",
+      "core_topics": [
+        "Vehicle dynamics",
+        "Powertrain",
+        "Auto electronics",
+        "Maintenance technology"
+      ],
+      "career_paths": [
+        "Automotive engineer",
+        "Vehicle diagnostic specialist"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "Physics",
+        "Chemistry"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "TTU"
+      ],
+      "detailed_overview": "Automobile programmes blend mechanical and electrical systems for modern vehicles."
+    },
+    {
+      "slug": "computer-science",
+      "name": "BSc Computer Science",
+      "field": "Computer & IT",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Study algorithms, software development, and computing theory for modern applications.",
+      "core_topics": [
+        "Programming",
+        "Data structures",
+        "Databases",
+        "Operating systems",
+        "Software engineering",
+        "AI basics"
+      ],
+      "career_paths": [
+        "Software developer",
+        "Systems analyst",
+        "Data engineer",
+        "Research assistant"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "ICT",
+        "Physics"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana",
+        "UCC",
+        "Ashesi University"
+      ],
+      "detailed_overview": "Computer Science builds problem-solving skills through coding, theory, and systems design for digital solutions."
+    },
+    {
+      "slug": "information-technology",
+      "name": "BSc Information Technology",
+      "field": "Computer & IT",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Apply computing to organisational systems, networks, and user-focused IT services.",
+      "core_topics": [
+        "Networks",
+        "Databases",
+        "Web systems",
+        "IT project management",
+        "Cybersecurity basics"
+      ],
+      "career_paths": [
+        "IT specialist",
+        "Systems administrator",
+        "Business IT analyst"
+      ],
+      "related_shs_subjects": [
+        "ICT",
+        "Elective Mathematics",
+        "English"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "KNUST",
+        "UCC"
+      ],
+      "detailed_overview": "IT programmes emphasise practical systems organisations rely on — networks, databases, and digital services."
+    },
+    {
+      "slug": "information-systems",
+      "name": "BSc Information Systems",
+      "field": "Computer & IT",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Bridge business needs and technology through systems analysis and data management.",
+      "core_topics": [
+        "Systems analysis",
+        "Databases",
+        "Business processes",
+        "ERP concepts",
+        "Data analytics basics"
+      ],
+      "career_paths": [
+        "Business analyst",
+        "IS analyst",
+        "IT consultant"
+      ],
+      "related_shs_subjects": [
+        "ICT",
+        "Elective Mathematics",
+        "Economics",
+        "Accounting"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "KNUST",
+        "UCC"
+      ],
+      "detailed_overview": "Information Systems focuses on how organisations use technology to make decisions and run operations."
+    },
+    {
+      "slug": "cybersecurity",
+      "name": "BSc Cyber Security",
+      "field": "Computer & IT",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Protect systems and data through security engineering, risk, and ethical hacking foundations.",
+      "core_topics": [
+        "Network security",
+        "Cryptography basics",
+        "Ethical hacking",
+        "Risk management",
+        "Digital forensics intro"
+      ],
+      "career_paths": [
+        "Security analyst",
+        "SOC analyst",
+        "Security consultant"
+      ],
+      "related_shs_subjects": [
+        "ICT",
+        "Elective Mathematics",
+        "Physics"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "KNUST"
+      ],
+      "detailed_overview": "Cybersecurity trains students to identify threats, harden systems, and respond to incidents."
+    },
+    {
+      "slug": "data-science",
+      "name": "BSc Data Science",
+      "field": "Computer & IT",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Turn data into insight using statistics, programming, and machine learning foundations.",
+      "core_topics": [
+        "Statistics",
+        "Python/R",
+        "Data wrangling",
+        "Visualisation",
+        "ML intro"
+      ],
+      "career_paths": [
+        "Data analyst",
+        "Junior data scientist",
+        "Business intelligence analyst"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "ICT",
+        "Economics"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "KNUST",
+        "Ashesi University"
+      ],
+      "detailed_overview": "Data science combines maths and computing to clean, analyse, and communicate patterns from datasets."
+    },
+    {
+      "slug": "software-engineering",
+      "name": "BSc Software Engineering",
+      "field": "Computer & IT",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Engineer reliable software with design patterns, testing, and team development practices.",
+      "core_topics": [
+        "Software design",
+        "Testing",
+        "Agile methods",
+        "Requirements",
+        "Architecture"
+      ],
+      "career_paths": [
+        "Software engineer",
+        "QA engineer",
+        "Product engineer"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "ICT"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana",
+        "Ashesi University"
+      ],
+      "detailed_overview": "Software engineering emphasises maintainable products — process, quality, and collaboration as well as coding."
+    },
+    {
+      "slug": "computer-networking",
+      "name": "BSc Computer Networking",
+      "field": "Computer & IT",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Design and manage computer networks and internet infrastructure.",
+      "core_topics": [
+        "Routing and switching",
+        "Network protocols",
+        "Wireless",
+        "Network security"
+      ],
+      "career_paths": [
+        "Network engineer",
+        "Infrastructure specialist"
+      ],
+      "related_shs_subjects": [
+        "ICT",
+        "Elective Mathematics",
+        "Physics"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana"
+      ],
+      "detailed_overview": "Networking programmes prepare graduates to keep organisations connected through reliable infrastructure."
+    },
+    {
+      "slug": "business-administration",
+      "name": "BSc Business Administration",
+      "field": "Business & Economics",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Build broad management skills across marketing, finance, HR, and operations.",
+      "core_topics": [
+        "Management",
+        "Marketing",
+        "Accounting basics",
+        "Organisational behaviour",
+        "Strategy"
+      ],
+      "career_paths": [
+        "Business manager",
+        "Entrepreneur",
+        "Management trainee"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "Economics",
+        "Accounting",
+        "English"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "KNUST",
+        "UCC",
+        "UPS"
+      ],
+      "detailed_overview": "Business Administration gives a versatile foundation for leading teams and organisations."
+    },
+    {
+      "slug": "accounting",
+      "name": "BSc Accounting",
+      "field": "Business & Economics",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Master financial reporting, auditing, and management accounting for organisations.",
+      "core_topics": [
+        "Financial accounting",
+        "Cost accounting",
+        "Auditing",
+        "Taxation",
+        "Finance"
+      ],
+      "career_paths": [
+        "Accountant",
+        "Auditor",
+        "Tax associate",
+        "Financial analyst pathway"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "Accounting",
+        "Economics"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "KNUST",
+        "UCC",
+        "UPS"
+      ],
+      "detailed_overview": "Accounting programmes train students to measure and communicate financial performance with ethics and precision."
+    },
+    {
+      "slug": "banking-finance",
+      "name": "BSc Banking and Finance",
+      "field": "Business & Economics",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Understand banks, financial markets, investments, and corporate finance.",
+      "core_topics": [
+        "Financial markets",
+        "Banking operations",
+        "Investment analysis",
+        "Risk",
+        "Corporate finance"
+      ],
+      "career_paths": [
+        "Bank officer",
+        "Credit analyst",
+        "Treasury associate"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "Economics",
+        "Accounting"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "KNUST",
+        "UCC",
+        "UPS"
+      ],
+      "detailed_overview": "Students learn how money moves through banks and markets, and how firms raise and manage capital."
+    },
+    {
+      "slug": "economics",
+      "name": "BA / BSc Economics",
+      "field": "Business & Economics",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Analyse how societies allocate resources using micro and macroeconomics.",
+      "core_topics": [
+        "Microeconomics",
+        "Macroeconomics",
+        "Econometrics",
+        "Development economics"
+      ],
+      "career_paths": [
+        "Economist",
+        "Policy analyst",
+        "Research officer"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "Economics",
+        "Geography"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "KNUST",
+        "UCC"
+      ],
+      "detailed_overview": "Economics develops analytical tools for markets, policy, and development challenges."
+    },
+    {
+      "slug": "marketing",
+      "name": "BSc Marketing",
+      "field": "Business & Economics",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Create value for customers through branding, research, and digital marketing.",
+      "core_topics": [
+        "Consumer behaviour",
+        "Market research",
+        "Brand management",
+        "Digital marketing"
+      ],
+      "career_paths": [
+        "Marketing executive",
+        "Brand associate",
+        "Digital marketer"
+      ],
+      "related_shs_subjects": [
+        "English",
+        "Economics",
+        "Elective Mathematics"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "KNUST",
+        "UCC"
+      ],
+      "detailed_overview": "Marketing programmes blend creativity and analytics to position products and reach audiences."
+    },
+    {
+      "slug": "human-resource-management",
+      "name": "BSc Human Resource Management",
+      "field": "Business & Economics",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Manage people systems: recruitment, performance, training, and labour relations.",
+      "core_topics": [
+        "HR planning",
+        "Recruitment",
+        "Performance management",
+        "Labour law basics",
+        "Training"
+      ],
+      "career_paths": [
+        "HR officer",
+        "Talent associate",
+        "Employee relations officer"
+      ],
+      "related_shs_subjects": [
+        "English",
+        "Social Studies",
+        "Economics"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "KNUST",
+        "UCC",
+        "UPS"
+      ],
+      "detailed_overview": "HRM focuses on productive workplaces through fair policies and talent development."
+    },
+    {
+      "slug": "entrepreneurship",
+      "name": "BSc Entrepreneurship",
+      "field": "Business & Economics",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Launch and grow ventures with opportunity recognition, finance, and innovation skills.",
+      "core_topics": [
+        "Opportunity analysis",
+        "Business models",
+        "Small business finance",
+        "Innovation"
+      ],
+      "career_paths": [
+        "Founder",
+        "Startup operator",
+        "SME consultant"
+      ],
+      "related_shs_subjects": [
+        "Economics",
+        "Elective Mathematics",
+        "English"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana",
+        "UCC"
+      ],
+      "detailed_overview": "Entrepreneurship programmes train students to spot opportunities, build ventures, and manage risk. You study business models, finance for startups, marketing, and innovation. Graduates often launch their own firms or work in SME development, incubators, and corporate innovation teams across Ghana and beyond."
+    },
+    {
+      "slug": "supply-chain-management",
+      "name": "BSc Logistics and Supply Chain Management",
+      "field": "Business & Economics",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Coordinate procurement, logistics, and inventory across local and global networks.",
+      "core_topics": [
+        "Procurement",
+        "Logistics",
+        "Inventory",
+        "Operations",
+        "Trade facilitation"
+      ],
+      "career_paths": [
+        "Logistics officer",
+        "Procurement analyst",
+        "Supply chain coordinator"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "Economics",
+        "Geography"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana",
+        "UPS"
+      ],
+      "detailed_overview": "Supply chain education prepares graduates to move goods efficiently while managing cost and risk."
+    },
+    {
+      "slug": "actuarial-science",
+      "name": "BSc Actuarial Science",
+      "field": "Business & Economics",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Use mathematics and statistics to price risk in insurance and finance.",
+      "core_topics": [
+        "Probability",
+        "Financial maths",
+        "Life contingencies",
+        "Statistics",
+        "Risk modelling"
+      ],
+      "career_paths": [
+        "Actuarial analyst",
+        "Risk analyst",
+        "Insurance analyst"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "Economics",
+        "Accounting"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana"
+      ],
+      "detailed_overview": "Actuarial science is highly quantitative — modelling uncertainty for pensions, insurance, and financial risk."
+    },
+    {
+      "slug": "hospitality-management",
+      "name": "BSc Hospitality Management",
+      "field": "Business & Economics",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Run hotels, tourism services, and guest experience operations.",
+      "core_topics": [
+        "Front office",
+        "Food and beverage",
+        "Tourism",
+        "Hospitality marketing"
+      ],
+      "career_paths": [
+        "Hotel manager trainee",
+        "Events coordinator",
+        "Tourism officer"
+      ],
+      "related_shs_subjects": [
+        "English",
+        "Social Studies",
+        "Home Economics"
+      ],
+      "commonly_offered_at": [
+        "University of Cape Coast",
+        "University of Ghana"
+      ],
+      "detailed_overview": "Hospitality programmes combine service excellence with business operations for tourism."
+    },
+    {
+      "slug": "procurement",
+      "name": "BSc Procurement and Supply Chain",
+      "field": "Business & Economics",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Specialise in purchasing strategy, contracts, and supplier management.",
+      "core_topics": [
+        "Procurement law basics",
+        "Supplier evaluation",
+        "Contract management",
+        "Negotiation"
+      ],
+      "career_paths": [
+        "Procurement officer",
+        "Buyer",
+        "Contract administrator"
+      ],
+      "related_shs_subjects": [
+        "Economics",
+        "Elective Mathematics",
+        "English"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "UPS",
+        "University of Ghana"
+      ],
+      "detailed_overview": "Procurement training emphasises value for money, ethics, and supplier relationships."
+    },
+    {
+      "slug": "insurance",
+      "name": "BSc Insurance",
+      "field": "Business & Economics",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Study risk transfer, underwriting, claims, and insurance markets.",
+      "core_topics": [
+        "Principles of insurance",
+        "Underwriting",
+        "Claims",
+        "Risk management"
+      ],
+      "career_paths": [
+        "Insurance officer",
+        "Underwriter trainee",
+        "Claims associate"
+      ],
+      "related_shs_subjects": [
+        "Economics",
+        "Elective Mathematics",
+        "Accounting"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "KNUST"
+      ],
+      "detailed_overview": "Insurance programmes prepare graduates to help individuals and firms manage financial risk."
+    },
+    {
+      "slug": "biological-sciences",
+      "name": "BSc Biological Sciences",
+      "field": "Natural Sciences",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Explore living systems from cells to ecosystems with laboratory practice.",
+      "core_topics": [
+        "Cell biology",
+        "Genetics",
+        "Ecology",
+        "Microbiology",
+        "Biochemistry"
+      ],
+      "career_paths": [
+        "Lab scientist",
+        "Research assistant",
+        "Environmental biologist pathway"
+      ],
+      "related_shs_subjects": [
+        "Biology",
+        "Chemistry",
+        "Elective Mathematics"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana",
+        "UCC"
+      ],
+      "detailed_overview": "Biological Sciences builds life-science literacy for research, health pathways, and environmental careers."
+    },
+    {
+      "slug": "chemistry",
+      "name": "BSc Chemistry",
+      "field": "Natural Sciences",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Study matter, reactions, and chemical analysis in laboratory settings.",
+      "core_topics": [
+        "Organic",
+        "Inorganic",
+        "Physical chemistry",
+        "Analytical chemistry"
+      ],
+      "career_paths": [
+        "Chemist",
+        "Lab analyst",
+        "Quality control chemist"
+      ],
+      "related_shs_subjects": [
+        "Chemistry",
+        "Physics",
+        "Elective Mathematics"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana",
+        "UCC"
+      ],
+      "detailed_overview": "Chemistry programmes train precise experimental skills used in industry, research, and regulation."
+    },
+    {
+      "slug": "physics",
+      "name": "BSc Physics",
+      "field": "Natural Sciences",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Investigate energy, matter, and physical laws with mathematical modelling.",
+      "core_topics": [
+        "Mechanics",
+        "Electromagnetism",
+        "Modern physics",
+        "Laboratory physics"
+      ],
+      "career_paths": [
+        "Physicist pathway",
+        "Lab technologist",
+        "Technical analyst"
+      ],
+      "related_shs_subjects": [
+        "Physics",
+        "Elective Mathematics",
+        "Chemistry"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana",
+        "UCC"
+      ],
+      "detailed_overview": "Physics develops quantitative reasoning useful in technology, research, and engineering-adjacent roles."
+    },
+    {
+      "slug": "mathematics",
+      "name": "BSc Mathematics",
+      "field": "Natural Sciences",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Develop abstract and applied mathematical reasoning for science and industry.",
+      "core_topics": [
+        "Algebra",
+        "Analysis",
+        "Discrete maths",
+        "Probability",
+        "Modelling"
+      ],
+      "career_paths": [
+        "Data roles",
+        "Teaching pathway",
+        "Quantitative analyst junior roles"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "Physics",
+        "ICT"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana",
+        "UCC"
+      ],
+      "detailed_overview": "Mathematics sharpens logical thinking that underpins computing, finance, teaching, and modelling."
+    },
+    {
+      "slug": "statistics",
+      "name": "BSc Statistics",
+      "field": "Natural Sciences",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Collect, analyse, and interpret data for research and decision-making.",
+      "core_topics": [
+        "Probability",
+        "Inference",
+        "Regression",
+        "Survey methods",
+        "Computing for stats"
+      ],
+      "career_paths": [
+        "Statistician",
+        "Data analyst",
+        "Research officer"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "Economics",
+        "ICT"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana",
+        "UCC"
+      ],
+      "detailed_overview": "Statistics programmes prepare graduates to design studies and draw trustworthy conclusions from data."
+    },
+    {
+      "slug": "biochemistry",
+      "name": "BSc Biochemistry",
+      "field": "Natural Sciences",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Study the chemistry of life — proteins, metabolism, and molecular biology.",
+      "core_topics": [
+        "Biomolecules",
+        "Metabolism",
+        "Molecular biology",
+        "Enzymology"
+      ],
+      "career_paths": [
+        "Biochemist",
+        "Lab scientist",
+        "Biotech research assistant"
+      ],
+      "related_shs_subjects": [
+        "Biology",
+        "Chemistry",
+        "Elective Mathematics"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana"
+      ],
+      "detailed_overview": "Biochemistry links chemistry and biology for labs, health sciences, and biotechnology."
+    },
+    {
+      "slug": "environmental-science",
+      "name": "BSc Environmental Science",
+      "field": "Natural Sciences",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Analyse environmental problems and sustainability solutions.",
+      "core_topics": [
+        "Ecology",
+        "Pollution",
+        "GIS basics",
+        "Environmental policy",
+        "Field methods"
+      ],
+      "career_paths": [
+        "Environmental officer",
+        "Sustainability associate",
+        "Conservation roles"
+      ],
+      "related_shs_subjects": [
+        "Biology",
+        "Chemistry",
+        "Geography"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana",
+        "UCC",
+        "UENR"
+      ],
+      "detailed_overview": "Environmental Science combines field and lab work to support sustainable development."
+    },
+    {
+      "slug": "food-science",
+      "name": "BSc Food Science and Technology",
+      "field": "Natural Sciences",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Apply science to food safety, processing, and product development.",
+      "core_topics": [
+        "Food chemistry",
+        "Microbiology",
+        "Processing",
+        "Quality assurance"
+      ],
+      "career_paths": [
+        "Food technologist",
+        "QA officer",
+        "Product development associate"
+      ],
+      "related_shs_subjects": [
+        "Biology",
+        "Chemistry",
+        "Elective Mathematics",
+        "Home Economics"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana",
+        "UCC"
+      ],
+      "detailed_overview": "Food science prepares graduates for safe and innovative food products in industry and regulation."
+    },
+    {
+      "slug": "agriculture",
+      "name": "BSc Agriculture",
+      "field": "Agriculture & Environment",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Improve crop and livestock systems for food security and rural livelihoods.",
+      "core_topics": [
+        "Crop science",
+        "Soil science",
+        "Animal science",
+        "Agribusiness basics"
+      ],
+      "career_paths": [
+        "Agronomist",
+        "Extension officer",
+        "Farm manager"
+      ],
+      "related_shs_subjects": [
+        "Biology",
+        "Chemistry",
+        "Geography",
+        "Elective Mathematics"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "UCC",
+        "UDS",
+        "UENR"
+      ],
+      "detailed_overview": "Agriculture programmes blend science and practice so graduates can raise productivity sustainably."
+    },
+    {
+      "slug": "agricultural-engineering",
+      "name": "BSc Agricultural Engineering",
+      "field": "Agriculture & Environment",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Engineer tools, irrigation, and post-harvest systems for farming.",
+      "core_topics": [
+        "Farm power",
+        "Irrigation",
+        "Soil and water engineering",
+        "Processing equipment"
+      ],
+      "career_paths": [
+        "Agricultural engineer",
+        "Irrigation engineer"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "Physics",
+        "Chemistry"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "UCC"
+      ],
+      "detailed_overview": "Agricultural engineering applies mechanical and civil principles to farm productivity."
+    },
+    {
+      "slug": "natural-resources",
+      "name": "BSc Natural Resources Management",
+      "field": "Agriculture & Environment",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Manage forests, wildlife, and land resources responsibly.",
+      "core_topics": [
+        "Forestry",
+        "Wildlife",
+        "Land use",
+        "Conservation",
+        "Resource economics"
+      ],
+      "career_paths": [
+        "Resource officer",
+        "Forestry roles",
+        "Conservation associate"
+      ],
+      "related_shs_subjects": [
+        "Biology",
+        "Geography",
+        "Chemistry"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "UENR",
+        "UCC"
+      ],
+      "detailed_overview": "Students learn stewardship of forests, water, and biodiversity alongside community livelihoods."
+    },
+    {
+      "slug": "aquaculture",
+      "name": "BSc Aquaculture and Fisheries",
+      "field": "Agriculture & Environment",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Produce and manage fish and aquatic resources sustainably.",
+      "core_topics": [
+        "Fish biology",
+        "Pond management",
+        "Hatchery",
+        "Aquatic ecology"
+      ],
+      "career_paths": [
+        "Aquaculture officer",
+        "Fisheries officer"
+      ],
+      "related_shs_subjects": [
+        "Biology",
+        "Chemistry",
+        "Geography"
+      ],
+      "commonly_offered_at": [
+        "UCC",
+        "KNUST",
+        "UDS"
+      ],
+      "detailed_overview": "Aquaculture focuses on farming fish and other aquatic organisms sustainably. Students learn hatchery methods, water quality, feeding, disease control, and farm economics. Careers include fish farm management, extension services, feed supply, and roles in food security and environmental agencies."
+    },
+    {
+      "slug": "agribusiness",
+      "name": "BSc Agribusiness",
+      "field": "Agriculture & Environment",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Run agricultural value chains with business and market skills.",
+      "core_topics": [
+        "Farm business",
+        "Value chains",
+        "Agricultural marketing",
+        "Finance"
+      ],
+      "career_paths": [
+        "Agribusiness manager",
+        "Commodity trader junior roles"
+      ],
+      "related_shs_subjects": [
+        "Economics",
+        "Elective Mathematics",
+        "Agriculture Elective"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "UCC",
+        "UDS"
+      ],
+      "detailed_overview": "Agribusiness connects farming to markets through finance, logistics, and entrepreneurship."
+    },
+    {
+      "slug": "climate-science",
+      "name": "BSc Meteorology and Climate Science",
+      "field": "Agriculture & Environment",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Understand climate systems and adaptation strategies for communities.",
+      "core_topics": [
+        "Climatology",
+        "Meteorology basics",
+        "Adaptation",
+        "Environmental monitoring"
+      ],
+      "career_paths": [
+        "Climate officer",
+        "Environmental analyst"
+      ],
+      "related_shs_subjects": [
+        "Geography",
+        "Physics",
+        "Elective Mathematics",
+        "Biology"
+      ],
+      "commonly_offered_at": [
+        "UENR",
+        "University of Ghana",
+        "KNUST"
+      ],
+      "detailed_overview": "These programmes prepare graduates to interpret climate data and support adaptation planning."
+    },
+    {
+      "slug": "architecture",
+      "name": "BSc Architecture",
+      "field": "Built Environment",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Design buildings and spaces that are functional, safe, and culturally responsive.",
+      "core_topics": [
+        "Design studio",
+        "Building technology",
+        "History and theory",
+        "Structures intro"
+      ],
+      "career_paths": [
+        "Architectural assistant",
+        "Design technologist pathway"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "Physics",
+        "Visual Arts",
+        "Technical Drawing"
+      ],
+      "commonly_offered_at": [
+        "KNUST"
+      ],
+      "detailed_overview": "Architecture blends creativity and technical knowledge through studio-based learning."
+    },
+    {
+      "slug": "quantity-surveying",
+      "name": "BSc Quantity Surveying",
+      "field": "Built Environment",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Manage construction costs, contracts, and project finances.",
+      "core_topics": [
+        "Measurement",
+        "Cost planning",
+        "Contracts",
+        "Construction economics"
+      ],
+      "career_paths": [
+        "Quantity surveyor",
+        "Cost consultant",
+        "Project cost officer"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "Economics",
+        "Technical Drawing"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "technical universities"
+      ],
+      "detailed_overview": "Quantity surveying keeps construction projects financially controlled from tender to completion."
+    },
+    {
+      "slug": "planning",
+      "name": "BSc Human Settlement Planning",
+      "field": "Built Environment",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Plan towns and regions for orderly, sustainable development.",
+      "core_topics": [
+        "Urban planning",
+        "Land use",
+        "GIS",
+        "Planning law basics"
+      ],
+      "career_paths": [
+        "Planning officer",
+        "Urban development associate"
+      ],
+      "related_shs_subjects": [
+        "Geography",
+        "Elective Mathematics",
+        "Economics"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Ghana"
+      ],
+      "detailed_overview": "Planning programmes train graduates to shape cities through policy, maps, and engagement."
+    },
+    {
+      "slug": "land-economy",
+      "name": "BSc Land Economy",
+      "field": "Built Environment",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Study land markets, valuation, and real estate economics.",
+      "core_topics": [
+        "Valuation",
+        "Land law basics",
+        "Real estate",
+        "Economics of land"
+      ],
+      "career_paths": [
+        "Valuer trainee",
+        "Estate officer",
+        "Land administration roles"
+      ],
+      "related_shs_subjects": [
+        "Economics",
+        "Elective Mathematics",
+        "Geography"
+      ],
+      "commonly_offered_at": [
+        "KNUST"
+      ],
+      "detailed_overview": "Land Economy blends property valuation, land administration, and real-estate economics. You study land law, surveying basics, investment appraisal, and development planning. Graduates work in valuation firms, banks, estate agencies, and public land commissions."
+    },
+    {
+      "slug": "construction-technology",
+      "name": "BSc Construction Technology and Management",
+      "field": "Built Environment",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Deliver building projects through construction methods and site management.",
+      "core_topics": [
+        "Building materials",
+        "Site management",
+        "Construction methods",
+        "Safety"
+      ],
+      "career_paths": [
+        "Site engineer trainee",
+        "Construction supervisor"
+      ],
+      "related_shs_subjects": [
+        "Elective Mathematics",
+        "Physics",
+        "Technical Drawing"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "technical universities"
+      ],
+      "detailed_overview": "Construction programmes emphasise practical delivery with quality, safety, and scheduling."
+    },
+    {
+      "slug": "education-basic",
+      "name": "BEd Basic Education",
+      "field": "Education",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Prepare to teach and support learning at the basic school level.",
+      "core_topics": [
+        "Pedagogy",
+        "Curriculum",
+        "Child development",
+        "Subject methods",
+        "Teaching practice"
+      ],
+      "career_paths": [
+        "Basic school teacher",
+        "Education officer pathway"
+      ],
+      "related_shs_subjects": [
+        "English",
+        "Social Studies",
+        "relevant electives"
+      ],
+      "commonly_offered_at": [
+        "UEW",
+        "UCC",
+        "University of Ghana"
+      ],
+      "detailed_overview": "Basic Education programmes prepare teachers for primary and junior high classrooms. Coursework covers child development, pedagogy, curriculum, and subject methods. Graduates typically teach in schools or move into education administration, curriculum support, and community learning programmes."
+    },
+    {
+      "slug": "education-secondary",
+      "name": "BEd Secondary Education",
+      "field": "Education",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Train as a secondary school teacher in specialised subject areas.",
+      "core_topics": [
+        "Subject pedagogy",
+        "Assessment",
+        "Educational psychology",
+        "Teaching practice"
+      ],
+      "career_paths": [
+        "SHS teacher",
+        "Subject tutor"
+      ],
+      "related_shs_subjects": [
+        "Strong SHS electives in teaching subject",
+        "English"
+      ],
+      "commonly_offered_at": [
+        "UEW",
+        "UCC",
+        "University of Ghana"
+      ],
+      "detailed_overview": "Secondary education programmes deepen content knowledge and classroom skills for SHS teaching."
+    },
+    {
+      "slug": "early-childhood",
+      "name": "BEd Early Childhood Education",
+      "field": "Education",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Support learning and care for young children in the early years.",
+      "core_topics": [
+        "Child development",
+        "Play-based learning",
+        "Early literacy and numeracy",
+        "Care practices"
+      ],
+      "career_paths": [
+        "Early childhood educator",
+        "Kindergarten teacher"
+      ],
+      "related_shs_subjects": [
+        "English",
+        "Social Studies",
+        "Home Economics"
+      ],
+      "commonly_offered_at": [
+        "UEW",
+        "UCC"
+      ],
+      "detailed_overview": "Early childhood programmes emphasise nurturing environments for lifelong learning foundations."
+    },
+    {
+      "slug": "special-education",
+      "name": "BEd Special Education",
+      "field": "Education",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Teach and support learners with diverse educational needs.",
+      "core_topics": [
+        "Inclusive education",
+        "Assessment",
+        "Intervention strategies",
+        "Psychology"
+      ],
+      "career_paths": [
+        "Special educator",
+        "Inclusive education officer"
+      ],
+      "related_shs_subjects": [
+        "English",
+        "Social Studies",
+        "Biology"
+      ],
+      "commonly_offered_at": [
+        "UEW",
+        "UCC"
+      ],
+      "detailed_overview": "Special Education prepares teachers to adapt instruction so every learner can progress."
+    },
+    {
+      "slug": "psychology",
+      "name": "BA / BSc Psychology",
+      "field": "Social Sciences & Arts",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Study behaviour and mental processes with research and applied foundations.",
+      "core_topics": [
+        "Developmental",
+        "Social",
+        "Cognitive",
+        "Research methods",
+        "Counselling intro"
+      ],
+      "career_paths": [
+        "HR and people roles",
+        "Research assistant",
+        "Counselling pathway (further study)"
+      ],
+      "related_shs_subjects": [
+        "English",
+        "Social Studies",
+        "Biology",
+        "Elective Mathematics"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "UCC",
+        "KNUST"
+      ],
+      "detailed_overview": "Psychology builds insight into human behaviour useful in education, health, and business."
+    },
+    {
+      "slug": "sociology",
+      "name": "BA Sociology",
+      "field": "Social Sciences & Arts",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Analyse social structures, change, and community life.",
+      "core_topics": [
+        "Social theory",
+        "Research methods",
+        "Ghanaian society",
+        "Development sociology"
+      ],
+      "career_paths": [
+        "Social researcher",
+        "NGO programme officer",
+        "Policy support roles"
+      ],
+      "related_shs_subjects": [
+        "English",
+        "Social Studies",
+        "Geography"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "UCC"
+      ],
+      "detailed_overview": "Sociology helps graduates understand institutions and inequality in development work."
+    },
+    {
+      "slug": "political-science",
+      "name": "BA Political Science",
+      "field": "Social Sciences & Arts",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Study government, power, and public affairs.",
+      "core_topics": [
+        "Political theory",
+        "Comparative politics",
+        "Ghanaian politics",
+        "International relations intro"
+      ],
+      "career_paths": [
+        "Public service",
+        "Policy analyst",
+        "Diplomatic pathway"
+      ],
+      "related_shs_subjects": [
+        "English",
+        "Social Studies",
+        "Government"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "UCC",
+        "KNUST"
+      ],
+      "detailed_overview": "Political Science prepares students for civic leadership and careers around governance."
+    },
+    {
+      "slug": "geography-development",
+      "name": "BA Geography and Resource Development",
+      "field": "Social Sciences & Arts",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Explore people–environment relationships and spatial development.",
+      "core_topics": [
+        "Physical geography",
+        "Human geography",
+        "GIS basics",
+        "Development studies"
+      ],
+      "career_paths": [
+        "Development officer",
+        "GIS assistant",
+        "Planning support"
+      ],
+      "related_shs_subjects": [
+        "Geography",
+        "Elective Mathematics",
+        "Economics"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "UCC",
+        "KNUST"
+      ],
+      "detailed_overview": "Geography and Development explores how people, places, and resources interact. You study physical and human geography, GIS, environmental management, and development planning. Careers include urban planning support, NGOs, environmental consulting, and research or policy roles."
+    },
+    {
+      "slug": "social-work",
+      "name": "BA Social Work",
+      "field": "Social Sciences & Arts",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Support individuals and communities through professional social services.",
+      "core_topics": [
+        "Social welfare",
+        "Casework",
+        "Community practice",
+        "Ethics"
+      ],
+      "career_paths": [
+        "Social worker",
+        "Community development officer"
+      ],
+      "related_shs_subjects": [
+        "English",
+        "Social Studies"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "UCC"
+      ],
+      "detailed_overview": "Social Work trains practitioners to advocate for vulnerable people and deliver support."
+    },
+    {
+      "slug": "history",
+      "name": "BA History",
+      "field": "Social Sciences & Arts",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Investigate the past to understand societies and identity.",
+      "core_topics": [
+        "African history",
+        "World history",
+        "Historical methods",
+        "Ghanaian history"
+      ],
+      "career_paths": [
+        "Teaching pathway",
+        "Heritage and museum roles",
+        "Research"
+      ],
+      "related_shs_subjects": [
+        "English",
+        "Social Studies",
+        "History"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "UCC"
+      ],
+      "detailed_overview": "History develops critical reading and writing skills for education and culture careers."
+    },
+    {
+      "slug": "languages",
+      "name": "BA English / French / Linguistics",
+      "field": "Social Sciences & Arts",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Deepen language skills for communication, teaching, and cultural work.",
+      "core_topics": [
+        "Literature",
+        "Linguistics",
+        "Composition",
+        "Language teaching methods"
+      ],
+      "career_paths": [
+        "Teacher",
+        "Communications",
+        "Translation pathway"
+      ],
+      "related_shs_subjects": [
+        "English",
+        "French",
+        "Literature"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "UCC",
+        "UEW"
+      ],
+      "detailed_overview": "Language programmes develop advanced communication, literature, and cultural analysis skills in one or more languages. Students practise translation, linguistics, and critical reading. Graduates work in teaching, media, diplomacy support, translation, publishing, and international organisations."
+    },
+    {
+      "slug": "international-relations",
+      "name": "BA International Relations",
+      "field": "Social Sciences & Arts",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Study diplomacy, global politics, and international organisations.",
+      "core_topics": [
+        "IR theory",
+        "Diplomacy",
+        "International organisations",
+        "Global political economy"
+      ],
+      "career_paths": [
+        "Foreign service pathway",
+        "NGO international programmes",
+        "Policy roles"
+      ],
+      "related_shs_subjects": [
+        "English",
+        "Government",
+        "Social Studies",
+        "Economics"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "UCC"
+      ],
+      "detailed_overview": "International Relations prepares students to analyse global affairs and development work."
+    },
+    {
+      "slug": "communication-studies",
+      "name": "BA Communication Studies",
+      "field": "Creative Arts & Communication",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Create and manage media messages across journalism, PR, and digital platforms.",
+      "core_topics": [
+        "Media writing",
+        "PR",
+        "Broadcasting basics",
+        "Digital media",
+        "Media ethics"
+      ],
+      "career_paths": [
+        "Journalist",
+        "PR officer",
+        "Content producer"
+      ],
+      "related_shs_subjects": [
+        "English",
+        "Social Studies",
+        "Literature"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "UCC",
+        "GIJ pathways"
+      ],
+      "detailed_overview": "Communication Studies trains clear storytelling for newsrooms, brands, and public institutions."
+    },
+    {
+      "slug": "fine-art",
+      "name": "BA Fine Art",
+      "field": "Creative Arts & Communication",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Develop studio practice in drawing, painting, sculpture, and visual expression.",
+      "core_topics": [
+        "Studio practice",
+        "Art history",
+        "Critique",
+        "Contemporary practice"
+      ],
+      "career_paths": [
+        "Artist",
+        "Illustrator",
+        "Creative educator pathway"
+      ],
+      "related_shs_subjects": [
+        "Visual Arts",
+        "English"
+      ],
+      "commonly_offered_at": [
+        "KNUST",
+        "University of Education"
+      ],
+      "detailed_overview": "Fine Art centres creative practice and critical thinking through intensive studio work."
+    },
+    {
+      "slug": "graphic-design",
+      "name": "BA Communication Design",
+      "field": "Creative Arts & Communication",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Design visual identities, publications, and digital interfaces.",
+      "core_topics": [
+        "Typography",
+        "Branding",
+        "Layout",
+        "Digital design tools",
+        "Design thinking"
+      ],
+      "career_paths": [
+        "Graphic designer",
+        "Brand designer",
+        "UI design pathway"
+      ],
+      "related_shs_subjects": [
+        "Visual Arts",
+        "ICT",
+        "English"
+      ],
+      "commonly_offered_at": [
+        "KNUST"
+      ],
+      "detailed_overview": "Design programmes teach how visuals communicate clearly for business, culture, and the web."
+    },
+    {
+      "slug": "theatre-film",
+      "name": "BA Theatre Arts / Film and Television",
+      "field": "Creative Arts & Communication",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Tell stories through performance, directing, and screen production.",
+      "core_topics": [
+        "Acting and directing",
+        "Scriptwriting",
+        "Production",
+        "Media aesthetics"
+      ],
+      "career_paths": [
+        "Performer",
+        "Production assistant",
+        "Content creator"
+      ],
+      "related_shs_subjects": [
+        "English",
+        "Literature",
+        "Visual Arts"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "NAFTI pathways",
+        "UCC"
+      ],
+      "detailed_overview": "These programmes blend creative storytelling with production skills for stage and screen."
+    },
+    {
+      "slug": "music",
+      "name": "BA Music",
+      "field": "Creative Arts & Communication",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Study performance, theory, and musicology with practical ensembles.",
+      "core_topics": [
+        "Music theory",
+        "Performance",
+        "Ethnomusicology",
+        "Composition basics"
+      ],
+      "career_paths": [
+        "Performer",
+        "Music educator",
+        "Studio roles"
+      ],
+      "related_shs_subjects": [
+        "Music",
+        "English"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "UEW"
+      ],
+      "detailed_overview": "Music degrees combine artistry and scholarship for performance, teaching, and culture."
+    },
+    {
+      "slug": "publishing",
+      "name": "BA Publishing Studies",
+      "field": "Creative Arts & Communication",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Manage the journey of text from manuscript to reader across print and digital.",
+      "core_topics": [
+        "Editing",
+        "Book design basics",
+        "Publishing business",
+        "Digital publishing"
+      ],
+      "career_paths": [
+        "Editorial assistant",
+        "Publishing officer"
+      ],
+      "related_shs_subjects": [
+        "English",
+        "Literature",
+        "ICT"
+      ],
+      "commonly_offered_at": [
+        "KNUST"
+      ],
+      "detailed_overview": "Publishing Studies prepares graduates for editorial and production roles in knowledge industries."
+    },
+    {
+      "slug": "law-llb",
+      "name": "LLB Law",
+      "field": "Law",
+      "level": "Undergraduate (Bachelor's)",
+      "typical_duration": "4 years",
+      "brief": "Study the legal system, rights, and legal reasoning for advocacy and counsel.",
+      "core_topics": [
+        "Constitutional law",
+        "Contract",
+        "Criminal law",
+        "Tort",
+        "Legal method"
+      ],
+      "career_paths": [
+        "Lawyer pathway (after professional training)",
+        "Legal officer",
+        "Compliance"
+      ],
+      "related_shs_subjects": [
+        "English",
+        "Literature",
+        "Government",
+        "Elective Mathematics helpful"
+      ],
+      "commonly_offered_at": [
+        "University of Ghana",
+        "KNUST",
+        "UCC",
+        "GIMPA"
+      ],
+      "detailed_overview": "An LLB builds rigorous legal analysis. Graduates usually continue to professional training before practice."
+    }
+  ]
+}
