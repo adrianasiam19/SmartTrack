@@ -30,7 +30,6 @@ desktop.ini
 # Local env files
 .env
 *.env
-.env*.local
 
 # Typescript
 *.tsbuildinfo
