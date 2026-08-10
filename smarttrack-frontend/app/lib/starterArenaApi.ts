@@ -117,14 +117,23 @@ export async function startStarterArena(
   psychometricCount: number = 4,
   academicCount: number = 4
 ): Promise<StartSessionResponse> {
-  const response = await fetch(`${API_BASE_URL}/starter-arena/start`, {
-    method: 'POST',
-    headers: getAuthHeaders(),
-    body: JSON.stringify({
-      psychometric_count: psychometricCount,
-      academic_count: academicCount,
-    }),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}/starter-arena/start`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({
+        psychometric_count: psychometricCount,
+        academic_count: academicCount,
+      }),
+      signal: AbortSignal.timeout(25000),
+    });
+  } catch (err) {
+    if (err instanceof DOMException && err.name === 'TimeoutError') {
+      throw new Error('Starter Arena is taking too long to start. Please try again.');
+    }
+    throw err;
+  }
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
@@ -142,16 +151,25 @@ export async function completeStarterArena(
   psychometricResponses: StoredResponse[],
   cognitiveResponses: StoredResponse[]
 ): Promise<CompleteSessionResponse> {
-  const response = await fetch(`${API_BASE_URL}/starter-arena/complete`, {
-    method: 'POST',
-    headers: getAuthHeaders(),
-    body: JSON.stringify({
-      session_id: sessionId,
-      psychometric_responses: psychometricResponses,
-      cognitive_responses: cognitiveResponses,
-      academic_responses: cognitiveResponses,
-    }),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}/starter-arena/complete`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({
+        session_id: sessionId,
+        psychometric_responses: psychometricResponses,
+        cognitive_responses: cognitiveResponses,
+        academic_responses: cognitiveResponses,
+      }),
+      signal: AbortSignal.timeout(15000),
+    });
+  } catch {
+    return {
+      success: false,
+      error: 'Timed out saving Starter Arena results.',
+    };
+  }
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));

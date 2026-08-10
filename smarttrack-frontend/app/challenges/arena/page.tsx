@@ -165,6 +165,7 @@ function ChallengeArena() {
   const retriesRef = useRef(0);
   const responseTimesRef = useRef<number[]>([]);
   const bgFetchRef = useRef(false);
+  const completingRef = useRef(false);
   const psychResponsesRef = useRef<StoredResponse[]>([]);
   const academicResponsesRef = useRef<StoredResponse[]>([]);
 
@@ -230,28 +231,6 @@ function ChallengeArena() {
       // Backend /starter-arena/complete also sets these flags as a safety net.
     }
   }, []);
-
-  useEffect(() => {
-    if (isPlacement && phase === 'complete') {
-      // Generate learner profile
-      if (psychResponses.length > 0 || academicResponses.length > 0) {
-        setProfileLoading(true);
-        completeStarterArena(starterSessionId, psychResponses, academicResponses)
-          .then(async (result) => {
-            if (result.success && result.profile) {
-              setLearnerProfile(result.profile);
-            }
-            await markStarterArenaComplete();
-          })
-          .catch(async () => {
-            await markStarterArenaComplete();
-          })
-          .finally(() => setProfileLoading(false));
-      } else {
-        markStarterArenaComplete();
-      }
-    }
-  }, [isPlacement, phase, starterSessionId, psychResponses, academicResponses, markStarterArenaComplete]);
 
   // For placement: use actual count from API (defaults to 8: 4 LLM + 4 psychometric)
   const MAX_QUESTIONS = isPlacement ? (session.totalQuestions || 8) : 10;
@@ -559,6 +538,8 @@ function ChallengeArena() {
     }
 
     const finishPlacement = async () => {
+      if (completingRef.current) return;
+      completingRef.current = true;
       // Leave the static "Great thinking!" card immediately so deploy latency is visible.
       setProfileLoading(true);
       setPhase('loading_more');
@@ -649,25 +630,28 @@ function ChallengeArena() {
       } else if (isPlacement) {
         // Placement has no mid-session refill — finish with answers collected so far
         // instead of hanging on "Preparing your next discovery...".
-        setPhase('loading_more');
-        setProfileLoading(true);
-        void (async () => {
-          try {
-            const result = await completeStarterArena(
-              starterSessionId,
-              psychResponsesRef.current,
-              academicResponsesRef.current,
-            );
-            if (result.success && result.profile) {
-              setLearnerProfile(result.profile);
+        if (!completingRef.current) {
+          completingRef.current = true;
+          setPhase('loading_more');
+          setProfileLoading(true);
+          void (async () => {
+            try {
+              const result = await completeStarterArena(
+                starterSessionId,
+                psychResponsesRef.current,
+                academicResponsesRef.current,
+              );
+              if (result.success && result.profile) {
+                setLearnerProfile(result.profile);
+              }
+            } catch {
+              // continue to dashboard
             }
-          } catch {
-            // continue to dashboard
-          }
-          await markStarterArenaComplete();
-          setProfileLoading(false);
-          router.replace('/dashboard');
-        })();
+            await markStarterArenaComplete();
+            setProfileLoading(false);
+            router.replace('/dashboard');
+          })();
+        }
       } else {
         setPhase('loading_more');
       }
@@ -698,7 +682,6 @@ function ChallengeArena() {
 
   useEffect(() => {
     if (isPlacement) return;
-    if (isScientificArena) return;
     if (phase === 'gameplay' && currentQuestion && !bgFetchRef.current) {
       bgFetchRef.current = true;
       fetchMoreQuestions().then((qs: Question[] | null) => {
@@ -713,6 +696,46 @@ function ChallengeArena() {
       });
     }
   }, [phase, currentQuestion?.id, fetchMoreQuestions, isPlacement]);
+
+  // Recover from empty competitive queue instead of spinning forever.
+  useEffect(() => {
+    if (isPlacement || phase !== 'loading_more') return;
+    let cancelled = false;
+    let attempts = 0;
+    const tick = async () => {
+      if (cancelled) return;
+      attempts += 1;
+      const qs = await fetchMoreQuestions();
+      if (cancelled) return;
+      if (qs?.length) {
+        const fresh = qs.filter((q) => !usedIdsRef.current.has(q.id));
+        fresh.forEach((q) => usedIdsRef.current.add(q.id));
+        if (fresh.length) {
+          setCurrentQuestion(fresh[0]);
+          setQuestionQueue(fresh.slice(1));
+          setSelectedAnswer(null);
+          setIsCorrect(null);
+          setShortResponseDraft('');
+          setRankingOrder([]);
+          setTimeLeft(QUESTION_TIMEOUT);
+          setQuestionStartTime(Date.now());
+          setShuffledKeys(shuffledOptionKeys(fresh[0].options || {}));
+          setPhase('gameplay');
+          return;
+        }
+      }
+      if (attempts >= 4) {
+        setError('Could not load more challenges. Please try again.');
+        setPhase('intro');
+        return;
+      }
+      window.setTimeout(tick, 1500);
+    };
+    void tick();
+    return () => {
+      cancelled = true;
+    };
+  }, [isPlacement, phase, fetchMoreQuestions, QUESTION_TIMEOUT]);
 
   const handlePsychometricComplete = () => {
     psychometricCompletedRef.current = true;
@@ -1239,6 +1262,18 @@ function ChallengeArena() {
               : 'Atlas AI is crafting questions for your level…'}
           </p>
         </div>
+        {isPlacement && profileLoading ? (
+          <button
+            type="button"
+            onClick={async () => {
+              await markStarterArenaComplete();
+              router.replace('/dashboard');
+            }}
+            className="mt-2 text-sm font-semibold text-[#4F46E5] underline underline-offset-2"
+          >
+            Continue to dashboard
+          </button>
+        ) : null}
       </div>
     </motion.div>
   );
