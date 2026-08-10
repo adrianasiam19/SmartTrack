@@ -13,10 +13,22 @@ export type ProgrammeBrief = {
   commonly_offered_at?: string[];
 };
 
+export type ProgrammeOffering = {
+  university: string;
+  programme_name?: string;
+  overview?: string;
+  source_url?: string;
+  department?: string;
+  duration?: string;
+  faculty?: string;
+};
+
 export type ProgrammeDetail = ProgrammeBrief & {
   core_topics?: string[];
   career_paths?: string[];
   detailed_overview?: string;
+  offerings?: ProgrammeOffering[];
+  source_urls?: string[];
 };
 
 export type CourseDirectoryListResponse = {
