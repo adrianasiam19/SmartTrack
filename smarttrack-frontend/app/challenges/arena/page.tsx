@@ -558,23 +558,31 @@ function ChallengeArena() {
         });
     }
 
+    const finishPlacement = async () => {
+      // Leave the static "Great thinking!" card immediately so deploy latency is visible.
+      setProfileLoading(true);
+      setPhase('loading_more');
+      try {
+        const result = await completeStarterArena(
+          starterSessionId,
+          psychResponsesRef.current,
+          academicResponsesRef.current,
+        );
+        if (result.success && result.profile) {
+          setLearnerProfile(result.profile);
+        }
+      } catch {
+        // Completion endpoint also sets flags; continue to dashboard.
+      }
+      await markStarterArenaComplete();
+      setProfileLoading(false);
+      router.replace('/dashboard');
+    };
+
     const handleAdvance = async () => {
       if (isLastQuestion) {
         if (isPlacement) {
-          try {
-            const result = await completeStarterArena(
-              starterSessionId,
-              psychResponsesRef.current,
-              academicResponsesRef.current,
-            );
-            if (result.success && result.profile) {
-              setLearnerProfile(result.profile);
-            }
-          } catch {
-            // Completion endpoint also sets flags; continue to dashboard.
-          }
-          await markStarterArenaComplete();
-          router.replace('/dashboard');
+          await finishPlacement();
         } else {
           const avgTime = responseTimesRef.current.length > 0
             ? responseTimesRef.current.reduce((a, b) => a + b, 0) / responseTimesRef.current.length
@@ -601,7 +609,8 @@ function ChallengeArena() {
     if (isInteractive) {
       setTimeout(handleAdvance, 400);
     } else {
-      setTimeout(handleAdvance, isPlacement ? 1800 : 2200);
+      // Placement: short beat so hosted API work isn't hidden behind a long static card.
+      setTimeout(handleAdvance, isPlacement ? 500 : 2200);
     }
   };
 
@@ -637,6 +646,28 @@ function ChallengeArena() {
         setShuffledKeys(shuffledOptionKeys(nextQ.options || {}));
         bgFetchRef.current = false;
         setPhase('gameplay');
+      } else if (isPlacement) {
+        // Placement has no mid-session refill — finish with answers collected so far
+        // instead of hanging on "Preparing your next discovery...".
+        setPhase('loading_more');
+        setProfileLoading(true);
+        void (async () => {
+          try {
+            const result = await completeStarterArena(
+              starterSessionId,
+              psychResponsesRef.current,
+              academicResponsesRef.current,
+            );
+            if (result.success && result.profile) {
+              setLearnerProfile(result.profile);
+            }
+          } catch {
+            // continue to dashboard
+          }
+          await markStarterArenaComplete();
+          setProfileLoading(false);
+          router.replace('/dashboard');
+        })();
       } else {
         setPhase('loading_more');
       }
@@ -1194,11 +1225,17 @@ function ChallengeArena() {
         <div className="w-16 h-16 border-4 border-[#C7D2FE] border-t-[#4F46E5] rounded-full animate-spin" />
         <div>
           <h3 className="text-xl font-semibold text-[#1E293B] mb-2">
-            {isPlacement ? 'Preparing your next discovery...' : 'Generating Challenge'}
+            {isPlacement
+              ? profileLoading
+                ? 'Wrapping up Starter Arena…'
+                : 'Preparing your next discovery...'
+              : 'Generating Challenge'}
           </h3>
           <p className="text-gray-400 text-sm max-w-xs mx-auto">
             {isPlacement
-              ? 'Atlas AI is picking something interesting for you!'
+              ? profileLoading
+                ? 'Saving your answers and opening your dashboard.'
+                : 'Atlas AI is picking something interesting for you!'
               : 'Atlas AI is crafting questions for your level…'}
           </p>
         </div>
