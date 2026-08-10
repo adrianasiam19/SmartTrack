@@ -30,14 +30,20 @@ desktop.ini
 # Local env files
 .env
 *.env
+.env*.local
 
 # Typescript
 *.tsbuildinfo
 next-env.d.ts
 
-# IDEs
+# IDEs / local AI agent tooling (do not publish as project contributors/content)
 .vscode/
 .idea/
+.claude/
+.cursor/
+.agent/
+antigravity-skills/
+superpowers/
 
 # Testing
 **/coverage/
