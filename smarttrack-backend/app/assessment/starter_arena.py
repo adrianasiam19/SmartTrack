@@ -241,7 +241,8 @@ async def get_ai_response(messages: list, model: str = "") -> str:
                 "temperature": 0.6,
                 "max_tokens": 4096,
             }
-            async with httpx.AsyncClient(timeout=120.0) as client:
+            # Keep start latency bounded so Starter Arena never blocks ~2 minutes on deploy.
+            async with httpx.AsyncClient(timeout=12.0) as client:
                 response = await client.post(provider["url"], headers=headers, json=payload)
                 response.raise_for_status()
                 result = response.json()
@@ -937,15 +938,27 @@ async def generate_starter_session(
     )
 
     # ── 2. Generate session-aware cognitive questions via the LLM ─────────
+    # Cap wait so hosted cold starts fail over to local fallbacks quickly.
     existing_questions = [question["question"] for question in psych_questions]
     covered_categories = [question["category"] for question in psych_questions]
-    cognitive_questions = await _generate_adaptive_cognitive_questions(
-        count=academic_count,
-        shs_level=shs_level,
-        existing_questions=existing_questions,
-        covered_categories=covered_categories,
-        total_assessment_questions=psychometric_count + academic_count,
-    )
+    cognitive_questions: list = []
+    try:
+        cognitive_questions = await asyncio.wait_for(
+            _generate_adaptive_cognitive_questions(
+                count=academic_count,
+                shs_level=shs_level,
+                existing_questions=existing_questions,
+                covered_categories=covered_categories,
+                total_assessment_questions=psychometric_count + academic_count,
+            ),
+            timeout=18.0,
+        )
+    except asyncio.TimeoutError:
+        logger.warning("Starter Arena LLM cognitive generation timed out; using fallbacks")
+        cognitive_questions = []
+    except Exception as e:
+        logger.warning("Starter Arena LLM cognitive generation failed: %s", e)
+        cognitive_questions = []
 
     if len(cognitive_questions) < academic_count:
         candidate_fallbacks = _get_fallback_cognitive_questions(
