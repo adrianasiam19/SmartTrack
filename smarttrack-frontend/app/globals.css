@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* Permanent light mode: dark: utilities only apply with an explicit .dark class.
+   Atlas never sets .dark, so OS/system dark theme cannot flip the UI. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   --color-primary: #2563EB;
@@ -31,7 +35,8 @@
 }
 
 :root {
-  --background: transparent;
+  color-scheme: light only;
+  --background: #F8FAFC;
   --foreground: #1E293B;
   --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   /* Aurora gradient CSS variables (Tailwind v4 equivalent of flattenColorPalette plugin) */
@@ -48,17 +53,32 @@
 html {
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
-  color-scheme: light;
+  color-scheme: light only;
+  background: #F8FAFC;
+}
+
+html.dark {
+  /* Belt-and-suspenders: never allow a .dark root to stick */
+  color-scheme: light only;
 }
 
 body {
-  color: var(--foreground);
-  background: #F8FAFC;
+  color: #1E293B;
+  background: #F8FAFC !important;
   font-family: var(--font-inter);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   min-height: 100dvh;
+}
+
+@media (prefers-color-scheme: dark) {
+  html,
+  body {
+    color-scheme: light only;
+    background: #F8FAFC !important;
+    color: #1E293B !important;
+  }
 }
 
 ::-webkit-scrollbar {

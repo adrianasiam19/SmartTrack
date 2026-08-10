@@ -13,6 +13,9 @@ export const metadata: Metadata = {
   title: "Atlas - Intelligent Learning & University Program Recommendations",
   description: "Challenge-based learning platform for secondary students. Discover your strengths and find the perfect university program.",
   keywords: ["education", "learning", "career guidance", "WASSCE", "university recommendations"],
+  other: {
+    "color-scheme": "light only",
+  },
 };
 
 export const viewport: Viewport = {
@@ -20,7 +23,11 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   viewportFit: "cover",
-  themeColor: "#F4F7FF",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F8FAFC" },
+    { media: "(prefers-color-scheme: dark)", color: "#F8FAFC" },
+  ],
+  colorScheme: "light",
 };
 
 export default function RootLayout({
