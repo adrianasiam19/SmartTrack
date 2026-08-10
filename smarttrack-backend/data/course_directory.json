@@ -1,5 +1,5 @@
 {
-  "note": "Course Directory reference catalogue for Atlas. Educational overview only — no cut-offs or eligibility claims. Expand by appending programmes.",
+  "note": "Course Directory for Atlas — educational programme overviews with university offerings where available. Not admission cut-offs or eligibility advice. Last scrape merge: 2026-08-09T23:12:51+00:00.",
   "fields": [
     "Health Sciences",
     "Engineering",
@@ -46,7 +46,40 @@
         "UCC",
         "UDS"
       ],
-      "detailed_overview": "Medicine combines biomedical science with supervised clinical practice. Students study the structure and function of the human body, disease processes, and patient care across hospital and community settings. Graduates typically complete internship and residency pathways before independent practice."
+      "detailed_overview": "The Bachelor of Medicine and Bachelor of Surgery (MB ChB) degree commonly referred to as the ‘medical degree’ trains physicians and surgeons to diagnose illnesses and prescribe and administer treatment for people suffering from injury or disease. Physicians examine patients, obtain medical histories, and order, perform, and interpret diagnostic tests and offer treatment and management of diseases. They counsel patients on diet, hygiene, and preventive healthcare. Surgeons specialise in the treatment of injury, disease, and deformity through operations. Using a variety of instruments, a surgeon corrects physical deformities, repairs bone and tissue after injuries, or performs preventive surgeries on patients with debilitating diseases or disorders. Although a large number perform general surgery, many surgeons choose to specialise in a specific area such as: orthopedic surgery (treatment of the musculoskeletal system); neurological surgery (treatment of the brain and nervous system), cardiovascular surgery, otolaryngology (treatment of the ear, nose, and throat) and plastic or reconstructive surgery\n\n(Source: University of Ghana programme information — https://new.ug.edu.gh/ugms.ug.edu.gh/. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Human Biology (Medicine)",
+          "overview": "BSc Human Biology (Medicine) is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Health Sciences"
+        },
+        {
+          "university": "KNUST",
+          "programme_name": "MBChB Medicine",
+          "overview": "MBChB Medicine is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Health Sciences"
+        },
+        {
+          "university": "University of Ghana",
+          "programme_name": "Bachelor of Medicine And Bachelor of Surgery",
+          "overview": "The Bachelor of Medicine and Bachelor of Surgery (MB ChB) degree commonly referred to as the ‘medical degree’ trains physicians and surgeons to diagnose illnesses and prescribe and administer treatment for people suffering from injury or disease. Physicians examine patients, obtain medical histories, and order, perform, and interpret diagnostic tests and offer treatment and management of diseases. They counsel patients on diet, hygiene, and preventive healthcare. Surgeons specialise in the treatment of injury, disease, and deformity through operations. Using a variety of instruments, a surgeon corrects physical deformities, repairs bone and tissue after injuries, or performs preventive surgeries on patients with debilitating diseases or disorders. Although a large number perform general surgery, many surgeons choose to specialise in a specific area such as: orthopedic surgery (treatment of the musculoskeletal system); neurological surgery (treatment of the brain and nervous system), cardiovascular surgery, otolaryngology (treatment of the ear, nose, and throat) and plastic or reconstructive surgery",
+          "source_url": "https://new.ug.edu.gh/ugms.ug.edu.gh/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply",
+        "https://new.ug.edu.gh/ugms.ug.edu.gh/"
+      ]
     },
     {
       "slug": "nursing",
@@ -81,7 +114,41 @@
         "UEW",
         "UDS"
       ],
-      "detailed_overview": "Nursing programmes develop clinical judgment, compassionate care, and evidence-based practice through ward and community placements."
+      "detailed_overview": "Nursing is healthcare professions that focuses on the care of individuals, families, and communities in order for them to attain, maintain, or recover optimal health and quality of life from conception to death. As professional/practice disciplines, Nursing and midwifery embrace theories and models from the natural sciences, behavioural sciences and humanities in nursing and midwifery practice. They equip students in the knowledge, techniques and procedures for promoting health, providing care for the sick, disabled, infirm, children, pregnant women and other individuals or groups. It also includes instruction in the administration of medication and treatments, assisting physicians during treatments and examinations, referring patients for specialist care and planning education for health maintenance. The B.Sc Nursing programme with options leads to professional qualification in General Nursing, Paediatric Nursing, Community Health Nursing or Mental Health Nursing.\n\n(Source: University of Ghana programme information — https://new.ug.edu.gh/nursing.ug.edu.gh. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Nursing",
+          "overview": "BSc Nursing is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Health Sciences"
+        },
+        {
+          "university": "UCC",
+          "programme_name": "BSc Nursing",
+          "overview": "BSc Nursing appears in the UCC academic programmes catalogue. Open the official programme page for full structure and entry information.",
+          "source_url": "https://admissions.ucc.edu.gh/catalogue/programme/bsc-nursing",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        },
+        {
+          "university": "University of Ghana",
+          "programme_name": "Bachelor of Science In Nursing",
+          "overview": "Nursing is healthcare professions that focuses on the care of individuals, families, and communities in order for them to attain, maintain, or recover optimal health and quality of life from conception to death. As professional/practice disciplines, Nursing and midwifery embrace theories and models from the natural sciences, behavioural sciences and humanities in nursing and midwifery practice. They equip students in the knowledge, techniques and procedures for promoting health, providing care for the sick, disabled, infirm, children, pregnant women and other individuals or groups. It also includes instruction in the administration of medication and treatments, assisting physicians during treatments and examinations, referring patients for specialist care and planning education for health maintenance. The B.Sc Nursing programme with options leads to professional qualification in General Nursing, Paediatric Nursing, Community Health Nursing or Mental Health Nursing.",
+          "source_url": "https://new.ug.edu.gh/nursing.ug.edu.gh",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://new.ug.edu.gh/nursing.ug.edu.gh",
+        "https://apps.knust.edu.gh/admissions/apply",
+        "https://admissions.ucc.edu.gh/catalogue/programme/bsc-nursing"
+      ]
     },
     {
       "slug": "pharmacy",
@@ -114,7 +181,41 @@
         "University of Ghana",
         "UCC"
       ],
-      "detailed_overview": "Pharmacy education covers how medicines are designed, dispensed, and used safely across hospitals, community pharmacies, industry, and regulation."
+      "detailed_overview": "Pharmacy is a health profession that deals with various aspects of drug production, dispensing and administration to ensure the safe and effective use of drugs in humans and animals. Pharmacists prepare and dispense prescribed medications and their contraindications. They also advise patients about the use of both prescribed and over-the-counter drugs. The scope of Pharmacy practice is wide ranging from traditional roles such as compounding and dispensing medications to more modern services related to health care, including clinical services, reviewing medications for safety and efficacy, and providing drug information. Pharmacists communicate directly with physicians to correctly deliver medications. Pharmacists also counsel patients on over the counter medications and provide information on home health care supplies and various other health care products. Areas of specialization of pharmacy include psychiatry, intravenous nutrition support, oncology, geriatrics, diabetes, fertility, HIV, psychiatry, nuclear pharmacy, compounding of specialty medications, pharmacotherapy, regulatory pharmacy and industrial pharmacy. Areas of specialization of pharmacy include psychiatry, intravenous nutrition support, oncology, geriatrics, diabetes, fertility, HIV, psychiatry, nuclear medicine, compounding of specialty medications, and pharmacotherapy,regulatory pharmacy and Industrial pharmacy.\n\n(Source: University of Ghana programme information — https://new.ug.edu.gh/pharmacy.ug.edu.gh/. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "Doctor of Pharmacy",
+          "overview": "Doctor of Pharmacy is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Health Sciences"
+        },
+        {
+          "university": "UCC",
+          "programme_name": "PharmD Pharmacy",
+          "overview": "PharmD Pharmacy appears in the UCC academic programmes catalogue. Open the official programme page for full structure and entry information.",
+          "source_url": "https://admissions.ucc.edu.gh/catalogue/programme/pharmd-pharmacy",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        },
+        {
+          "university": "University of Ghana",
+          "programme_name": "Doctor of Pharmacy",
+          "overview": "Pharmacy is a health profession that deals with various aspects of drug production, dispensing and administration to ensure the safe and effective use of drugs in humans and animals. Pharmacists prepare and dispense prescribed medications and their contraindications. They also advise patients about the use of both prescribed and over-the-counter drugs. The scope of Pharmacy practice is wide ranging from traditional roles such as compounding and dispensing medications to more modern services related to health care, including clinical services, reviewing medications for safety and efficacy, and providing drug information. Pharmacists communicate directly with physicians to correctly deliver medications. Pharmacists also counsel patients on over the counter medications and provide information on home health care supplies and various other health care products. Areas of specialization of pharmacy include psychiatry, intravenous nutrition support, oncology, geriatrics, diabetes, fertility, HIV, psychiatry, nuclear pharmacy, compounding of specialty medications, pharmacotherapy, regulatory pharmacy and industrial pharmacy. Areas of specialization of pharmacy include psychiatry, intravenous nutrition support, oncology, geriatrics, diabetes, fertility, HIV, psychiatry, nuclear medicine, compounding of specialty medications, and pharmacotherapy,regulatory pharmacy and Industrial pharmacy.",
+          "source_url": "https://new.ug.edu.gh/pharmacy.ug.edu.gh/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://admissions.ucc.edu.gh/catalogue/programme/pharmd-pharmacy",
+        "https://new.ug.edu.gh/pharmacy.ug.edu.gh/",
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "medical-laboratory-science",
@@ -146,7 +247,40 @@
         "UCC",
         "UDS"
       ],
-      "detailed_overview": "Students learn to analyse blood, tissues, and other specimens that guide clinical decisions, with strong emphasis on biosafety and quality control."
+      "detailed_overview": "Medical Laboratory Sciences is a field of applied biology and chemistry that focuses on conducting analytical tests on blood, tissue, and body fluids to provide laboratory information for the detection, diagnosis and treatment of human diseases. The f ield of Medical Laboratory Science also involve performing chemical, haematological, immunologic, microscopic and bacteriological diagnostic analyses on body fluids such as urine, blood, sputum, stool, cerebrospinal fluid (CSF), peritoneal f luid, pericardial fluid, and synovial f luid as well as other specimens. In this highly skilled profession, Medical Laboratory Scientists use microscopes, cell counters, and other sophisticated laboratory equipment to perform tests. After testing and examining a specimen, the results are analysed and relayed to physicians. Medical Laboratory Scientists work in hospitals, clinics, research laboratories, pharmaceutical companies, forensic science laboratories and environmental laboratories.\n\n(Source: University of Ghana programme information — https://new.ug.edu.gh/sbahs.ug.edu.gh/. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Medical Laboratory Sciences (Obuasi Campus)",
+          "overview": "BSc Medical Laboratory Sciences (Obuasi Campus) is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Health Sciences"
+        },
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Medical Laboratory Technology",
+          "overview": "BSc Medical Laboratory Technology is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Health Sciences"
+        },
+        {
+          "university": "University of Ghana",
+          "programme_name": "Bachelor of Science in Medical Laboratory",
+          "overview": "Medical Laboratory Sciences is a field of applied biology and chemistry that focuses on conducting analytical tests on blood, tissue, and body fluids to provide laboratory information for the detection, diagnosis and treatment of human diseases. The f ield of Medical Laboratory Science also involve performing chemical, haematological, immunologic, microscopic and bacteriological diagnostic analyses on body fluids such as urine, blood, sputum, stool, cerebrospinal fluid (CSF), peritoneal f luid, pericardial fluid, and synovial f luid as well as other specimens. In this highly skilled profession, Medical Laboratory Scientists use microscopes, cell counters, and other sophisticated laboratory equipment to perform tests. After testing and examining a specimen, the results are analysed and relayed to physicians. Medical Laboratory Scientists work in hospitals, clinics, research laboratories, pharmaceutical companies, forensic science laboratories and environmental laboratories.",
+          "source_url": "https://new.ug.edu.gh/sbahs.ug.edu.gh/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://new.ug.edu.gh/sbahs.ug.edu.gh/",
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "physician-assistantship",
@@ -176,7 +310,21 @@
         "KNUST",
         "University of Cape Coast"
       ],
-      "detailed_overview": "Physician assistant programmes blend medical science with practical clinical training under physician supervision."
+      "detailed_overview": "BSc Physician Assistantship is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.\n\n(Source: KNUST programme information — https://apps.knust.edu.gh/admissions/apply. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Physician Assistantship",
+          "overview": "BSc Physician Assistantship is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Health Sciences"
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "physiotherapy",
@@ -206,7 +354,31 @@
         "KNUST",
         "University of Ghana"
       ],
-      "detailed_overview": "Students study how the body moves and recovers, then apply exercise and education to help patients regain function."
+      "detailed_overview": "Physiotherapy (PT), also known as Physical therapy , is one of the allied health professions that, by using mechanical force and movements (bio-mechanics or kinesiology), manual therapy, exercise therapy, and electrotherapy, remediates impairments and promotes mobility and function. Physiotherapy is used to improve a patient’s quality of life through examination, diagnosis, prognosis, physical intervention, and patient education. It is performed by physiotherapists (known as physical therapists) In addition to clinical practice, other activities encompassed in the physiotherapy profession include research, education, consultation and administration. Physiotherapy services may be provided as primary care treatment or alongside, or in conjunction with, other medical services.\n\n(Source: University of Ghana programme information — https://new.ug.edu.gh/sbahs.ug.edu.gh/. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Physiotherapy and Sports Science",
+          "overview": "BSc Physiotherapy and Sports Science is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Health Sciences"
+        },
+        {
+          "university": "University of Ghana",
+          "programme_name": "Bachelor of Science In Physiotherapy",
+          "overview": "Physiotherapy (PT), also known as Physical therapy , is one of the allied health professions that, by using mechanical force and movements (bio-mechanics or kinesiology), manual therapy, exercise therapy, and electrotherapy, remediates impairments and promotes mobility and function. Physiotherapy is used to improve a patient’s quality of life through examination, diagnosis, prognosis, physical intervention, and patient education. It is performed by physiotherapists (known as physical therapists) In addition to clinical practice, other activities encompassed in the physiotherapy profession include research, education, consultation and administration. Physiotherapy services may be provided as primary care treatment or alongside, or in conjunction with, other medical services.",
+          "source_url": "https://new.ug.edu.gh/sbahs.ug.edu.gh/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://new.ug.edu.gh/sbahs.ug.edu.gh/",
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "midwifery",
@@ -238,7 +410,31 @@
         "KNUST",
         "UDS"
       ],
-      "detailed_overview": "Midwifery focuses on safe motherhood and newborn wellbeing, including emergency obstetric skills and family health education."
+      "detailed_overview": "Midwifery is healthcare professions that focuses on the care of individuals, families, and communities in order for them to attain, maintain, or recover optimal health and quality of life from conception to death. As professional/practice disciplines, Nursing and midwifery embrace theories and models from the natural sciences, behavioural sciences and humanities in nursing and midwifery practice. They equip students in the knowledge, techniques and procedures for promoting health, providing care for the sick, disabled, infirm, children, pregnant women and other individuals or groups. It also includes instruction in the administration of medication and treatments, assisting physicians during treatments and examinations, referring patients for specialist care and planning education for health maintenance. The BSc Midwifery programme leads to a qualification as a midwife.\n\n(Source: University of Ghana programme information — https://new.ug.edu.gh/nursing.ug.edu.gh. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Midwifery",
+          "overview": "BSc Midwifery is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Health Sciences"
+        },
+        {
+          "university": "University of Ghana",
+          "programme_name": "Bachelor of Science In Midwifery",
+          "overview": "Midwifery is healthcare professions that focuses on the care of individuals, families, and communities in order for them to attain, maintain, or recover optimal health and quality of life from conception to death. As professional/practice disciplines, Nursing and midwifery embrace theories and models from the natural sciences, behavioural sciences and humanities in nursing and midwifery practice. They equip students in the knowledge, techniques and procedures for promoting health, providing care for the sick, disabled, infirm, children, pregnant women and other individuals or groups. It also includes instruction in the administration of medication and treatments, assisting physicians during treatments and examinations, referring patients for specialist care and planning education for health maintenance. The BSc Midwifery programme leads to a qualification as a midwife.",
+          "source_url": "https://new.ug.edu.gh/nursing.ug.edu.gh",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://new.ug.edu.gh/nursing.ug.edu.gh",
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "dental-surgery",
@@ -268,7 +464,31 @@
         "University of Ghana",
         "KNUST"
       ],
-      "detailed_overview": "Dental programmes combine biomedical science with clinical dentistry to diagnose and treat oral disease."
+      "detailed_overview": "Dentistry is a general term that is used to refer to the science and art of preventing, diagnosing and treating diseases, injuries and malformations of teeth, jaws and mouth. Dental Surgery focuses on the surgery and medical procedure that is performed to alter, modify or correct the teeth and jaw bones. Dental Surgery is an interdisciplinary programme and it encompasses major specialty areas such as Orthodontics (straightening teeth by applying pressure to the teeth with braces or other appliance); Oral & Maxillofacial Surgery (operations on the mouth, jaws, teeth, gums, neck and head); Periodontics (treating gums and bone supporting the teeth); Prosthodontics (replacing missing teeth with permanent or removable fixtures) and Oral Pathology (diagnosis for diseases that affect the mouth). Besides diagnosing and treating problems with teeth and tissues in the mouth, specialists in Dental Surgery also give advice and administer care to help prevent future problems.\n\n(Source: University of Ghana programme information — https://new.ug.edu.gh/ugds.ug.edu.gh/. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Dental Surgery",
+          "overview": "BSc Dental Surgery is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Health Sciences"
+        },
+        {
+          "university": "University of Ghana",
+          "programme_name": "Bachelor of Dental Surgery (BDS)",
+          "overview": "Dentistry is a general term that is used to refer to the science and art of preventing, diagnosing and treating diseases, injuries and malformations of teeth, jaws and mouth. Dental Surgery focuses on the surgery and medical procedure that is performed to alter, modify or correct the teeth and jaw bones. Dental Surgery is an interdisciplinary programme and it encompasses major specialty areas such as Orthodontics (straightening teeth by applying pressure to the teeth with braces or other appliance); Oral & Maxillofacial Surgery (operations on the mouth, jaws, teeth, gums, neck and head); Periodontics (treating gums and bone supporting the teeth); Prosthodontics (replacing missing teeth with permanent or removable fixtures) and Oral Pathology (diagnosis for diseases that affect the mouth). Besides diagnosing and treating problems with teeth and tissues in the mouth, specialists in Dental Surgery also give advice and administer care to help prevent future problems.",
+          "source_url": "https://new.ug.edu.gh/ugds.ug.edu.gh/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply",
+        "https://new.ug.edu.gh/ugds.ug.edu.gh/"
+      ]
     },
     {
       "slug": "veterinary-medicine",
@@ -298,7 +518,31 @@
         "KNUST",
         "University of Ghana"
       ],
-      "detailed_overview": "Veterinary medicine covers animal care plus disease control that protects both animal and human health."
+      "detailed_overview": "DVM Veterinary Medicine is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.\n\n(Source: KNUST programme information — https://apps.knust.edu.gh/admissions/apply. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "DVM Veterinary Medicine",
+          "overview": "DVM Veterinary Medicine is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Health Sciences"
+        },
+        {
+          "university": "University of Ghana",
+          "programme_name": "Doctor of Veterinary Medicine",
+          "overview": "",
+          "source_url": "https://www.ug.edu.gh/programme-catalogue",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply",
+        "https://www.ug.edu.gh/programme-catalogue"
+      ]
     },
     {
       "slug": "public-health",
@@ -363,7 +607,21 @@
         "KNUST",
         "UCC"
       ],
-      "detailed_overview": "Students learn how nutrients affect the body and how tailored diets support wellness and recovery."
+      "detailed_overview": "Dietetics is concerned with interpretation and communication of the science of nutrition to enable people make informed and practical choices about food and lifestyle, in both health and disease. The study of Dietetics is deeply rooted in the physiological, biochemical and behavioural sciences as well as social, environmental, cultural and psychological factors affecting food accessibility and dietary intake. Aside addressing nutritional needs of patients, dietitians prevent and treat illnesses by promoting healthy eating habits and recommending dietary modifications. Specialty areas in dietetics include clinical dietitian, community dietitian, management dietitian and consultant dietitian.\n\n(Source: University of Ghana programme information — https://new.ug.edu.gh/sbahs.ug.edu.gh/. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "University of Ghana",
+          "programme_name": "Bachelor of Science in Dietetics",
+          "overview": "Dietetics is concerned with interpretation and communication of the science of nutrition to enable people make informed and practical choices about food and lifestyle, in both health and disease. The study of Dietetics is deeply rooted in the physiological, biochemical and behavioural sciences as well as social, environmental, cultural and psychological factors affecting food accessibility and dietary intake. Aside addressing nutritional needs of patients, dietitians prevent and treat illnesses by promoting healthy eating habits and recommending dietary modifications. Specialty areas in dietetics include clinical dietitian, community dietitian, management dietitian and consultant dietitian.",
+          "source_url": "https://new.ug.edu.gh/sbahs.ug.edu.gh/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://new.ug.edu.gh/sbahs.ug.edu.gh/"
+      ]
     },
     {
       "slug": "medical-imaging",
@@ -393,7 +651,21 @@
         "University of Ghana",
         "KNUST"
       ],
-      "detailed_overview": "Medical imaging trains students to operate equipment safely and produce diagnostic-quality images."
+      "detailed_overview": "BSc Medical Imaging is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.\n\n(Source: KNUST programme information — https://apps.knust.edu.gh/admissions/apply. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Medical Imaging",
+          "overview": "BSc Medical Imaging is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Health Sciences"
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "herbal-medicine",
@@ -419,7 +691,21 @@
       "commonly_offered_at": [
         "KNUST"
       ],
-      "detailed_overview": "This programme connects ethnobotany and laboratory science for responsible plant-based therapies."
+      "detailed_overview": "BSc Herbal Medicine is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.\n\n(Source: KNUST programme information — https://apps.knust.edu.gh/admissions/apply. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Herbal Medicine",
+          "overview": "BSc Herbal Medicine is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Health Sciences"
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "optometry",
@@ -446,9 +732,34 @@
         "Mathematics"
       ],
       "commonly_offered_at": [
-        "KNUST"
+        "KNUST",
+        "UCC"
       ],
-      "detailed_overview": "Optometry blends optics with clinical eye care for vision assessment and ocular health."
+      "detailed_overview": "Optometry blends optics with clinical eye care for vision assessment and ocular health.",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Optometry",
+          "overview": "BSc Optometry is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Science"
+        },
+        {
+          "university": "UCC",
+          "programme_name": "OD Optometry",
+          "overview": "OD Optometry appears in the UCC academic programmes catalogue. Open the official programme page for full structure and entry information.",
+          "source_url": "https://admissions.ucc.edu.gh/catalogue/programme/od-optometry",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply",
+        "https://admissions.ucc.edu.gh/catalogue/programme/od-optometry"
+      ]
     },
     {
       "slug": "computer-engineering",
@@ -480,7 +791,31 @@
         "University of Ghana",
         "UMaT"
       ],
-      "detailed_overview": "Computer engineering focuses on how hardware and low-level software work together in modern devices."
+      "detailed_overview": "Computer Engineering deals with the process of analysing and designing all hardware, software and operating systems for computer systems. Computer Engineering fuses the disciplines of Computer Science and Electrical Engineering for a more integrative study and application. However the terms Computer Engineering and Computer Science differ in certain aspects. In simplest terms, whereas Computer Science focuses on the software aspect of computers, Computer Engineering looks at the design and build of computer hardware. Computer Engineers thus research, design, develop, test, and oversee the manufacture and installation of computer hardware. This includes computer chips, circuit boards, computer systems, and related equipment such as keyboards, routers and printers.\n\n(Source: University of Ghana programme information — https://new.ug.edu.gh/ce. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Computer Engineering",
+          "overview": "BSc Computer Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Engineering"
+        },
+        {
+          "university": "University of Ghana",
+          "programme_name": "Bachelor of Science In Computer Engineering",
+          "overview": "Computer Engineering deals with the process of analysing and designing all hardware, software and operating systems for computer systems. Computer Engineering fuses the disciplines of Computer Science and Electrical Engineering for a more integrative study and application. However the terms Computer Engineering and Computer Science differ in certain aspects. In simplest terms, whereas Computer Science focuses on the software aspect of computers, Computer Engineering looks at the design and build of computer hardware. Computer Engineers thus research, design, develop, test, and oversee the manufacture and installation of computer hardware. This includes computer chips, circuit boards, computer systems, and related equipment such as keyboards, routers and printers.",
+          "source_url": "https://new.ug.edu.gh/ce",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://new.ug.edu.gh/ce",
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "electrical-engineering",
@@ -512,7 +847,21 @@
         "UMaT",
         "TTU"
       ],
-      "detailed_overview": "Students learn to generate, distribute, and use electrical energy across industry and infrastructure."
+      "detailed_overview": "BSc Electrical Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.\n\n(Source: KNUST programme information — https://apps.knust.edu.gh/admissions/apply. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Electrical Engineering",
+          "overview": "BSc Electrical Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Engineering"
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "civil-engineering",
@@ -544,7 +893,21 @@
         "UMaT",
         "CKT-UTAS"
       ],
-      "detailed_overview": "Civil engineering trains graduates to design resilient infrastructure for communities."
+      "detailed_overview": "BSc Civil Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.\n\n(Source: KNUST programme information — https://apps.knust.edu.gh/admissions/apply. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Civil Engineering",
+          "overview": "BSc Civil Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Engineering"
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "mechanical-engineering",
@@ -576,7 +939,21 @@
         "UMaT",
         "TTU"
       ],
-      "detailed_overview": "Mechanical engineers apply physics and design methods to engines, plants, tools, and production lines."
+      "detailed_overview": "BSc Mechanical Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.\n\n(Source: KNUST programme information — https://apps.knust.edu.gh/admissions/apply. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Mechanical Engineering",
+          "overview": "BSc Mechanical Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Engineering"
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "chemical-engineering",
@@ -605,7 +982,30 @@
         "KNUST",
         "University of Ghana"
       ],
-      "detailed_overview": "Chemical engineering connects chemistry with large-scale process design for fuels, foods, and materials."
+      "detailed_overview": "BSc Chemical Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.\n\n(Source: KNUST programme information — https://apps.knust.edu.gh/admissions/apply. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Chemical Engineering",
+          "overview": "BSc Chemical Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Engineering"
+        },
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Petrochemical Engineering",
+          "overview": "BSc Petrochemical Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Science"
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "biomedical-engineering",
@@ -635,7 +1035,31 @@
         "KNUST",
         "University of Ghana"
       ],
-      "detailed_overview": "Biomedical engineering sits between medicine and engineering, focusing on devices that diagnose or treat patients."
+      "detailed_overview": "Biomedical Engineering involves the application of concepts, knowledge, and approaches of virtually all engineering disciplines (examples: Electrical, Mechanical, Chemical, Materials and Computer Engineering) to solve specific healthcare- related problems. The multidisciplinary nature of this field makes specialisation at the undergraduate level impractical. The core curriculum is, therefore, designed to introduce students to all aspects of Biomedical Engineering. Highly motivated students may acquire areas of speciality by selecting electives from other departments of the School of Engineering. Biomedical Engineers often need to bring together knowledge and techniques from different engineering fields, as well as information from the life sciences. As a result Biomedical Engineering is usually described as a bridge between engineering and the life sciences. Additionally, creativity is valued and design experience is incorporated throughout the curriculum.\n\n(Source: University of Ghana programme information — https://www.ug.edu.gh/biomedical-engineering. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Biomedical Engineering",
+          "overview": "BSc Biomedical Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Engineering"
+        },
+        {
+          "university": "University of Ghana",
+          "programme_name": "Bachelor of Science In Biomedical Engineering",
+          "overview": "Biomedical Engineering involves the application of concepts, knowledge, and approaches of virtually all engineering disciplines (examples: Electrical, Mechanical, Chemical, Materials and Computer Engineering) to solve specific healthcare- related problems. The multidisciplinary nature of this field makes specialisation at the undergraduate level impractical. The core curriculum is, therefore, designed to introduce students to all aspects of Biomedical Engineering. Highly motivated students may acquire areas of speciality by selecting electives from other departments of the School of Engineering. Biomedical Engineers often need to bring together knowledge and techniques from different engineering fields, as well as information from the life sciences. As a result Biomedical Engineering is usually described as a bridge between engineering and the life sciences. Additionally, creativity is valued and design experience is incorporated throughout the curriculum.",
+          "source_url": "https://www.ug.edu.gh/biomedical-engineering",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://www.ug.edu.gh/biomedical-engineering",
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "aerospace-engineering",
@@ -663,7 +1087,21 @@
       "commonly_offered_at": [
         "KNUST"
       ],
-      "detailed_overview": "Aerospace programmes emphasise fluid mechanics, structures, and systems engineering for flight technologies."
+      "detailed_overview": "BSc Aerospace Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.\n\n(Source: KNUST programme information — https://apps.knust.edu.gh/admissions/apply. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Aerospace Engineering",
+          "overview": "BSc Aerospace Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Engineering"
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "petroleum-engineering",
@@ -692,7 +1130,21 @@
         "KNUST",
         "UMaT"
       ],
-      "detailed_overview": "Students learn how hydrocarbons are located and produced with attention to safety and efficiency."
+      "detailed_overview": "BSc Petroleum Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.\n\n(Source: KNUST programme information — https://apps.knust.edu.gh/admissions/apply. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Petroleum Engineering",
+          "overview": "BSc Petroleum Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Engineering"
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "telecommunications-engineering",
@@ -721,7 +1173,21 @@
         "KNUST",
         "University of Ghana"
       ],
-      "detailed_overview": "Telecom engineering covers how voice, data, and media move across wired and wireless networks."
+      "detailed_overview": "BSc Telecommunication Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.\n\n(Source: KNUST programme information — https://apps.knust.edu.gh/admissions/apply. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Telecommunication Engineering",
+          "overview": "BSc Telecommunication Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Engineering"
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "materials-engineering",
@@ -749,9 +1215,34 @@
       ],
       "commonly_offered_at": [
         "KNUST",
-        "UMaT"
+        "UMaT",
+        "University of Ghana"
       ],
-      "detailed_overview": "Materials engineers select and improve materials so products are stronger, lighter, or more sustainable."
+      "detailed_overview": "Materials scientists and engineers are developing important new materials to meet the needs of the ever-changing technological society. These include high-temperature superconductors; high-strength alloys for use at the extreme temperatures encountered in jet and rocket engines; specialised glasses and ceramics with high thermal, mechanical, and chemical stability, and a host of polymeric materials: some with unique functional characteristics and others which replace metal, glass, wood, and natural fibres in dozens of applications. Materials scientists and engineers are rising to the challenge of global energy scarcity by reducing the weight of automobiles and other transportation systems. They are also at the forefront of recycling technologies; searching for more energy-efficient ways of processing materials.\n\n(Source: University of Ghana programme information — https://www.ug.edu.gh/dmse/academics/undergraduate-admission. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Materials Engineering",
+          "overview": "BSc Materials Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Engineering"
+        },
+        {
+          "university": "University of Ghana",
+          "programme_name": "Bachelor of Science In Material Science and Engineering",
+          "overview": "Materials scientists and engineers are developing important new materials to meet the needs of the ever-changing technological society. These include high-temperature superconductors; high-strength alloys for use at the extreme temperatures encountered in jet and rocket engines; specialised glasses and ceramics with high thermal, mechanical, and chemical stability, and a host of polymeric materials: some with unique functional characteristics and others which replace metal, glass, wood, and natural fibres in dozens of applications. Materials scientists and engineers are rising to the challenge of global energy scarcity by reducing the weight of automobiles and other transportation systems. They are also at the forefront of recycling technologies; searching for more energy-efficient ways of processing materials.",
+          "source_url": "https://www.ug.edu.gh/dmse/academics/undergraduate-admission",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://www.ug.edu.gh/dmse/academics/undergraduate-admission",
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "geological-engineering",
@@ -781,7 +1272,21 @@
         "KNUST",
         "UMaT"
       ],
-      "detailed_overview": "This field connects earth science with engineering design for tunnels, foundations, and mining."
+      "detailed_overview": "BSc Geological Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.\n\n(Source: KNUST programme information — https://apps.knust.edu.gh/admissions/apply. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Geological Engineering",
+          "overview": "BSc Geological Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Engineering"
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "industrial-engineering",
@@ -811,7 +1316,21 @@
         "KNUST",
         "University of Ghana"
       ],
-      "detailed_overview": "Industrial engineering focuses on efficiency — designing workflows and improving organisational performance."
+      "detailed_overview": "BSc Industrial Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.\n\n(Source: KNUST programme information — https://apps.knust.edu.gh/admissions/apply. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Industrial Engineering",
+          "overview": "BSc Industrial Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Engineering"
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "marine-engineering",
@@ -836,9 +1355,24 @@
         "Chemistry"
       ],
       "commonly_offered_at": [
-        "Regional Maritime University"
+        "Regional Maritime University",
+        "KNUST"
       ],
-      "detailed_overview": "Marine engineering prepares graduates for propulsion and mechanical systems that keep vessels operating safely."
+      "detailed_overview": "BSc Marine Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.\n\n(Source: KNUST programme information — https://apps.knust.edu.gh/admissions/apply. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Marine Engineering",
+          "overview": "BSc Marine Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Engineering"
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "automobile-engineering",
@@ -866,7 +1400,21 @@
         "KNUST",
         "TTU"
       ],
-      "detailed_overview": "Automobile programmes blend mechanical and electrical systems for modern vehicles."
+      "detailed_overview": "BSc Automobile Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.\n\n(Source: KNUST programme information — https://apps.knust.edu.gh/admissions/apply. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Automobile Engineering",
+          "overview": "BSc Automobile Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Engineering"
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "computer-science",
@@ -900,7 +1448,31 @@
         "UCC",
         "Ashesi University"
       ],
-      "detailed_overview": "Computer Science builds problem-solving skills through coding, theory, and systems design for digital solutions."
+      "detailed_overview": "BSc Computer Science is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.\n\n(Source: KNUST programme information — https://apps.knust.edu.gh/admissions/apply. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Computer Science",
+          "overview": "BSc Computer Science is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Science"
+        },
+        {
+          "university": "University of Ghana",
+          "programme_name": "Bachelor of Science in Computer Science",
+          "overview": "",
+          "source_url": "https://dcs.ug.edu.gh/programmes/665f404432a78958efb7fa3f",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://dcs.ug.edu.gh/programmes/665f404432a78958efb7fa3f",
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "information-technology",
@@ -929,9 +1501,43 @@
       "commonly_offered_at": [
         "University of Ghana",
         "KNUST",
-        "UCC"
+        "UCC",
+        "UPSA"
       ],
-      "detailed_overview": "IT programmes emphasise practical systems organisations rely on — networks, databases, and digital services."
+      "detailed_overview": "Bachelor of Science in Information Technology is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.\n\n(Source: UPSA programme information — https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "UPSA",
+          "programme_name": "Bachelor of Science in Information Technology",
+          "overview": "Bachelor of Science in Information Technology is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.",
+          "source_url": "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        },
+        {
+          "university": "UPSA",
+          "programme_name": "Diploma in Information Technology Management",
+          "overview": "Diploma in Information Technology Management is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.",
+          "source_url": "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        },
+        {
+          "university": "University of Ghana",
+          "programme_name": "Bachelor of Science In Information Technology",
+          "overview": "",
+          "source_url": "https://www.ug.edu.gh/programme-catalogue",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://www.ug.edu.gh/programme-catalogue",
+        "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/"
+      ]
     },
     {
       "slug": "information-systems",
@@ -1022,9 +1628,24 @@
       "commonly_offered_at": [
         "University of Ghana",
         "KNUST",
-        "Ashesi University"
+        "Ashesi University",
+        "UPSA"
       ],
-      "detailed_overview": "Data science combines maths and computing to clean, analyse, and communicate patterns from datasets."
+      "detailed_overview": "Bachelor of Science in Data Science and Analytics is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.\n\n(Source: UPSA programme information — https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "UPSA",
+          "programme_name": "Bachelor of Science in Data Science and Analytics",
+          "overview": "Bachelor of Science in Data Science and Analytics is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.",
+          "source_url": "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/"
+      ]
     },
     {
       "slug": "software-engineering",
@@ -1113,9 +1734,34 @@
         "University of Ghana",
         "KNUST",
         "UCC",
-        "UPS"
+        "UPS",
+        "UPSA"
       ],
-      "detailed_overview": "Business Administration gives a versatile foundation for leading teams and organisations."
+      "detailed_overview": "B.Sc Administration Banking & Finance B.Sc Administration Public Administration B.Sc Administration Human Resource Management B.Sc Administration Insurance B.Sc Administration Accounting B.Sc Administration Marketing\n\n(Source: University of Ghana programme information — https://new.ug.edu.gh/ugbs.ug.edu.gh/. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "UPSA",
+          "programme_name": "Bachelor of Business Administration",
+          "overview": "Bachelor of Business Administration is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.",
+          "source_url": "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        },
+        {
+          "university": "University of Ghana",
+          "programme_name": "Bachelor of Science In Administration",
+          "overview": "B.Sc Administration Banking & Finance B.Sc Administration Public Administration B.Sc Administration Human Resource Management B.Sc Administration Insurance B.Sc Administration Accounting B.Sc Administration Marketing",
+          "source_url": "https://new.ug.edu.gh/ugbs.ug.edu.gh/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://new.ug.edu.gh/ugbs.ug.edu.gh/",
+        "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/"
+      ]
     },
     {
       "slug": "accounting",
@@ -1146,9 +1792,52 @@
         "University of Ghana",
         "KNUST",
         "UCC",
-        "UPS"
+        "UPS",
+        "UPSA"
       ],
-      "detailed_overview": "Accounting programmes train students to measure and communicate financial performance with ethics and precision."
+      "detailed_overview": "Bachelor of Science in Accounting is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.\n\n(Source: UPSA programme information — https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "UCC",
+          "programme_name": "BCom Accounting",
+          "overview": "BCom Accounting appears in the UCC academic programmes catalogue. Open the official programme page for full structure and entry information.",
+          "source_url": "https://admissions.ucc.edu.gh/catalogue/programme/bcom-accounting",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        },
+        {
+          "university": "UPSA",
+          "programme_name": "Bachelor of Science in Accounting",
+          "overview": "Bachelor of Science in Accounting is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.",
+          "source_url": "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        },
+        {
+          "university": "UPSA",
+          "programme_name": "Bachelor of Science in Accounting and Finance",
+          "overview": "Bachelor of Science in Accounting and Finance is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.",
+          "source_url": "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        },
+        {
+          "university": "UPSA",
+          "programme_name": "Diploma in Accounting",
+          "overview": "Diploma in Accounting is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.",
+          "source_url": "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://admissions.ucc.edu.gh/catalogue/programme/bcom-accounting",
+        "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/"
+      ]
     },
     {
       "slug": "banking-finance",
@@ -1178,9 +1867,24 @@
         "University of Ghana",
         "KNUST",
         "UCC",
-        "UPS"
+        "UPS",
+        "UPSA"
       ],
-      "detailed_overview": "Students learn how money moves through banks and markets, and how firms raise and manage capital."
+      "detailed_overview": "Bachelor of Science in Banking and Finance is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.\n\n(Source: UPSA programme information — https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "UPSA",
+          "programme_name": "Bachelor of Science in Banking and Finance",
+          "overview": "Bachelor of Science in Banking and Finance is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.",
+          "source_url": "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/"
+      ]
     },
     {
       "slug": "economics",
@@ -1208,9 +1912,24 @@
       "commonly_offered_at": [
         "University of Ghana",
         "KNUST",
-        "UCC"
+        "UCC",
+        "UPSA"
       ],
-      "detailed_overview": "Economics develops analytical tools for markets, policy, and development challenges."
+      "detailed_overview": "Bachelor of Science in Business Economics is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.\n\n(Source: UPSA programme information — https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "UPSA",
+          "programme_name": "Bachelor of Science in Business Economics",
+          "overview": "Bachelor of Science in Business Economics is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.",
+          "source_url": "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/"
+      ]
     },
     {
       "slug": "marketing",
@@ -1238,9 +1957,33 @@
       "commonly_offered_at": [
         "University of Ghana",
         "KNUST",
-        "UCC"
+        "UCC",
+        "UPSA"
       ],
-      "detailed_overview": "Marketing programmes blend creativity and analytics to position products and reach audiences."
+      "detailed_overview": "Bachelor of Science in Applied Marketing is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.\n\n(Source: UPSA programme information — https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "UPSA",
+          "programme_name": "Bachelor of Science in Applied Marketing",
+          "overview": "Bachelor of Science in Applied Marketing is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.",
+          "source_url": "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        },
+        {
+          "university": "UPSA",
+          "programme_name": "Diploma in Marketing",
+          "overview": "Diploma in Marketing is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.",
+          "source_url": "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/"
+      ]
     },
     {
       "slug": "human-resource-management",
@@ -1331,9 +2074,24 @@
       "commonly_offered_at": [
         "KNUST",
         "University of Ghana",
-        "UPS"
+        "UPS",
+        "UPSA"
       ],
-      "detailed_overview": "Supply chain education prepares graduates to move goods efficiently while managing cost and risk."
+      "detailed_overview": "Bachelor of Science in Logistics and Transport Management is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.\n\n(Source: UPSA programme information — https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "UPSA",
+          "programme_name": "Bachelor of Science in Logistics and Transport Management",
+          "overview": "Bachelor of Science in Logistics and Transport Management is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.",
+          "source_url": "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/"
+      ]
     },
     {
       "slug": "actuarial-science",
@@ -1361,9 +2119,44 @@
       ],
       "commonly_offered_at": [
         "KNUST",
-        "University of Ghana"
+        "University of Ghana",
+        "UPSA"
       ],
-      "detailed_overview": "Actuarial science is highly quantitative — modelling uncertainty for pensions, insurance, and financial risk."
+      "detailed_overview": "If you are excited about mathematics and are actually good at it in addition to being curious about financial matters, you should enjoy studying actuarial science. Actuarial science graduates learn how to analyse risk using mathematics and statistics. They also learn how to use their findings to solve management problems in insurance and other businesses. The two main applications of actuarial science are life insurance and pension plans. However, actuarial science is also applied in the study of financial organisations to analyse their liabilities and improve financial decision-making. Students undertake courses such as Multivariate Distributions, Life Contingencies, Differential Equations,Probability Distributions, Operations Research, Investment Fundamentals ,Discrete Mathematics, Financial Accounting, Business Finance amongst many others as part of the programme. Relevant career internship opportunities are also provided for all students during the course of their studies.\n\n(Source: University of Ghana programme information — https://www.ug.edu.gh/programme-catalogue. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Actuarial Science",
+          "overview": "BSc Actuarial Science is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Science"
+        },
+        {
+          "university": "UPSA",
+          "programme_name": "Bachelor of Science in Actuarial Science",
+          "overview": "Bachelor of Science in Actuarial Science is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.",
+          "source_url": "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        },
+        {
+          "university": "University of Ghana",
+          "programme_name": "Bachelor of Science in Actuarial Science",
+          "overview": "If you are excited about mathematics and are actually good at it in addition to being curious about financial matters, you should enjoy studying actuarial science. Actuarial science graduates learn how to analyse risk using mathematics and statistics. They also learn how to use their findings to solve management problems in insurance and other businesses. The two main applications of actuarial science are life insurance and pension plans. However, actuarial science is also applied in the study of financial organisations to analyse their liabilities and improve financial decision-making. Students undertake courses such as Multivariate Distributions, Life Contingencies, Differential Equations,Probability Distributions, Operations Research, Investment Fundamentals ,Discrete Mathematics, Financial Accounting, Business Finance amongst many others as part of the programme. Relevant career internship opportunities are also provided for all students during the course of their studies.",
+          "source_url": "https://www.ug.edu.gh/programme-catalogue",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://www.ug.edu.gh/programme-catalogue",
+        "https://apps.knust.edu.gh/admissions/apply",
+        "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/"
+      ]
     },
     {
       "slug": "hospitality-management",
@@ -1482,7 +2275,31 @@
         "University of Ghana",
         "UCC"
       ],
-      "detailed_overview": "Biological Sciences builds life-science literacy for research, health pathways, and environmental careers."
+      "detailed_overview": "BSc Biological Sciences is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.\n\n(Source: KNUST programme information — https://apps.knust.edu.gh/admissions/apply. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Biological Sciences",
+          "overview": "BSc Biological Sciences is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Science"
+        },
+        {
+          "university": "University of Ghana",
+          "programme_name": "Bachelor of Science In Biological Sciences",
+          "overview": "",
+          "source_url": "https://www.ug.edu.gh/programme-catalogue",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://www.ug.edu.gh/programme-catalogue",
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "chemistry",
@@ -1512,7 +2329,21 @@
         "University of Ghana",
         "UCC"
       ],
-      "detailed_overview": "Chemistry programmes train precise experimental skills used in industry, research, and regulation."
+      "detailed_overview": "Chemistry programmes train precise experimental skills used in industry, research, and regulation.",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Chemistry",
+          "overview": "BSc Chemistry is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Science"
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "physics",
@@ -1542,7 +2373,21 @@
         "University of Ghana",
         "UCC"
       ],
-      "detailed_overview": "Physics develops quantitative reasoning useful in technology, research, and engineering-adjacent roles."
+      "detailed_overview": "Physics develops quantitative reasoning useful in technology, research, and engineering-adjacent roles.",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Physics",
+          "overview": "BSc Physics is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Science"
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "mathematics",
@@ -1573,7 +2418,31 @@
         "University of Ghana",
         "UCC"
       ],
-      "detailed_overview": "Mathematics sharpens logical thinking that underpins computing, finance, teaching, and modelling."
+      "detailed_overview": "Mathematics sharpens logical thinking that underpins computing, finance, teaching, and modelling.",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Mathematics",
+          "overview": "BSc Mathematics is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Science"
+        },
+        {
+          "university": "University of Ghana",
+          "programme_name": "Bachelor of Science In Mathematical Sciences",
+          "overview": "Computer Science Mathematics Statistics and Actuarial Science",
+          "source_url": "https://www.ug.edu.gh/programme-catalogue",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://www.ug.edu.gh/programme-catalogue",
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "statistics",
@@ -1602,9 +2471,34 @@
       "commonly_offered_at": [
         "KNUST",
         "University of Ghana",
-        "UCC"
+        "UCC",
+        "UPSA"
       ],
-      "detailed_overview": "Statistics programmes prepare graduates to design studies and draw trustworthy conclusions from data."
+      "detailed_overview": "Bachelor of Science in Applied Statistics is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.\n\n(Source: UPSA programme information — https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Statistics",
+          "overview": "BSc Statistics is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Science"
+        },
+        {
+          "university": "UPSA",
+          "programme_name": "Bachelor of Science in Applied Statistics",
+          "overview": "Bachelor of Science in Applied Statistics is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.",
+          "source_url": "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply",
+        "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/"
+      ]
     },
     {
       "slug": "biochemistry",
@@ -1633,7 +2527,21 @@
         "KNUST",
         "University of Ghana"
       ],
-      "detailed_overview": "Biochemistry links chemistry and biology for labs, health sciences, and biotechnology."
+      "detailed_overview": "Biochemistry links chemistry and biology for labs, health sciences, and biotechnology.",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Biochemistry",
+          "overview": "BSc Biochemistry is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Science"
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "environmental-science",
@@ -1665,7 +2573,21 @@
         "UCC",
         "UENR"
       ],
-      "detailed_overview": "Environmental Science combines field and lab work to support sustainable development."
+      "detailed_overview": "BSc Environmental Science is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.\n\n(Source: KNUST programme information — https://apps.knust.edu.gh/admissions/apply. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Environmental Science",
+          "overview": "BSc Environmental Science is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Science"
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "food-science",
@@ -1696,7 +2618,21 @@
         "University of Ghana",
         "UCC"
       ],
-      "detailed_overview": "Food science prepares graduates for safe and innovative food products in industry and regulation."
+      "detailed_overview": "BSc Food Science and Technology is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.\n\n(Source: KNUST programme information — https://apps.knust.edu.gh/admissions/apply. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Food Science and Technology",
+          "overview": "BSc Food Science and Technology is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Science"
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "agriculture",
@@ -1726,9 +2662,53 @@
         "KNUST",
         "UCC",
         "UDS",
-        "UENR"
+        "UENR",
+        "University of Ghana"
       ],
-      "detailed_overview": "Agriculture programmes blend science and practice so graduates can raise productivity sustainably."
+      "detailed_overview": "Agricultural Engineering is a multidisciplinary science involving the application of engineering technology and biological science to agricultural, food and biological systems for the benefit of the human society. Also referred to as “bioengineering” and “resource systems engineering”; Agricultural Engineering includes specialisation in power systems and machinery design; structures and environment and food and bioprocess engineering. It also emphasise soil and water conservation as well as innovative ways of processing agricultural products. Agricultural Engineers use their expertise in Research & Development, production, operations, sales and management.\n\n(Source: University of Ghana programme information — https://new.ug.edu.gh/agricultural-eng/. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "University of Ghana",
+          "programme_name": "Bachelor of Science In Agriculture",
+          "overview": "Agricultural Engineering is a multidisciplinary science involving the application of engineering technology and biological science to agricultural, food and biological systems for the benefit of the human society. Also referred to as “bioengineering” and “resource systems engineering”; Agricultural Engineering includes specialisation in power systems and machinery design; structures and environment and food and bioprocess engineering. It also emphasise soil and water conservation as well as innovative ways of processing agricultural products. Agricultural Engineers use their expertise in Research & Development, production, operations, sales and management.",
+          "source_url": "https://new.ug.edu.gh/agricultural-eng/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        },
+        {
+          "university": "University of Ghana",
+          "programme_name": "BSc Agriculture Agribusiness",
+          "overview": "Agribusiness combines the knowledge and principles of agriculture, science, economics and business for the production, processing and marketing of agricultural commodities. Agribusiness examines the structure and organisation of the agricultural food sector as well as the entire value chain extending from farm inputs, through onfarm businesses, to processing, transportation, credit and marketing. The cost-effective management and conservation of natural resources are also considered in Agribusiness. Professionals in Agribusiness work as entrepreneurs, business consultants, product support specialist and agricultural finance advisors.",
+          "source_url": "https://www.ug.edu.gh/agricecons/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        },
+        {
+          "university": "University of Ghana",
+          "programme_name": "BSc Agriculture Agricultural Economics",
+          "overview": "Agricultural Economics is concerned with the study of the production, distribution and consumption of agricultural goods and services. In order to understand agriculture and resource issues, economic theory provides an analytical framework that can be used to assess the interconnected parts of the agricultural industry, predicting likely outcomes of programmes, policies and regulations and devising necessary solutions. Agricultural Economists thus integrate the concepts, methods and approaches from economics with knowledge of agriculture to evaluate issues, plans and projects in agriculture. Agricultural Economists utilise their expertise in management, extension work, finance, marketing and policy making and advocacy.",
+          "source_url": "https://www.ug.edu.gh/agricecons/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        },
+        {
+          "university": "University of Ghana",
+          "programme_name": "BSc Agriculture Animal Science",
+          "overview": "Animal Science deals with the scientific production and management of animals with an emphasis on animal nutrition, reproduction, genetics and growth. Apart from dealing with the sound foundation in the science upon which the production of animals depends, Animal Science also integrate the business and support services in the animal industry. The challenges and issues that affect the animal industry in the wider social and economic context are also considered. The B.Sc. Agriculture (Animal Science) programme equips students with the necessary theoretical and practical skills to work on farms or to obtain positions in the livestock industry or related fields.",
+          "source_url": "https://new.ug.edu.gh/animalscience/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://new.ug.edu.gh/agricultural-eng/",
+        "https://www.ug.edu.gh/agricecons/",
+        "https://new.ug.edu.gh/animalscience/"
+      ]
     },
     {
       "slug": "agricultural-engineering",
@@ -1756,7 +2736,21 @@
         "KNUST",
         "UCC"
       ],
-      "detailed_overview": "Agricultural engineering applies mechanical and civil principles to farm productivity."
+      "detailed_overview": "BSc Agricultural Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.\n\n(Source: KNUST programme information — https://apps.knust.edu.gh/admissions/apply. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Agricultural Engineering",
+          "overview": "BSc Agricultural Engineering is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Science"
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "natural-resources",
@@ -1843,9 +2837,24 @@
       "commonly_offered_at": [
         "KNUST",
         "UCC",
-        "UDS"
+        "UDS",
+        "UPSA"
       ],
-      "detailed_overview": "Agribusiness connects farming to markets through finance, logistics, and entrepreneurship."
+      "detailed_overview": "Bachelor of Science in Agribusiness and Finance is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.\n\n(Source: UPSA programme information — https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "UPSA",
+          "programme_name": "Bachelor of Science in Agribusiness and Finance",
+          "overview": "Bachelor of Science in Agribusiness and Finance is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.",
+          "source_url": "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/"
+      ]
     },
     {
       "slug": "climate-science",
@@ -1875,7 +2884,21 @@
         "University of Ghana",
         "KNUST"
       ],
-      "detailed_overview": "These programmes prepare graduates to interpret climate data and support adaptation planning."
+      "detailed_overview": "BSc Meteorology and Climate Science is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.\n\n(Source: KNUST programme information — https://apps.knust.edu.gh/admissions/apply. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Meteorology and Climate Science",
+          "overview": "BSc Meteorology and Climate Science is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Science"
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "architecture",
@@ -1988,7 +3011,21 @@
       "commonly_offered_at": [
         "KNUST"
       ],
-      "detailed_overview": "Land Economy blends property valuation, land administration, and real-estate economics. You study land law, surveying basics, investment appraisal, and development planning. Graduates work in valuation firms, banks, estate agencies, and public land commissions."
+      "detailed_overview": "Land Economy blends property valuation, land administration, and real-estate economics. You study land law, surveying basics, investment appraisal, and development planning. Graduates work in valuation firms, banks, estate agencies, and public land commissions.",
+      "offerings": [
+        {
+          "university": "KNUST",
+          "programme_name": "BSc Land Economy",
+          "overview": "BSc Land Economy is offered at KNUST (listed among undergraduate admission programmes). Visit the KNUST admissions portal for the current brochure, structure, and entry details.",
+          "source_url": "https://apps.knust.edu.gh/admissions/apply",
+          "department": "",
+          "duration": "",
+          "faculty": "Science"
+        }
+      ],
+      "source_urls": [
+        "https://apps.knust.edu.gh/admissions/apply"
+      ]
     },
     {
       "slug": "construction-technology",
@@ -2046,7 +3083,31 @@
         "UCC",
         "University of Ghana"
       ],
-      "detailed_overview": "Basic Education programmes prepare teachers for primary and junior high classrooms. Coursework covers child development, pedagogy, curriculum, and subject methods. Graduates typically teach in schools or move into education administration, curriculum support, and community learning programmes."
+      "detailed_overview": "Basic Education programmes prepare teachers for primary and junior high classrooms. Coursework covers child development, pedagogy, curriculum, and subject methods. Graduates typically teach in schools or move into education administration, curriculum support, and community learning programmes.",
+      "offerings": [
+        {
+          "university": "UCC",
+          "programme_name": "B.Ed. Primary Education",
+          "overview": "B.Ed. Primary Education appears in the UCC academic programmes catalogue. Open the official programme page for full structure and entry information.",
+          "source_url": "https://admissions.ucc.edu.gh/catalogue/programme/bed-primary-education",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        },
+        {
+          "university": "UCC",
+          "programme_name": "B.Ed. Basic Education",
+          "overview": "B.Ed. Basic Education appears in the UCC academic programmes catalogue. Open the official programme page for full structure and entry information.",
+          "source_url": "https://admissions.ucc.edu.gh/catalogue/programme/bed-basic-education",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://admissions.ucc.edu.gh/catalogue/programme/bed-primary-education",
+        "https://admissions.ucc.edu.gh/catalogue/programme/bed-basic-education"
+      ]
     },
     {
       "slug": "education-secondary",
@@ -2100,9 +3161,62 @@
       ],
       "commonly_offered_at": [
         "UEW",
-        "UCC"
+        "UCC",
+        "University of Ghana"
       ],
-      "detailed_overview": "Early childhood programmes emphasise nurturing environments for lifelong learning foundations."
+      "detailed_overview": "Promoting effective English teaching and learning in Ghana has become an issue of immense concern. This has been necessitated by Ghanaian students’ poor performance at the national and international levels. Producing teachers and education practitioners who understand what it takes to improve quality education and manage its delivery effectively is often lacking. The courses in this programme are designed to equip those who wish to begin a career in teaching English at the senior high level with skills to maximise student learning outcomes. The skills acquired will also be transferable to other levels and contexts of education, thus make students graduating from the School equipped to work as assessment design specialists and managers of educational change in general. The programme desires to produce a unique educational practitioner able to diagnose problems of teaching and learning, and introduce innovative practices that can lead to significant improvements in the learning experiences of all English Language learners.\n\n(Source: University of Ghana programme information — https://new.ug.edu.gh/teacher-education/. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "UCC",
+          "programme_name": "B.Ed. Early Childhood Education",
+          "overview": "B.Ed. Early Childhood Education appears in the UCC academic programmes catalogue. Open the official programme page for full structure and entry information.",
+          "source_url": "https://admissions.ucc.edu.gh/catalogue/programme/bed-early-childhood-education",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        },
+        {
+          "university": "University of Ghana",
+          "programme_name": "Bachelor of Arts in Education",
+          "overview": "",
+          "source_url": "https://www.ug.edu.gh/programme-catalogue",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        },
+        {
+          "university": "University of Ghana",
+          "programme_name": "Bachelor of Arts In Education (English)",
+          "overview": "Promoting effective English teaching and learning in Ghana has become an issue of immense concern. This has been necessitated by Ghanaian students’ poor performance at the national and international levels. Producing teachers and education practitioners who understand what it takes to improve quality education and manage its delivery effectively is often lacking. The courses in this programme are designed to equip those who wish to begin a career in teaching English at the senior high level with skills to maximise student learning outcomes. The skills acquired will also be transferable to other levels and contexts of education, thus make students graduating from the School equipped to work as assessment design specialists and managers of educational change in general. The programme desires to produce a unique educational practitioner able to diagnose problems of teaching and learning, and introduce innovative practices that can lead to significant improvements in the learning experiences of all English Language learners.",
+          "source_url": "https://new.ug.edu.gh/teacher-education/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        },
+        {
+          "university": "University of Ghana",
+          "programme_name": "Bachelor of Education - Early Grade Specialism",
+          "overview": "",
+          "source_url": "https://www.ug.edu.gh/programme-catalogue",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        },
+        {
+          "university": "University of Ghana",
+          "programme_name": "Bachelor of Science In Education",
+          "overview": "",
+          "source_url": "https://www.ug.edu.gh/programme-catalogue",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://www.ug.edu.gh/programme-catalogue",
+        "https://new.ug.edu.gh/teacher-education/",
+        "https://admissions.ucc.edu.gh/catalogue/programme/bed-early-childhood-education"
+      ]
     },
     {
       "slug": "special-education",
@@ -2162,7 +3276,21 @@
         "UCC",
         "KNUST"
       ],
-      "detailed_overview": "Psychology builds insight into human behaviour useful in education, health, and business."
+      "detailed_overview": "Psychology builds insight into human behaviour useful in education, health, and business.",
+      "offerings": [
+        {
+          "university": "University of Ghana",
+          "programme_name": "Bachelor of Science In Psychology",
+          "overview": "",
+          "source_url": "https://www.ug.edu.gh/programme-catalogue",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://www.ug.edu.gh/programme-catalogue"
+      ]
     },
     {
       "slug": "sociology",
@@ -2396,9 +3524,24 @@
       "commonly_offered_at": [
         "University of Ghana",
         "UCC",
-        "GIJ pathways"
+        "GIJ pathways",
+        "UPSA"
       ],
-      "detailed_overview": "Communication Studies trains clear storytelling for newsrooms, brands, and public institutions."
+      "detailed_overview": "Bachelor of Arts in Communication Studies is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.\n\n(Source: UPSA programme information — https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "UPSA",
+          "programme_name": "Bachelor of Arts in Communication Studies",
+          "overview": "Bachelor of Arts in Communication Studies is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.",
+          "source_url": "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/"
+      ]
     },
     {
       "slug": "fine-art",
@@ -2453,9 +3596,24 @@
         "English"
       ],
       "commonly_offered_at": [
-        "KNUST"
+        "KNUST",
+        "UCC"
       ],
-      "detailed_overview": "Design programmes teach how visuals communicate clearly for business, culture, and the web."
+      "detailed_overview": "Design programmes teach how visuals communicate clearly for business, culture, and the web.",
+      "offerings": [
+        {
+          "university": "UCC",
+          "programme_name": "B.Ed. Communication Design",
+          "overview": "B.Ed. Communication Design appears in the UCC academic programmes catalogue. Open the official programme page for full structure and entry information.",
+          "source_url": "https://admissions.ucc.edu.gh/catalogue/programme/bed-communication-design",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://admissions.ucc.edu.gh/catalogue/programme/bed-communication-design"
+      ]
     },
     {
       "slug": "theatre-film",
@@ -2571,9 +3729,40 @@
         "University of Ghana",
         "KNUST",
         "UCC",
-        "GIMPA"
+        "GIMPA",
+        "UPSA"
       ],
-      "detailed_overview": "An LLB builds rigorous legal analysis. Graduates usually continue to professional training before practice."
+      "detailed_overview": "Law basically describes the systems, methods and rules employed to administer justice, foster mutual relations and facilitate development in society. Law as a discipline equips individuals with the requisite skills to think critically and apply the appropriate rules and regulations for the benefit of society. Law as a subject has numerous branches covering every conceivable facet of human life. The basic aspects include Contract Law, Legal Systems and Method, Criminal Law, Law of Torts and Constitutional Law. Other aspects include Immovable Property Law, Commercial Law, Public International Law, Company Law and Alternative Dispute Resolution. In recent years, the area has expanded to include Oil and Gas Law, Gender and the Law, International Human Rights Law and Intellectual Property Law. Future areas which promise interesting and interdisciplinary research include Cyber Law, AntiMoney Laundering and Patent Law. Students trained in law serve as lawyers, law lecturers, legislative drafters, law reporters, solicitors, research assistants and fellows, external board members of organizations and judges.\n\n(Source: University of Ghana programme information — https://law.ug.edu.gh/. Always confirm on the official university site.)",
+      "offerings": [
+        {
+          "university": "UPSA",
+          "programme_name": "Bachelor of Laws (LLB)",
+          "overview": "Bachelor of Laws (LLB) is listed among UPSA undergraduate/diploma offerings on the official admissions programmes page. Confirm current curriculum details on the university site.",
+          "source_url": "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        },
+        {
+          "university": "University of Ghana",
+          "programme_name": "Bachelor of Laws (LLB)",
+          "overview": "Law basically describes the systems, methods and rules employed to administer justice, foster mutual relations and facilitate development in society. Law as a discipline equips individuals with the requisite skills to think critically and apply the appropriate rules and regulations for the benefit of society. Law as a subject has numerous branches covering every conceivable facet of human life. The basic aspects include Contract Law, Legal Systems and Method, Criminal Law, Law of Torts and Constitutional Law. Other aspects include Immovable Property Law, Commercial Law, Public International Law, Company Law and Alternative Dispute Resolution. In recent years, the area has expanded to include Oil and Gas Law, Gender and the Law, International Human Rights Law and Intellectual Property Law. Future areas which promise interesting and interdisciplinary research include Cyber Law, AntiMoney Laundering and Patent Law. Students trained in law serve as lawyers, law lecturers, legislative drafters, law reporters, solicitors, research assistants and fellows, external board members of organizations and judges.",
+          "source_url": "https://law.ug.edu.gh/",
+          "department": "",
+          "duration": "",
+          "faculty": ""
+        }
+      ],
+      "source_urls": [
+        "https://law.ug.edu.gh/",
+        "https://admissions.upsa.edu.gh/admissions/undergraduate/undergraduate-programmes/"
+      ]
     }
-  ]
+  ],
+  "scrape_merge": {
+    "merged_at": "2026-08-09T23:12:51+00:00",
+    "scraped_rows": 122,
+    "matched_rows": 95,
+    "enriched_overviews": 4
+  }
 }

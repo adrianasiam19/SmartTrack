@@ -143,13 +143,55 @@ export default function ProgrammeDetailPage() {
 
                 <section className="mt-5 rounded-2xl border border-[#E2E8F0] bg-white p-5 sm:p-6">
                   <h2 className="text-lg font-bold text-[#1E293B] mb-3">
-                    Commonly offered at
+                    Where it&apos;s offered
                   </h2>
                   <p className="text-xs text-[#64748B] mb-3">
-                    Illustrative list of universities known to offer related programmes. Always
-                    confirm current offerings on official university sites.
+                    University listings from catalogue sources where available. Always confirm
+                    current offerings and entry rules on the official site.
                   </p>
-                  <ChipList items={programme.commonly_offered_at || []} tone="blue" />
+                  {(programme.offerings || []).length > 0 ? (
+                    <ul className="space-y-4">
+                      {programme.offerings!.map((offering) => (
+                        <li
+                          key={`${offering.university}-${offering.programme_name || ''}`}
+                          className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3"
+                        >
+                          <div className="flex flex-wrap items-baseline justify-between gap-2">
+                            <p className="text-sm font-semibold text-[#1E293B]">
+                              {offering.university}
+                            </p>
+                            {offering.source_url ? (
+                              <a
+                                href={offering.source_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs font-medium text-[#1D4ED8] underline"
+                              >
+                                Official page
+                              </a>
+                            ) : null}
+                          </div>
+                          {offering.programme_name ? (
+                            <p className="mt-1 text-sm text-[#334155]">
+                              {offering.programme_name}
+                            </p>
+                          ) : null}
+                          {(offering.department || offering.duration) && (
+                            <p className="mt-1 text-xs text-[#64748B]">
+                              {[offering.department, offering.duration].filter(Boolean).join(' · ')}
+                            </p>
+                          )}
+                          {offering.overview ? (
+                            <p className="mt-2 text-sm text-[#475569] leading-relaxed whitespace-pre-line">
+                              {offering.overview}
+                            </p>
+                          ) : null}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <ChipList items={programme.commonly_offered_at || []} tone="blue" />
+                  )}
                 </section>
 
                 <div className="mt-8 rounded-xl border border-[#FDE68A] bg-[#FFFBEB] px-4 py-3 text-sm text-[#92400E]">
