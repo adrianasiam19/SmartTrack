@@ -386,15 +386,15 @@ function ChallengeArena() {
     const localIsCorrect = isPreference ? true : answerKey === localCorrect;
 
     setIsCorrect(localIsCorrect);
-    setPhase('feedback');
 
+    // Starter Arena: never park on the static "Great thinking!" feedback card.
+    // That card was still showing on deploy while timeouts/API work ran.
     if (isPlacement) {
       setLastXP(0);
       setLastStreak(0);
       setLevelUp(false);
       setNewRank(null);
 
-      // Track response for learner profile using the stable backend question id.
       const isPsychometric = currentQuestion._category === 'psychometric';
       const response: StoredResponse = {
         question_id: currentQuestion._sourceId || String(currentQuestion.id),
@@ -411,101 +411,124 @@ function ChallengeArena() {
         time_taken: timeTaken,
       };
       if (isPsychometric) {
-        setPsychResponses(prev => [...prev, response]);
+        setPsychResponses((prev) => [...prev, response]);
         psychResponsesRef.current = [...psychResponsesRef.current, response];
       } else {
-        setAcademicResponses(prev => [...prev, response]);
+        setAcademicResponses((prev) => [...prev, response]);
         academicResponsesRef.current = [...academicResponsesRef.current, response];
       }
 
       const newCount = session.questionsAnswered + 1;
-      if (newCount % 3 === 0 && newCount < MAX_QUESTIONS) {
-        setEncouragementMsg(ENCOURAGEMENTS[Math.floor(newCount / 3) - 1] || ENCOURAGEMENTS[0]);
-      } else {
-        setEncouragementMsg('');
-      }
-
       setSession((prev) => ({
         ...prev,
         questionsAnswered: prev.questionsAnswered + 1,
         correctAnswers: prev.correctAnswers + 1,
         totalTime: prev.totalTime + timeTaken,
       }));
-    } else {
-      let apiSuccess = false;
-      try {
-        const data = await submitAnswer({
-          question_id: currentQuestion.id,
-          selected_option: answerKey,
-          time_taken_seconds: timeTaken,
-          hints_used: 0,
-          is_correct: localIsCorrect,
-        });
+      setLoading(false);
 
-        setLastXP(data.xp_gained || (localIsCorrect ? 15 : 5));
-        setLastStreak(data.streak_updated || session.streak + (localIsCorrect ? 1 : 0));
-        setLevelUp(data.level_up || false);
-        setNewRank(data.new_rank || null);
-
-        setSession((prev) => ({
-          ...prev,
-          xpEarned: prev.xpEarned + (data.xp_gained || (localIsCorrect ? 15 : 5)),
-          streak: data.streak_updated || (localIsCorrect ? prev.streak + 1 : 0),
-          questionsAnswered: prev.questionsAnswered + 1,
-          correctAnswers: prev.correctAnswers + (localIsCorrect ? 1 : 0),
-          totalTime: prev.totalTime + timeTaken,
-        }));
-
-        if (user) {
-          const updated = {
-            ...user,
-            xp: user.xp + (data.xp_gained || (localIsCorrect ? 15 : 5)),
-            streak: data.streak_updated || (localIsCorrect ? user.streak + 1 : 0),
-            rank: data.new_rank || user.rank,
-          };
-          storeUser(updated);
-          setUser(updated);
-        }
-
-        if (data.next_questions?.length > 0) {
-          const fresh = data.next_questions.filter(
-            (q: Question) => !usedIdsRef.current.has(q.id)
+      const isLastQuestion = newCount >= MAX_QUESTIONS;
+      if (isLastQuestion) {
+        if (completingRef.current) return;
+        completingRef.current = true;
+        setProfileLoading(true);
+        setPhase('loading_more');
+        try {
+          const result = await completeStarterArena(
+            starterSessionId,
+            psychResponsesRef.current,
+            academicResponsesRef.current,
           );
-          fresh.forEach((q: Question) => usedIdsRef.current.add(q.id));
-          setQuestionQueue((prev) => [...prev, ...fresh]);
+          if (result.success && result.profile) {
+            setLearnerProfile(result.profile);
+          }
+        } catch {
+          // continue to dashboard
         }
+        await markStarterArenaComplete();
+        setProfileLoading(false);
+        router.replace('/dashboard');
+      } else {
+        advanceToNextQuestion();
+      }
+      return;
+    }
 
-        apiSuccess = true;
-      } catch {
-        console.warn('Backend submit failed, using local XP only');
+    setPhase('feedback');
+
+    let apiSuccess = false;
+    try {
+      const data = await submitAnswer({
+        question_id: currentQuestion.id,
+        selected_option: answerKey,
+        time_taken_seconds: timeTaken,
+        hints_used: 0,
+        is_correct: localIsCorrect,
+      });
+
+      setLastXP(data.xp_gained || (localIsCorrect ? 15 : 5));
+      setLastStreak(data.streak_updated || session.streak + (localIsCorrect ? 1 : 0));
+      setLevelUp(data.level_up || false);
+      setNewRank(data.new_rank || null);
+
+      setSession((prev) => ({
+        ...prev,
+        xpEarned: prev.xpEarned + (data.xp_gained || (localIsCorrect ? 15 : 5)),
+        streak: data.streak_updated || (localIsCorrect ? prev.streak + 1 : 0),
+        questionsAnswered: prev.questionsAnswered + 1,
+        correctAnswers: prev.correctAnswers + (localIsCorrect ? 1 : 0),
+        totalTime: prev.totalTime + timeTaken,
+      }));
+
+      if (user) {
+        const updated = {
+          ...user,
+          xp: user.xp + (data.xp_gained || (localIsCorrect ? 15 : 5)),
+          streak: data.streak_updated || (localIsCorrect ? user.streak + 1 : 0),
+          rank: data.new_rank || user.rank,
+        };
+        storeUser(updated);
+        setUser(updated);
       }
 
-      if (!apiSuccess) {
-        const baseXP = localIsCorrect ? 15 : 5;
-        const streakBonus = localIsCorrect ? (session.streak + 1) * 2 : 0;
-        const earnedXP = baseXP + streakBonus;
+      if (data.next_questions?.length > 0) {
+        const fresh = data.next_questions.filter(
+          (q: Question) => !usedIdsRef.current.has(q.id)
+        );
+        fresh.forEach((q: Question) => usedIdsRef.current.add(q.id));
+        setQuestionQueue((prev) => [...prev, ...fresh]);
+      }
 
-        setLastXP(earnedXP);
-        setLastStreak(localIsCorrect ? session.streak + 1 : 0);
+      apiSuccess = true;
+    } catch {
+      console.warn('Backend submit failed, using local XP only');
+    }
 
-        setSession((prev) => ({
-          ...prev,
-          xpEarned: prev.xpEarned + earnedXP,
-          streak: localIsCorrect ? prev.streak + 1 : 0,
-          questionsAnswered: prev.questionsAnswered + 1,
-          correctAnswers: prev.correctAnswers + (localIsCorrect ? 1 : 0),
-          totalTime: prev.totalTime + timeTaken,
-        }));
+    if (!apiSuccess) {
+      const baseXP = localIsCorrect ? 15 : 5;
+      const streakBonus = localIsCorrect ? (session.streak + 1) * 2 : 0;
+      const earnedXP = baseXP + streakBonus;
 
-        if (user) {
-          const updated = {
-            ...user,
-            xp: user.xp + earnedXP,
-            streak: localIsCorrect ? user.streak + 1 : 0,
-          };
-          storeUser(updated);
-          setUser(updated);
-        }
+      setLastXP(earnedXP);
+      setLastStreak(localIsCorrect ? session.streak + 1 : 0);
+
+      setSession((prev) => ({
+        ...prev,
+        xpEarned: prev.xpEarned + earnedXP,
+        streak: localIsCorrect ? prev.streak + 1 : 0,
+        questionsAnswered: prev.questionsAnswered + 1,
+        correctAnswers: prev.correctAnswers + (localIsCorrect ? 1 : 0),
+        totalTime: prev.totalTime + timeTaken,
+      }));
+
+      if (user) {
+        const updated = {
+          ...user,
+          xp: user.xp + earnedXP,
+          streak: localIsCorrect ? user.streak + 1 : 0,
+        };
+        storeUser(updated);
+        setUser(updated);
       }
     }
 
@@ -516,10 +539,7 @@ function ChallengeArena() {
     const newCount = session.questionsAnswered + 1;
     const isLastQuestion = newCount >= MAX_QUESTIONS;
 
-    // Non-placement arenas may still inject occasional psychometric cards.
-    // Placement mode must NOT — the adaptive session already alternates them.
     const willShowPsychometric =
-      !isPlacement &&
       !isLastQuestion &&
       newCount % PSYCHOMETRIC_EVERY_N === 0 &&
       !psychometricInProgressRef.current;
@@ -537,62 +557,30 @@ function ChallengeArena() {
         });
     }
 
-    const finishPlacement = async () => {
-      if (completingRef.current) return;
-      completingRef.current = true;
-      // Leave the static "Great thinking!" card immediately so deploy latency is visible.
-      setProfileLoading(true);
-      setPhase('loading_more');
-      try {
-        const result = await completeStarterArena(
-          starterSessionId,
-          psychResponsesRef.current,
-          academicResponsesRef.current,
-        );
-        if (result.success && result.profile) {
-          setLearnerProfile(result.profile);
-        }
-      } catch {
-        // Completion endpoint also sets flags; continue to dashboard.
-      }
-      await markStarterArenaComplete();
-      setProfileLoading(false);
-      router.replace('/dashboard');
-    };
-
     const handleAdvance = async () => {
       if (isLastQuestion) {
-        if (isPlacement) {
-          await finishPlacement();
-        } else {
-          const avgTime = responseTimesRef.current.length > 0
-            ? responseTimesRef.current.reduce((a, b) => a + b, 0) / responseTimesRef.current.length
-            : 0;
-          const consistency = Math.round((session.correctAnswers / session.questionsAnswered) * 100);
-          submitBehaviourData({
-            retries: retriesRef.current,
-            response_time_avg: Math.round(avgTime * 10) / 10,
-            response_times: responseTimesRef.current,
-            questions_answered: newCount,
-            correct_answers: session.correctAnswers,
-            consistency,
-            domain: domain || undefined,
-          });
-          setPhase('complete');
-        }
-      } else if (!isPlacement && newCount % PSYCHOMETRIC_EVERY_N === 0) {
+        const avgTime = responseTimesRef.current.length > 0
+          ? responseTimesRef.current.reduce((a, b) => a + b, 0) / responseTimesRef.current.length
+          : 0;
+        const consistency = Math.round((session.correctAnswers / session.questionsAnswered) * 100);
+        submitBehaviourData({
+          retries: retriesRef.current,
+          response_time_avg: Math.round(avgTime * 10) / 10,
+          response_times: responseTimesRef.current,
+          questions_answered: newCount,
+          correct_answers: session.correctAnswers,
+          consistency,
+          domain: domain || undefined,
+        });
+        setPhase('complete');
+      } else if (newCount % PSYCHOMETRIC_EVERY_N === 0) {
         setPhase('psychometric');
       } else {
         advanceToNextQuestion();
       }
     };
 
-    if (isInteractive) {
-      setTimeout(handleAdvance, 400);
-    } else {
-      // Placement: short beat so hosted API work isn't hidden behind a long static card.
-      setTimeout(handleAdvance, isPlacement ? 500 : 2200);
-    }
+    setTimeout(handleAdvance, isInteractive ? 400 : 2200);
   };
 
   useEffect(() => {
