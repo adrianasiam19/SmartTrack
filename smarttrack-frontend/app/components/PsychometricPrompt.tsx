@@ -27,7 +27,7 @@ export default function PsychometricPrompt({ onComplete, onSkip, preloadedCard }
   const [card, setCard] = useState<PsychometricCardData | null>(preloadedCard || null);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState(false);
+  const [, setError] = useState(false);
   const [loading, setLoading] = useState(!preloadedCard);
   const settledRef = useRef(false);
 

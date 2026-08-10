@@ -67,7 +67,7 @@ export function getRandomQuantQuestions(count: number): Question[] {
 
 // ── Get questions by category ──────────────────────────────────────────────
 export function getQuantQuestionsByCategory(category: string): Question[] {
-  return QUANT_ARENA_QUESTIONS.filter((q: any) => q._category === category);
+  return QUANT_ARENA_QUESTIONS.filter((q) => q._category === category);
 }
 
 // ── Get question IDs already used (for dedup) ──────────────────────────────

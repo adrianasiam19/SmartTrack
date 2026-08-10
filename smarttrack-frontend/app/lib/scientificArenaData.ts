@@ -69,7 +69,7 @@ export function getRandomScientificQuestions(count: number): Question[] {
 
 // ── Get questions by category ──────────────────────────────────────────────
 export function getScientificQuestionsByCategory(category: string): Question[] {
-  return SCIENTIFIC_ARENA_QUESTIONS.filter((q: any) => q._category === category);
+  return SCIENTIFIC_ARENA_QUESTIONS.filter((q) => q._category === category);
 }
 
 // ── Get question IDs already used (for dedup) ──────────────────────────────
