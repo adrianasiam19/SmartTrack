@@ -507,7 +507,7 @@ export async function fetchWithAuth(
     return fetch(url, { ...options, headers });
   };
 
-  let token = getAccessToken();
+  const token = getAccessToken();
   let res = await doFetch(token ?? undefined);
 
   if (res.status === 401 && token) {

@@ -43,7 +43,6 @@ describe('getCurrentUser refresh-on-401', () => {
     storeTokens({
       access_token: makeJwt('user-a'),
       refresh_token: 'refresh-token-1',
-      token_type: 'bearer',
     });
     storeUser(makeUser());
   });

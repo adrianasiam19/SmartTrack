@@ -154,11 +154,10 @@ function ChallengeArena() {
 
   // New Starter Arena state
   const [starterSessionId, setStarterSessionId] = useState<string>('');
-  const [psychResponses, setPsychResponses] = useState<StoredResponse[]>([]);
-  const [academicResponses, setAcademicResponses] = useState<StoredResponse[]>([]);
+  const [, setPsychResponses] = useState<StoredResponse[]>([]);
+  const [, setAcademicResponses] = useState<StoredResponse[]>([]);
   const [learnerProfile, setLearnerProfile] = useState<LearnerProfile | null>(null);
   const [profileLoading, setProfileLoading] = useState(false);
-  const [encouragementMsg, setEncouragementMsg] = useState<string>('');
   const [shortResponseDraft, setShortResponseDraft] = useState('');
   const [rankingOrder, setRankingOrder] = useState<string[]>([]);
 
@@ -168,15 +167,6 @@ function ChallengeArena() {
   const completingRef = useRef(false);
   const psychResponsesRef = useRef<StoredResponse[]>([]);
   const academicResponsesRef = useRef<StoredResponse[]>([]);
-
-  const ENCOURAGEMENTS = [
-    'You\'re doing great! Keep going! 🎉',
-    'Atlas is learning more about you!',
-    'Almost there! You\'re doing amazing! ✨',
-    'Every answer helps! You\'re on fire! 🔥',
-    'Wonderful progress! Keep it up! 💪',
-    'You\'re almost done! Fantastic effort! 🌟',
-  ];
 
   useEffect(() => {
     const loadUser = async () => {
@@ -317,13 +307,13 @@ function ChallengeArena() {
               _xp: 0,
             };
           });
-          setEncouragementMsg('');
           setShortResponseDraft('');
           setRankingOrder([]);
-        } catch (e: any) {
+        } catch (e: unknown) {
           console.warn('Adaptive Starter Arena failed:', e);
+          const message = e instanceof Error ? e.message : null;
           setError(
-            e?.message ||
+            message ||
               'Could not start Starter Arena. Check that the backend is running, then try again.',
           );
           return;
@@ -354,8 +344,9 @@ function ChallengeArena() {
       } else {
         throw new Error('No questions returned');
       }
-    } catch (e: any) {
-      setError(e?.message || 'Failed to start.');
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : null;
+      setError(message || 'Failed to start.');
     } finally {
       setLoading(false);
     }
@@ -764,7 +755,6 @@ function ChallengeArena() {
     academicResponsesRef.current = [];
     setLearnerProfile(null);
     setProfileLoading(false);
-    setEncouragementMsg('');
     setShortResponseDraft('');
     setRankingOrder([]);
   };

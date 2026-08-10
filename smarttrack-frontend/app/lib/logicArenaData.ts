@@ -72,7 +72,7 @@ export function getRandomLogicQuestions(count: number): Question[] {
 }
 
 export function getLogicQuestionsByCategory(category: string): Question[] {
-  return LOGIC_ARENA_QUESTIONS.filter((q: any) => q._category === category);
+  return LOGIC_ARENA_QUESTIONS.filter((q) => q._category === category);
 }
 
 export const LOGIC_QUESTION_IDS = new Set(LOGIC_ARENA_QUESTIONS.map((q) => q.id));

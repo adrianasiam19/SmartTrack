@@ -34,11 +34,12 @@ export default function Sidebar() {
   const navItems = useMemo(() => buildNavItems(), []);
 
   const hiddenPaths = ['/', '/login', '/register', '/onboarding'];
-  if (hiddenPaths.some((p) => pathname === p || pathname.startsWith('/onboarding'))) {
-    return null;
-  }
+  const isHidden = hiddenPaths.some(
+    (p) => pathname === p || pathname.startsWith('/onboarding'),
+  );
 
   useEffect(() => {
+    if (isHidden) return;
     const loadUser = async () => {
       try {
         if (!getAccessToken()) { setUser(null); return; }
@@ -50,7 +51,7 @@ export default function Sidebar() {
       finally { setLoading(false); }
     };
     loadUser();
-  }, [pathname]);
+  }, [pathname, isHidden]);
 
   // Close sidebar when route changes
   useEffect(() => {
@@ -59,12 +60,13 @@ export default function Sidebar() {
 
   // Close on Escape key
   useEffect(() => {
+    if (isHidden) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setIsOpen(false);
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [isHidden]);
 
   const getInitials = (name: string | undefined) => {
     if (!name) return '?';
@@ -92,6 +94,10 @@ export default function Sidebar() {
     if (href === '/dashboard') return pathname === href;
     return pathname.startsWith(href);
   };
+
+  if (isHidden) {
+    return null;
+  }
 
   return (
     <>
