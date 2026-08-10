@@ -65,30 +65,32 @@ app = FastAPI(
 )
 
 # ── CORS ──────────────────────────────────────────────────────────────────────
-# Allow your Next.js frontend to call the API cross-origin
-# Allow localhost on all dev ports
+# Localhost for dev + CORS_ORIGINS from .env for production (e.g. atlasgh.org)
+_DEV_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "http://localhost:3002",
+    "http://localhost:3003",
+    "http://localhost:3004",
+    "http://localhost:3005",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:3001",
+    "http://127.0.0.1:3002",
+    "http://127.0.0.1:3003",
+    "http://127.0.0.1:3004",
+    "http://127.0.0.1:3005",
+    "http://192.168.127.1:3000",
+    "http://192.168.127.1:3001",
+    "http://192.168.127.1:3002",
+    "http://192.168.127.1:3003",
+    "http://192.168.127.1:3004",
+    "http://192.168.127.1:3005",
+]
+_cors_origins = list(dict.fromkeys([*_DEV_ORIGINS, *settings.cors_origins_list]))
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "http://localhost:3002",
-        "http://localhost:3003",
-        "http://localhost:3004",
-        "http://localhost:3005",
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:3001",
-        "http://127.0.0.1:3002",
-        "http://127.0.0.1:3003",
-        "http://127.0.0.1:3004",
-        "http://127.0.0.1:3005",
-        "http://192.168.127.1:3000",
-        "http://192.168.127.1:3001",
-        "http://192.168.127.1:3002",
-        "http://192.168.127.1:3003",
-        "http://192.168.127.1:3004",
-        "http://192.168.127.1:3005",
-    ],
+    allow_origins=_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
