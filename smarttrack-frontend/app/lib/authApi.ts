@@ -259,7 +259,21 @@ async function fetchWithRetry(
  */
 export function getFetchErrorMessage(err: unknown): string {
   if (err instanceof TypeError && err.message === 'Failed to fetch') {
-    return 'Unable to connect to the server. Please check that the backend is running (port 8000) and try again.';
+    const apiLooksLocal =
+      typeof API_BASE_URL === 'string' &&
+      (API_BASE_URL.includes('localhost') || API_BASE_URL.includes('127.0.0.1'));
+    const pageIsHosted =
+      typeof window !== 'undefined' &&
+      !['localhost', '127.0.0.1'].includes(window.location.hostname);
+    if (apiLooksLocal && pageIsHosted) {
+      return (
+        'This hosted site is still calling a local API (localhost). ' +
+        'Set NEXT_PUBLIC_API_URL on the frontend host to your live backend URL ' +
+        '(e.g. https://your-api.example.com/api/v1), redeploy, and ensure CORS_ORIGINS ' +
+        'on the backend includes this site.'
+      );
+    }
+    return 'Unable to connect to the server. Please check that the backend is running and try again.';
   }
   if (err instanceof Error) return err.message;
   return 'An unexpected error occurred. Please try again.';
