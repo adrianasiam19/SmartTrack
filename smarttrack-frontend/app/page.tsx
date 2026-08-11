@@ -154,6 +154,17 @@ export default function Home() {
               {googleError && (
                 <p className="text-sm text-[#DC2626] text-center mt-3">{googleError}</p>
               )}
+              <p className="text-center text-xs text-[#94A3B8] mt-6 leading-relaxed">
+                By continuing you agree to our{' '}
+                <Link href="/terms" className="text-[#2563EB] hover:underline">
+                  Terms
+                </Link>{' '}
+                and{' '}
+                <Link href="/privacy" className="text-[#2563EB] hover:underline">
+                  Privacy Policy
+                </Link>
+                .
+              </p>
             </div>
           </motion.div>
         </div>

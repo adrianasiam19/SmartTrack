@@ -61,11 +61,12 @@ app = FastAPI(
     version="1.0.0",
     docs_url="/docs" if settings.ENVIRONMENT == "development" else None,
     redoc_url="/redoc" if settings.ENVIRONMENT == "development" else None,
+    openapi_url="/openapi.json" if settings.ENVIRONMENT == "development" else None,
     lifespan=lifespan,
 )
 
 # ── CORS ──────────────────────────────────────────────────────────────────────
-# Localhost for dev + CORS_ORIGINS from .env for production (e.g. atlasgh.org)
+# Localhost for local/dev. Production uses only CORS_ORIGINS from .env.
 _DEV_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:3001",
@@ -86,7 +87,14 @@ _DEV_ORIGINS = [
     "http://192.168.127.1:3004",
     "http://192.168.127.1:3005",
 ]
-_cors_origins = list(dict.fromkeys([*_DEV_ORIGINS, *settings.cors_origins_list]))
+_is_prod = (settings.ENVIRONMENT or "").lower() == "production"
+_cors_origins = list(
+    dict.fromkeys(
+        [*settings.cors_origins_list]
+        if _is_prod
+        else [*_DEV_ORIGINS, *settings.cors_origins_list]
+    )
+)
 
 app.add_middleware(
     CORSMiddleware,

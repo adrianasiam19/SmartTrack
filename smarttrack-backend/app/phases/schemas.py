@@ -73,6 +73,15 @@ class SubmitAnswerRequest(BaseModel):
     time_taken_seconds: Optional[float] = None
 
 
+class SessionStatusResponse(BaseModel):
+    session_id: int
+    status: str
+    level_id: Optional[int] = None
+    is_replay: bool = False
+    answered_count: int = 0
+    question_count: int = 0
+
+
 class SubmitAnswerResponse(BaseModel):
     is_correct: bool
     explanation: Optional[str] = None

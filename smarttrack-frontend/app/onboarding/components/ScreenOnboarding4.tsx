@@ -24,15 +24,16 @@ export default function ScreenOnboarding4({ onNext }: Props) {
             Learn & Grow
           </h1>
           <p className="text-base text-[#475569] mb-6 leading-relaxed">
-            Access a rich library of lessons across core subjects — tailored to your learning path.
+            Access lessons across all your SHS subjects — core and elective — tailored to your
+            programme and learning path, not just a few core courses.
           </p>
 
           <div className="space-y-3 mb-8">
             {[
-              { subject: 'Core Mathematics', color: '#2563EB', bg: 'bg-[#EFF6FF]' },
-              { subject: 'English Language', color: '#D97706', bg: 'bg-[#FFFBEB]' },
-              { subject: 'Integrated Science', color: '#059669', bg: 'bg-[#F0FDF4]' },
-              { subject: 'Social Studies', color: '#7C3AED', bg: 'bg-[#F5F3FF]' },
+              { subject: 'Core & elective subjects', color: '#2563EB', bg: 'bg-[#EFF6FF]' },
+              { subject: 'Maths, English, Science & more', color: '#D97706', bg: 'bg-[#FFFBEB]' },
+              { subject: 'Arts, Business & technical paths', color: '#059669', bg: 'bg-[#F0FDF4]' },
+              { subject: 'Matched to your programme', color: '#7C3AED', bg: 'bg-[#F5F3FF]' },
             ].map((item, i) => (
               <motion.div
                 key={i}

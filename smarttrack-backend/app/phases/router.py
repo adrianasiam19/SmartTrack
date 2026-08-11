@@ -13,6 +13,7 @@ from app.phases.schemas import (
     CompleteSessionResponse,
     PrefetchStatusResponse,
     ProgressionMeResponse,
+    SessionStatusResponse,
     StartLevelResponse,
     SubmitAnswerRequest,
     SubmitAnswerResponse,
@@ -91,6 +92,15 @@ async def prefetch_buffer_status(
     from app.phases.prefetch import phase_prefetch_manager
 
     return await phase_prefetch_manager.buffer_status(current_user.id)
+
+
+@router.get("/sessions/{session_id}", response_model=SessionStatusResponse)
+async def get_session_status(
+    session_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    return await service.get_session_status(db, current_user.id, session_id)
 
 
 @router.post("/sessions/{session_id}/submit-answer", response_model=SubmitAnswerResponse)

@@ -68,7 +68,13 @@ export default function Register() {
     if (!programme) { setError('Please choose your programme.'); return; }
     setIsLoading(true);
     try {
-      await register({ email: email.trim(), password, full_name: fullName.trim(), programme, school: school.trim() || null });
+      await register({
+        email: email.trim().toLowerCase(),
+        password,
+        full_name: fullName.trim(),
+        programme,
+        school: school.trim() || null,
+      });
       router.push('/onboarding');
     } catch (err) { setError(err instanceof Error ? err.message : 'Registration failed'); }
     finally { setIsLoading(false); }
@@ -247,6 +253,13 @@ export default function Register() {
 
           <p className="text-center text-sm text-[#64748B] mt-6">
             Already have an account?{' '}<Link href="/login" className="text-[#2563EB] hover:text-[#1D4ED8] font-semibold">Sign in</Link>
+          </p>
+          <p className="text-center text-xs text-[#94A3B8] mt-4 leading-relaxed">
+            By continuing you agree to our{' '}
+            <Link href="/terms" className="text-[#2563EB] hover:underline">Terms</Link>
+            {' '}and{' '}
+            <Link href="/privacy" className="text-[#2563EB] hover:underline">Privacy Policy</Link>.
+            Google Sign-In requires a verified Google email.
           </p>
         </div>
       </motion.div>

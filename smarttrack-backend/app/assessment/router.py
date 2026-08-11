@@ -1,6 +1,6 @@
 import random
 from typing import List, Optional, Dict, Set
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, desc, delete
 from datetime import datetime, timezone
@@ -18,7 +18,8 @@ from app.assessment.schemas import (
     SaveAcademicRecordsRequest, ConfirmAcademicUploadRequest,
     LearningModuleResponse, RecommendedModulesResponse,
     ExplanationRequest, ExplanationResponse, DashboardResponse,
-    GenerateChallengeRequest, GenerateChallengeResponse, GeneratedChallenge
+    GenerateChallengeRequest, GenerateChallengeResponse, GeneratedChallenge,
+    BehaviourSessionRequest, BehaviourSessionResponse,
 )
 from app.assessment.engine import (
     update_theta, get_domain_weights, analyze_behavior, get_initial_prior
@@ -87,7 +88,10 @@ router = APIRouter(prefix="/challenges", tags=["Challenges"])
 
 
 @router.get("/questions", response_model=AssessmentListResponse)
-async def get_all_questions(db: AsyncSession = Depends(get_db)):
+async def get_all_questions(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
     """Get all challenge questions (without answers for security)."""
     result = await db.execute(select(Question).order_by(Question.id))
     questions = result.scalars().all()
@@ -99,7 +103,11 @@ async def get_all_questions(db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/questions/{domain}", response_model=AssessmentListResponse)
-async def get_questions_by_domain(domain: str, db: AsyncSession = Depends(get_db)):
+async def get_questions_by_domain(
+    domain: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
     """Get questions filtered by domain."""
     result = await db.execute(
         select(Question).where(Question.domain == domain).order_by(Question.id)
@@ -118,7 +126,9 @@ async def get_questions_by_domain(domain: str, db: AsyncSession = Depends(get_db
 
 @router.post("/generate-challenge", response_model=GenerateChallengeResponse)
 async def generate_challenge(
-    request: GenerateChallengeRequest,
+    body: GenerateChallengeRequest,
+    http_request: Request,
+    current_user: User = Depends(get_current_user),
 ):
     """
     Generate a dynamic SHS challenge question using AI (DeepSeek / NVIDIA).
@@ -127,16 +137,20 @@ async def generate_challenge(
     instead of relying solely on hardcoded questions.
     
     Args:
-        request: GenerateChallengeRequest with category, difficulty, programme, and optional concept
+        body: GenerateChallengeRequest with category, difficulty, programme, and optional concept
     
     Returns:
         GenerateChallengeResponse with generated challenge or error message
     """
+    from app.security.rate_limit import rate_limit
+
+    rate_limit(http_request, scope="ai-generate-challenge", limit=10, window_seconds=60)
+
     result = await generate_challenge_question(
-        category=request.category,
-        difficulty=request.difficulty,
-        programme=request.programme,
-        concept=request.concept,
+        category=body.category,
+        difficulty=body.difficulty,
+        programme=body.programme,
+        concept=body.concept,
     )
     
     if result["success"]:
@@ -622,6 +636,62 @@ async def submit_response(
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/behaviour", response_model=BehaviourSessionResponse)
+async def submit_behaviour_session(
+    body: BehaviourSessionRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Persist session-level behavioural signals from competitive arenas.
+
+    Complements per-answer /response/submit analysis with an end-of-session summary
+    (retries, pace, consistency) used by recommendation soft signals.
+    """
+    answered = max(0, int(body.questions_answered or 0))
+    correct = max(0, int(body.correct_answers or 0))
+    accuracy = (correct / answered) if answered else 0.0
+    avg_time = float(body.response_time_avg or 0.0)
+    if avg_time <= 0 and body.response_times:
+        avg_time = sum(body.response_times) / len(body.response_times)
+
+    # Normalize to 0–1 trait scale used by BehavioralProfile / recommendations.
+    persistence = min(1.0, (body.retries / 5.0) + (avg_time / 60.0) * 0.5)
+    processing_speed = min(1.0, 30.0 / max(1.0, avg_time)) if accuracy >= 0.4 else 0.0
+    carefulness = min(1.0, accuracy * min(1.0, avg_time / 20.0))
+    consistency = min(1.0, max(0.0, float(body.consistency or 0.0) / 100.0))
+
+    traits = {
+        "Persistence": round(persistence, 4),
+        "Processing Speed": round(processing_speed, 4),
+        "Carefulness": round(carefulness, 4),
+        "Consistency": round(consistency, 4),
+    }
+    if body.domain:
+        # Trait column is String(50) — keep keys short.
+        domain_key = f"Pref:{body.domain}"[:50]
+        traits[domain_key] = 1.0
+
+    now = datetime.now(timezone.utc)
+    for trait_name, value in traits.items():
+        trait_res = await db.execute(
+            select(BehavioralProfile)
+            .where(BehavioralProfile.user_id == current_user.id)
+            .where(BehavioralProfile.trait == trait_name)
+        )
+        profile = trait_res.scalar_one_or_none()
+        if not profile:
+            profile = BehavioralProfile(user_id=current_user.id, trait=trait_name)
+            db.add(profile)
+        # Blend with prior value so one noisy session doesn't overwrite history.
+        prior = float(profile.value or 0.0) if profile.value is not None else value
+        profile.value = round((prior * 0.6) + (value * 0.4), 4)
+        profile.last_updated = now
+
+    await db.commit()
+    return BehaviourSessionResponse(status="success", traits=traits)
 
 
 @router.get("/leaderboard/{domain}/{category}", response_model=LeaderboardResponse)

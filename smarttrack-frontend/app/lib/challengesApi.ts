@@ -503,34 +503,50 @@ export async function submitPsychometric(data: PsychometricAnswer): Promise<void
   });
 }
 
-/** Get user's challenge progress */
+/** Get user's challenge/personal progress (maps GET /progress/me). */
 export async function getUserProgress(): Promise<UserProgress> {
-  const res = await fetch(`${API_BASE}/challenges/progress`, { headers: getHeaders() });
+  const res = await fetch(`${API_BASE}/progress/me`, { headers: getHeaders() });
   if (!res.ok) throw new Error('Failed to fetch progress');
-  return res.json();
+  const data = await res.json();
+  const stats = data?.stats ?? {};
+  const xpMeter = data?.visualizations?.xp_progress;
+  return {
+    xp: Number(stats.total_xp ?? 0),
+    rank: String(stats.rank ?? 'Explorer'),
+    streak: Number(stats.current_streak_days ?? 0),
+    level: Number(stats.current_level ?? 1),
+    xp_for_next_level: Number(xpMeter?.target ?? 100),
+    xp_progress: Number(xpMeter?.pct ?? 0) / 100,
+  };
 }
 
 /**
- * Get leaderboard entries.
- * Deferred for MVP — competitive rankings are not shown in the learner UI.
- * Kept for future compatibility; prefer GET /progress/me for personal stats.
+ * Get leaderboard entries for a domain/category segment.
+ * Prefer personal stats via GET /progress/me in the learner UI (MVP).
  */
 export async function getLeaderboard(
   category: string = 'Overall',
   programme?: string
 ): Promise<LeaderboardEntry[]> {
-  const params = new URLSearchParams();
-  if (category) params.set('category', category);
-  if (programme) params.set('programme', programme);
-
-  const res = await fetch(`${API_BASE}/challenges/leaderboard?${params.toString()}`, {
+  const domain = encodeURIComponent(programme || 'General');
+  const cat = encodeURIComponent(category || 'Overall');
+  const res = await fetch(`${API_BASE}/challenges/leaderboard/${domain}/${cat}`, {
     headers: getHeaders(),
   });
   if (!res.ok) return [];
-  return res.json();
+  const body = await res.json();
+  const entries = Array.isArray(body?.entries) ? body.entries : Array.isArray(body) ? body : [];
+  return entries.map((e: Record<string, unknown>) => ({
+    rank: Number(e.rank ?? 0),
+    user_name: String(e.user_name ?? ''),
+    xp: Number(e.score ?? e.xp ?? 0),
+    streak: Number(e.streak ?? 0),
+    school: String(e.school ?? ''),
+    programme: String(e.programme ?? programme ?? ''),
+  }));
 }
 
-/** Get learning modules */
+/** Get learning modules recommended from challenge thetas */
 export async function getRecommendedModules(): Promise<{
   modules: LearningModule[];
   user_theta: Record<string, number>;
@@ -539,33 +555,74 @@ export async function getRecommendedModules(): Promise<{
     headers: getHeaders(),
   });
   if (!res.ok) throw new Error('Failed to load learning modules');
-  return res.json();
+  const data = await res.json();
+  return {
+    modules: data.modules ?? data ?? [],
+    user_theta: data.user_theta ?? {},
+  };
 }
 
-/** Get challenge completion status */
+/** Get challenge / placement completion status from live profile + progress */
 export async function getChallengeStatus(): Promise<{
   academic_completed: boolean;
   psychometric_completed: boolean;
   is_fully_completed: boolean;
   last_updated: string;
 }> {
-  const res = await fetch(`${API_BASE}/challenges/completion-status`, { headers: getHeaders() });
-  if (!res.ok) {
-    return { academic_completed: false, psychometric_completed: false, is_fully_completed: false, last_updated: '' };
+  try {
+    const [meRes, progressRes] = await Promise.all([
+      fetch(`${API_BASE}/users/me`, { headers: getHeaders() }),
+      fetch(`${API_BASE}/progress/me`, { headers: getHeaders() }),
+    ]);
+    if (!meRes.ok) {
+      return {
+        academic_completed: false,
+        psychometric_completed: false,
+        is_fully_completed: false,
+        last_updated: '',
+      };
+    }
+    const me = await meRes.json();
+    const progress = progressRes.ok ? await progressRes.json() : null;
+    const academic = Boolean(progress?.stats?.wassce_uploaded);
+    const psychometric =
+      Boolean(progress?.stats?.psychometric_completed) ||
+      Boolean(me?.starter_arena_completed);
+    return {
+      academic_completed: academic,
+      psychometric_completed: psychometric,
+      is_fully_completed: Boolean(me?.starter_arena_completed) && academic,
+      last_updated: String(me?.updated_at ?? me?.created_at ?? ''),
+    };
+  } catch {
+    return {
+      academic_completed: false,
+      psychometric_completed: false,
+      is_fully_completed: false,
+      last_updated: '',
+    };
   }
-  return res.json();
 }
 
-/** Get challenge score */
+/** Get challenge score summary from cognitive dashboard */
 export async function getChallengeScore(): Promise<{
   score_percentage: number;
   performance_level: string;
   total_questions: number;
   correct_answers: number;
 }> {
-  const res = await fetch(`${API_BASE}/challenges/score`, { headers: getHeaders() });
+  const res = await fetch(`${API_BASE}/challenges/dashboard`, { headers: getHeaders() });
   if (!res.ok) throw new Error('Failed to fetch score');
-  return res.json();
+  const data = await res.json();
+  const score = Number(data.overall_score ?? 0);
+  const level =
+    score >= 85 ? 'Excellent' : score >= 70 ? 'Strong' : score >= 50 ? 'Developing' : 'Building';
+  return {
+    score_percentage: score,
+    performance_level: level,
+    total_questions: 0,
+    correct_answers: 0,
+  };
 }
 
 /** Update user profile (programme, level, school) */
@@ -593,13 +650,16 @@ export async function submitBehaviourData(data: {
   consistency: number;
   domain?: string;
 }): Promise<void> {
-  // Fire-and-forget — non-critical data for future recommendation intelligence.
-  // Backend endpoint will be fully wired in Phase 3.
-  await fetch(`${API_BASE}/challenges/behaviour`, {
-    method: 'POST',
-    headers: getHeaders(),
-    body: JSON.stringify(data),
-  }).catch(() => {
-    console.warn('Behaviour tracking submission failed (expected if endpoint not yet deployed)');
-  });
+  try {
+    const res = await fetch(`${API_BASE}/challenges/behaviour`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      console.warn('Behaviour tracking submission failed:', res.status);
+    }
+  } catch {
+    console.warn('Behaviour tracking submission failed');
+  }
 }

@@ -120,7 +120,14 @@ async def revoke_all_refresh_tokens(user_id: uuid.UUID, db: AsyncSession) -> Non
 # ── User Lookup Helpers ───────────────────────────────────────────────────────
 
 async def get_user_by_email(email: str, db: AsyncSession) -> User | None:
-    result = await db.execute(select(User).where(User.email == email))
+    from sqlalchemy import func
+
+    normalized = (email or "").strip().lower()
+    if not normalized:
+        return None
+    result = await db.execute(
+        select(User).where(func.lower(User.email) == normalized)
+    )
     return result.scalar_one_or_none()
 
 
@@ -160,11 +167,23 @@ async def exchange_google_code(code: str, redirect_uri: str) -> dict:
 async def get_or_create_google_user(google_info: dict, db: AsyncSession) -> User:
     """
     Find existing user by google_id or email, or create a new one.
-    Google OAuth users are automatically verified.
+    Requires a Google-verified email address (not an unverified/alias-only identity).
     """
+    if not google_info.get("email"):
+        raise ValueError(
+            "Google did not provide an email for this account. "
+            "Use a Google account with a real, verified email address."
+        )
+    # Google sets email_verified when the address is confirmed.
+    if google_info.get("email_verified") is False:
+        raise ValueError(
+            "That Google account email is not verified. "
+            "Verify the email in your Google account settings, then try again."
+        )
+
     google_id: str = google_info["sub"]
-    email: str = google_info["email"]
-    name: str = google_info.get("name", email.split("@")[0])
+    email: str = str(google_info["email"]).strip().lower()
+    name: str = google_info.get("name") or email.split("@")[0]
     avatar: str | None = google_info.get("picture")
 
     # Try by google_id first (most reliable)
@@ -190,11 +209,20 @@ async def get_or_create_google_user(google_info: dict, db: AsyncSession) -> User
         user.last_login = datetime.now(timezone.utc)
         return user
 
-    # Try by email (existing email/password account → link Google)
+    # Try by email (existing email/password account → do not auto-hijack)
     result = await db.execute(select(User).where(User.email == email))
     user = result.scalar_one_or_none()
+    if user is None:
+        # Case-insensitive fallback for older mixed-case rows
+        user = await get_user_by_email(email, db)
 
     if user:
+        if user.password_hash and not user.google_id:
+            # Prevent takeover: attacker registers victim email, then victim uses Google.
+            raise ValueError(
+                "An account with this email already exists. "
+                "Sign in with your password, then you can link Google from your profile."
+            )
         previous_login = user.last_login
         try:
             from app.notifications.engine import notify_return_after_absence
@@ -214,7 +242,7 @@ async def get_or_create_google_user(google_info: dict, db: AsyncSession) -> User
 
     # Create brand-new user
     new_user = User(
-        email=email,
+        email=email.lower(),
         full_name=name,
         google_id=google_id,
         avatar_url=avatar,

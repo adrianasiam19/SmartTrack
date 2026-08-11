@@ -806,6 +806,33 @@ async def warm_prefetch_buffer(
     }
 
 
+async def get_session_status(
+    db: AsyncSession,
+    user_id: uuid.UUID,
+    session_id: int,
+) -> dict[str, Any]:
+    session = (
+        await db.execute(select(ChallengeSession).where(ChallengeSession.id == session_id))
+    ).scalar_one_or_none()
+    if not session or session.user_id != user_id:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Session not found")
+
+    responses = (
+        await db.execute(
+            select(ChallengeResponse).where(ChallengeResponse.session_id == session_id)
+        )
+    ).scalars().all()
+    answered = sum(1 for r in responses if r.user_answer is not None)
+    return {
+        "session_id": session.id,
+        "status": session.status,
+        "level_id": session.level_id,
+        "is_replay": bool(session.is_replay),
+        "answered_count": answered,
+        "question_count": len(responses),
+    }
+
+
 async def submit_answer(
     db: AsyncSession,
     user_id: uuid.UUID,
@@ -944,6 +971,55 @@ async def complete_session(db: AsyncSession, user_id: uuid.UUID, session_id: int
     ).scalar_one_or_none()
     if not session or session.user_id != user_id:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Session not found")
+
+    # Idempotent: a refreshed tab / double-complete must not fail the learner.
+    if session.status == "completed":
+        level = None
+        phase_number = None
+        next_level_id = None
+        next_level_number = None
+        next_action = None
+        if session.level_id:
+            level = (
+                await db.execute(
+                    select(Level).options(selectinload(Level.phase)).where(Level.id == session.level_id)
+                )
+            ).scalar_one_or_none()
+            if level:
+                phase_number = level.phase.number
+                next_level = (
+                    await db.execute(
+                        select(Level).where(
+                            Level.phase_id == level.phase_id,
+                            Level.number == level.number + 1,
+                        )
+                    )
+                ).scalar_one_or_none()
+                if next_level:
+                    next_level_id = next_level.id
+                    next_level_number = next_level.number
+                else:
+                    next_action = "psychometric_checkpoint"
+        total = session.correct_count + session.wrong_count
+        score = (session.correct_count / total) if total else 0.0
+        user = (await db.execute(select(User).where(User.id == user_id))).scalar_one()
+        return {
+            "passed": True,
+            "score": score,
+            "threshold": 0.0,
+            "level_completed": True,
+            "next": next_action,
+            "phase_number": phase_number,
+            "level_id": session.level_id,
+            "next_level_id": next_level_id,
+            "next_level_number": next_level_number,
+            "session_xp": session.total_xp,
+            "user_xp": user.xp,
+            "rank": user.rank,
+            "streak": user.streak,
+            "streak_incremented": False,
+            "learning_nudge": None,
+        }
 
     total = session.correct_count + session.wrong_count
     score = (session.correct_count / total) if total else 0.0
