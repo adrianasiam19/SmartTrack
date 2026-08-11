@@ -16,7 +16,7 @@ from urllib.parse import urlencode
 from datetime import datetime, timezone
 import logging
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -40,6 +40,7 @@ from app.auth.service import (
 from app.auth.validators import validate_password_strength, PasswordValidationError
 from app.config import settings
 from app.database import get_db
+from app.security.rate_limit import rate_limit
 from app.users.models import User
 from app.users.schemas import UserPublic
 
@@ -50,6 +51,40 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 
 
+def _allowed_google_redirect_uris() -> set[str]:
+    """Only accept redirects that match our known frontend origins."""
+    allowed: set[str] = set()
+    frontends = [settings.FRONTEND_URL, *settings.cors_origins_list]
+    if (settings.ENVIRONMENT or "").lower() != "production":
+        frontends.extend(
+            [
+                "http://localhost:3000",
+                "http://127.0.0.1:3000",
+                "http://localhost:3001",
+                "http://127.0.0.1:3001",
+            ]
+        )
+    for origin in frontends:
+        base = (origin or "").strip().rstrip("/")
+        if not base:
+            continue
+        allowed.add(f"{base}/auth/callback")
+    return allowed
+
+
+def _assert_google_redirect_uri(redirect_uri: str) -> str:
+    cleaned = (redirect_uri or "").strip()
+    if cleaned not in _allowed_google_redirect_uris():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=(
+                "Invalid Google redirect URI. Add this exact frontend origin to "
+                "FRONTEND_URL / CORS_ORIGINS and to Google Cloud Authorized redirect URIs."
+            ),
+        )
+    return cleaned
+
+
 # ── Register ──────────────────────────────────────────────────────────────────
 
 @router.post(
@@ -57,8 +92,14 @@ GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
     response_model=schemas.TokenResponse,
     status_code=status.HTTP_201_CREATED,
 )
-async def register(body: schemas.RegisterRequest, db: AsyncSession = Depends(get_db)):
+async def register(
+    body: schemas.RegisterRequest,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+):
     """Register a new account with email and password."""
+    rate_limit(request, scope="auth-register", limit=8, window_seconds=60)
+
     # Validate password strength
     try:
         validate_password_strength(body.password)
@@ -67,21 +108,31 @@ async def register(body: schemas.RegisterRequest, db: AsyncSession = Depends(get
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
         )
-    
-    existing = await get_user_by_email(body.email, db)
+
+    email = body.email.strip().lower()
+    existing = await get_user_by_email(email, db)
     if existing:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="An account with this email already exists.",
+            detail="An account with this email already exists. Try signing in instead.",
+        )
+
+    try:
+        password_hash = hash_password(body.password)
+    except Exception:
+        logger.exception("Password hashing failed during register")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Could not process that password. Try a slightly shorter password.",
         )
 
     user = User(
-        email=body.email,
-        full_name=body.full_name,
-        password_hash=hash_password(body.password),
+        email=email,
+        full_name=body.full_name.strip(),
+        password_hash=password_hash,
         programme=body.programme,
         shs_level=body.shs_level,
-        school=body.school,
+        school=body.school.strip() if body.school else None,
         onboarding_completed=False,
         starter_arena_completed=False,
         # Initialize gamification stats
@@ -104,9 +155,15 @@ async def register(body: schemas.RegisterRequest, db: AsyncSession = Depends(get
 # ── Login ─────────────────────────────────────────────────────────────────────
 
 @router.post("/login", response_model=schemas.TokenResponse)
-async def login(body: schemas.LoginRequest, db: AsyncSession = Depends(get_db)):
+async def login(
+    body: schemas.LoginRequest,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+):
     """Log in with email and password."""
-    user = await get_user_by_email(body.email, db)
+    rate_limit(request, scope="auth-login", limit=12, window_seconds=60)
+
+    user = await get_user_by_email(body.email.strip().lower(), db)
 
     # Don't reveal whether the email exists or the password is wrong
     invalid = HTTPException(
@@ -183,27 +240,35 @@ async def google_auth_url(redirect_uri: str):
             detail="Google Sign-In is not configured on this server.",
         )
 
+    safe_redirect = _assert_google_redirect_uri(redirect_uri)
+
     params = {
         "client_id": settings.google_client_id_clean,
-        "redirect_uri": redirect_uri,
+        "redirect_uri": safe_redirect,
         "response_type": "code",
         "scope": "openid email profile",
         "access_type": "offline",
         "prompt": "select_account",
+        "include_granted_scopes": "true",
     }
     return {"url": f"{GOOGLE_AUTH_URL}?{urlencode(params)}"}
 
 
 @router.post("/google/callback", response_model=schemas.TokenResponse)
 async def google_callback(
-    body: schemas.GoogleCallbackRequest, db: AsyncSession = Depends(get_db)
+    body: schemas.GoogleCallbackRequest,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Exchange the Google authorization code for our JWT tokens.
     The frontend sends the `code` and `redirect_uri` it used.
     """
+    rate_limit(request, scope="auth-google", limit=20, window_seconds=60)
+    safe_redirect = _assert_google_redirect_uri(body.redirect_uri)
+
     try:
-        google_info = await exchange_google_code(body.code, body.redirect_uri)
+        google_info = await exchange_google_code(body.code, safe_redirect)
     except Exception as exc:
         logger.warning("Google code exchange failed: %s", exc)
         raise HTTPException(
@@ -211,7 +276,13 @@ async def google_callback(
             detail="Failed to authenticate with Google.",
         )
 
-    user = await get_or_create_google_user(google_info, db)
+    try:
+        user = await get_or_create_google_user(google_info, db)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=str(exc),
+        ) from exc
     if not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -240,6 +311,7 @@ async def _send_reset_email_safe(email: str, reset_url: str) -> None:
 @router.post("/forgot-password", response_model=schemas.ForgotPasswordResponse)
 async def forgot_password(
     body: schemas.ForgotPasswordRequest,
+    request: Request,
     background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db),
 ):
@@ -252,6 +324,8 @@ async def forgot_password(
     Dev fallback: `dev_reset_link` is returned only when ENVIRONMENT is not
     production (independent of whether Resend credentials are present).
     """
+    rate_limit(request, scope="auth-forgot", limit=5, window_seconds=60)
+
     generic = (
         "Password reset instructions have been sent to your email address."
     )

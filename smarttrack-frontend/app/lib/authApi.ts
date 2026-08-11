@@ -21,6 +21,28 @@ const API_BASE_URL =
   (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_API_URL) ||
   'http://localhost:8000/api/v1';
 
+/** Turn FastAPI `detail` (string | list | object) into a readable message. */
+export function formatApiDetail(detail: unknown, fallback: string): string {
+  if (typeof detail === 'string' && detail.trim()) return detail;
+  if (Array.isArray(detail)) {
+    const parts = detail
+      .map((item) => {
+        if (typeof item === 'string') return item;
+        if (item && typeof item === 'object' && 'msg' in item) {
+          return String((item as { msg?: string }).msg || '');
+        }
+        return '';
+      })
+      .filter(Boolean);
+    if (parts.length) return parts.join(' ');
+  }
+  if (detail && typeof detail === 'object' && 'message' in detail) {
+    const msg = (detail as { message?: unknown }).message;
+    if (typeof msg === 'string' && msg.trim()) return msg;
+  }
+  return fallback;
+}
+
 export type Programme = 'General Science' | 'General Arts' | 'Business' | 'Visual Arts' | 'Home Economics' | 'Technical';
 /** Internal API value — never show these labels in the UI. Use phaseLabelFromLevel(). */
 export type SHSLevel = 'SHS 1' | 'SHS 2' | 'SHS 3' | 'Completed SHS';
@@ -441,11 +463,16 @@ export const register = async (data: RegisterRequest): Promise<UserProfile | nul
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    throw new Error(error.detail || 'Registration failed');
+    throw new Error(formatApiDetail(error.detail, 'Registration failed'));
   }
 
   const tokens: AuthTokens = await response.json();
-  return installAuthSession(tokens);
+  const profile = await installAuthSession(tokens);
+  // Tokens are stored even if /users/me briefly fails — caller can continue.
+  if (!profile && !getAccessToken()) {
+    throw new Error('Account created but sign-in did not finish. Please sign in.');
+  }
+  return profile;
 };
 
 /**
@@ -472,11 +499,15 @@ export const login = async (data: LoginRequest): Promise<UserProfile | null> => 
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    throw new Error(error.detail || 'Login failed');
+    throw new Error(formatApiDetail(error.detail, 'Invalid email or password.'));
   }
 
   const tokens: AuthTokens = await response.json();
-  return installAuthSession(tokens);
+  const profile = await installAuthSession(tokens);
+  if (!profile && !getAccessToken()) {
+    throw new Error('Signed in but profile could not load. Please try again.');
+  }
+  return profile;
 };
 
 /**

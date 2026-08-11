@@ -1,9 +1,14 @@
 /**
  * Phase / Level progression API client
  */
-import { fetchWithAuth } from './authApi';
+import { fetchWithAuth, getFetchErrorMessage, formatApiDetail } from './authApi';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+
+async function readApiError(res: Response, fallback: string): Promise<string> {
+  const err = await res.json().catch(() => ({}));
+  return formatApiDetail((err as { detail?: unknown }).detail, fallback);
+}
 
 /** Must match backend Settings.CHALLENGE_FORMAT_VERSION — stale sessions are regenerated. */
 export const CHALLENGE_FORMAT_VERSION = 12;
@@ -34,28 +39,51 @@ export type ProgressionMe = {
 };
 
 export async function getProgression(): Promise<ProgressionMe> {
-  const res = await fetchWithAuth(`${API_BASE}/phases/me`);
-  if (!res.ok) throw new Error('Failed to load progression');
-  return res.json();
+  try {
+    const res = await fetchWithAuth(`${API_BASE}/phases/me`);
+    if (!res.ok) throw new Error(await readApiError(res, 'Failed to load progression'));
+    return res.json();
+  } catch (err) {
+    throw new Error(getFetchErrorMessage(err));
+  }
 }
 
 export async function startLevel(levelId: number) {
-  const res = await fetchWithAuth(`${API_BASE}/phases/levels/${levelId}/start`, {
-    method: 'POST',
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.detail || 'Failed to start level');
+  try {
+    const res = await fetchWithAuth(`${API_BASE}/phases/levels/${levelId}/start`, {
+      method: 'POST',
+      signal: AbortSignal.timeout(120_000),
+    });
+    if (!res.ok) {
+      throw new Error(await readApiError(res, 'Failed to start level'));
+    }
+    return res.json();
+  } catch (err) {
+    if (err instanceof DOMException && err.name === 'TimeoutError') {
+      throw new Error(
+        'Starting this level is taking too long. Check your connection and try again.',
+      );
+    }
+    throw new Error(getFetchErrorMessage(err));
   }
-  return res.json();
 }
 
 export async function replayLevel(levelId: number) {
-  const res = await fetchWithAuth(`${API_BASE}/phases/levels/${levelId}/replay`, {
-    method: 'POST',
-  });
-  if (!res.ok) throw new Error('Failed to replay level');
-  return res.json();
+  try {
+    const res = await fetchWithAuth(`${API_BASE}/phases/levels/${levelId}/replay`, {
+      method: 'POST',
+      signal: AbortSignal.timeout(120_000),
+    });
+    if (!res.ok) throw new Error(await readApiError(res, 'Failed to replay level'));
+    return res.json();
+  } catch (err) {
+    if (err instanceof DOMException && err.name === 'TimeoutError') {
+      throw new Error(
+        'Replaying this level is taking too long. Check your connection and try again.',
+      );
+    }
+    throw new Error(getFetchErrorMessage(err));
+  }
 }
 
 export type PrefetchStatus = {
@@ -165,34 +193,64 @@ export function isFreshPhaseSession(session: Record<string, unknown> | null): bo
 }
 
 /**
- * If the cached play session predates mixed question types / images,
- * start or replay the level again so every attempt uses the new format.
+ * Ensure the cached play session is still active on the server.
+ * Stale/completed session IDs caused "Session is not active" mid-level.
  */
 export async function refreshPhaseSessionIfStale(): Promise<Record<string, unknown> | null> {
   const cached = readPhaseSession();
-  if (isFreshPhaseSession(cached)) return cached;
-
   const levelId = Number(cached?.level_id);
-  if (!Number.isFinite(levelId) || levelId <= 0) {
-    sessionStorage.removeItem('atlasPhaseSession');
-    return null;
-  }
-
+  const sessionId = Number(cached?.session_id);
   const preferReplay = Boolean(cached?.is_replay);
-  try {
-    const fresh = preferReplay
-      ? await replayLevel(levelId)
-      : await startLevel(levelId);
-    return storePhaseSession(fresh);
-  } catch {
-    try {
-      const fresh = await startLevel(levelId);
-      return storePhaseSession(fresh);
-    } catch {
+
+  const restart = async (): Promise<Record<string, unknown> | null> => {
+    if (!Number.isFinite(levelId) || levelId <= 0) {
       sessionStorage.removeItem('atlasPhaseSession');
       return null;
     }
+    try {
+      const fresh = preferReplay
+        ? await replayLevel(levelId)
+        : await startLevel(levelId);
+      return storePhaseSession(fresh);
+    } catch {
+      try {
+        const fresh = await startLevel(levelId);
+        return storePhaseSession(fresh);
+      } catch {
+        sessionStorage.removeItem('atlasPhaseSession');
+        return null;
+      }
+    }
+  };
+
+  if (!isFreshPhaseSession(cached)) {
+    return restart();
   }
+
+  if (!Number.isFinite(sessionId) || sessionId <= 0) {
+    return restart();
+  }
+
+  try {
+    const res = await fetchWithAuth(`${API_BASE}/phases/sessions/${sessionId}`);
+    if (!res.ok) return restart();
+    const status = await res.json();
+    if (status?.status !== 'in_progress') {
+      return restart();
+    }
+    return cached;
+  } catch {
+    return restart();
+  }
+}
+
+/** Start a fresh session for the same level after an inactive-session error. */
+export async function recoverPhaseSession(
+  levelId: number,
+  isReplay = false,
+): Promise<Record<string, unknown>> {
+  const fresh = isReplay ? await replayLevel(levelId) : await startLevel(levelId);
+  return storePhaseSession(fresh);
 }
 
 export async function submitPhaseAnswer(

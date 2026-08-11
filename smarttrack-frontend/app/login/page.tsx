@@ -34,15 +34,18 @@ export default function Login() {
     try {
       const formData = new FormData(e.currentTarget);
       const user = await login({
-        email: formData.get('email') as string,
+        email: String(formData.get('email') || '').trim().toLowerCase(),
         password: formData.get('password') as string,
       });
       // Navigate immediately — login() already loaded and cached the profile.
       router.replace(resolvePostAuthDestination(user));
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Login failed';
+      const message = err instanceof Error ? err.message : 'Invalid email or password.';
       setError(message);
-      setIsNetworkError(message.toLowerCase().includes('connect to the server'));
+      setIsNetworkError(
+        message.toLowerCase().includes('connect to the server') ||
+          message.toLowerCase().includes('localhost'),
+      );
       setIsLoading(false);
     }
   };
@@ -204,6 +207,12 @@ export default function Login() {
             <Link href="/register" className="text-[#2563EB] hover:text-[#1D4ED8] font-semibold">
               Create one
             </Link>
+          </p>
+          <p className="text-center text-xs text-[#94A3B8] mt-4 leading-relaxed">
+            By continuing you agree to our{' '}
+            <Link href="/terms" className="text-[#2563EB] hover:underline">Terms</Link>
+            {' '}and{' '}
+            <Link href="/privacy" className="text-[#2563EB] hover:underline">Privacy Policy</Link>.
           </p>
         </div>
       </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import GuidanceDisclaimer from '../../components/GuidanceDisclaimer';
 
 interface Props {
   onNext: () => void;
@@ -63,11 +64,15 @@ export default function ScreenOnboarding2({ onNext }: Props) {
             </p>
           </div>
 
-          <div className="bg-[#F0FDF4] border border-[#BBF7D0] rounded-xl p-4 mb-8">
+          <div className="bg-[#F0FDF4] border border-[#BBF7D0] rounded-xl p-4 mb-4">
             <p className="text-sm text-[#475569] leading-relaxed">
-              There are no timers and no pressure. The goal is not to test what you know. The goal is to understand who you are. Atlas uses these insights to personalise your journey from the very beginning.
+              Each activity is timed so you can stay focused, but this is not a high-stakes exam.
+              The goal is to understand how you think — Atlas uses these insights to personalise
+              your journey from the very beginning.
             </p>
           </div>
+
+          <GuidanceDisclaimer className="mb-8" compact />
 
           <motion.button
             whileHover={{ scale: 1.02 }}

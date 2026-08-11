@@ -18,6 +18,7 @@ import {
   getRecommendationEligibility,
   type RecommendationEligibility,
 } from '../lib/phasesApi';
+import GuidanceDisclaimer from '../components/GuidanceDisclaimer';
 
 function formatApiDetail(detail: unknown): string {
   if (typeof detail === 'string') return detail;
@@ -641,6 +642,7 @@ export default function RecommendationsPage() {
                   </span>
                 </div>
               </div>
+              <GuidanceDisclaimer className="mt-4" />
             </motion.div>
 
             {phaseHistory.length > 0 && (

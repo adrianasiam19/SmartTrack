@@ -44,6 +44,28 @@ class TelemetrySubmitResponse(BaseModel):
     status: str
     is_correct: bool
     next_questions: List[QuestionResponse]
+    streak: Optional[int] = None
+    streak_updated: Optional[bool] = None
+    xp_gained: Optional[int] = None
+    level_up: Optional[bool] = None
+    new_rank: Optional[str] = None
+
+
+class BehaviourSessionRequest(BaseModel):
+    """Session-level behavioural telemetry from competitive arenas."""
+    session_id: Optional[str] = None
+    retries: int = 0
+    response_time_avg: float = 0.0
+    response_times: List[float] = []
+    questions_answered: int = 0
+    correct_answers: int = 0
+    consistency: float = 0.0
+    domain: Optional[str] = None
+
+
+class BehaviourSessionResponse(BaseModel):
+    status: str = "success"
+    traits: Dict[str, float] = {}
 
 class ExplanationRequest(BaseModel):
     question_id: int

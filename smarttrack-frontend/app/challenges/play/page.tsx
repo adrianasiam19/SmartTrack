@@ -18,6 +18,7 @@ import {
   startLevel,
   submitPhaseAnswer,
   refreshPhaseSessionIfStale,
+  recoverPhaseSession,
   storePhaseSession,
 } from '../../lib/phasesApi';
 import { getCurrentUser, getStoredUser, storeUser } from '../../lib/authApi';
@@ -334,6 +335,24 @@ function PhasePlayInner() {
           },
           timedOut,
         );
+      } else if (/session is not active|session not found/i.test(message)) {
+        // Cached session finished or expired — start a fresh one for this level.
+        try {
+          const recovered = await recoverPhaseSession(
+            sessionData.level_id,
+            Boolean(sessionData.is_replay),
+          );
+          setSession(recovered as unknown as SessionPayload);
+          setIndex(0);
+          setSelected('');
+          setFeedback('Your previous attempt ended — starting a fresh set for this level.');
+          lockRef.current = false;
+          questionStartRef.current = Date.now();
+          setTimeLeft(QUESTION_TIMEOUT);
+        } catch {
+          lockRef.current = false;
+          setFeedback('This challenge session ended. Return to Challenges and start again.');
+        }
       } else {
         lockRef.current = false;
         setFeedback(message);

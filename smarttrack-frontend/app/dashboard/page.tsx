@@ -16,6 +16,7 @@ import {
   UserProfile,
 } from '../lib/authApi';
 import { hasPriorDashboardVisit } from '../lib/dashboardWelcome';
+import GuidanceDisclaimer from '../components/GuidanceDisclaimer';
 import {
   getProgression,
   warmPrefetchBuffer,
@@ -403,6 +404,7 @@ export default function Dashboard() {
                 {firstName}
               </h1>
               <p className="mt-1.5 text-sm text-[#64748B]">{phaseSubtitle}</p>
+              <GuidanceDisclaimer className="mt-4" compact />
             </motion.section>
 
             {/* Your path — first content block after welcome */}
