@@ -61,7 +61,7 @@ export default function Home() {
               <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/20 shadow-lg">
                 <span className="text-white font-bold text-lg">A</span>
               </div>
-              <span className="text-2xl font-bold text-white tracking-tight">Atlas</span>
+              <span className="text-2xl font-bold text-white tracking-tight">ATLAS</span>
             </motion.div>
 
             {/* Center messaging */}
@@ -72,11 +72,11 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-white leading-[1.1] tracking-tight mb-6"
               >
-                Discover Your
+                ATLAS
                 <br />
-                Strengths.
+                <span className="text-[#F59E0B]">Learning &amp; guidance</span>
                 <br />
-                <span className="text-[#F59E0B]">Shape Your Future.</span>
+                for SHS students.
               </motion.h1>
 
               <motion.p
@@ -85,8 +85,10 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.35 }}
                 className="text-base sm:text-lg text-[#BFDBFE] leading-relaxed max-w-lg font-light"
               >
-                An intelligent platform to discover your strengths, improve your skills,
-                and explore academic paths that match your potential.
+                ATLAS is an intelligent learning platform for secondary students in Ghana.
+                Sign in to practise challenges, study lessons across your subjects, track
+                progress, and explore university programme recommendations that match your
+                strengths. Suggestions are guidance only — not admission guarantees.
               </motion.p>
             </div>
 
@@ -106,8 +108,10 @@ export default function Home() {
             <div className="bg-white rounded-2xl border border-[#BFDBFE] p-8 lg:p-10 shadow-xl shadow-[#2563EB]/5">
               {/* Welcome */}
               <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-[#1E293B] mb-2">Welcome to Atlas</h2>
-                <p className="text-[#475569]">Create an account or sign in to continue your journey.</p>
+                <h2 className="text-2xl font-bold text-[#1E293B] mb-2">Welcome to ATLAS</h2>
+                <p className="text-[#475569]">
+                  Create an account or sign in to use ATLAS learning, challenges, and programme guidance.
+                </p>
               </div>
 
               {/* CTA Buttons */}
