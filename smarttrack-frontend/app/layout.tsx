@@ -10,9 +10,10 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Atlas - Intelligent Learning & University Program Recommendations",
-  description: "Challenge-based learning platform for secondary students. Discover your strengths and find the perfect university program.",
-  keywords: ["education", "learning", "career guidance", "WASSCE", "university recommendations"],
+  title: "ATLAS - Intelligent Learning & University Program Recommendations",
+  description:
+    "ATLAS is an intelligent learning platform for secondary students in Ghana. Practise challenges, study lessons, track progress, and explore university programme recommendations.",
+  keywords: ["ATLAS", "education", "learning", "career guidance", "WASSCE", "university recommendations", "Ghana", "SHS"],
   other: {
     "color-scheme": "light only",
   },

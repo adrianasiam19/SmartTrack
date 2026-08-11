@@ -168,9 +168,9 @@ export default function AtlasIntroAnimation({ onFinish }: AtlasIntroAnimationPro
                 y: phase >= 4 ? -15 : 0,
               }}
               transition={{ duration: 0.5, delay: 1.0, ease: [0.16, 1, 0.3, 1] }}
-              className="text-sm text-[#94A3B8] font-light tracking-[0.25em] uppercase"
+              className="text-sm text-[#64748B] font-light tracking-wide max-w-sm text-center px-4"
             >
-              Discover Your Future
+              ATLAS — learning, challenges &amp; programme guidance for SHS students
             </motion.p>
           </motion.div>
         )}
@@ -366,7 +366,7 @@ export default function AtlasIntroAnimation({ onFinish }: AtlasIntroAnimationPro
             transition={{ delay: 0.5 }}
             className="absolute bottom-8 left-4 sm:left-8 text-[10px] text-[#CBD5E1] tracking-[0.2em] uppercase font-medium"
           >
-            Atlas
+            ATLAS
           </motion.p>
         )}
       </div>
