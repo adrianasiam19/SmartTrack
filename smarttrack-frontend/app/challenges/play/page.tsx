@@ -9,8 +9,9 @@ import PhaseQuestionRenderer, {
   type PhaseQuestion,
 } from '../components/PhaseQuestionRenderer';
 import {
-  completePhaseSession,
+  completePhaseSessionWithRetry,
   findNextLevelId,
+  getPhaseSessionStatus,
   getPrefetchStatus,
   getProgression,
   prefetchLevel,
@@ -20,6 +21,7 @@ import {
   refreshPhaseSessionIfStale,
   recoverPhaseSession,
   storePhaseSession,
+  type CompletePhaseResult,
 } from '../../lib/phasesApi';
 import { getCurrentUser, getStoredUser, storeUser } from '../../lib/authApi';
 
@@ -115,6 +117,32 @@ function PhasePlayInner() {
         router.replace('/challenges');
         return;
       }
+
+      // Session already completed on the server (slow complete / remount) — show results,
+      // never regenerate the level at question 1.
+      if (String(fresh.status || '') === 'completed') {
+        try {
+          const complete = await completePhaseSessionWithRetry(Number(fresh.session_id));
+          if (cancelled) return;
+          setSession(fresh as unknown as SessionPayload);
+          setResult({
+            ...complete,
+            level_id: complete.level_id ?? Number(fresh.level_id),
+          });
+          setDone(true);
+          sessionStorage.removeItem('atlasPhaseSession');
+          if (typeof complete.user_xp === 'number') setUserXp(complete.user_xp);
+          void syncUserFromServer({
+            xp: complete.user_xp,
+            rank: complete.rank,
+            streak: complete.streak,
+          });
+        } catch {
+          if (!cancelled) router.replace('/challenges');
+        }
+        return;
+      }
+
       setSession(fresh as unknown as SessionPayload);
       const cached = getStoredUser();
       if (cached) setUserXp(cached.xp ?? 0);
@@ -272,21 +300,43 @@ function PhasePlayInner() {
       return;
     }
 
-    const complete = await completePhaseSession(sessionData.session_id);
+    try {
+      const complete = await completePhaseSessionWithRetry(sessionData.session_id);
+      await finishFromCompletedSession(sessionData, complete);
+    } catch (completeErr) {
+      // Last answer may already be saved; if the server finished the level, show results.
+      try {
+        const status = await getPhaseSessionStatus(sessionData.session_id);
+        if (status.status === 'completed') {
+          const complete = await completePhaseSessionWithRetry(sessionData.session_id);
+          await finishFromCompletedSession(sessionData, complete);
+          return;
+        }
+      } catch {
+        /* fall through */
+      }
+      throw completeErr instanceof Error
+        ? completeErr
+        : new Error('Failed to complete session');
+    }
+  }
+
+  async function finishFromCompletedSession(
+    sessionData: SessionPayload,
+    complete: CompletePhaseResult,
+  ) {
     setFeedback('');
     setResult({
       ...complete,
       level_id: complete.level_id ?? sessionData.level_id,
     });
     setDone(true);
-    if (typeof complete.user_xp === 'number' || typeof complete.streak === 'number') {
-      if (typeof complete.user_xp === 'number') setUserXp(complete.user_xp);
-      void syncUserFromServer({
-        xp: complete.user_xp,
-        rank: complete.rank,
-        streak: complete.streak,
-      });
-    }
+    if (typeof complete.user_xp === 'number') setUserXp(complete.user_xp);
+    void syncUserFromServer({
+      xp: complete.user_xp,
+      rank: complete.rank,
+      streak: complete.streak,
+    });
     sessionStorage.removeItem('atlasPhaseSession');
   }
 
@@ -336,22 +386,43 @@ function PhasePlayInner() {
           timedOut,
         );
       } else if (/session is not active|session not found/i.test(message)) {
-        // Cached session finished or expired — start a fresh one for this level.
+        // Production race: complete often succeeds on the server while the client
+        // still retries submit. Prefer finishing the level over restarting at Q1.
         try {
-          const recovered = await recoverPhaseSession(
-            sessionData.level_id,
-            Boolean(sessionData.is_replay),
-          );
-          setSession(recovered as unknown as SessionPayload);
-          setIndex(0);
-          setSelected('');
-          setFeedback('Your previous attempt ended — starting a fresh set for this level.');
-          lockRef.current = false;
-          questionStartRef.current = Date.now();
-          setTimeLeft(QUESTION_TIMEOUT);
+          const complete = await completePhaseSessionWithRetry(sessionData.session_id);
+          await finishFromCompletedSession(sessionData, complete);
         } catch {
-          lockRef.current = false;
-          setFeedback('This challenge session ended. Return to Challenges and start again.');
+          try {
+            const status = await getPhaseSessionStatus(sessionData.session_id);
+            if (status.status === 'completed') {
+              const complete = await completePhaseSessionWithRetry(sessionData.session_id);
+              await finishFromCompletedSession(sessionData, complete);
+            } else if (
+              typeof status.answered_count === 'number' &&
+              typeof status.question_count === 'number' &&
+              status.answered_count >= status.question_count &&
+              status.question_count > 0
+            ) {
+              const complete = await completePhaseSessionWithRetry(sessionData.session_id);
+              await finishFromCompletedSession(sessionData, complete);
+            } else {
+              // Truly abandoned mid-level — only then start fresh.
+              const recovered = await recoverPhaseSession(
+                sessionData.level_id,
+                Boolean(sessionData.is_replay),
+              );
+              setSession(recovered as unknown as SessionPayload);
+              setIndex(0);
+              setSelected('');
+              setFeedback('Your previous attempt ended — starting a fresh set for this level.');
+              lockRef.current = false;
+              questionStartRef.current = Date.now();
+              setTimeLeft(QUESTION_TIMEOUT);
+            }
+          } catch {
+            lockRef.current = false;
+            setFeedback('This challenge session ended. Return to Challenges and start again.');
+          }
         }
       } else {
         lockRef.current = false;

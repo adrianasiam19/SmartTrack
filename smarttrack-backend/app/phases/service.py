@@ -846,16 +846,33 @@ async def submit_answer(
     ).scalar_one_or_none()
     if not session or session.user_id != user_id:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Session not found")
-    if session.status != "in_progress":
-        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Session is not active")
 
     q = (
         await db.execute(select(ChallengeResponse).where(ChallengeResponse.id == question_id))
     ).scalar_one_or_none()
     if not q or q.session_id != session_id:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Question not found")
+
+    # Idempotent replay: after a slow/interrupted complete, the client may retry the
+    # last question. Returning the prior result (even if the session is completed)
+    # prevents the frontend from "recovering" into a brand-new Q1 session.
     if q.user_answer is not None:
-        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Already answered")
+        user = (await db.execute(select(User).where(User.id == user_id))).scalar_one()
+        return {
+            "is_correct": bool(q.is_correct),
+            "explanation": q.explanation,
+            "correct_count": session.correct_count,
+            "wrong_count": session.wrong_count,
+            "xp_earned": 0,
+            "user_xp": user.xp or 0,
+            "rank": user.rank,
+            "streak": user.streak,
+            "streak_incremented": False,
+            "learning_nudge": None,
+        }
+
+    if session.status != "in_progress":
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Session is not active")
 
     from app.phases.answer_grading import grade_answer
 
