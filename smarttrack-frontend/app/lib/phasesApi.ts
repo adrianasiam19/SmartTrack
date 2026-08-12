@@ -192,9 +192,32 @@ export function isFreshPhaseSession(session: Record<string, unknown> | null): bo
   return Number(session.format_version) === CHALLENGE_FORMAT_VERSION;
 }
 
+export type PhaseSessionStatus = {
+  session_id: number;
+  status: string;
+  level_id?: number | null;
+  is_replay?: boolean;
+  answered_count?: number;
+  question_count?: number;
+};
+
+export async function getPhaseSessionStatus(
+  sessionId: number,
+): Promise<PhaseSessionStatus> {
+  const res = await fetchWithAuth(`${API_BASE}/phases/sessions/${sessionId}`);
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    const detail =
+      typeof err?.detail === 'string' ? err.detail : `Session status failed (${res.status})`;
+    throw new Error(detail);
+  }
+  return res.json() as Promise<PhaseSessionStatus>;
+}
+
 /**
  * Ensure the cached play session is still active on the server.
- * Stale/completed session IDs caused "Session is not active" mid-level.
+ * Completed sessions must NOT restart at Q1 — that wiped progression in production
+ * when complete was slow and the tab remounted / retried.
  */
 export async function refreshPhaseSessionIfStale(): Promise<Record<string, unknown> | null> {
   const cached = readPhaseSession();
@@ -232,19 +255,24 @@ export async function refreshPhaseSessionIfStale(): Promise<Record<string, unkno
   }
 
   try {
-    const res = await fetchWithAuth(`${API_BASE}/phases/sessions/${sessionId}`);
-    if (!res.ok) return restart();
-    const status = await res.json();
-    if (status?.status !== 'in_progress') {
+    const status = await getPhaseSessionStatus(sessionId);
+    if (status.status === 'completed') {
+      return { ...cached, status: 'completed' };
+    }
+    if (status.status !== 'in_progress') {
       return restart();
     }
     return cached;
   } catch {
-    return restart();
+    // Transient network blip — keep the cached in-progress session.
+    return cached;
   }
 }
 
-/** Start a fresh session for the same level after an inactive-session error. */
+/**
+ * Only for genuinely abandoned mid-level sessions.
+ * Do not use after the last question / completed session.
+ */
 export async function recoverPhaseSession(
   levelId: number,
   isReplay = false,
@@ -300,34 +328,65 @@ export async function submitPhaseAnswer(
   }>;
 }
 
-export async function completePhaseSession(sessionId: number) {
+export type CompletePhaseResult = {
+  passed: boolean;
+  score: number;
+  threshold: number;
+  level_completed: boolean;
+  next?: string | null;
+  phase_number?: number | null;
+  level_id?: number | null;
+  next_level_id?: number | null;
+  next_level_number?: number | null;
+  session_xp?: number;
+  user_xp?: number;
+  rank?: string;
+  streak?: number;
+  streak_incremented?: boolean;
+  learning_nudge?: {
+    subject: string;
+    message?: string;
+    curriculum_id?: string | null;
+    topic_title?: string | null;
+  } | null;
+};
+
+export async function completePhaseSession(sessionId: number): Promise<CompletePhaseResult> {
   const res = await fetchWithAuth(
     `${API_BASE}/phases/sessions/${sessionId}/complete`,
-    { method: 'POST' },
+    {
+      method: 'POST',
+      signal: AbortSignal.timeout(60_000),
+    },
   );
-  if (!res.ok) throw new Error('Failed to complete session');
-  return res.json() as Promise<{
-    passed: boolean;
-    score: number;
-    threshold: number;
-    level_completed: boolean;
-    next?: string | null;
-    phase_number?: number | null;
-    level_id?: number | null;
-    next_level_id?: number | null;
-    next_level_number?: number | null;
-    session_xp?: number;
-    user_xp?: number;
-    rank?: string;
-    streak?: number;
-    streak_incremented?: boolean;
-    learning_nudge?: {
-      subject: string;
-      message?: string;
-      curriculum_id?: string | null;
-      topic_title?: string | null;
-    } | null;
-  }>;
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    const detail =
+      typeof err?.detail === 'string'
+        ? err.detail
+        : `Failed to complete session (${res.status})`;
+    throw new Error(detail);
+  }
+  return res.json() as Promise<CompletePhaseResult>;
+}
+
+/** Retry complete — server is idempotent; production often drops the first response. */
+export async function completePhaseSessionWithRetry(
+  sessionId: number,
+  attempts = 3,
+): Promise<CompletePhaseResult> {
+  let lastError: Error | null = null;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await completePhaseSession(sessionId);
+    } catch (e) {
+      lastError = e instanceof Error ? e : new Error('Failed to complete session');
+      if (i < attempts - 1) {
+        await new Promise((r) => setTimeout(r, 800 * (i + 1)));
+      }
+    }
+  }
+  throw lastError || new Error('Failed to complete session');
 }
 
 export async function startCheckpoint(phaseNumber: number) {

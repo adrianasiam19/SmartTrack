@@ -14,7 +14,6 @@ import {
   storePhaseSession,
 } from '../lib/phasesApi';
 import { getAccessToken } from '../lib/authApi';
-import GuidanceDisclaimer from '../components/GuidanceDisclaimer';
 
 function phaseStatusLabel(status: string) {
   return status.replace(/_/g, ' ');
@@ -126,7 +125,6 @@ export default function ChallengesHomePage() {
               Choose a phase to open its levels. Complete levels in order to unlock
               the next ones.
             </p>
-            <GuidanceDisclaimer className="mt-4" compact />
           </>
         ) : (
           <>
